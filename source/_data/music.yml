@@ -1,12 +1,23 @@
-# 首页 XP-MP4 播放器的曲目表
+# 首页 XP-MP4 播放器 —— 两种模式，二选一
 #
-# 留空（默认）时：首页不会加载 APlayer（省掉 CDN 的 CSS/JS），播放器显示「未配置曲目」空状态，
-# 不会出现"示例歌曲 / 艺术家 A / w3schools 测试音频"这类假内容。
+# 模式 A：本地音频 / 直链（推荐，外观是 XP 风格的自定义播放器，不依赖任何第三方）
+#   tracks:
+#     - title: 曲目名
+#       author: 艺术家
+#       album: 专辑名
+#       url: /music/song.mp3          # 也可以填 https:// 开头的直链
+#       pic: /images/covers/song.jpg  # 可选，封面图
 #
-# 想启用播放器，把下面的示例取消注释并换成自己的音频地址即可（支持相对路径与 http(s)）：
+# 模式 B：网易云歌单（用网易云官方的外链播放器 iframe）
+#   把歌单链接里 id= 后面那串数字填到 netease_playlist 即可，例如
+#   https://music.163.com/#/playlist?id=123456789  →  填 123456789
+#   ⚠️ 注意事项：
+#     1. 这个播放器是网易云自己的外观，**不会**套用 XP 皮肤；
+#     2. 需要联网、依赖网易云服务，歌单被删/接口变动就会失效；
+#     3. 别人能不能听到取决于歌曲版权与你所在地区，与本站无关。
+#   netease_playlist: 123456789
 #
-# - title: 曲目名
-#   author: 艺术家
-#   album: 专辑名
-#   url: /music/song.mp3
-#   pic: /images/covers/song.jpg
+# 两种都不填 = 显示「未配置曲目」空状态，且不会加载 APlayer（最省流量）。
+
+tracks: []
+# netease_playlist: 0

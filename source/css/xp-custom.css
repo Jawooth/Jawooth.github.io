@@ -220,7 +220,9 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 .xp-window-title {
   background: var(--title-grad);
   color: #fff;
-  padding: 5px 10px;
+  /* 固定高度：普通与紧凑标题栏一样高，同一横带里的窗体内容起始位置才会齐平 */
+  height: 26px;
+  padding: 0 10px;
   font-weight: bold;
   font-size: 13px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
@@ -230,7 +232,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   gap: 8px;
   flex-shrink: 0;
 }
-.xp-window-title.compact { padding: 4px 8px; font-size: 12px; }
+.xp-window-title.compact { height: 26px; padding: 0 8px; font-size: 12px; }
 .xp-window-title-text { display: flex; align-items: center; gap: 6px; min-width: 0; }
 
 .xp-window-btns { display: flex; gap: 2px; flex-shrink: 0; }
@@ -404,7 +406,7 @@ html.dark .meta-chip strong { color: #9cc2ff; }
   border: 1px solid #c0a030;
   border-top: none;
   box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
-  padding: 14px 18px 12px;
+  padding: 12px 16px 10px;
   transform: rotate(-1.5deg);
   position: relative;
   margin: 2px 4px;
@@ -413,6 +415,8 @@ html.dark .meta-chip strong { color: #9cc2ff; }
   flex-direction: column;
   justify-content: center;
   color: #3a3000;
+  /* 格子高度固定，长句子宁可裁剪也不让它顶出去压到下一带 */
+  overflow: hidden;
 }
 .sticky-pin {
   position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
@@ -420,7 +424,7 @@ html.dark .meta-chip strong { color: #9cc2ff; }
   background: radial-gradient(circle at 30% 30%, #ff6b6b, #c03030);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
-.sticky-note-content p { margin: 0 0 8px; font-size: 15px; line-height: 1.6; font-style: italic; }
+.sticky-note-content p { margin: 0 0 6px; font-size: 14px; line-height: 1.55; font-style: italic; transition: opacity 0.25s; }
 .hitokoto-from {
   text-align: right; font-size: 12px; color: #806020;
   margin-top: 10px !important; font-style: normal !important;
@@ -442,29 +446,29 @@ html.dark .hitokoto-from { color: #d0c080; }
 .stat-label { flex: 1; color: var(--text-muted); }
 .stat-row a { color: var(--link); }
 
-/* 竖版复古 MP4 播放器 */
+/* 复古 MP4 播放器（紧凑面板：填满所在格子，≈3 栏 × 210px） */
 .retro-mp4-player {
   background: linear-gradient(180deg, #e8e8e0 0%, #d8d8d0 100%);
   border: 2px solid var(--xp-blue-border);
   border-radius: 8px 8px 0 0;
   box-shadow: var(--win-shadow);
-  padding: 12px 14px 14px;
+  padding: 10px 12px;
   display: flex; flex-direction: column; align-items: center;
-  gap: 12px; text-align: center;
-  width: 100%; max-width: 240px; aspect-ratio: 3 / 4;
-  margin: 0 auto;
+  gap: 8px; text-align: center;
+  width: 100%; height: 100%; max-width: none;
+  justify-content: space-between;
   transition: box-shadow 0.2s;
 }
 .retro-mp4-player:hover { box-shadow: var(--win-shadow-hover); }
 .mp4-brand { text-align: center; font-size: 11px; font-weight: bold; color: var(--xp-blue-border); letter-spacing: 1px; }
 .mp4-screen {
   background: #1a1a1a; border: 2px solid #4a4a4a; border-radius: 4px;
-  padding: 14px; width: 100%; box-sizing: border-box;
+  padding: 8px; width: 100%; box-sizing: border-box;
 }
-.mp4-screen-content { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.mp4-screen-content { display: flex; flex-direction: row; gap: 10px; align-items: center; }
 .mp4-cover { flex-shrink: 0; }
 .mp4-cover-placeholder {
-  width: 72px; height: 72px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50%;
   background: linear-gradient(135deg, #2a2a2a 0%, #111 100%);
   border: 2px solid #4a4a4a;
   display: flex; align-items: center; justify-content: center;
@@ -480,36 +484,46 @@ html.dark .hitokoto-from { color: #d0c080; }
   display: inline-block; width: 6px; height: 6px; background: #7cfc00;
   border-radius: 50%; animation: blink 1s infinite; flex-shrink: 0;
 }
-.mp4-song-author { font-size: 11px; color: #b8b8b8; margin-top: 3px; }
-.mp4-song-album { font-size: 10px; color: #a0a0a0; margin-top: 2px; }
-.mp4-progress-wrap { display: flex; flex-direction: column; gap: 4px; width: 100%; }
-.mp4-progress-times { display: flex; justify-content: space-between; font-size: 11px; color: #4a4a4a; }
+.mp4-song-author { font-size: 10px; color: #b8b8b8; margin-top: 2px; }
+.mp4-song-album { font-size: 10px; color: #a0a0a0; margin-top: 1px; }
+.mp4-progress-wrap { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+.mp4-progress-times { display: flex; justify-content: space-between; font-size: 10px; color: #4a4a4a; }
 .mp4-progress-bar {
-  height: 8px; background: #c0c0b8; border: 1px solid #999;
+  height: 7px; background: #c0c0b8; border: 1px solid #999;
   border-radius: 2px; overflow: hidden; cursor: pointer;
 }
 .mp4-progress-fill { height: 100%; width: 0%; background: linear-gradient(to bottom, #7cfc00 0%, #4caf50 100%); }
-.mp4-controls { display: flex; justify-content: center; gap: 10px; }
+.mp4-controls { display: flex; justify-content: center; gap: 8px; }
 .mp4-btn {
-  width: 36px; height: 30px; border: 1px solid var(--btn-border); border-radius: 3px;
+  width: 32px; height: 26px; border: 1px solid var(--btn-border); border-radius: 3px;
   background: var(--face); color: var(--text); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   box-shadow: inset 1px 1px 0 var(--btn-shadow-light), inset -1px -1px 0 var(--btn-shadow-dark);
 }
 .mp4-btn:hover { background: var(--face-hover); }
-.mp4-btn-play { width: 46px; }
-html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }
-html.dark .mp4-brand { color: #9cc2ff; }
+.mp4-btn-play { width: 42px; }
+html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }html.dark .mp4-brand { color: #9cc2ff; }
 html.dark .mp4-progress-times { color: #c8c8d6; }
 html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 
-/* 最近作品横栏 */
+/* 网易云歌单模式：官方外链播放器填满整个格子（不套 XP 皮肤，见 _data/music.yml 说明） */
+.xp-music-embed {
+  width: 100%; height: 100%;
+  border: 2px solid var(--xp-blue-border);
+  border-radius: 8px 8px 0 0;
+  box-shadow: var(--win-shadow);
+  background: var(--surface);
+  overflow: hidden;
+}
+.xp-music-embed iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* 最近作品横栏：卡片压扁成 16:9，使整带（含标题栏与内边距）刚好落在 210px 内 */
 .recent-works-strip {
-  display: flex; gap: 14px; overflow-x: auto;
+  display: flex; gap: 12px; overflow-x: auto;
   padding-bottom: 4px; height: 100%; align-items: stretch;
 }
 .recent-work-item {
-  flex-shrink: 0; width: 150px;
+  flex-shrink: 0; width: 148px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 3px; overflow: hidden;
@@ -517,9 +531,9 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   text-decoration: none; color: inherit;
   display: flex; flex-direction: column;
 }
-.recent-work-item.featured { width: 220px; border-color: var(--xp-blue-border); box-shadow: 0 0 0 1px var(--xp-blue-border); }
+.recent-work-item.featured { width: 196px; border-color: var(--xp-blue-border); box-shadow: 0 0 0 1px var(--xp-blue-border); }
 .recent-work-item.more {
-  width: 120px;
+  width: 112px;
   background: linear-gradient(135deg, #f0f8ff 0%, #d6e8ff 100%);
   align-items: center; justify-content: center; text-align: center;
   border-style: dashed;
@@ -527,8 +541,8 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 .recent-work-item:hover { transform: translateY(-3px); border-color: var(--xp-hover); }
 .recent-work-item.more:hover { background: linear-gradient(135deg, #e6f3ff 0%, #c2dfff 100%); }
 html.dark .recent-work-item.more { background: linear-gradient(135deg, #33384a 0%, #2a3040 100%); }
-.recent-work-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
-.recent-work-info { padding: 8px 10px; flex: 1; }
+.recent-work-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.recent-work-info { padding: 6px 8px; flex: 1; }
 .recent-work-title {
   font-size: 13px; font-weight: bold; margin: 0 0 4px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -896,7 +910,7 @@ html.dark .credit-item.credit-special { background: linear-gradient(135deg, #3a2
   min-height: 50vh;
 }
 .content-container.xp-shell .xp-window-title { margin: 0; }
-.xp-shell .post-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.xp-shell .post-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* 文章信息条 */
 .xp-shell > .post-info {
@@ -1286,28 +1300,30 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 .blog-todo-window { margin: 16px 16px 0; }
 
 /* ============ 12) 动画 ============ */
-/* 注意：入场动画只负责「从透明到出现」，基础状态必须是可见的。
-   早期写法把 .xp-bento > * 的基础 opacity 设为 0，一旦动画没跑（低端设备节流、
-   无头渲染、打印、脚本异常）整页内容就彻底不可见。 */
+/* 入场动画必须做到「动画不跑也可读」：
+   早期写法把基础 opacity 设为 0（后来改成 fill-mode: backwards，问题一样）——
+   只要动画时钟没推进（无头渲染、后台标签页、打印、省电模式），内容就整块不可见。
+   现在的起始态是 70% 不透明度 + 下移 12px：正常时是轻微的落位动画，
+   异常时内容仍然看得到。 */
 @keyframes popIn {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0.7; transform: translateY(12px); }
   to { opacity: 1; transform: none; }
 }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-.xp-bento > * { animation: popIn 0.5s ease backwards; }
-.xp-bento > *:nth-child(1) { animation-delay: 0.05s; }
-.xp-bento > *:nth-child(2) { animation-delay: 0.12s; }
-.xp-bento > *:nth-child(3) { animation-delay: 0.19s; }
-.xp-bento > *:nth-child(4) { animation-delay: 0.26s; }
-.xp-bento > *:nth-child(5) { animation-delay: 0.33s; }
-.xp-bento > *:nth-child(6) { animation-delay: 0.40s; }
-.xp-bento > *:nth-child(7) { animation-delay: 0.47s; }
-.xp-bento > *:nth-child(8) { animation-delay: 0.54s; }
-.xp-bento > *:nth-child(9) { animation-delay: 0.61s; }
-.xp-bento > *:nth-child(10) { animation-delay: 0.68s; }
-.xp-bento > *:nth-child(11) { animation-delay: 0.75s; }
-.xp-bento > *:nth-child(12) { animation-delay: 0.82s; }
+.xp-bento > * { animation: popIn 0.45s ease backwards; }
+.xp-bento > *:nth-child(1) { animation-delay: 0.04s; }
+.xp-bento > *:nth-child(2) { animation-delay: 0.09s; }
+.xp-bento > *:nth-child(3) { animation-delay: 0.14s; }
+.xp-bento > *:nth-child(4) { animation-delay: 0.19s; }
+.xp-bento > *:nth-child(5) { animation-delay: 0.24s; }
+.xp-bento > *:nth-child(6) { animation-delay: 0.29s; }
+.xp-bento > *:nth-child(7) { animation-delay: 0.34s; }
+.xp-bento > *:nth-child(8) { animation-delay: 0.39s; }
+.xp-bento > *:nth-child(9) { animation-delay: 0.44s; }
+.xp-bento > *:nth-child(10) { animation-delay: 0.49s; }
+.xp-bento > *:nth-child(11) { animation-delay: 0.54s; }
+.xp-bento > *:nth-child(12) { animation-delay: 0.59s; }
 
 /* 桌面端轻微倾斜（手工感），移动端取消 */
 @media (min-width: 901px) {

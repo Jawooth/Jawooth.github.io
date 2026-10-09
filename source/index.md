@@ -3,13 +3,11 @@ title: 首页
 layout: xp-page
 ---
 
-{% xp_music %}
-
 <div class="home-page">
 <div class="xp-bento">
 
-<!-- ========== 大格：用户账户窗口 ========== -->
-<div class="bento-item bento-profile tilt-left">
+<!-- ========== 带 1：我是谁 ========== -->
+<div class="bento-item bento-profile">
 <div class="xp-window">
 <div class="xp-window-title">
 <span class="xp-window-title-text">
@@ -44,7 +42,7 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 小格：便签 ========== -->
+<!-- ========== 带 1：便签 ========== -->
 <div class="bento-item bento-sticky tilt-note">
 <div class="xp-sticky-note">
 <div class="sticky-pin"></div>
@@ -55,23 +53,10 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 小格：站点统计 ========== -->
-<div class="bento-item bento-stats">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/><path d="M3 12l3-4 3 2 4-6" fill="none" stroke="#60b060" stroke-width="1.5"/></svg>
-小站数据
-</span>
-</div>
-<div class="xp-window-body compact-body">
-{% xp_stat_rows %}
-</div>
-</div>
-</div>
-
-<!-- ========== 中格：复古 MP4 播放器 ========== -->
-<div class="bento-item bento-music tilt-right">
+<!-- ========== 带 1：复古 MP4 播放器 ========== -->
+<div class="bento-item bento-music">
+<!-- 曲目 / 歌单都在 source/_data/music.yml 里配置；这里只是播放器外观 -->
+{% xp_music %}
 <div class="retro-mp4-player">
 <div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg> XP-MP4 <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg></div>
 <div class="mp4-screen">
@@ -116,8 +101,8 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 宽格：最近作品 ========== -->
-<div class="bento-item bento-recent tilt-soft">
+<!-- ========== 带 2：最近作品 ========== -->
+<div class="bento-item bento-recent">
 <div class="xp-window">
 <div class="xp-window-title">
 <span class="xp-window-title-text">
@@ -138,7 +123,7 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 窄格：待办事项 ========== -->
+<!-- ========== 带 2：待办事项 ========== -->
 <div class="bento-item bento-todo">
 <div class="xp-window">
 <div class="xp-window-title compact">
@@ -153,23 +138,53 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 中格：最近更新 ========== -->
+<!-- ========== 带 3：最新文章 ========== -->
 <div class="bento-item bento-articles">
 <div class="xp-window">
 <div class="xp-window-title compact">
 <span class="xp-window-title-text">
 <svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#0066cc" stroke-width="0.5"/><path d="M4 5h8M4 8h8M4 11h5" stroke="#666" stroke-width="1" stroke-linecap="round"/></svg>
-最近更新
+最新文章
 </span>
 </div>
 <div class="xp-window-body compact-body">
-{% xp_recent_posts 4 %}
+{% xp_recent_posts 4 exclude=作品 %}
 </div>
 </div>
 </div>
 
-<!-- ========== 中格：快速导航 ========== -->
-<div class="bento-item bento-nav tilt-rise">
+<!-- ========== 带 3：标签云 ========== -->
+<div class="bento-item bento-tags">
+<div class="xp-window">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8l6-6 6 6-6 6-6-6z" fill="#ffe0e0" stroke="#cc6666" stroke-width="0.5"/><circle cx="8" cy="8" r="2" fill="#cc6666"/></svg>
+标签云
+</span>
+</div>
+<div class="xp-window-body compact-body">
+{% xp_tag_cloud pill %}
+</div>
+</div>
+</div>
+
+<!-- ========== 带 3：小站数据 ========== -->
+<div class="bento-item bento-stats">
+<div class="xp-window">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/><path d="M3 12l3-4 3 2 4-6" fill="none" stroke="#60b060" stroke-width="1.5"/></svg>
+小站数据
+</span>
+</div>
+<div class="xp-window-body compact-body">
+{% xp_stat_rows %}
+</div>
+</div>
+</div>
+
+<!-- ========== 带 3：快速导航 ========== -->
+<div class="bento-item bento-nav">
 <div class="xp-window">
 <div class="xp-window-title compact">
 <span class="xp-window-title-text">
@@ -190,23 +205,8 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 中格：标签云 ========== -->
-<div class="bento-item bento-tags">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8l6-6 6 6-6 6-6-6z" fill="#ffe0e0" stroke="#cc6666" stroke-width="0.5"/><circle cx="8" cy="8" r="2" fill="#cc6666"/></svg>
-标签云
-</span>
-</div>
-<div class="xp-window-body compact-body">
-{% xp_tag_cloud pill %}
-</div>
-</div>
-</div>
-
-<!-- ========== 宽格：友情链接 + 搜索 ========== -->
-<div class="bento-item bento-links tilt-drop">
+<!-- ========== 带 4：友情链接与搜索 ========== -->
+<div class="bento-item bento-links">
 <div class="xp-window">
 <div class="xp-window-title compact">
 <span class="xp-window-title-text">
@@ -235,27 +235,38 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 便签：手动句子（每次刷新轮换） ========== -->
+<!-- ========== 便签：句子在 source/_data/quotes.yml 里维护 ========== -->
+{% xp_quotes %}
 <script>
 (function () {
-  var quotes = [
-    { text: "于是我驻足享受无法复制的瞬间。", from: "网易云热评" },
-    { text: "我们开始一起攀登，这长长的，长长的坡道。", from: "《Clannad》" },
-    { text: "人生就是一列开往坟墓的列车，路途上会有很多站，很难有人可以自始至终陪着走完。", from: "《千与千寻》" },
-    { text: "我迎着万束朝阳，于韶光中奔赴远方。", from: "网络" },
-    { text: "生活不止眼前的苟且，还有诗和远方的田野。", from: "高晓松" },
-    { text: "我们终其一生，就是要摆脱他人的期待，找到真正的自己。", from: "《无声告白》" },
-    { text: "世界上只有一种真正的英雄主义，那就是认清生活的真相后依然热爱生活。", from: "罗曼·罗兰" }
-  ];
-  function show() {
-    var q = quotes[Math.floor(Math.random() * quotes.length)];
-    var textEl = document.getElementById('sticky-text');
-    var fromEl = document.getElementById('sticky-from');
-    if (textEl) textEl.textContent = '「' + q.text + '」';
-    if (fromEl) fromEl.textContent = '—— ' + q.from;
+  var data = window.XP_QUOTES || { rotate: 0, list: [] };
+  var list = data.list || [];
+  var textEl = document.getElementById('sticky-text');
+  var fromEl = document.getElementById('sticky-from');
+  if (!list.length || !textEl) return;
+
+  var idx = Math.floor(Math.random() * list.length);
+
+  function render(i) {
+    var q = list[((i % list.length) + list.length) % list.length];
+    textEl.style.opacity = '0';
+    setTimeout(function () {
+      textEl.textContent = '「' + (q.text || '') + '」';
+      if (fromEl) fromEl.textContent = q.from ? ('—— ' + q.from) : '—— 小站碎碎念';
+      textEl.style.opacity = '1';
+    }, 220);
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show);
-  else show();
+
+  function start() {
+    render(idx);
+    var seconds = Number(data.rotate) || 0;
+    if (seconds > 0 && list.length > 1) {
+      setInterval(function () { idx += 1; render(idx); }, seconds * 1000);
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
 })();
 </script>
 
@@ -432,29 +443,44 @@ layout: xp-page
 })();
 </script>
 
-<!-- ========== 页面级排布（组件样式统一在 /css/xp-custom.css） ========== -->
+<!-- ========== 页面级排布 ==========
+     规则：12 栏 × 固定 96px 行高（gap 18px），每个横带 = 2 行 = 210px，
+     同一横带里的窗口上下边缘自然对齐。DOM 顺序与视觉顺序保持一致。
+     想要"手工拼贴感"可以在格子上加回 .tilt-left / .tilt-right / .tilt-soft 等类，
+     但边线就不会齐平了。 -->
 <style>
-.bento-profile { grid-column: 1 / 8; grid-row: span 3; }
-.bento-music { grid-column: 11 / 13; grid-row: span 3; }
-.bento-sticky { grid-column: 8 / 11; grid-row: span 1; }
-.bento-stats { grid-column: 8 / 11; grid-row: span 2; }
-.bento-recent { grid-column: 1 / 9; grid-row: span 2; }
-.bento-todo { grid-column: 9 / 13; grid-row: span 2; }
-.bento-articles { grid-column: 1 / 6; grid-row: span 2; }
-.bento-nav { grid-column: 6 / 10; grid-row: span 2; }
-.bento-tags { grid-column: 10 / 13; grid-row: span 2; }
-.bento-links { grid-column: 1 / 13; grid-row: span 1; }
+.xp-bento { grid-auto-rows: 96px; }
+
+/* 带 1：身份带 —— 我 / 便签 / 播放器 */
+.bento-profile { grid-column: 1 / 7;   grid-row: 1 / 3; }
+.bento-sticky  { grid-column: 7 / 10;  grid-row: 1 / 3; }
+.bento-music   { grid-column: 10 / 13; grid-row: 1 / 3; }
+
+/* 带 2：内容带 —— 作品横栏 / 待办 */
+.bento-recent  { grid-column: 1 / 8;   grid-row: 3 / 5; }
+.bento-todo    { grid-column: 8 / 13;  grid-row: 3 / 5; }
+
+/* 带 3：四等分 —— 文章 / 标签 / 数据 / 导航 */
+.bento-articles{ grid-column: 1 / 4;   grid-row: 5 / 7; }
+.bento-tags    { grid-column: 4 / 7;   grid-row: 5 / 7; }
+.bento-stats   { grid-column: 7 / 10;  grid-row: 5 / 7; }
+.bento-nav     { grid-column: 10 / 13; grid-row: 5 / 7; }
+
+/* 带 4：通栏 —— 链接与搜索 */
+.bento-links   { grid-column: 1 / 13;  grid-row: 7 / 8; }
 
 @media (max-width: 900px) {
-  .bento-profile { grid-column: 1 / 7; grid-row: span 2; }
-  .bento-music { grid-column: 4 / 7; grid-row: span 3; }
-  .bento-sticky { grid-column: 1 / 4; grid-row: span 1; }
-  .bento-stats { grid-column: 1 / 4; grid-row: span 2; }
-  .bento-recent { grid-column: 1 / 7; grid-row: span 2; }
-  .bento-todo { grid-column: 1 / 3; grid-row: span 2; }
-  .bento-articles { grid-column: 3 / 7; grid-row: span 2; }
-  .bento-nav { grid-column: 1 / 4; grid-row: span 2; }
-  .bento-tags { grid-column: 4 / 7; grid-row: span 2; }
-  .bento-links { grid-column: 1 / 7; grid-row: span 1; }
+  /* 小屏放弃固定行高，回到内容决定高度 */
+  .xp-bento { grid-auto-rows: auto; }
+  .bento-profile { grid-column: 1 / 7;  grid-row: auto; }
+  .bento-sticky  { grid-column: 1 / 4;  grid-row: auto; }
+  .bento-music   { grid-column: 4 / 7;  grid-row: auto; }
+  .bento-recent  { grid-column: 1 / 7;  grid-row: auto; }
+  .bento-todo    { grid-column: 1 / 3;  grid-row: auto; }
+  .bento-articles{ grid-column: 1 / 4;  grid-row: auto; }
+  .bento-tags    { grid-column: 4 / 7;  grid-row: auto; }
+  .bento-stats   { grid-column: 1 / 4;  grid-row: auto; }
+  .bento-nav     { grid-column: 4 / 7;  grid-row: auto; }
+  .bento-links   { grid-column: 1 / 7;  grid-row: auto; }
 }
 </style>

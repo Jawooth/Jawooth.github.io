@@ -183,8 +183,12 @@ function statRows() {
   )).join(''));
 }
 
-function recentPosts(limit) {
-  const items = allPosts().slice(0, limit).map((p) => (
+function recentPosts(limit, excludeCategory) {
+  let list = allPosts();
+  if (excludeCategory) {
+    list = list.filter((p) => catsOf(p).indexOf(excludeCategory) < 0);
+  }
+  const items = list.slice(0, limit).map((p) => (
     `<li><a class="article-link" href="${href(p.path)}">` +
     `<span class="article-title">${esc(p.title)}</span>` +
     `<span class="article-meta">${fmtDate(p)} · ${esc(metaOf(p))}</span></a></li>`
@@ -398,16 +402,47 @@ hexo.extend.generator.register('xp-search-index', () => {
   };
 });
 
-/* ---------------------------------------------------------------- 曲目表 */
-/* 有曲目时才注入 APlayer（CDN），没有就什么都不加载 */
+/* ---------------------------------------------------------------- 播放器与便签 */
+/* 曲目表：兼容两种写法
+   - 纯列表（旧格式）：直接当作 tracks
+   - 映射格式：{ tracks: [...], netease_playlist: <歌单id> } */
+function musicData() {
+  const raw = dataFile('music');
+  if (Array.isArray(raw)) return { tracks: raw, netease: null };
+  const tracks = Array.isArray(raw.tracks) ? raw.tracks : [];
+  const id = raw.netease_playlist ? String(raw.netease_playlist).trim() : '';
+  return { tracks, netease: id && id !== '0' ? id : null };
+}
+
 hexo.extend.tag.register('xp_music', () => {
-  const songs = dataFile('music');
-  const config = `<script>window.XP_MUSIC = ${JSON.stringify(songs || [])};</script>`;
-  if (!songs.length) return config;
+  const { tracks, netease } = musicData();
+
+  /* 模式 B：网易云歌单 —— 用官方外链播放器 iframe，不加载 APlayer */
+  if (netease) {
+    const src = '//music.163.com/outchain/player?type=0&id=' + encodeURIComponent(netease) + '&auto=0&height=430';
+    return oneLine(
+      '<script>window.XP_MUSIC = []; window.XP_MUSIC_EMBED = true;</script>' +
+      '<div class="xp-music-embed"><iframe src="' + src + '" width="100%" height="100%" frameborder="0" ' +
+      'loading="lazy" title="网易云音乐歌单播放器"></iframe></div>'
+    );
+  }
+
+  /* 模式 A：自己的曲目 —— 只有真的填了曲目才加载 APlayer（省流量） */
+  const config = `<script>window.XP_MUSIC = ${JSON.stringify(tracks)};</script>`;
+  if (!tracks.length) return config;
   return oneLine(
     '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">' +
     '<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>' + config
   );
+});
+
+/* 便签句子：从 source/_data/quotes.yml 读取，供首页脚本轮换 */
+hexo.extend.tag.register('xp_quotes', () => {
+  const raw = dataFile('quotes');
+  const isList = Array.isArray(raw);
+  const list = isList ? raw : (raw.quotes || []);
+  const rotate = isList ? 0 : (Number(raw.rotate_seconds) || 0);
+  return `<script>window.XP_QUOTES = ${JSON.stringify({ rotate, list })};</script>`;
 });
 
 /* ---------------------------------------------------------------- 侧栏 / 卡片 / 索引 片段 */
@@ -590,7 +625,11 @@ function registerTag(name, fn) {
 
 registerTag('xp_num', (args) => String(num(args[0])));
 registerTag('xp_stat_rows', () => statRows());
-registerTag('xp_recent_posts', (args) => recentPosts(parseInt(args[0], 10) || 4));
+registerTag('xp_recent_posts', (args) => {
+  const limit = parseInt(args[0], 10) || 4;
+  const exclude = String(args[1] || '').replace(/^exclude=/, '');
+  return recentPosts(limit, exclude || null);
+});
 registerTag('xp_recent_works', (args) => recentWorks(parseInt(args[0], 10) || 3));
 registerTag('xp_tag_cloud', (args) => tagCloud(args[0]));
 registerTag('xp_todo', (args) => (args[0] === 'full' ? todoFull() : todoMini(parseInt(args[0], 10) || 4)));
