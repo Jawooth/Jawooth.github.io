@@ -182,33 +182,13 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 带 4：关于本站（原「关于」页已取消，内容整合到这里；/#about 锚点指这里） ========== -->
-<div class="bento-item bento-about">
+<!-- ========== 带 4：搜索 · 关于 · 致谢（通栏；/#about 锚点指这里） ========== -->
+<div class="bento-item bento-links">
 <div class="xp-window" id="about">
 <div class="xp-window-title compact">
 <span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="3.5" fill="#fc9" stroke="#963" stroke-width="0.5"/><path d="M3 14c0-4 2.5-6 5-6s5 2 5 6" fill="#69c" stroke="#369" stroke-width="0.5"/></svg>
-关于本站
-</span>
-</div>
-<div class="xp-window-body compact-body about-home-body">
-<!-- 文案在 source/_data/profile.yml 的 about: 下面 -->
-<h3 class="about-home-title">{% xp_profile about.title %}</h3>
-{% xp_profile_lines about.paragraphs %}
-<div class="about-home-meta">
-{% xp_profile_chips about.chips %}
-</div>
-</div>
-</div>
-</div>
-
-<!-- ========== 带 4：搜索与致谢 ========== -->
-<div class="bento-item bento-links">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
 <svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#333" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
-搜索 &amp; 致谢
+搜索 · 关于本站 · 致谢
 </span>
 </div>
 <div class="xp-window-body compact-body links-body">
@@ -221,6 +201,15 @@ layout: xp-page
 </div>
 <div class="xp-search-results" id="site-search-results"></div>
 </form>
+</div>
+<!-- 关于本站：原先单独的「关于本站」窗口已并入这里（文案在 profile.yml 的 about: 下） -->
+<div class="about-col">
+<div class="about-home-body">
+{% xp_profile_lines about.paragraphs %}
+<div class="about-home-meta">
+{% xp_profile_chips about.chips %}
+</div>
+</div>
 </div>
 <!-- 致谢：原先在「关于」页，现已搬到这里（删条目就删下面这几行） -->
 <div class="credits-col">
@@ -476,9 +465,8 @@ layout: xp-page
 .bento-stats   { grid-column: 7 / 10;  grid-row: 5 / 7; }
 .bento-nav     { grid-column: 10 / 13; grid-row: 5 / 7; }
 
-/* 带 4：关于本站 + 搜索与致谢（3 行，给邮箱地址行留出空间） */
-.bento-about   { grid-column: 1 / 7;   grid-row: 7 / 10; }
-.bento-links   { grid-column: 7 / 13;  grid-row: 7 / 10; }
+/* 带 4：通栏（搜索 · 关于本站 · 致谢）；原「关于本站」窗口已并入这里，故整行 2 行高 */
+.bento-links   { grid-column: 1 / 13;  grid-row: 7 / 9; }
 
 @media (max-width: 900px) {
   /* 小屏放弃固定行高，回到内容决定高度 */
@@ -491,7 +479,6 @@ layout: xp-page
   .bento-tags    { grid-column: 4 / 7;  grid-row: auto; }
   .bento-stats   { grid-column: 1 / 4;  grid-row: auto; }
   .bento-nav     { grid-column: 4 / 7;  grid-row: auto; }
-  .bento-about   { grid-column: 1 / 7;  grid-row: auto; }
   .bento-links   { grid-column: 1 / 7;  grid-row: auto; }
 }
 </style>

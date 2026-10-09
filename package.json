@@ -7,7 +7,7 @@
     "generate": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server"
+    "server": "hexo server -p 4010"
   },
   "hexo": {
     "version": "7.3.0"
