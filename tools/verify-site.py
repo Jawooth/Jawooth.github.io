@@ -99,13 +99,23 @@ if "top-box" in home:
     fail("首页混进了文章目录（TOC），说明页面模板回落到了 post.ejs")
 
 for rel in ["works/index.html", "games/index.html", "guides/index.html",
-            "todo/index.html", "about/index.html"]:
+            "todo/index.html"]:
     s = read(rel)
     if not s:
         fail("缺少页面：%s" % rel)
         continue
     if 'class="post-detail"' in s or 'class="post-content"' in s:
         fail("%s 出现了文章结构，说明 layout 不是 xp-page" % rel)
+
+# 「关于」页已按站主要求删除，内容整合进首页的「关于本站」窗口
+if os.path.exists(os.path.join(PUB, "about", "index.html")):
+    fail("关于页应当已删除，但仍存在 public/about/index.html")
+if 'id="about"' not in home:
+    fail("首页缺少「关于本站」窗口（原关于页内容，锚点 id=about）")
+if 'href="/about/"' in home:
+    fail("首页仍有指向 /about/ 的死链")
+if "friend-links" in home:
+    fail("首页底部仍残留友情链接按钮（friend-links）")
 
 posts = sorted(glob.glob(os.path.join(PUB, "20*", "*", "*", "*", "index.html")))
 if not posts:

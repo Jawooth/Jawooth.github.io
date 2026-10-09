@@ -193,28 +193,46 @@ layout: xp-page
 <a class="nav-tile" href="/guides/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h5v12H2z" fill="#c44" stroke="#900" stroke-width="0.5"/><path d="M14 2H9v12h5V2z" fill="#47c" stroke="#039" stroke-width="0.5"/><line x1="7" y1="2" x2="9" y2="2" stroke="#666" stroke-width="0.5"/><line x1="7" y1="14" x2="9" y2="14" stroke="#666" stroke-width="0.5"/></svg></span><span>攻略</span></a>
 <a class="nav-tile" href="/blog/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#666" stroke-width="0.5"/><line x1="4" y1="5" x2="12" y2="5" stroke="#666" stroke-width="0.8"/><line x1="4" y1="8" x2="12" y2="8" stroke="#666" stroke-width="0.8"/><line x1="4" y1="11" x2="9" y2="11" stroke="#666" stroke-width="0.8"/></svg></span><span>杂谈</span></a>
 <a class="nav-tile" href="/todo/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#003399" stroke-width="0.5"/><rect x="2" y="1" width="12" height="3" rx="1" fill="#0066cc" stroke="#003399" stroke-width="0.5"/><rect x="4" y="5.5" width="2" height="2" fill="#66cc66" stroke="#003399" stroke-width="0.8"/><path d="M4.5 6.5l1 1 2-2" fill="none" stroke="#fff" stroke-width="0.8"/></svg></span><span>待办</span></a>
-<a class="nav-tile" href="/about/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="3.5" fill="#fc9" stroke="#963" stroke-width="0.5"/><path d="M3 14c0-4 2.5-6 5-6s5 2 5 6" fill="#69c" stroke="#369" stroke-width="0.5"/></svg></span><span>关于</span></a>
+<a class="nav-tile" href="/#about"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="3.5" fill="#fc9" stroke="#963" stroke-width="0.5"/><path d="M3 14c0-4 2.5-6 5-6s5 2 5 6" fill="#69c" stroke="#369" stroke-width="0.5"/></svg></span><span>关于</span></a>
 </div>
 </div>
 </div>
 </div>
 
-<!-- ========== 带 4：友情链接与搜索 ========== -->
+<!-- ========== 带 4：关于本站（原「关于」页已取消，内容整合到这里；/#about 锚点指这里） ========== -->
+<div class="bento-item bento-about">
+<div class="xp-window" id="about">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="3.5" fill="#fc9" stroke="#963" stroke-width="0.5"/><path d="M3 14c0-4 2.5-6 5-6s5 2 5 6" fill="#69c" stroke="#369" stroke-width="0.5"/></svg>
+关于本站
+</span>
+</div>
+<div class="xp-window-body compact-body about-home-body">
+<!-- 文案在 source/_data/profile.yml 的 about: 下面 -->
+<h3 class="about-home-title">{% xp_profile about.title %}</h3>
+{% xp_profile_lines about.paragraphs %}
+<div class="about-home-meta">
+{% xp_profile_chips about.chips %}
+</div>
+<!-- 邮箱：在 profile.yml 的 contacts.email 里可以写多个，这里会列成一行 -->
+<p class="about-home-contact">{% xp_profile about.contact_desc %}</p>
+{% xp_profile_emails %}
+</div>
+</div>
+</div>
+
+<!-- ========== 带 4：搜索与致谢 ========== -->
 <div class="bento-item bento-links">
 <div class="xp-window">
 <div class="xp-window-title compact">
 <span class="xp-window-title-text">
 <svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#333" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
-链接 &amp; 搜索
+搜索 &amp; 致谢
 </span>
 </div>
 <div class="xp-window-body compact-body links-body">
 <div class="links-col">
-<ul class="friend-links">
-<li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a></li>
-<li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a></li>
-<li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
-</ul>
 <form class="xp-search-wrap" id="site-search-form" role="search">
 <div class="xp-search-box">
 <label class="xp-sr-only" for="site-search-input">搜索文章</label>
@@ -477,8 +495,9 @@ layout: xp-page
 .bento-stats   { grid-column: 7 / 10;  grid-row: 5 / 7; }
 .bento-nav     { grid-column: 10 / 13; grid-row: 5 / 7; }
 
-/* 带 4：通栏 —— 链接与搜索 + 致谢 */
-.bento-links   { grid-column: 1 / 13;  grid-row: 7 / 9; }
+/* 带 4：关于本站 + 搜索与致谢（3 行，给邮箱地址行留出空间） */
+.bento-about   { grid-column: 1 / 7;   grid-row: 7 / 10; }
+.bento-links   { grid-column: 7 / 13;  grid-row: 7 / 10; }
 
 @media (max-width: 900px) {
   /* 小屏放弃固定行高，回到内容决定高度 */
@@ -492,6 +511,7 @@ layout: xp-page
   .bento-tags    { grid-column: 4 / 7;  grid-row: auto; }
   .bento-stats   { grid-column: 1 / 4;  grid-row: auto; }
   .bento-nav     { grid-column: 4 / 7;  grid-row: auto; }
+  .bento-about   { grid-column: 1 / 7;  grid-row: auto; }
   .bento-links   { grid-column: 1 / 7;  grid-row: auto; }
 }
 </style>

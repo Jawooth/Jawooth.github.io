@@ -34,8 +34,8 @@ chips:
 # 备用：首页的文字按钮。现在首页用的是下面的图标行，
 # 想把按钮换回来就把 source/index.md 里的 {% xp_profile_icons %} 改成 {% xp_profile_buttons %}
 buttons:
-  - text: 关于我
-    url: /about/
+  - text: 关于本站
+    url: /#about
   - text: 作品集
     url: /works/
   - text: 小游戏
@@ -43,20 +43,25 @@ buttons:
 
 # 首页「用户账户」里的图标行：填了地址的才显示，留空就隐藏。
 # 支持的键：github / email / bilibili / xiaohongshu / x / weibo / pixiv / website
-#   email 直接填邮箱地址（会自动加 mailto:）
+#   email（邮箱）支持多个地址：写成列表，图标行下面会自动多出一行带标签的地址链接；
+#     只有一个邮箱时只显示图标，不再单列一行。两种写法都行：
+#       email:
+#         - 个人: me@example.com      # 带标签
+#         - work@example.com          # 不带标签
 #   xiaohongshu 填你的小红书主页链接（App：我 → 右上角 → 分享主页 → 复制链接）
 #   其它平台的键没填就自动不显示
 contacts:
   github: https://github.com/Jawooth
-  email: ""
-  bilibili: ""
-  xiaohongshu: ""
-  x: ""
+  email:
+    - 2917129582@qq.com
+  bilibili: https://b23.tv/FWf3XB1
+  xiaohongshu: https://xhslink.cn/o/5iSJjTT5dHC
+  x: https://x.com/Jawooth
   weibo: ""
   pixiv: ""
   website: ""
 
-# 「关于」页面的文案
+# 站点介绍文案（原先在「关于」页，现在显示在首页的「关于本站」窗口里）
 about:
   title: 你好，欢迎来到我的小站！
   paragraphs:
@@ -66,4 +71,4 @@ about:
     - 像素风
     - 绘画
     - 游戏
-  contact_desc: 欢迎来 GitHub 找我，或者去首页逛逛：
+  contact_desc: 想聊两句、约稿或者交换链接，可以发邮件：

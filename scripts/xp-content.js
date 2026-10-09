@@ -648,7 +648,7 @@ hexo.extend.helper.register('xp_widget_author', function () {
     `<div class="name">${esc(name)}</div>` +
     `<div class="bio">${esc(bio)}</div>` +
     `<div class="links">` +
-    `<a class="xp-btn xp-btn-small" href="/about/">关于我</a>` +
+    `<a class="xp-btn xp-btn-small" href="/#about">关于本站</a>` +
     `<a class="xp-btn xp-btn-small" href="/works/">作品集</a>` +
     `<a class="xp-btn xp-btn-small" href="/blog/">全部文章</a>` +
     `</div></div>`
@@ -669,7 +669,7 @@ hexo.extend.helper.register('xp_widget_browse', () => widget('浏览', oneLine(
   `<a class="nav-tile" href="/tags/"><span>标签</span></a>` +
   `<a class="nav-tile" href="/categories/"><span>分类</span></a>` +
   `<a class="nav-tile" href="/works/"><span>作品</span></a>` +
-  `<a class="nav-tile" href="/about/"><span>关于</span></a>` +
+  `<a class="nav-tile" href="/#about"><span>关于</span></a>` +
   `</div>`
 )));
 
@@ -862,16 +862,55 @@ const PROFILE_ICONS = {
   }
 };
 
-/* 只渲染 profile.yml 里填了地址的平台；email 自动加 mailto: */
+/* 邮箱：支持单个字符串，也支持列表（列表项写 "地址" 或 { 标签: 地址 }）。
+   多个邮箱时图标仍只有一个，图标行下方会多出一行带标签的地址链接。 */
+function profileEmails() {
+  const raw = (profileData().contacts || {}).email;
+  const out = [];
+  const push = (label, address) => {
+    const a = String(address == null ? '' : address).trim();
+    if (a) out.push({ label: String(label || '').trim(), address: a });
+  };
+  if (Array.isArray(raw)) {
+    raw.forEach((it) => {
+      if (typeof it === 'string') push('', it);
+      else if (it && typeof it === 'object') Object.keys(it).forEach((k) => push(k, it[k]));
+    });
+  } else if (raw && typeof raw === 'object') {
+    Object.keys(raw).forEach((k) => push(k, raw[k]));
+  } else {
+    push('', raw);
+  }
+  return out;
+}
+
+/* 只渲染 profile.yml 里填了地址的平台；email 用第一个地址（其余在下面单列一行） */
 hexo.extend.tag.register('xp_profile_icons', () => {
   const contacts = profileData().contacts || {};
-  const html = Object.keys(PROFILE_ICONS).filter((k) => contacts[k]).map((k) => {
+  const emails = profileEmails();
+  const html = Object.keys(PROFILE_ICONS).filter((k) => {
+    if (k === 'email') return emails.length > 0;
+    return Boolean(contacts[k]);
+  }).map((k) => {
     const icon = PROFILE_ICONS[k];
-    const href = k === 'email' ? `mailto:${contacts[k]}` : String(contacts[k]);
+    const href = k === 'email' ? `mailto:${emails[0].address}` : String(contacts[k]);
     const extra = k === 'email' ? '' : ' target="_blank" rel="noopener"';
-    return `<a class="profile-icon" href="${esc(href)}"${extra} title="${icon.label}" aria-label="${icon.label}">${icon.svg}</a>`;
+    const title = k === 'email' && emails.length > 1 ? `${icon.label}（共 ${emails.length} 个，见下方列表）` : icon.label;
+    return `<a class="profile-icon" href="${esc(href)}"${extra} title="${esc(title)}" aria-label="${esc(icon.label)}">${icon.svg}</a>`;
   });
   return oneLine(html.join(''));
+});
+
+/* 邮箱地址行：一个或多个邮箱都列出来（带标签的会显示成小胶囊）；没有邮箱就不输出 */
+hexo.extend.tag.register('xp_profile_emails', () => {
+  const emails = profileEmails();
+  if (!emails.length) return '';
+  const items = emails.map((e) => (
+    `<a class="profile-email" href="mailto:${esc(e.address)}">` +
+    (e.label ? `<span class="email-label">${esc(e.label)}</span>` : '') +
+    `<span class="email-address">${esc(e.address)}</span></a>`
+  ));
+  return oneLine(`<div class="profile-emails"><span class="emails-title">邮箱</span>${items.join('')}</div>`);
 });
 
 /* ---------------------------------------------------------------- 注册 */

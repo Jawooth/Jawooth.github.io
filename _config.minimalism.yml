@@ -28,10 +28,6 @@ menu:
     url: /blog/
     External: false
     name: 杂谈
-  About:
-    url: /about/
-    External: false
-    name: 关于
 
 # 文章目录（TOC）
 # 主题 post.ejs 会对所有页面输出目录，页面缺少 page.ejs 时会回落到文章模板，

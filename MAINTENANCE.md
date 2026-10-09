@@ -10,7 +10,7 @@
 |---|---|---|
 | 写一篇文章 | `source/_posts/新建文件.md` | `npm run build` |
 | 加一件作品（带封面卡片） | 跑 `tools/add-artwork.py` 导入图 + 新建文章填 front matter | 同上（首页与作品页会自动出现卡片） |
-| **改名字 / 自我介绍 / 图标行链接** | `source/_data/profile.yml` | 同上（首页、关于页、侧栏三处同步） |
+| **改名字 / 自我介绍 / 图标行链接 / 多个邮箱** | `source/_data/profile.yml` | 同上（首页 + 侧栏同步；关于页已取消） |
 | **改首页气泡句子** | `source/_data/quotes.yml` | 同上（`rotate_seconds` 控制轮换） |
 | **改作品栏目（原创/同人）** | 文章 front matter 加一行 `origin: 原创` 或 `origin: 同人` | 同上 |
 | **改作品分期** | 按 `date` 自动归入；要手动就写 `era: 2025 年` | 分期区间在 `scripts/xp-content.js` 的 `WORK_ERAS` |
@@ -52,7 +52,7 @@ D:\tools\hexo
 │  │  ├─ guides.yml              攻略/教程清单
 │  │  └─ music.yml               播放器曲目（默认空）
 │  ├─ index.md                   首页（XP 桌面 + 便当格）
-│  ├─ works|games|guides|todo|about/index.md   其余 5 个桌面式页面
+│  ├─ works|games|guides|todo/index.md   其余 4 个桌面式页面
 │  ├─ css/xp-custom.css          ★ XP 设计系统（唯一真源，约 1300 行）
 │  ├─ images/                    作品图 / 缩略图 / 头像 / 桌面背景
 │  └─ favicon.ico                浏览器标签页图标
@@ -143,12 +143,12 @@ status: done                  # done / doing（作品卡片上的状态角标）
 
 | 类型 | front matter | 渲染模板 | 用途 |
 |---|---|---|---|
-| **桌面式页面** | `layout: xp-page` | `layout/xp-page.ejs`：页面自己画 XP 窗口/便当格 | 首页、作品、游戏、攻略、待办、关于、标签、分类 |
+| **桌面式页面** | `layout: xp-page` | `layout/xp-page.ejs`：页面自己画 XP 窗口/便当格 | 首页、作品、游戏、攻略、待办、标签、分类 |
 | **普通页面** | `layout: page` | `layout/page.ejs`：自动套 XP 窗口外壳（标题栏 + 两栏 + 侧栏） | 以后新增的说明页、留言板之类 |
 | **文章** | `layout: post`（默认） | `layout/post.ejs`：窗口外壳 + 大图 + 两栏 + 目录 + 相关文章 | 所有 `source/_posts/` 下的文章 |
 | **列表/归档/标签** | 自动 | `index.ejs` / `archive.ejs` / `tag.ejs` | 由生成器决定，不用手动写 |
 
-新增页面时：复制 `source/about/index.md` 就是桌面式；只想写一篇普通长文页面就用 `layout: page`；`source/tags/index.md`、`source/categories/index.md` 是两个索引页的现成例子。
+新增页面时：复制 `source/works/index.md` 或 `source/games/index.md` 就是桌面式；只想写一篇普通长文页面就用 `layout: page`；`source/tags/index.md`、`source/categories/index.md` 是两个索引页的现成例子。
 
 ---
 
@@ -261,7 +261,7 @@ status: done                  # done / doing（作品卡片上的状态角标）
 | 关注点 | 文件 |
 |---|---|
 | 所有 XP 组件与颜色 | `source/css/xp-custom.css`（分 13 节，含 token 与深色分支） |
-| 页面内容与网格排布 | `source/index.md`、`source/{works,games,guides,todo,about,tags,categories}/index.md` |
+| 页面内容与网格排布 | `source/index.md`、`source/{works,games,guides,todo,tags,categories}/index.md` |
 | 页面骨架（外壳/两栏/侧栏） | `themes/minimalism/layout/{post,page,index,archive,tag,xp-page}.ejs` 与 `includes/xp-*.ejs` |
 | 数据驱动的内容标签与 helper | `scripts/xp-content.js` |
 | 懒加载、图片放大、目录跟随、SEO | `scripts/xp-enhance.js` |
@@ -324,20 +324,32 @@ npm run server                      # 打开 http://127.0.0.1:4000/ 看效果
 
 ### 11.1 身份与自我介绍（一个文件搞定）
 
-文件：`source/_data/profile.yml` —— 首页、关于页、侧栏三处同时生效。
+文件：`source/_data/profile.yml` —— 首页与侧栏同时生效（关于页已删除，其文案现在显示在首页「关于本站」窗口）。
 
 | 字段 | 作用 | 出现在 |
 |---|---|---|
 | `name` / `greeting` | 首页大标题「你好，我是 X」 | 首页、侧栏 |
 | `bio` | 侧栏一句话简介 | 文章/列表/归档页侧栏 |
-| `avatar` | 头像路径 | 首页、关于页、侧栏 |
+| `avatar` | 头像路径 | 首页、侧栏 |
 | `tagline` / `intro` | 首页正文段落 | 首页 |
 | `chips` | 首页小胶囊（`key:` 是用站点统计自动填的数字，`value:` 是固定文字） | 首页 |
 | `buttons` | 首页三个按钮 | 首页 |
-| `contacts.github` / `contacts.email` | 联系方式（**留空就不显示**） | 关于页 |
-| `about.*` | 关于页的标题、段落、标签、说明文字 | 关于页 |
+| `contacts.*` | 图标行链接（GitHub/B站/小红书/X/邮箱…，**留空就不显示**） | 首页用户账户卡片 |
+| `about.*` | 「关于本站」的标题、段落、标签、说明文字 | 首页底部「关于本站」窗口 |
 
-### 11.2 首页便签句子
+**多个邮箱怎么放**：图标行里始终只有一个信封图标（点它发第一封），**地址列表显示在首页底部的「关于本站」窗口**里——`about.contact_desc` 那句话下面会列出一行带标签的地址。写法：
+
+```yaml
+contacts:
+  email:
+    - 主要: me@example.com        # 带标签（标签会显示成小胶囊）
+    - 约稿: work@example.com
+    - backup@example.com          # 不带标签也行
+```
+
+只填一个邮箱时，同一行里就只显示那一个地址。**为什么不把多个地址直接排在图标行里**：用户账户卡片的高度是固定的（两行网格 = 210px），图标行下面再加一行会被裁掉；而且几个一模一样的信封图标并排也分不清哪个是哪个。放在「关于本站」里既看得清、又能写标签。
+
+### 11.2 首页句子气泡
 
 文件：`source/_data/quotes.yml`
 
@@ -380,8 +392,9 @@ python tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage --
 文章正文里的文字（"传统素描练习，陶罐 + 水果组合。"之类）都是示例文案，直接改成你自己的即可；卡片上的摘要优先取 front matter 的 `desc`，没写才取正文第一段。
 
 > 顺带说明两个"位置调整"，别在新版页面里找不到：
-> - **致谢 & 参考** 已从「关于」页搬到**首页底部的「链接 & 搜索」窗口**右侧；
-> - **关于页**不再出现在开始菜单里（开始菜单只保留 首页 / 作品 / 游戏·工具 / 攻略教程 / 杂谈 / 归档），入口是首页右下角「快速导航 → 关于」与侧栏「关于我」卡片里的按钮。
+> - **「关于」页已整个删掉**（原文备份在 `backup/about.index.md.bak`）：介绍文字在首页新的「关于本站」窗口里，致谢条目在首页底部「搜索 & 致谢」窗口里；
+> - 指向关于内容的入口统一用锚点 **`/#about`**（快速导航「关于」瓦片、侧栏「关于我」卡片的按钮都指这里）；
+> - 开始菜单只保留 首页 / 作品 / 游戏·工具 / 攻略教程 / 杂谈 / 归档；底部那排友情链接按钮（XP.css / Hexo / GitHub）也已按站主要求删除。
 
 ### 11.6 站点配置
 
@@ -394,7 +407,7 @@ python tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage --
 
 1. `npm run build` —— 退出码 0、没有 `WARN/ERROR`；
 2. `python tools\verify-site.py` —— 输出「全部通过」，没有断链、没有未渲染的 `{% %}`；
-3. 本地打开首页 / 作品页 / 关于页 / 杂谈页 / 一篇文章，确认名字、介绍、图片、便签、播放器都是你要的样子；
+3. 本地打开首页 / 作品页 / 杂谈页 / 一篇文章，确认名字、介绍、图片、句子气泡、播放器都是你要的样子；
 4. 满意就 `git add -A ; git commit -m "换成我自己的内容"`，然后 `.\deploy.ps1` 发布。
 
 ---

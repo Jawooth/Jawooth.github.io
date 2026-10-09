@@ -691,17 +691,7 @@ html.dark .tag-life { --pill-fg: #86d68a; }
 .credits-list li { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 .credits-list a { color: var(--link); text-decoration: none; font-weight: bold; }
 .credits-list a:hover { text-decoration: underline; }
-.friend-links { list-style: none; padding: 0; margin: 0; display: flex; gap: 12px; flex-wrap: wrap; }
-.friend-links a {
-  display: inline-block; padding: 4px 12px;
-  background: var(--face);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  color: var(--link);
-  text-decoration: none;
-  font-size: 13px;
-}
-.friend-links a:hover { background: var(--face-hover); border-color: var(--xp-hover); }
+/* 原来的 .friend-links（底部友情链接按钮）已按站主要求删除 */
 .xp-search-box { display: flex; gap: 4px; flex: 1; min-width: 220px; }
 .xp-search-input {
   flex: 1; border: 1px solid #7f9db9; border-radius: 2px; padding: 4px 8px;
@@ -962,65 +952,41 @@ a.guide-title:hover { text-decoration: underline; }
 .tag-todo { background: var(--xp-status-todo); }
 .tag-done { background: var(--xp-status-done); }
 
-.about-profile-layout { display: flex; gap: 18px; }
-.about-avatar {
-  width: 120px; height: 120px;
-  border: 2px solid var(--xp-blue-border);
-  border-radius: 6px; background: var(--surface-3);
-  object-fit: cover; flex-shrink: 0;
-  image-rendering: pixelated;
-}
-.about-text { flex: 1; min-width: 0; }
-.about-text h2 { margin: 0 0 10px; color: var(--text-heading); }
-.about-text p { margin: 8px 0; line-height: 1.6; font-size: 14px; }
-.about-meta { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+/* 原「关于」页的专用样式已随页面删除（.about-profile-layout / .about-avatar /
+   .about-nav-list / .contact-* / .credits-grid / .credit-* 等）。
+   关于页的文案现在显示在首页「关于本站」窗口，见上面的 .about-home-*。
+   致谢条目在首页底部「搜索 & 致谢」窗口，见 .credits-list。 */
 
-.about-nav-list { list-style: none; padding: 0; margin: 0; }
-.about-nav-list li {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 0; border-bottom: 1px dashed var(--border);
-}
-.about-nav-list li:last-child { border-bottom: none; }
-.about-nav-list a {
-  display: flex; align-items: center; gap: 6px;
-  color: var(--link); text-decoration: none; font-size: 13px; font-weight: bold;
-}
-.about-nav-list a:hover { text-decoration: underline; }
-.about-nav-list span { flex: 1; text-align: right; font-size: 12px; color: var(--text-muted); }
+/* 首页「关于本站」窗口（原「关于」页的内容，已整合到首页） */
+.about-home-body { display: flex; flex-direction: column; gap: 6px; }
+.about-home-title { margin: 0 0 4px; font-size: 17px; color: var(--text-heading); font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; }
+.about-home-body p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--text); }
+.about-home-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.about-home-contact { margin: 8px 0 0 !important; font-size: 12px !important; color: var(--text-muted) !important; }
 
-.contact-desc { margin: 0 0 10px; font-size: 13px; color: var(--text-muted); }
-.contact-links { display: flex; flex-wrap: wrap; gap: 8px; }
-
-.credits-intro { margin: 0 0 12px; font-size: 13px; color: var(--text-muted); }
-.credits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.credit-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 10px 12px;
-  box-shadow: inset 1px 1px 0 var(--btn-shadow-light);
-  transition: border-color 0.15s, transform 0.15s;
+/* 邮箱地址行（首页「关于本站」窗口里；profile.yml 的 contacts.email 可以写多个） */
+.profile-emails {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px;
+  font-size: 12px;
 }
-.credit-item:hover { border-color: var(--xp-hover); transform: translateY(-2px); }
-.credit-name { font-weight: bold; font-size: 17px; color: var(--text-heading); margin-bottom: 3px; font-family: "Caveat", "KaiTi", cursive; }
-.credit-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
-.credit-link { font-size: 12px; color: var(--link); text-decoration: none; display: inline-block; }
-.credit-link:hover { text-decoration: underline; }
-.credit-ai { color: #b8456b; font-weight: bold; cursor: default; }
-html.dark .credit-ai { color: #ff9ab8; }
-.credit-item.credit-special {
-  background: linear-gradient(135deg, #fff0f5 0%, #fff8ec 100%);
-  border-color: #e8a0b8;
+.profile-emails .emails-title { color: var(--text-muted); }
+.profile-email { display: inline-flex; align-items: center; gap: 5px; color: var(--link); text-decoration: none; }
+.profile-email:hover .email-address { text-decoration: underline; }
+.profile-email .email-label {
+  padding: 1px 6px; border-radius: 8px; font-size: 11px;
+  color: var(--text-heading);
+  background: rgba(53, 144, 243, 0.12);
+  border: 1px solid rgba(53, 144, 243, 0.3);
 }
-html.dark .credit-item.credit-special { background: linear-gradient(135deg, #3a2a3a 0%, #3a3020 100%); border-color: #8b4a6a; }
+.profile-email .email-address { color: var(--link); }
+html.dark .profile-email .email-label { color: var(--link); background: rgba(138, 180, 255, 0.16); border-color: rgba(138, 180, 255, 0.4); }
 
 /* 手写体标题统一 */
 .profile-text h2,
 .recent-work-title,
 .work-card-title,
 .app-info h4,
-.guide-title,
-.credit-name { font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; font-size: 17px; }
+.guide-title { font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; font-size: 17px; }
 .profile-text h2 { font-size: 22px; }
 
 /* ============ 10) 文章 / 列表页 XP 外壳与侧栏 ============ */
