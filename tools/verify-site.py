@@ -54,6 +54,9 @@ BAD_EXTERNAL = {
     "picsum.photos": "第三方随机图床（示例图应换成本地图片）",
     "unpkg.com/xp.css": "未使用的 XP.css CDN",
     "Press+Start+2P": "全站未使用的字体家族",
+    "fonts.googleapis.com": "字体已自托管，不应再请求 Google Fonts（见 xp-custom.css 第 0 节）",
+    "fonts.gstatic.com": "字体已自托管，不应再请求 Google Fonts",
+    "VT323": "全站未使用的像素字体",
 }
 
 sizes = []

@@ -15,6 +15,7 @@
 | **改作品栏目（原创/同人）** | 文章 front matter 加一行 `origin: 原创` 或 `origin: 同人` | 同上 |
 | **改作品分期** | 按 `date` 自动归入；要手动就写 `era: 2025 年` | 分期区间在 `scripts/xp-content.js` 的 `WORK_ERAS` |
 | **放两边装饰图** | `source/images/decor/left.png` 与 `right.png` | 同上（仅在窗口 ≥1500px 宽时显示） |
+| **换手写字体** | 覆盖 `source/fonts/caveat-latin.woff2`，并在 `xp-custom.css` 第 0 节改 family 名 | 同上（自托管，不请求 Google） |
 | **换深色模式壁纸** | 覆盖 `source/images/xp-desktop-bg-dark.jpg` | 同上（浅色壁纸是 `xp-desktop-bg.jpg`） |
 | **改开始菜单条目** | `scripts/xp-taskbar.js` 里的开始菜单部分 | 同上（**改完要重启预览服务**） |
 | 改待办事项 | `source/_data/todo.yml` | 同上（**只在杂谈页显示**，全部条目按 进行中→待做→已完成 排） |
@@ -505,8 +506,10 @@ git -C D:\tools\hexo diff --cached | Select-String -Pattern 'secret|token|passwo
 
 ### 13.6 第三方外部依赖（页面会联网请求它们）
 
+**默认状态下，站点不请求任何第三方资源**：手写体 Caveat 已自托管（`source/fonts/caveat-latin.woff2`，73 KB，可变字重 400–700，SIL OFL 1.1，只带 latin 子集，中文走系统楷体回退），评论/统计/CDN/搜索全部关闭。
+下面两个只在你主动启用对应功能时才会出现：
+
 | 域名 | 用途 | 备注 |
 |---|---|---|
-| `fonts.googleapis.com` | 手写体 Caveat | 每页都会请求；介意隐私/速度可改自托管 |
 | `cdn.jsdelivr.net` | APlayer 播放器 | **只有 `music.yml` 里填了曲目才加载** |
 | `music.163.com` | 网易云歌单 iframe | 只有填了 `netease_playlist` 才出现 |
