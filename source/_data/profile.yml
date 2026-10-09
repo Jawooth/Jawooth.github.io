@@ -10,7 +10,7 @@
 avatar: /images/site-avatar.png
 
 # 首页大标题会渲染成「<greeting> <name>」，例如「你好，我是 Jawooth」
-greeting: 空你几哇哦类哇
+greeting: 我是
 name: 用户EE45E4 desu。
 
 # 侧栏「关于我」卡片里的一句话简介（留空则用下面的 tagline）
