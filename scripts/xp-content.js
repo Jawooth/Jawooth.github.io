@@ -669,7 +669,6 @@ hexo.extend.helper.register('xp_widget_browse', () => widget('浏览', oneLine(
   `<a class="nav-tile" href="/tags/"><span>标签</span></a>` +
   `<a class="nav-tile" href="/categories/"><span>分类</span></a>` +
   `<a class="nav-tile" href="/works/"><span>作品</span></a>` +
-  `<a class="nav-tile" href="/#about"><span>关于</span></a>` +
   `</div>`
 )));
 
