@@ -11,8 +11,32 @@
  */
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
 const SITE_TITLE = (hexo.config && hexo.config.title) || '';
 const SEP = ' | ';
+
+/* 给 xp-custom.css 的链接加内容版本号。
+   原因：样式文件的 URL 一直没变，浏览器会拿缓存，导致"我明明改了样式却看不到变化"
+   （对不写代码的人来说这是最容易误判成"没生效"的一类问题）。
+   用文件内容哈希：内容没变就继续吃缓存，内容一变立刻失效。 */
+let cssVersion = null;
+let cssStamp = 0;
+function currentCssVersion() {
+  try {
+    const file = path.join(hexo.base_dir, 'source', 'css', 'xp-custom.css');
+    const stat = fs.statSync(file);
+    if (!cssVersion || stat.mtimeMs !== cssStamp) {
+      cssStamp = stat.mtimeMs;
+      cssVersion = crypto.createHash('md5').update(fs.readFileSync(file)).digest('hex').slice(0, 8);
+    }
+  } catch (err) {
+    /* 文件暂时读不到就不加版本号，不影响页面 */
+  }
+  return cssVersion;
+}
 
 /* ---------------------------------------------------------- 1. 原生懒加载 */
 hexo.extend.filter.register('after_post_render', (data) => {
@@ -131,6 +155,10 @@ hexo.extend.filter.register('after_render:html', (str, data) => {
       `<meta property="og:url" content="${url}">\n` +
       `<meta property="og:type" content="${type}">\n</head>`);
   }
+
+  /* 样式表加内容版本号，避免浏览器缓存导致"改了样式看不到变化" */
+  const ver = currentCssVersion();
+  if (ver) str = str.replace('/css/xp-custom.css"', `/css/xp-custom.css?v=${ver}"`);
 
   return str;
 });
