@@ -35,3 +35,7 @@ desktop.ini
 npm-debug.log*
 *.tmp
 *.bak
+
+# Hexo Pro 客户端自己的东西：模板目录与「丢弃区」（被丢弃的文件会移到这里）
+_yaml_templates/
+source/_discarded/
