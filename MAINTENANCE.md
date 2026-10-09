@@ -361,3 +361,49 @@ python tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage --
 2. `python tools\verify-site.py` —— 输出「全部通过」，没有断链、没有未渲染的 `{% %}`；
 3. 本地打开首页 / 作品页 / 关于页 / 杂谈页 / 一篇文章，确认名字、介绍、图片、便签、播放器都是你要的样子；
 4. 满意就 `git add -A ; git commit -m "换成我自己的内容"`，然后 `.\deploy.ps1` 发布。
+
+---
+
+## 12. 部署到 GitHub Pages（以及"卡住不动"怎么办）
+
+发布用一条命令：
+
+```powershell
+cd D:\tools\hexo
+.\deploy.ps1              # = clean → generate → 清理多余 JS → hexo deploy
+```
+
+`hexo deploy` 做三件事：把 `public/` 同步到仓库内的 `.deploy_git/` → 在里面提交（提交信息是 `Site updated: 时间`）→ 推送到 `https://github.com/Jawooth/Jawooth.github.io.git` 的 `gh-pages` 分支。线上地址是 **https://jawooth.github.io/**。
+
+### 12.1 卡在 `Writing objects: 100% …` 不动
+
+**这不是操作错了**，是 git 通过本机代理（Clash Verge，`127.0.0.1:7897`）走 HTTP/2 时，在上传完成后"等服务器回执"的阶段会挂住。判断与处理：
+
+```powershell
+# 1) 看是不是真的还卡着（列出 git 进程与命令行）
+Get-CimInstance Win32_Process -Filter "Name='git.exe'" | ForEach-Object { $_.CommandLine }
+
+# 2) 卡住就结束掉（只结束 git，别动其他进程）
+Get-Process git,git-remote-https -ErrorAction SilentlyContinue | Stop-Process -Force
+
+# 3) 确认远端当前指向哪次提交（能print出来就说明网络与凭据都是通的）
+$env:GIT_TERMINAL_PROMPT=0; git ls-remote https://github.com/Jawooth/Jawooth.github.io.git refs/heads/gh-pages
+
+# 4) 用 HTTP/1.1 重新推送（本机已全局配置好，正常情况不必再手动加参数）
+cd D:\tools\hexo\.deploy_git
+git -c http.version=HTTP/1.1 push -u https://github.com/Jawooth/Jawooth.github.io.git HEAD:gh-pages --force
+```
+
+已经做过的永久修复：`git config --global http.version HTTP/1.1`（就是为了绕开 12.1）。如果将来换了网络、或不再用本地代理，可以撤销：
+
+```powershell
+git config --global --unset http.version
+```
+
+### 12.2 几个要点
+
+- **卡住不会丢东西**：静态文件已经在 `.deploy_git/` 里提交好了（日志里能看到 `Site updated: …`），网络恢复后重新推一次即可，不需要重新生成。
+- **不要连点两次部署**：同时跑两个 `git push --force` 会互相抢，更容易卡住。先按 12.1 收尾，确认上一次结束再重试。
+- **代理必须开着**：本机访问 GitHub 走代理（`http.proxy=http://127.0.0.1:7897`）。代理没启动时 git 会一直等到超时；绕过代理**直连是连不通的**。
+- **推送成功后线上不是立刻更新**：GitHub Pages 还要构建，通常半分钟到两分钟。用浏览器打开 https://jawooth.github.io/ 并 `Ctrl + F5` 强刷。
+- **判断线上是不是新版**：首页 HTML 字节数应与本机 `public/index.html` 一致（约 43 KB），样式链接会带内容版本号 `/css/xp-custom.css?v=xxxxxxxx`。
