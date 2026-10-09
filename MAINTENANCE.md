@@ -92,6 +92,8 @@ npm run server            # 本地预览 http://127.0.0.1:4010/（4000 被 Hexo 
 .\deploy.ps1              # 清理 + 生成 + 部署到 GitHub Pages
 ```
 
+**构建与预览别同时来**：`npm run build` 会先删 `public/`，如果此时预览服务正在跑，偶尔会出现"构建报成功但 public 没了"。养成习惯：**先停预览服务 → 构建 → 再开预览**（本手册里的验证流程都是这个顺序）。
+
 **为什么默认带 clean**：Hexo 的增量生成**感知不到** `source/_data/*.yml` 与 `scripts/*.js` 的改动——只改这两类文件时，`hexo generate` 会"跑成功了但页面没变"（我实测过：改 `profile.yml` 里的名字，增量生成后首页仍是旧名字，clean 之后才更新）。`npm run build` 先 clean 再生成，永远是对的，代价只是多几秒。
 
 改了 `scripts/*.js`（构建期脚本）之后，本地预览服务需要**重启**才生效；模板和样式改动不用重启。
