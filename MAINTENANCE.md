@@ -29,7 +29,7 @@
 | 换主题色 / 圆角 / 间距 | `source/css/xp-custom.css` 顶部 `:root` 与 `html.dark` | 同上（**浅色深色两处都要改**） |
 | 调首页格子排布 | `source/index.md` 末尾 `<style>`（12 栏 × 96px 行高，按横带排） | 同上 |
 | 改导航菜单 | `_config.minimalism.yml` 的 `menu` | URL **结尾要带 `/`** |
-| 改页脚联系方式 | `_config.minimalism.yml` 的 `contact` | 同上 |
+| 改/去掉页脚社交图标 | `_config.minimalism.yml` 的 `contact` | 同上（留空即整块不显示；与首页图标行 `profile.yml` 无关） |
 | 改站名 / 描述 / 作者 | `_config.yml` | 同上 |
 | 发到线上 | `.\deploy.ps1` | 会依次做 clean → generate → deploy |
 
@@ -246,7 +246,8 @@ status: done                  # done / doing（作品卡片上的状态角标）
 11. **改了样式却看不到变化时先强制刷新**：`xp-custom.css` 的链接已自动带内容版本号（`?v=xxxxxxxx`，由文件哈希生成），正常情况不会再吃缓存；若仍异常，用 `Ctrl + F5`（Mac 是 `Cmd + Shift + R`）强制刷新，或确认自己看的端口/页面是否正确——例如首页是 XP 桌面便当格，**文章页/杂谈页/归档页/标签页才是两栏新版式**。
 12. **改了 `_data/*.yml` 却"没生效"**：增量 `hexo generate` 感知不到数据文件与 `scripts/*.js` 的变化，必须 `npm run build`（内部先 clean）。这是实测过的行为，不是你的错觉。
 13. **含中文的文件不要用 PowerShell 的 `-replace` / `Set-Content` 去改**：会把中文写成 `?`，YAML/CSS 直接损坏（排查时非常容易误判成"功能没生效"）。要批量改就用编辑器，或用 Python 以 UTF-8 读写。
-14. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
+14. **窄屏下 `flex-basis` 会变成「高度」**：底部「搜索 & 致谢」窗口里 `.links-col { flex: 1 1 420px }`、`.credits-col { flex: 0 1 460px }`，一旦在媒体查询里把容器改成 `flex-direction: column`，这两个 basis 就变成高度，窗口被撑到 800+px（移动端就是这样变长的）。规则：**凡是把容器改成纵向排列的地方，都要同时把子项的 flex-basis 复位**（`flex: 0 0 auto` 或改用 `width`）。
+15. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
     需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
 
 ---

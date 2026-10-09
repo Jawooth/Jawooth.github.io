@@ -1514,7 +1514,12 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bubble { transform: none; margin: 0; }
   .recent-work-item { width: 140px; }
   .recent-work-item.featured { width: 180px; }
-  .links-body { flex-direction: column; align-items: flex-start; }
+  /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，
+     否则 .links-col/.credits-col 的 420px/460px 会被当成"高度"，窗口被撑到 800+px */
+  .links-body { flex-direction: column; align-items: stretch; }
+  .links-col,
+  .credits-col { flex: 0 0 auto; width: 100%; min-width: 0; }
+  .credits-col { border-left: none; border-top: 1px dashed var(--border); padding: 12px 0 0; }
   .xp-search-box { width: 100%; }
   .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
   .about-profile-layout { flex-direction: column; align-items: center; text-align: center; }

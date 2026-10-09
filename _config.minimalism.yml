@@ -37,9 +37,11 @@ dark_theme:
   enable: true
   mode: auto # 可选 auto、dark
 
-# 联系方式
+# 联系方式（页脚社交图标，用主题内置图标字体渲染）
+# 留空则整块不显示；想加回来就填对应的 key：github / twitter / weibo / zhihu / facebook / email / rss / bluesky
+# 注意：这里是"页脚那一个"图标，和首页用户账户卡片里的图标行（profile.yml 的 contacts）不是同一处。
 contact:
-  github: "https://github.com/Jawooth"
+  github: ""
   twitter:
   weibo:
   zhihu:
