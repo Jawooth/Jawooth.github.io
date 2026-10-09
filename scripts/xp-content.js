@@ -15,8 +15,7 @@
  *   {% xp_todo mini|full %}              待办（mini=首页与杂谈页 / full=待办页）
  *   {% xp_apps %}                        游戏/工具卡片（含分组标题条）
  *   {% xp_guides %}                      攻略/教程分组列表
- *   {% xp_work_cards %}                  作品页精选 + 普通卡片
- *   {% xp_work_filters %}                作品页分类筛选按钮
+ *   {% xp_work_gallery %}                作品页：原创/同人分栏 + 时间轴 + 标签筛选 + 原地展开
  */
 'use strict';
 
@@ -325,60 +324,202 @@ function guidesList() {
   return oneLine(out.join(''));
 }
 
-function workCards() {
-  const posts = workPosts();
-  if (!posts.length) return '<div class="works-item works-featured"><p class="xp-empty">还没有作品，先写一篇文章吧</p></div>';
-  const out = posts.map((p, i) => {
-    const cats = catsOf(p).filter((c) => c !== WORK_CATEGORY);
-    const cat = cats[0] || '';
-    const icon = CATEGORY_ICON[cat] || 'icon-palette';
-    const thumb = p.thumbnail || p.img || '';
-    const status = p.status === 'doing' ? 'doing' : 'done';
-    const statusText = status === 'doing' ? '进行中' : '已完成';
-    const meta = `${fmtDate(p)}<span class="work-status ${status}">${statusText}</span>`;
-    const tagHtml = cats.map((c, idx) => `<span class="work-tag${idx === 0 ? ' category' : ''}">${esc(c)}</span>`).join('') +
-      tagsOf(p).map((t) => `<span class="work-tag">${esc(t)}</span>`).join('');
-    const titleBar =
-      `<div class="xp-window-title"><span class="xp-window-title-text">` +
-      `<svg class="inline-icon" width="12" height="12" aria-hidden="true"><use href="#${icon}"/></svg>` +
-      `${esc(cat)}${i === 0 ? ' · 精选' : ''}</span>${BULLET}</div>`;
-    if (i === 0) {
-      return (
-        `<div class="works-item works-featured" data-category="${esc(cat)}">` +
-        `<a class="xp-window work-window-card featured" href="${href(p.path)}">${titleBar}` +
-        `<div class="xp-window-body"><div class="work-featured-layout">` +
-        `<div class="work-featured-thumb"><img src="${esc(thumb)}" alt="${esc(p.title)}" loading="lazy" decoding="async" width="480" height="360">` +
-        `<div class="work-card-overlay"><span class="work-card-view">查看详情 <svg class="view-arrow" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></div>` +
-        `<div class="work-featured-info"><h3 class="work-featured-title">${esc(p.short_title || p.title)}</h3>` +
-        `<p class="work-featured-desc">${esc(p.desc || '')}</p>` +
-        `<div class="work-featured-meta"><span class="work-card-date">${meta}</span></div>` +
-        `<div class="work-card-tags">${tagHtml}</div></div></div></div></a></div>`
-      );
-    }
-    return (
-      `<div class="works-item works-normal" data-category="${esc(cat)}">` +
-      `<a class="xp-window work-window-card" href="${href(p.path)}">${titleBar}` +
-      `<div class="xp-window-body"><div class="work-card-thumb"><img src="${esc(thumb)}" alt="${esc(p.title)}" loading="lazy" decoding="async" width="480" height="360">` +
-      `<div class="work-card-overlay"><span class="work-card-view">查看详情 <svg class="view-arrow" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></div>` +
-      `<div class="work-card-info"><h4 class="work-card-title">${esc(p.short_title || p.title)}</h4>` +
-      `<div class="work-card-meta"><span class="work-card-date">${meta}</span></div>` +
-      `<div class="work-card-tags">${tagHtml}</div></div></div></a></div>`
-    );
-  });
-  return oneLine(out.join(''));
+/* ---------------------------------------------------------------- 作品集（分栏目 + 时间轴 + 筛选） */
+/* 时间轴分期：想改分期就改这里。from 含、to 不含；最后一档 to: null 表示"至今"。
+   "最新的一档"会默认展开，其余默认折叠（点击展开）。 */
+const WORK_ERAS = [
+  { label: '远古期', from: '0000-01-01', to: '2024-01-01' },
+  { label: '2024 年', from: '2024-01-01', to: '2025-01-01' },
+  { label: '2025 年', from: '2025-01-01', to: '2026-01-01' },
+  { label: '2026 年上半年', from: '2026-01-01', to: '2026-06-01' },
+  { label: '2026 年 6-10 月', from: '2026-06-01', to: null }
+];
+
+const WORK_ORIGINS = ['原创', '同人'];
+
+/* 栏目：文章里写 origin: 同人，没写就当原创 */
+function workOrigin(post) {
+  const raw = String(post.origin || '').trim();
+  return WORK_ORIGINS.indexOf(raw) >= 0 ? raw : WORK_ORIGINS[0];
 }
 
-function workFilters() {
-  const cats = workCategories();
-  const total = workPosts().length;
-  const btns = [`<button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">全部 (${total})</button>`]
-    .concat(cats.map((c) => {
-      const n = workPosts().filter((p) => catsOf(p).includes(c)).length;
-      return `<button type="button" class="filter-btn" data-filter="${esc(c)}" aria-pressed="false">${esc(c)} (${n})</button>`;
-    }));
-  return oneLine(`<div class="filter-tags">${btns.join('')}</div>` +
-    `<p class="filter-status" role="status" aria-live="polite" data-total="${total}">显示全部 ${total} 件作品</p>`);
+/* 分期：文章里写 era: 2025 年 可以手动覆盖，否则按日期自动归入 */
+function workEraLabel(post) {
+  const override = String(post.era || '').trim();
+  if (override) return override;
+  const t = new Date(post.date).getTime();
+  for (let i = 0; i < WORK_ERAS.length; i += 1) {
+    const era = WORK_ERAS[i];
+    const from = new Date(era.from + 'T00:00:00').getTime();
+    const to = era.to ? new Date(era.to + 'T00:00:00').getTime() : Infinity;
+    if (t >= from && t < to) return era.label;
+  }
+  return WORK_ERAS[WORK_ERAS.length - 1].label;
 }
+
+function eraOrder(label) {
+  const idx = WORK_ERAS.map((e) => e.label).indexOf(label);
+  if (idx >= 0) return idx;
+  const year = parseInt(String(label).replace(/[^\d]/g, '').slice(0, 4), 10);
+  return Number.isFinite(year) ? 100 + year : 9999;   /* 自定义 label 排在预置分期之后 */
+}
+
+function workCardHtml(post) {
+  const tags = tagsOf(post);
+  const cats = catsOf(post).filter((c) => c !== WORK_CATEGORY);
+  const thumb = post.thumbnail || post.img || '';
+  const statusText = post.status === 'doing' ? '进行中' : '已完成';
+  const title = post.short_title || post.title;
+  const tagButtons = tags.map((t) => (
+    `<button type="button" class="work-tag" data-tag="${esc(t)}" title="只看「${esc(t)}」">${esc(t)}</button>`
+  )).join('');
+  const catChips = cats.map((c) => `<span class="work-cat">${esc(c)}</span>`).join('');
+  const body = '';
+  return (
+    `<article class="work-card" data-tags="${esc(tags.join(' '))}" data-era="${esc(workEraLabel(post))}" data-origin="${esc(workOrigin(post))}">` +
+    `<a class="work-thumb" href="${href(post.path)}">` +
+    (thumb ? `<img src="${esc(thumb)}" alt="${esc(title)}" loading="lazy" decoding="async" width="480" height="360">` : '') +
+    `<span class="work-status ${post.status === 'doing' ? 'doing' : 'done'}">${statusText}</span>` +
+    `</a>` +
+    `<div class="work-card-body">` +
+    `<h3 class="work-card-title"><a href="${href(post.path)}">${esc(title)}</a></h3>` +
+    `<div class="work-card-meta"><span class="work-card-date">${fmtDate(post)}</span>${catChips}</div>` +
+    (tagButtons ? `<div class="work-card-tags">${tagButtons}</div>` : '') +
+    /* 正文不在这里内联：源码页面渲染时文章的 content 还没写入（Hexo 的处理顺序），
+       改由 works-bodies.json 按需加载，见 xp-work-bodies 生成器与下面的脚本 */
+    `<div class="work-card-full" hidden data-work="${esc(post.path)}">${body}</div>` +
+    `</div>` +
+    `<div class="work-card-foot"><button type="button" class="work-expand" aria-expanded="false">展开全文</button></div>` +
+    `</article>`
+  );
+}
+
+function workGallery() {
+  const posts = workPosts();
+  if (!posts.length) return '<p class="xp-empty">还没有作品，先写一篇文章吧</p>';
+
+  /* 标签统计（用于筛选条） */
+  const tagCount = {};
+  posts.forEach((p) => tagsOf(p).forEach((t) => { tagCount[t] = (tagCount[t] || 0) + 1; }));
+  const tags = Object.keys(tagCount).sort((a, b) => tagCount[b] - tagCount[a]);
+
+  const tabs = WORK_ORIGINS.map((o, i) => {
+    const n = posts.filter((p) => workOrigin(p) === o).length;
+    return `<button type="button" class="work-tab${i === 0 ? ' is-active' : ''}" data-origin="${esc(o)}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}">${esc(o)} <span class="tab-count">${n}</span></button>`;
+  }).join('');
+
+  const pills = tags.map((t) => (
+    `<button type="button" class="filter-pill" data-tag="${esc(t)}" aria-pressed="false">${esc(t)} <span class="pill-count">${tagCount[t]}</span></button>`
+  )).join('');
+
+  const panes = WORK_ORIGINS.map((origin) => {
+    const mine = posts.filter((p) => workOrigin(p) === origin);
+    /* 按分期分组，分期从新到旧，最新的一档默认展开 */
+    const groups = {};
+    mine.forEach((p) => {
+      const label = workEraLabel(p);
+      (groups[label] = groups[label] || []).push(p);
+    });
+    const labels = Object.keys(groups).sort((a, b) => eraOrder(b) - eraOrder(a));
+    const eras = labels.map((label, idx) => (
+      `<details class="work-era"${idx === 0 ? ' open' : ''}>` +
+      `<summary class="work-era-bar"><span class="era-name">${esc(label)}</span>` +
+      `<span class="era-count">${groups[label].length} 件</span></summary>` +
+      `<div class="work-grid">${groups[label].sort((a, b) => new Date(b.date) - new Date(a.date)).map(workCardHtml).join('')}</div>` +
+      `</details>`
+    )).join('');
+    return (
+      `<div class="work-pane${origin === WORK_ORIGINS[0] ? ' is-active' : ''}" data-origin="${esc(origin)}" role="tabpanel"${origin === WORK_ORIGINS[0] ? '' : ' hidden'}>` +
+      (eras || '<p class="xp-empty">这个栏目还没有作品</p>') +
+      `</div>`
+    );
+  }).join('');
+
+  const toolbar =
+    `<div class="work-toolbar">` +
+    `<div class="work-tabs" role="tablist" aria-label="作品栏目">${tabs}</div>` +
+    `<div class="work-filter-bar">` +
+    `<span class="filter-label">标签筛选</span>${pills}` +
+    `<label class="filter-block"><input type="checkbox" id="work-block-mode"> 屏蔽模式</label>` +
+    `<button type="button" class="filter-clear" id="work-filter-clear">清除筛选</button>` +
+    `</div>` +
+    `<p class="filter-status" id="work-filter-status" role="status" aria-live="polite">共 ${posts.length} 件作品</p>` +
+    `</div>`;
+
+  const script = oneLine(
+    `<script>(function(){` +
+    `var root=document.querySelector('.work-gallery');if(!root)return;` +
+    `var tabs=root.querySelectorAll('.work-tab');` +
+    `var panes=root.querySelectorAll('.work-pane');` +
+    `var pills=root.querySelectorAll('.filter-pill');` +
+    `var mode=root.querySelector('#work-block-mode');` +
+    `var clearBtn=root.querySelector('#work-filter-clear');` +
+    `var status=root.querySelector('#work-filter-status');` +
+    `var activeTags=[];` +
+    `function pane(){for(var i=0;i<panes.length;i++){if(!panes[i].hidden)return panes[i];}return null;}` +
+    `function apply(){` +
+    `var p=pane();if(!p)return;var cards=p.querySelectorAll('.work-card');var shown=0;var blocked=(mode&&mode.checked);` +
+    `for(var i=0;i<cards.length;i++){var c=cards[i];var list=(c.getAttribute('data-tags')||'').split(' ').filter(Boolean);` +
+    `var hit=activeTags.length===0?false:activeTags.some(function(t){return list.indexOf(t)>=0;});` +
+    `var hide=activeTags.length===0?false:(blocked?hit:!hit);` +
+    `c.hidden=hide;if(!hide)shown++;}` +
+    `var eras=p.querySelectorAll('.work-era');` +
+    `for(var e=0;e<eras.length;e++){var any=false;var cs=eras[e].querySelectorAll('.work-card');` +
+    `for(var k=0;k<cs.length;k++){if(!cs[k].hidden){any=true;break;}}eras[e].hidden=!any;if(any&&activeTags.length)eras[e].open=true;}` +
+    `if(status){status.textContent=activeTags.length===0?('共 '+cards.length+' 件作品'):((blocked?'已屏蔽':'只看')+'「'+activeTags.join('、')+'」：'+shown+' 件');}` +
+    `}` +
+    `for(var i=0;i<tabs.length;i++){(function(btn){btn.addEventListener('click',function(){` +
+    `for(var j=0;j<tabs.length;j++){tabs[j].classList.toggle('is-active',tabs[j]===btn);tabs[j].setAttribute('aria-selected',tabs[j]===btn?'true':'false');}` +
+    `for(var k=0;k<panes.length;k++){panes[k].hidden=panes[k].getAttribute('data-origin')!==btn.getAttribute('data-origin');}` +
+    `activeTags=[];for(var m=0;m<pills.length;m++){pills[m].classList.remove('is-active');pills[m].setAttribute('aria-pressed','false');}` +
+    `apply();});})(tabs[i]);}` +
+    `for(var i=0;i<pills.length;i++){(function(btn){btn.addEventListener('click',function(){` +
+    `var t=btn.getAttribute('data-tag');var idx=activeTags.indexOf(t);` +
+    `if(idx>=0){activeTags.splice(idx,1);btn.classList.remove('is-active');btn.setAttribute('aria-pressed','false');}` +
+    `else{activeTags.push(t);btn.classList.add('is-active');btn.setAttribute('aria-pressed','true');}` +
+    `apply();});})(pills[i]);}` +
+    `if(mode){mode.addEventListener('change',apply);}` +
+    `if(clearBtn){clearBtn.addEventListener('click',function(){activeTags=[];` +
+    `for(var i=0;i<pills.length;i++){pills[i].classList.remove('is-active');pills[i].setAttribute('aria-pressed','false');}` +
+    `if(mode){mode.checked=false;}apply();});}` +
+    `root.addEventListener('click',function(ev){` +
+    `var tagBtn=ev.target.closest?ev.target.closest('.work-tag'):null;` +
+    `if(tagBtn){var t=tagBtn.getAttribute('data-tag');` +
+    `for(var i=0;i<pills.length;i++){if(pills[i].getAttribute('data-tag')===t){pills[i].click();break;}}return;}` +
+    `var ex=ev.target.closest?ev.target.closest('.work-expand'):null;` +
+    `if(!ex)return;var card=ex.closest('.work-card');var full=card?card.querySelector('.work-card-full'):null;if(!full)return;` +
+    `if(!full.hidden){full.hidden=true;ex.textContent='展开全文';ex.setAttribute('aria-expanded','false');return;}` +
+    `var key=full.getAttribute('data-work');` +
+    `function open(d){if(d&&!full.innerHTML.trim()){full.innerHTML=d[key]||'<p class="xp-empty">这篇没有正文</p>';}` +
+    `full.hidden=false;ex.textContent='收起';ex.setAttribute('aria-expanded','true');}` +
+    `if(full.innerHTML.trim()){open(null);return;}` +
+    `ex.textContent='加载中…';` +
+    `if(xpBodies){open(xpBodies);return;}` +
+    `fetch('/works-bodies.json').then(function(r){return r.json();}).then(function(d){xpBodies=d;open(d);})` +
+    `.catch(function(){xpBodies={};open(xpBodies);});` +
+    `});` +
+    `var xpBodies=null;` +
+    `apply();` +   /* 首次也走一遍：让状态栏数字与当前栏目一致 */
+    `})();</script>`
+  );
+
+  return oneLine(`<div class="work-gallery">${toolbar}${panes}</div>` + script);
+}
+
+/* ---------------------------------------------------------------- 作品正文（按需加载） */
+/* 作品页的「展开全文」需要文章正文，但源码页面渲染时文章的 content 还没写入，
+   所以由生成器在全部处理完成之后输出 /works-bodies.json，页面点开时才去取。
+   好处：作品页初始体积不随作品数量增长。 */
+hexo.extend.generator.register('xp-work-bodies', () => {
+  const bodies = {};
+  workPosts().forEach((p) => {
+    bodies[p.path] = String(p.content || '');
+  });
+  return {
+    path: 'works-bodies.json',
+    data: JSON.stringify(bodies)
+  };
+});
 
 /* ---------------------------------------------------------------- 搜索索引 */
 /* 生成 /search.json，供首页搜索框在浏览器端匹配（替代原来指向 /blog/?q= 的死链） */
@@ -685,6 +826,54 @@ hexo.extend.tag.register('xp_profile_contacts', () => {
   }).join(''));
 });
 
+/* 首页图标行的图标（内联 SVG，不依赖任何外部图标库/CDN） */
+const PROFILE_ICONS = {
+  github: {
+    label: 'GitHub',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.5 2 2 6.6 2 12.2c0 4.5 2.9 8.3 6.8 9.6.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5.1 0-1.1.4-2.1 1-2.8-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.7 1 2.8 0 4-2.4 4.8-4.6 5.1.4.4.7 1 .7 2v2.9c0 .3.2.6.7.5A10.2 10.2 0 0 0 22 12.2C22 6.6 17.5 2 12 2z" fill="currentColor"/></svg>'
+  },
+  email: {
+    label: '邮箱',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 7.5l8.5 5.5 8.5-5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>'
+  },
+  bilibili: {
+    label: '哔哩哔哩',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="7" width="19" height="12.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 3.5l2.8 2.8M16.5 3.5l-2.8 2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.6" cy="13" r="1.4" fill="currentColor"/><circle cx="15.4" cy="13" r="1.4" fill="currentColor"/></svg>'
+  },
+  xiaohongshu: {
+    label: '小红书',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor" opacity="0.16"/><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8.5h8M8 12h8M8 15.5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+  },
+  x: {
+    label: 'X',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3h4.2l4.3 5.7L17.2 3h3.3l-6.6 8 6.9 10h-4.2l-4.7-6.2L6.4 21H3.1l7-8.5L3.5 3z" fill="currentColor"/></svg>'
+  },
+  weibo: {
+    label: '微博',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="11" cy="13" rx="8.5" ry="6" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="11" cy="13" r="2.8" fill="currentColor"/><path d="M18 5.5c1.6 0 3 1.4 3 3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+  },
+  pixiv: {
+    label: 'Pixiv',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 17.5V6.5h3.6a3.4 3.4 0 0 1 0 6.8H9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>'
+  },
+  website: {
+    label: '个人站点',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c3.2 3.3 3.2 14.7 0 18M12 3c-3.2 3.3-3.2 14.7 0 18" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>'
+  }
+};
+
+/* 只渲染 profile.yml 里填了地址的平台；email 自动加 mailto: */
+hexo.extend.tag.register('xp_profile_icons', () => {
+  const contacts = profileData().contacts || {};
+  const html = Object.keys(PROFILE_ICONS).filter((k) => contacts[k]).map((k) => {
+    const icon = PROFILE_ICONS[k];
+    const href = k === 'email' ? `mailto:${contacts[k]}` : String(contacts[k]);
+    const extra = k === 'email' ? '' : ' target="_blank" rel="noopener"';
+    return `<a class="profile-icon" href="${esc(href)}"${extra} title="${icon.label}" aria-label="${icon.label}">${icon.svg}</a>`;
+  });
+  return oneLine(html.join(''));
+});
+
 /* ---------------------------------------------------------------- 注册 */
 function registerTag(name, fn) {
   hexo.extend.tag.register(name, function (args) {
@@ -704,8 +893,7 @@ registerTag('xp_tag_cloud', (args) => tagCloud(args[0]));
 registerTag('xp_todo', (args) => (args[0] === 'full' ? todoFull() : todoMini(parseInt(args[0], 10) || 4)));
 registerTag('xp_apps', () => appsGrid());
 registerTag('xp_guides', () => guidesList());
-registerTag('xp_work_cards', () => workCards());
-registerTag('xp_work_filters', () => workFilters());
+registerTag('xp_work_gallery', () => workGallery());
 
 /* 供注入器 / 过滤器复用（/blog/ 的待办窗口、文章页窗口按钮） */
 hexo.extend.helper.register('xp_todo_mini', (limit) => todoMini(limit || 4));

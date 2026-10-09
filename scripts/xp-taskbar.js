@@ -120,14 +120,6 @@ const taskbarHTML = `
       </svg>
       <span class="xp-start-text">攻略教程</span>
     </a>
-    <a class="xp-start-item" href="/todo/" role="menuitem">
-      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
-        <rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#003399" stroke-width="0.5"/>
-        <rect x="2" y="1" width="12" height="3" rx="1" fill="#0066cc" stroke="#003399" stroke-width="0.5"/>
-        <path d="M4.5 8.5l1.5 1.5 3-3.5" fill="none" stroke="#66cc66" stroke-width="1.4"/>
-      </svg>
-      <span class="xp-start-text">待办</span>
-    </a>
     <a class="xp-start-item" href="/blog/" role="menuitem">
       <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
         <path d="M2 3h12v8H5l-3 3V3z" fill="#ccddee" stroke="#336699" stroke-width="0.5"/>
@@ -144,30 +136,6 @@ const taskbarHTML = `
         <rect x="2" y="8" width="12" height="2" fill="#99bbdd"/>
       </svg>
       <span class="xp-start-text">归档</span>
-    </a>
-    <a class="xp-start-item" href="/tags/" role="menuitem">
-      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
-        <path d="M2 7l7-5 5 5-7 7-5-7z" fill="#ffff99" stroke="#cc9933" stroke-width="0.5"/>
-        <circle cx="8" cy="7" r="1.6" fill="#cc9933"/>
-      </svg>
-      <span class="xp-start-text">标签</span>
-    </a>
-    <a class="xp-start-item" href="/categories/" role="menuitem">
-      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
-        <rect x="1" y="3" width="14" height="11" rx="1" fill="#ffd68a" stroke="#cc9933" stroke-width="0.5"/>
-        <rect x="1" y="2" width="6" height="3" rx="1" fill="#ffb84d" stroke="#cc9933" stroke-width="0.5"/>
-      </svg>
-      <span class="xp-start-text">分类</span>
-    </a>
-    <a class="xp-start-item" href="/about/" role="menuitem">
-      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
-        <circle cx="8" cy="5" r="3.5" fill="#ffcc99" stroke="#996633" stroke-width="0.5"/>
-        <path d="M2 14c0-4 3-6 6-6s6 2 6 6" fill="#6699cc" stroke="#336699" stroke-width="0.5"/>
-        <circle cx="6.5" cy="4.5" r="0.6" fill="#333"/>
-        <circle cx="9.5" cy="4.5" r="0.6" fill="#333"/>
-        <path d="M7 6.5c.5.5 1.5.5 2 0" fill="none" stroke="#cc6666" stroke-width="0.5"/>
-      </svg>
-      <span class="xp-start-text">关于</span>
     </a>
   </div>
   <div class="xp-start-menu-footer">

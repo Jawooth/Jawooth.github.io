@@ -124,50 +124,6 @@ layout: xp-page
 </div>
 </div>
 
-<!-- 致谢与参考 -->
-<div class="about-item about-credits">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text"><svg class="inline-icon" width="14" height="14" aria-hidden="true"><use href="#icon-heart"/></svg> 致谢 &amp; 参考</span>
-</div>
-<div class="xp-window-body compact-body">
-<p class="credits-intro">本站的诞生离不开以下开源项目与工具的支持 💖</p>
-<div class="credits-grid">
-<div class="credit-item">
-<div class="credit-name">Hexo</div>
-<div class="credit-desc">静态站点生成器</div>
-<a class="credit-link" href="https://hexo.io/" target="_blank" rel="noopener">hexo.io →</a>
-</div>
-<div class="credit-item">
-<div class="credit-name">XP.css</div>
-<div class="credit-desc">Windows XP 风格灵感来源</div>
-<a class="credit-link" href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">botoxparty.github.io/XP.css →</a>
-</div>
-<div class="credit-item">
-<div class="credit-name">hexo-theme-minimalism</div>
-<div class="credit-desc">极简 Hexo 主题（基础框架）</div>
-<a class="credit-link" href="https://www.npmjs.com/package/hexo-theme-minimalism" target="_blank" rel="noopener">npmjs.com →</a>
-</div>
-<div class="credit-item">
-<div class="credit-name">APlayer</div>
-<div class="credit-desc">HTML5 音乐播放器（可选启用）</div>
-<a class="credit-link" href="https://aplayer.js.org/" target="_blank" rel="noopener">aplayer.js.org →</a>
-</div>
-<div class="credit-item">
-<div class="credit-name">Google Fonts · Caveat</div>
-<div class="credit-desc">手写风格字体</div>
-<a class="credit-link" href="https://fonts.google.com/specimen/Caveat" target="_blank" rel="noopener">fonts.google.com →</a>
-</div>
-<div class="credit-item credit-special">
-<div class="credit-name">TRAE AI 助手</div>
-<div class="credit-desc">协助搭建与设计本站</div>
-<span class="credit-link credit-ai">✨ Made with AI</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-
 <!-- 提示框 -->
 <div class="about-item about-tip">
 <div class="xp-tip-box">
@@ -179,18 +135,18 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 页面级排布（组件样式统一在 /css/xp-custom.css） ========== -->
+<!-- ========== 页面级排布（组件样式统一在 /css/xp-custom.css）
+     致谢条目已搬到首页底部「链接 & 搜索」窗口 ========== -->
 <style>
-.about-profile { grid-column: 1 / 9; grid-row: span 3; }
-.about-nav { grid-column: 9 / 13; grid-row: span 2; }
-.about-contact { grid-column: 9 / 13; grid-row: span 1; }
-.about-credits { grid-column: 1 / 9; grid-row: span 2; }
-.about-tip { grid-column: 1 / -1; grid-row: span 1; }
+.about-profile { grid-column: 1 / 9;  grid-row: span 2; }
+.about-nav     { grid-column: 9 / 13; grid-row: span 2; }
+.about-contact { grid-column: 1 / 13; grid-row: span 1; }
+.about-tip     { grid-column: 1 / 13; grid-row: span 1; }
 
 @media (max-width: 900px) {
-  .about-profile { grid-column: 1 / 7; grid-row: span 2; }
-  .about-nav { grid-column: 1 / 4; grid-row: span 2; }
-  .about-contact { grid-column: 4 / 7; grid-row: span 2; }
-  .about-credits { grid-column: 1 / 7; grid-row: span 2; }
+  .about-profile { grid-column: 1 / 7; grid-row: auto; }
+  .about-nav     { grid-column: 1 / 7; grid-row: auto; }
+  .about-contact { grid-column: 1 / 7; grid-row: auto; }
+  .about-tip     { grid-column: 1 / 7; grid-row: auto; }
 }
 </style>

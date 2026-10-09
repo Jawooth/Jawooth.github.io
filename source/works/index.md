@@ -6,7 +6,13 @@ layout: xp-page
 <!-- 注意：本页正文是整块原始 HTML，所有 xp_ 标签必须顶格书写。
      一旦某行缩进 4 个空格以上、且前面留了空行，markdown 会把它当成代码块，
      整段 HTML 会被转义成文本、xp_ 标签也不会生效。
-     另外正文里不要出现字面的模板定界符（Nunjucks 会尝试解析它）。 -->
+     另外正文里不要出现字面的模板定界符——包括注释里也不行：
+     标签在注释里照样会被执行一遍，白白复制一份 HTML（踩过）。 -->
+
+<!-- 作品卡片由下方那个「作品集」标签自动生成（详见 MAINTENANCE.md）：
+       · 栏目（原创 / 同人）来自文章的 origin: 原创 或 origin: 同人（没写就是原创）
+       · 时间轴分期按文章日期自动归入，也可以用 era: 2025 年 手动指定
+       · 标签筛选、屏蔽模式、展开全文都是页面内的交互，不需要额外配置 -->
 
 <!-- SVG 图标集合 -->
 <svg width="0" height="0" style="position:absolute;visibility:hidden" aria-hidden="true">
@@ -17,22 +23,6 @@ layout: xp-page
 <circle cx="11" cy="6" r="1.2" fill="#66cc66"/>
 <circle cx="5" cy="10" r="1.2" fill="#6666ff"/>
 <circle cx="10" cy="11" r="1.2" fill="#ffff66"/>
-</symbol>
-<symbol id="icon-frame" viewBox="0 0 16 16">
-<rect x="1" y="1" width="14" height="14" fill="#8b4513" stroke="#5c2e0a" stroke-width="0.5"/>
-<rect x="3" y="3" width="10" height="10" fill="#fff" stroke="#5c2e0a" stroke-width="0.5"/>
-<line x1="3" y1="3" x2="13" y2="13" stroke="#ccc" stroke-width="0.5"/>
-<line x1="13" y1="3" x2="3" y2="13" stroke="#ccc" stroke-width="0.5"/>
-</symbol>
-<symbol id="icon-girl" viewBox="0 0 16 16">
-<circle cx="8" cy="6" r="3.5" fill="#ffcc99" stroke="#996633" stroke-width="0.5"/>
-<path d="M5 4c0-1 1.5-2 3-2s3 1 3 2" fill="#8b4513" stroke="#5c2e0a" stroke-width="0.5"/>
-<path d="M4 5c0 2 1 3 2 3" fill="none" stroke="#8b4513" stroke-width="1"/>
-<path d="M12 5c0 2-1 3-2 3" fill="none" stroke="#8b4513" stroke-width="1"/>
-<circle cx="6.5" cy="6" r="0.5" fill="#333"/>
-<circle cx="9.5" cy="6" r="0.5" fill="#333"/>
-<path d="M7 8c.5.5 1.5.5 2 0" fill="none" stroke="#cc6666" stroke-width="0.5"/>
-<path d="M3 14c0-3 2-5 5-5s5 2 5 5" fill="#ff99cc" stroke="#cc6699" stroke-width="0.5"/>
 </symbol>
 <symbol id="icon-pencil" viewBox="0 0 16 16">
 <path d="M10 1l5 5-9 9H1v-5l9-9z" fill="#ffcc66" stroke="#cc9933" stroke-width="0.5"/>
@@ -55,10 +45,6 @@ layout: xp-page
 <rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/>
 <path d="M3 12l3-4 3 2 4-6" fill="none" stroke="#60b060" stroke-width="1.5"/>
 </symbol>
-<symbol id="icon-filter" viewBox="0 0 16 16">
-<rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/>
-<path d="M4 4h8M4 8h8M4 12h5" stroke="#666" stroke-width="1.2" stroke-linecap="round"/>
-</symbol>
 <symbol id="icon-clock" viewBox="0 0 16 16">
 <circle cx="8" cy="8" r="6" fill="none" stroke="#f0a040" stroke-width="1.5"/>
 <path d="M8 4v4l3 2" fill="none" stroke="#f0a040" stroke-width="1.5" stroke-linecap="round"/>
@@ -80,7 +66,7 @@ layout: xp-page
 <span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
 </div>
 <div class="xp-window-body header-body">
-<p>按时间倒序排列，点击窗口卡片查看详情～</p>
+<p>按时间倒序排列：先选「原创 / 同人」，再按分期展开，也可以点标签只看某一类。</p>
 <div class="header-stats">
 <span class="header-chip"><strong>{% xp_num works %}</strong> 件作品</span>
 <span class="header-chip"><strong>{% xp_num workcats %}</strong> 个分类</span>
@@ -90,23 +76,21 @@ layout: xp-page
 </div>
 </div>
 
-<!-- 分类筛选栏（按钮由文章分类生成） -->
-<div class="works-item works-filter">
+<!-- 作品集：分栏目 + 时间轴分期 + 标签筛选 + 就地展开全文 -->
+<div class="works-item works-gallery">
 <div class="xp-window">
-<div class="xp-window-title compact">
+<div class="xp-window-title">
 <span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" aria-hidden="true"><use href="#icon-filter"/></svg>
-分类筛选
+<svg class="inline-icon" width="14" height="14" aria-hidden="true"><use href="#icon-palette"/></svg>
+作品集
 </span>
+<span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
 </div>
-<div class="xp-window-body compact-body">
-{% xp_work_filters %}
+<div class="xp-window-body">
+{% xp_work_gallery %}
 </div>
 </div>
 </div>
-
-<!-- 作品卡片（精选 + 普通，全部由文章生成） -->
-{% xp_work_cards %}
 
 <!-- 标签云 -->
 <div class="works-item works-tags">
@@ -143,7 +127,7 @@ layout: xp-page
 </div>
 </div>
 
-<!-- 即将上线 -->
+<!-- 创作中 -->
 <div class="works-item works-upcoming">
 <div class="xp-window work-window-card upcoming">
 <div class="xp-window-title">
@@ -167,65 +151,25 @@ layout: xp-page
 <div class="works-item works-tip">
 <div class="xp-tip-box">
 <strong><svg class="inline-icon" width="14" height="14" aria-hidden="true"><use href="#icon-bulb"/></svg> 小提示：</strong>
-新增作品只要写一篇文章、填好 categories / thumbnail / short_title / desc，本页卡片与首页「最近作品」会自动更新。
+新增作品只要写一篇文章、填好 categories / origin / thumbnail / short_title / desc，本页卡片与首页「最近作品」会自动更新；想手动指定分期就加一行 era: 2025 年。
 </div>
 </div>
 
 </div>
 </div>
-
-<script>
-(function () {
-  var btns = document.querySelectorAll('.filter-btn');
-  var items = document.querySelectorAll('.works-item[data-category]');
-  var status = document.querySelector('.filter-status');
-  if (!btns.length) return;
-
-  function apply(filter) {
-    var shown = 0;
-    Array.prototype.forEach.call(items, function (item) {
-      var match = filter === 'all' || item.getAttribute('data-category') === filter;
-      item.classList.toggle('is-hidden', !match);
-      if (match) shown++;
-    });
-    if (status) {
-      status.textContent = filter === 'all'
-        ? '显示全部 ' + shown + ' 件作品'
-        : '筛选「' + filter + '」：' + shown + ' 件作品';
-    }
-  }
-
-  Array.prototype.forEach.call(btns, function (btn) {
-    btn.addEventListener('click', function () {
-      Array.prototype.forEach.call(btns, function (b) {
-        var active = b === btn;
-        b.classList.toggle('active', active);
-        b.setAttribute('aria-pressed', String(active));
-      });
-      apply(btn.getAttribute('data-filter'));
-    });
-  });
-})();
-</script>
 
 <!-- ========== 页面级排布（组件样式统一在 /css/xp-custom.css） ========== -->
 <style>
 .works-header,
-.works-filter,
+.works-gallery,
 .works-tip { grid-column: 1 / -1; grid-row: span 1; }
-.works-featured { grid-column: 1 / 8; grid-row: span 3; }
-.works-normal { grid-column: 8 / 11; grid-row: span 2; }
-.works-normal + .works-normal { grid-column: 11 / 13; grid-row: span 2; }
-.works-tags { grid-column: 8 / 11; grid-row: span 1; }
-.works-mini-stats { grid-column: 11 / 13; grid-row: span 1; }
-.works-upcoming { grid-column: 8 / 13; grid-row: span 1; }
+.works-tags       { grid-column: 1 / 5;  grid-row: span 1; }
+.works-mini-stats { grid-column: 5 / 9;  grid-row: span 1; }
+.works-upcoming   { grid-column: 9 / 13; grid-row: span 1; }
 
 @media (max-width: 900px) {
-  .works-featured { grid-column: 1 / 5; grid-row: span 3; }
-  .works-normal,
-  .works-normal + .works-normal { grid-column: 5 / 7; grid-row: span 2; }
   .works-tags,
-  .works-mini-stats { grid-column: 5 / 7; grid-row: span 1; }
-  .works-upcoming { grid-column: 1 / -1; grid-row: span 1; }
+  .works-mini-stats,
+  .works-upcoming { grid-column: 1 / 7; grid-row: auto; }
 }
 </style>

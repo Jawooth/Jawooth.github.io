@@ -6,6 +6,17 @@ layout: xp-page
 <div class="home-page">
 <div class="xp-bento">
 
+<!-- ========== 带 1：气泡（尾巴指向右边的「用户账户」） ========== -->
+<div class="bento-item bento-bubble tilt-note">
+<div class="xp-bubble">
+<div class="bubble-content">
+<!-- 句子在 source/_data/quotes.yml 里维护，按 rotate_seconds 自动轮换 -->
+<p id="sticky-text">加载中…</p>
+<p class="bubble-from" id="sticky-from">—— 小站碎碎念</p>
+</div>
+</div>
+</div>
+
 <!-- ========== 带 1：我是谁 ========== -->
 <div class="bento-item bento-profile">
 <div class="xp-window">
@@ -21,30 +32,17 @@ layout: xp-page
 </div>
 <div class="xp-window-body">
 <div class="profile-content">
-<!-- 名字 / 介绍 / 胶囊 / 按钮 都在 source/_data/profile.yml 里改 -->
+<!-- 名字 / 介绍 / 图标 都在 source/_data/profile.yml 里改 -->
 <img class="profile-avatar" src="{% xp_profile avatar %}" alt="{% xp_profile name %} 的头像" width="256" height="256">
 <div class="profile-text">
 <h2>{% xp_profile greeting %} <span class="username">{% xp_profile name %}</span></h2>
 {% xp_profile_lines intro %}
-<div class="profile-meta">
-{% xp_profile_chips %}
-</div>
-<div class="profile-links">
-{% xp_profile_buttons %}
+<div class="profile-icons">
+<!-- GitHub / 邮箱 / B站 / 小红书 等：在 profile.yml 的 contacts 里填地址，留空即隐藏 -->
+{% xp_profile_icons %}
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-
-<!-- ========== 带 1：便签 ========== -->
-<div class="bento-item bento-sticky tilt-note">
-<div class="xp-sticky-note">
-<div class="sticky-pin"></div>
-<div class="sticky-note-content">
-<p id="sticky-text">加载中…</p>
-<p class="hitokoto-from" id="sticky-from">—— 小站碎碎念</p>
 </div>
 </div>
 </div>
@@ -211,6 +209,7 @@ layout: xp-page
 </span>
 </div>
 <div class="xp-window-body compact-body links-body">
+<div class="links-col">
 <ul class="friend-links">
 <li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a></li>
 <li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a></li>
@@ -224,6 +223,22 @@ layout: xp-page
 </div>
 <div class="xp-search-results" id="site-search-results"></div>
 </form>
+</div>
+<!-- 致谢：原先在「关于」页，现已搬到这里（删条目就删下面这几行） -->
+<div class="credits-col">
+<div class="credits-title">
+<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.4-5.5-7A3.2 3.2 0 0 1 8 4.6a3.2 3.2 0 0 1 5.5 2.4C13.5 10.6 8 14 8 14z" fill="#ff8080" stroke="#cc4444" stroke-width="0.5"/></svg>
+致谢 &amp; 参考
+</div>
+<ul class="credits-list">
+<li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> · 静态站点生成器</li>
+<li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a> · XP 风格灵感</li>
+<li><a href="https://npmjs.com/package/hexo-theme-minimalism" target="_blank" rel="noopener">minimalism</a> · 主题基础框架</li>
+<li><a href="https://aplayer.js.org/" target="_blank" rel="noopener">APlayer</a> · 音乐播放器（可选）</li>
+<li><a href="https://fonts.google.com/specimen/Caveat" target="_blank" rel="noopener">Caveat</a> · 手写英文字体</li>
+<li>AI 助手 · 协助搭建与设计</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -447,9 +462,9 @@ layout: xp-page
 <style>
 .xp-bento { grid-auto-rows: 96px; }
 
-/* 带 1：身份带 —— 我 / 便签 / 播放器 */
-.bento-profile { grid-column: 1 / 7;   grid-row: 1 / 3; }
-.bento-sticky  { grid-column: 7 / 10;  grid-row: 1 / 3; }
+/* 带 1：身份带 —— 气泡 / 我 / 播放器 */
+.bento-bubble  { grid-column: 1 / 4;   grid-row: 1 / 3; }
+.bento-profile { grid-column: 4 / 10;  grid-row: 1 / 3; }
 .bento-music   { grid-column: 10 / 13; grid-row: 1 / 3; }
 
 /* 带 2：内容带 —— 作品横栏 / 待办 */
@@ -462,15 +477,15 @@ layout: xp-page
 .bento-stats   { grid-column: 7 / 10;  grid-row: 5 / 7; }
 .bento-nav     { grid-column: 10 / 13; grid-row: 5 / 7; }
 
-/* 带 4：通栏 —— 链接与搜索 */
-.bento-links   { grid-column: 1 / 13;  grid-row: 7 / 8; }
+/* 带 4：通栏 —— 链接与搜索 + 致谢 */
+.bento-links   { grid-column: 1 / 13;  grid-row: 7 / 9; }
 
 @media (max-width: 900px) {
   /* 小屏放弃固定行高，回到内容决定高度 */
   .xp-bento { grid-auto-rows: auto; }
+  .bento-bubble  { grid-column: 1 / 7;  grid-row: auto; }
   .bento-profile { grid-column: 1 / 7;  grid-row: auto; }
-  .bento-sticky  { grid-column: 1 / 4;  grid-row: auto; }
-  .bento-music   { grid-column: 4 / 7;  grid-row: auto; }
+  .bento-music   { grid-column: 1 / 7;  grid-row: auto; }
   .bento-recent  { grid-column: 1 / 7;  grid-row: auto; }
   .bento-todo    { grid-column: 1 / 3;  grid-row: auto; }
   .bento-articles{ grid-column: 1 / 4;  grid-row: auto; }

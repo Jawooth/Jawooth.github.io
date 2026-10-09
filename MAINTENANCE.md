@@ -10,14 +10,21 @@
 |---|---|---|
 | 写一篇文章 | `source/_posts/新建文件.md` | `npm run build` |
 | 加一件作品（带封面卡片） | 跑 `tools/add-artwork.py` 导入图 + 新建文章填 front matter | 同上（首页与作品页会自动出现卡片） |
-| **改名字 / 自我介绍 / 按钮 / 联系方式** | `source/_data/profile.yml` | 同上（首页、关于页、侧栏三处同步） |
-| **改首页便签句子** | `source/_data/quotes.yml` | 同上（`rotate_seconds` 控制轮换） |
+| **改名字 / 自我介绍 / 图标行链接** | `source/_data/profile.yml` | 同上（首页、关于页、侧栏三处同步） |
+| **改首页气泡句子** | `source/_data/quotes.yml` | 同上（`rotate_seconds` 控制轮换） |
+| **改作品栏目（原创/同人）** | 文章 front matter 加一行 `origin: 原创` 或 `origin: 同人` | 同上 |
+| **改作品分期** | 按 `date` 自动归入；要手动就写 `era: 2025 年` | 分期区间在 `scripts/xp-content.js` 的 `WORK_ERAS` |
+| **放两边装饰图** | `source/images/decor/left.png` 与 `right.png` | 同上（仅在窗口 ≥1500px 宽时显示） |
+| **换深色模式壁纸** | 覆盖 `source/images/xp-desktop-bg-dark.jpg` | 同上（浅色壁纸是 `xp-desktop-bg.jpg`） |
+| **改开始菜单条目** | `scripts/xp-taskbar.js` 里的开始菜单部分 | 同上（**改完要重启预览服务**） |
 | 改待办事项 | `source/_data/todo.yml` | 同上（首页 / 待办页 / 杂谈页同时更新） |
 | 加游戏或小工具 | `source/_data/apps.yml` | 同上 |
 | 加攻略/教程条目 | `source/_data/guides.yml` | 同上 |
 | 启用首页播放器 / 换歌单 | `source/_data/music.yml` | 同上（可填自有曲目或网易云歌单 id） |
 | 换头像 | 覆盖 `source/images/site-avatar.png` | 同上 |
-| 换桌面壁纸 | 覆盖 `source/images/xp-desktop-bg.jpg` | 同上 |
+| 换浅色壁纸 | 覆盖 `source/images/xp-desktop-bg.jpg` | 同上 |
+| 换深色壁纸 | 覆盖 `source/images/xp-desktop-bg-dark.jpg` | 同上 |
+| 放两侧装饰图 | `source/images/decor/left.png`、`right.png` | 同上（png/gif/webp 都行，≥1500px 才显示） |
 | 换主题色 / 圆角 / 间距 | `source/css/xp-custom.css` 顶部 `:root` 与 `html.dark` | 同上（**浅色深色两处都要改**） |
 | 调首页格子排布 | `source/index.md` 末尾 `<style>`（12 栏 × 96px 行高，按横带排） | 同上 |
 | 改导航菜单 | `_config.minimalism.yml` 的 `menu` | URL **结尾要带 `/`** |
@@ -111,11 +118,13 @@ git log --oneline         # 看历史提交
 ```yaml
 ---
 title: 静物素描·陶罐与水果     # 显示标题（可以中文）
-date: 2026-10-05 16:00:00     # 必填，决定 URL 与排序
-categories: [作品, 素描]       # 第一个是分组，后面的是子分类（作品页筛选按钮由它生成）
-tags: [素描, 静物]
+date: 2026-10-05 16:00:00     # 必填，决定 URL、排序与作品分期
+categories: [作品, 素描]       # 第一个是分组，后面的是子分类（作品页的分类标签由它生成）
+origin: 原创                  # 作品栏目：原创 / 同人（只有作品用得到，不填按原创算）
+# era: 2025 年                # 可选：手动指定作品的时间轴分期，不写就按 date 自动归入
+tags: [素描, 静物]             # 作品页可点这些标签筛选/屏蔽
 short_title: 陶罐与水果        # 卡片上显示的短标题（不填则用 title）
-desc: 一句话简介               # 作品页精选卡片用
+desc: 一句话简介               # 首页「最近作品」与卡片摘要用
 img: /images/works/sketch.jpg          # 文章页顶部大图
 thumbnail: /images/works/sketch-thumb.jpg   # 卡片缩略图（用 -thumb 小图，省流量）
 status: done                  # done / doing（作品卡片上的状态角标）
@@ -125,6 +134,10 @@ status: done                  # done / doing（作品卡片上的状态角标）
 - 文件名决定 URL：请用英文短横线（例如 `work-still-life-sketch.md`），**不要用中文**，否则地址栏会出现 `%E4%BD%9C...` 这种编码。
 - 文章里可以插图片；图片会自动加懒加载，点击可以放大。
 - 想让某篇文章不进首页列表？front matter 加 `hide: true`。
+- **作品的两条额外规则**（只有 `categories` 里含「作品」的文章才算作品）：
+  - 栏目：`origin: 原创` 或 `origin: 同人`，决定卡片出现在作品页哪个栏目下；
+  - 分期：按 `date` 自动归入（远古期 / 2024 年 / 2025 年 / 2026 年上半年 / 2026 年 6-10 月），想手动指定就写 `era:`。
+  - 分期区间想改就去改 `scripts/xp-content.js` 顶部的 `WORK_ERAS`（有注释说明）。
 
 ### 5.2 页面分两类（很重要）
 
@@ -181,6 +194,20 @@ status: done                  # done / doing（作品卡片上的状态角标）
 | 标签/分类索引卡片 | `/tags/`、`/categories/` | `.xp-index-grid` / `.xp-index-item`（由 `{% xp_tag_index %}`、`{% xp_category_index %}` 生成） |
 | 相关文章 | 文章底部 | `.xp-related`（由 `xp_related(page, 3)` 生成） |
 
+### 6.3 作品页（画廊）是怎么拼起来的
+
+作品页的主体是 `{% xp_work_gallery %}` 一个标签生成的，结构如下（改样式就改 `xp-custom.css` 第 8 节的 `.work-*` / `.filter-*`）：
+
+| 部件 | 类名 | 数据来源 |
+|---|---|---|
+| 原创 / 同人 切换 | `.work-tab` | 文章 front matter 的 `origin:` |
+| 标签筛选 + 屏蔽模式 | `.filter-pill` / `#work-block-mode` | 文章 `tags:`（自动统计个数） |
+| 时间轴分期（可折叠） | `.work-era` / `.work-era-bar` | `date` 自动归入，或 `era:` 手动指定；**每个栏目里最新的一档默认展开** |
+| 作品卡片（等大） | `.work-card` | `thumbnail` / `short_title` / `date` / `tags` / `status` |
+| 展开全文 / 收起 | `.work-expand` / `.work-card-full` | **按需加载** `/works-bodies.json`（见第 8 节第 14 条） |
+
+分期区间集中在 `scripts/xp-content.js` 顶部的 `WORK_ERAS`：`from` 含、`to` 不含，最后一档 `to: null` 表示"至今"。**改完必须重启预览服务**（它是构建期脚本）。
+
 ---
 
 ## 7. 内容标签（页面里能用的 {% xp_xxx %}）
@@ -197,7 +224,7 @@ status: done                  # done / doing（作品卡片上的状态角标）
 | `{% xp_todo mini\|full %}` | 待办（mini = 首页小窗；full = 待办页三栏） |
 | `{% xp_apps %}` | 游戏/工具卡片（按 `_data/apps.yml` 生成） |
 | `{% xp_guides %}` | 攻略清单（按 `_data/guides.yml` 生成） |
-| `{% xp_work_cards %}` / `{% xp_work_filters %}` | 作品页的卡片与筛选按钮 |
+| `{% xp_work_gallery %}` | 作品页：原创/同人分栏 + 时间轴分期折叠 + 标签筛选/屏蔽 + 就地展开全文 |
 | `{% xp_tag_index %}` / `{% xp_category_index %}` | 标签 / 分类索引页的卡片网格 |
 | `{% xp_music %}` | 播放器曲目与 APlayer（按 `_data/music.yml`） |
 
@@ -206,7 +233,7 @@ status: done                  # done / doing（作品卡片上的状态角标）
 ## 8. 已知的坑（都是踩过的，改之前先看一遍）
 
 1. **整块 HTML 的页面里，所有标签必须顶格写。** 某一行缩进 4 个空格、且它前面有空行时，markdown 会认定这是「代码块」，整段 HTML 会被转义成文本、`{% %}` 标签也不会生效（作品页曾经整页变成代码）。
-2. **正文里不要出现字面的模板定界符**（两个花括号/花括号加百分号那种写法）。构建用的 Nunjucks 会去解析它并直接报错。
+2. **正文里不要出现字面的模板定界符**（两个花括号/花括号加百分号那种写法）。构建用的 Nunjucks 会去解析它并直接报错；**注释里也不行**——注释里的标签照样会执行一遍，白白复制一份 HTML 到页面里（作品页踩过，页面里出现两份画廊）。
 3. **深色模式成对写**：新组件必须同时给 `html.dark` 分支，否则深色下文字会看不清。
 4. **主题是自持的**：不要再 `npm i hexo-theme-minimalism`。要改模板就改 `themes/minimalism/layout/` 下的文件（`themes/` 的优先级高于 `node_modules/`）。
 5. **依赖已经锁死版本**：不要跑 `npm update`。真要升级就一次只升一个包，升完立刻 `npx hexo clean && npx hexo generate` 并本地预览确认。
@@ -218,6 +245,8 @@ status: done                  # done / doing（作品卡片上的状态角标）
 11. **改了样式却看不到变化时先强制刷新**：`xp-custom.css` 的链接已自动带内容版本号（`?v=xxxxxxxx`，由文件哈希生成），正常情况不会再吃缓存；若仍异常，用 `Ctrl + F5`（Mac 是 `Cmd + Shift + R`）强制刷新，或确认自己看的端口/页面是否正确——例如首页是 XP 桌面便当格，**文章页/杂谈页/归档页/标签页才是两栏新版式**。
 12. **改了 `_data/*.yml` 却"没生效"**：增量 `hexo generate` 感知不到数据文件与 `scripts/*.js` 的变化，必须 `npm run build`（内部先 clean）。这是实测过的行为，不是你的错觉。
 13. **含中文的文件不要用 PowerShell 的 `-replace` / `Set-Content` 去改**：会把中文写成 `?`，YAML/CSS 直接损坏（排查时非常容易误判成"功能没生效"）。要批量改就用编辑器，或用 Python 以 UTF-8 读写。
+14. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
+    需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
 
 ---
 
@@ -328,7 +357,9 @@ npm run server                      # 打开 http://127.0.0.1:4000/ 看效果
 | 想换什么 | 怎么换 |
 |---|---|
 | 头像 | 覆盖 `source/images/site-avatar.png`（建议 256×256 的方形图）。**不要**改名叫 `avatar.png`，那是主题自带的占位图 |
-| 桌面壁纸 | 覆盖 `source/images/xp-desktop-bg.jpg`（建议 1920×1080 以内） |
+| 浅色壁纸 | 覆盖 `source/images/xp-desktop-bg.jpg`（建议 1920×1080 以内） |
+| 深色壁纸 | 覆盖 `source/images/xp-desktop-bg-dark.jpg`（尺寸同上；不想单独做深色版，就把它换成同一张图的副本） |
+| 两侧装饰 | 放 `source/images/decor/left.png` 与 `source/images/decor/right.png`（png / gif / webp / jpg 都行，**动图也支持**）。窗口宽度 ≥1500px 时才显示，位置在页面左右留白区 |
 | 作品图 | 用下面的导入工具，会自动生成主图与缩略图 |
 
 导入作品图（把你的画放进任意位置，然后运行）：
@@ -337,16 +368,20 @@ npm run server                      # 打开 http://127.0.0.1:4000/ 看效果
 python tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage --title "风景插画·山间小屋" --desc "一句话简介"
 ```
 
-它会生成 `source/images/works/landscape-cottage.jpg`（长边 1200，文章大图）与 `...-thumb.jpg`（长边 480，卡片缩略图），把原图备份到 `backup/`，并打印一段可直接粘贴的 front matter。若提示缺 Pillow：`pip install Pillow`。
+它会生成 `source/images/works/landscape-cottage.jpg`（长边 1200，文章大图）与 `...-thumb.jpg`（长边 480，卡片缩略图），把原图备份到 `backup/`，并打印一段可直接粘贴的 front matter（含 `origin:` 那一行）。若提示缺 Pillow：`pip install Pillow`。
 
 ### 11.5 示例文章
 
 | 文件 | 建议 |
 |---|---|
 | `source/_posts/hello-world.md` | Hexo 自带示例，**留着当"文章格式参考"**即可，也可以直接删 |
-| `source/_posts/work-still-life-sketch.md`<br>`work-character-practice.md`<br>`work-landscape-cottage.md` | 三篇作品示例。换成自己的作品（用 11.4 的工具生成 front matter），或直接删掉——删掉后作品页会少一张卡片，「最近作品」会同步，"作品"计数也会自动变化 |
+| `source/_posts/work-still-life-sketch.md`<br>`work-character-practice.md`<br>`work-landscape-cottage.md` | 三篇作品示例（其中「角色练习·魔法少女」故意标了 `origin: 同人`，用来看两个栏目效果）。换成自己的作品（用 11.4 的工具生成 front matter），或直接删掉——删掉后作品页会少一张卡片，「最近作品」会同步，"作品"计数也会自动变化 |
 
 文章正文里的文字（"传统素描练习，陶罐 + 水果组合。"之类）都是示例文案，直接改成你自己的即可；卡片上的摘要优先取 front matter 的 `desc`，没写才取正文第一段。
+
+> 顺带说明两个"位置调整"，别在新版页面里找不到：
+> - **致谢 & 参考** 已从「关于」页搬到**首页底部的「链接 & 搜索」窗口**右侧；
+> - **关于页**不再出现在开始菜单里（开始菜单只保留 首页 / 作品 / 游戏·工具 / 攻略教程 / 杂谈 / 归档），入口是首页右下角「快速导航 → 关于」与侧栏「关于我」卡片里的按钮。
 
 ### 11.6 站点配置
 

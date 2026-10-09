@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 #  你的身份与介绍（唯一真源）
 #  ------------------------------------------------------------
 #  首页「用户账户」卡片、关于页、文章/列表页侧栏的「关于我」都读这个文件，
@@ -21,8 +21,8 @@ tagline: 这里是我的像素风个人角落，存放着画作、攻略、小�
 intro:
   - 欢迎随便逛逛，像操作 XP 桌面一样点击各个小窗口~
 
-# 首页的小胶囊。key 是从站点自动统计的数字（posts/tags/works/months…），
-# 也可以直接写 value: "∞" 这样的固定文字。
+# 首页的小胶囊（当前首页已换成图标行，这里留作备用：
+# 想把胶囊加回来就在 source/index.md 里放 {% xp_profile_chips %}）
 chips:
   - key: works
     label: 作品
@@ -31,7 +31,8 @@ chips:
   - value: "∞"
     label: 灵感
 
-# 首页卡片上的按钮
+# 备用：首页的文字按钮。现在首页用的是下面的图标行，
+# 想把按钮换回来就把 source/index.md 里的 {% xp_profile_icons %} 改成 {% xp_profile_buttons %}
 buttons:
   - text: 关于我
     url: /about/
@@ -40,10 +41,20 @@ buttons:
   - text: 小游戏
     url: /games/
 
-# 联系方式：留空的项目不会显示
+# 首页「用户账户」里的图标行：填了地址的才显示，留空就隐藏。
+# 支持的键：github / email / bilibili / xiaohongshu / x / weibo / pixiv / website
+#   email 直接填邮箱地址（会自动加 mailto:）
+#   xiaohongshu 填你的小红书主页链接（App：我 → 右上角 → 分享主页 → 复制链接）
+#   其它平台的键没填就自动不显示
 contacts:
   github: https://github.com/Jawooth
   email: ""
+  bilibili: ""
+  xiaohongshu: ""
+  x: ""
+  weibo: ""
+  pixiv: ""
+  website: ""
 
 # 「关于」页面的文案
 about:

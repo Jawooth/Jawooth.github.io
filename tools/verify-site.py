@@ -145,6 +145,45 @@ for rel in ["tags/index.html", "categories/index.html"]:
     elif "xp-index-item" not in s:
         fail("%s 没有渲染索引条目" % rel)
 
+# 作品页：画廊结构（栏目 / 时间轴 / 筛选 / 等大卡片 / 按需加载的正文）
+works = read("works/index.html")
+if not works:
+    fail("缺少作品页 works/index.html")
+else:
+    if works.count('class="work-gallery"') != 1:
+        fail("作品页画廊出现 %d 次（应为 1 次，多于 1 次通常是注释里写了标签）" % works.count('class="work-gallery"'))
+    if 'class="work-tab' not in works:
+        fail("作品页缺少「原创 / 同人」栏目切换")
+    if 'class="work-era"' not in works:
+        fail("作品页缺少时间轴分期")
+    if "work-era\" open" not in works:
+        fail("作品页没有任何默认展开的分期（最新一档应默认展开）")
+    if 'class="filter-pill"' not in works:
+        fail("作品页缺少标签筛选")
+    if 'id="work-block-mode"' not in works:
+        fail("作品页缺少屏蔽模式开关")
+    if "data-work=" not in works:
+        fail("作品卡片缺少正文定位标记（data-work）")
+    if not os.path.exists(os.path.join(PUB, "works-bodies.json")):
+        fail("缺少 works-bodies.json（作品「展开全文」的正文来源）")
+    elif len(open(os.path.join(PUB, "works-bodies.json"), encoding="utf-8").read()) < 50:
+        fail("works-bodies.json 内容为空")
+
+# 首页：气泡 / 图标行 / 致谢
+homes = read("index.html")
+if "xp-bubble" not in homes:
+    fail("首页缺少句子气泡（xp-bubble）")
+if "profile-icon" not in homes:
+    fail("首页缺少社交图标行（profile-icon）")
+if "credits-list" not in homes:
+    fail("首页底部缺少致谢条目（credits-list）")
+if "sticky-note" in homes:
+    fail("首页仍在使用旧便签样式（sticky-note）")
+
+# 深色壁纸应当存在
+if not os.path.exists(os.path.join(PUB, "images", "xp-desktop-bg-dark.jpg")):
+    warn("缺少深色模式壁纸 images/xp-desktop-bg-dark.jpg（深色下会回退成纯色）")
+
 # 有标题的文章应当生成目录
 for f in posts:
     s = open(f, encoding="utf-8", errors="replace").read()
