@@ -487,6 +487,7 @@
 <div class="xp-window-body">
 <div class="recent-works-strip">
 <a class="recent-work-item" href="/2026/10/05/作品示例3：静物素描/">
+<span class="new-sticker">NEW!</span>
 <img class="recent-work-thumb" src="/images/works/sketch.jpg" alt="静物素描·陶罐与水果">
 <div class="recent-work-info">
 <h4 class="recent-work-title">陶罐与水果</h4>
@@ -494,6 +495,7 @@
 </div>
 </a>
 <a class="recent-work-item" href="/2026/10/02/作品示例2：角色练习/">
+<span class="new-sticker">NEW!</span>
 <img class="recent-work-thumb" src="/images/works/character.jpg" alt="角色练习·魔法少女">
 <div class="recent-work-info">
 <h4 class="recent-work-title">魔法少女</h4>
@@ -513,7 +515,38 @@
 
 </div>
 
-<!-- ========== 便签手动句子（刷新轮换） ========== -->
+<!-- ========== 侧栏装饰区 ========== -->
+<div class="xp-sidebar-deco">
+<h5>友情链接</h5>
+<ul class="friend-links">
+<li><a href="/about/">关于本站</a></li>
+<li><a href="/works/">作品集</a></li>
+<li><a href="/games/">游戏&工具</a></li>
+<li><a href="/guides/">攻略教程</a></li>
+</ul>
+<div class="deco-divider">~ ~ ~</div>
+<h5>站内搜索</h5>
+<div class="xp-search-box">
+<input type="text" class="xp-search-input" id="site-search-input" placeholder="搜索文章...">
+<button class="xp-search-btn" onclick="doSearch()">Go</button>
+</div>
+</div>
+
+<!-- ========== 底部简易留言板 ========== -->
+<div class="xp-message-board">
+<h4>留言板</h4>
+<div class="message-input-row">
+<input type="text" class="message-input" id="msg-input" placeholder="说点什么..." maxlength="100">
+<button class="message-submit" onclick="sendMessage()">留言</button>
+</div>
+<div class="message-list" id="msg-list"></div>
+</div>
+
+<!-- ========== 访客计数器 ========== -->
+<div class="visitor-counter">
+<span class="visitor-counter-label">VISIT</span>
+<span class="visitor-counter-digits" id="visitor-count">000001</span>
+</div>
 <script>
   var stickyQuotes = [
     { text: "于是我驻足享受无法复制的瞬间。", from: "网易云热评" },
@@ -526,20 +559,8 @@
     { text: "世界上只有一种真正的英雄主义，那就是认清生活的真相后依然热爱生活。", from: "罗曼·罗兰" }
   ];
 
-  function showRandomQuote() {
-    var index = Math.floor(Math.random() * stickyQuotes.length);
-    var quote = stickyQuotes[index];
-    document.getElementById('sticky-text').textContent = '「' + quote.text + '」';
-    document.getElementById('sticky-from').textContent = '—— ' + quote.from;
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', showRandomQuote);
-  } else {
-    showRandomQuote();
-  }
-</script>
-
+<p>  function showRandomQuote() {<br>    var index &#x3D; Math.floor(Math.random() * stickyQuotes.length);<br>    var quote &#x3D; stickyQuotes[index];<br>    document.getElementById(‘sticky-text’).textContent &#x3D; ‘「’ + quote.text + ‘」’;<br>    document.getElementById(‘sticky-from’).textContent &#x3D; ‘—— ‘ + quote.from;<br>  }</p>
+<p>  if (document.readyState &#x3D;&#x3D;&#x3D; ‘loading’) {<br>    document.addEventListener(‘DOMContentLoaded’, showRandomQuote);<br>  } else {<br>    showRandomQuote();<br>  }<br></script></p>
 <!-- ========== 复古 MP4 播放器 ========== -->
 <script>
   var songList = [
@@ -657,6 +678,94 @@
   } else {
     initPlayer();
   }
+</script>
+
+<!-- ========== 搜索功能 ========== -->
+<script>
+  function doSearch() {
+    var q = document.getElementById('site-search-input').value.trim();
+    if (q) {
+      window.location.href = '/blog/?q=' + encodeURIComponent(q);
+    }
+  }
+  document.getElementById('site-search-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doSearch();
+  });
+</script>
+
+<!-- ========== 访客计数器 ========== -->
+<script>
+  (function() {
+    var key = 'xp_visitor_count';
+    var count = localStorage.getItem(key);
+    if (!count) {
+      count = Math.floor(Math.random() * 500) + 100;
+    } else {
+      count = parseInt(count) + 1;
+    }
+    localStorage.setItem(key, count);
+    var padded = String(count).padStart(6, '0');
+    var el = document.getElementById('visitor-count');
+    if (el) el.textContent = padded;
+  })();
+</script>
+
+<!-- ========== 留言板（localStorage） ========== -->
+<script>
+  (function() {
+    var key = 'xp_messages';
+    var msgList = document.getElementById('msg-list');
+
+    function getMessages() {
+      try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function saveMessages(msgs) {
+      localStorage.setItem(key, JSON.stringify(msgs));
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderMessages() {
+      var msgs = getMessages();
+      if (msgs.length === 0) {
+        msgList.innerHTML = '<div class="message-empty">还没有留言，来第一个吧~</div>';
+        return;
+      }
+      msgList.innerHTML = msgs.map(function(m) {
+        return '<div class="message-item"><span class="msg-name">' + escapeHtml(m.name) + '</span><span class="msg-time">' + m.time + '</span>: <span class="msg-text">' + escapeHtml(m.text) + '</span></div>';
+      }).join('');
+      msgList.scrollTop = msgList.scrollHeight;
+    }
+
+    window.sendMessage = function() {
+      var input = document.getElementById('msg-input');
+      var text = input.value.trim();
+      if (!text) return;
+      var msgs = getMessages();
+      var now = new Date();
+      var time = now.getMonth()+1 + '/' + now.getDate() + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+      msgs.push({ name: '访客', text: text, time: time });
+      if (msgs.length > 50) msgs = msgs.slice(-50);
+      saveMessages(msgs);
+      input.value = '';
+      renderMessages();
+    };
+
+    document.getElementById('msg-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') window.sendMessage();
+    });
+
+    renderMessages();
+  })();
 </script>
 
         </div>

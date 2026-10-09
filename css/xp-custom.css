@@ -1,7 +1,10 @@
 /* ============================================
    XP.css 自定义样式 —— Hexo 个人博客 Windows XP 桌面主题
-   v2.0 - 更贴近 XP.css 正宗风格 + 复古 MP4 播放器
+   v3.0 - 参考 taiwan_memory 项目改进排版与装饰
    ============================================ */
+
+/* ---------- Google Fonts: 手写字体 ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
 
 /* ---------- CSS 变量 ---------- */
 :root {
@@ -721,6 +724,7 @@ html.dark .hitokoto-from {
   transition: transform 0.2s, border-color 0.2s;
   text-decoration: none;
   color: inherit;
+  position: relative;
 }
 
 .recent-work-item:hover {
@@ -784,6 +788,7 @@ html.dark .recent-work-title {
   text-decoration: none;
   color: inherit;
   transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
 }
 
 .work-window-card:nth-child(2n+1) {
@@ -1377,4 +1382,330 @@ html.dark .post-content pre {
   .mp4-song-title {
     font-size: 16px;
   }
+
+  .visitor-counter {
+    bottom: calc(var(--taskbar-height) + 4px);
+    right: 6px;
+    font-size: 12px;
+  }
+
+  .xp-message-board {
+    transform: none;
+  }
+}
+
+/* ============================================
+   v3.0 新增样式
+   ============================================ */
+
+/* ---------- 手写字体混搭 ---------- */
+.profile-text h2,
+.recent-work-title,
+.work-card-title,
+.app-info h4,
+.guide-title a {
+  font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive;
+  font-size: 17px;
+}
+
+.profile-text h2 {
+  font-size: 22px;
+}
+
+/* ---------- 卡片边框交替（手工拼贴感） ---------- */
+.recent-work-item:nth-child(3n+1) {
+  border: 2px solid var(--xp-border);
+}
+.recent-work-item:nth-child(3n+2) {
+  border: 2px dashed var(--xp-border);
+}
+.recent-work-item:nth-child(3n) {
+  border: 3px double var(--xp-border);
+}
+
+.app-card:nth-child(3n+1) {
+  border: 2px solid var(--xp-border);
+}
+.app-card:nth-child(3n+2) {
+  border: 2px dashed var(--xp-border);
+}
+.app-card:nth-child(3n) {
+  border: 3px double var(--xp-border);
+}
+
+.post-list-item:nth-child(3n+1) {
+  border: 1px solid var(--xp-border);
+}
+.post-list-item:nth-child(3n+2) {
+  border: 1px dashed var(--xp-border);
+}
+.post-list-item:nth-child(3n) {
+  border: 2px double var(--xp-border);
+}
+
+.guide-list li:nth-child(3n+1) {
+  border: 1px solid var(--xp-border);
+}
+.guide-list li:nth-child(3n+2) {
+  border: 1px dashed var(--xp-border);
+}
+.guide-list li:nth-child(3n) {
+  border: 2px double var(--xp-border);
+}
+
+/* 作品页卡片底部边框交替 */
+.work-window-card:nth-child(3n+1) .work-card-info {
+  border-top: 2px solid var(--xp-border);
+}
+.work-window-card:nth-child(3n+2) .work-card-info {
+  border-top: 2px dashed var(--xp-border);
+}
+.work-window-card:nth-child(3n) .work-card-info {
+  border-top: 3px double var(--xp-border);
+}
+
+/* 图片复古滤镜 */
+.work-card-thumb img,
+.recent-work-thumb {
+  filter: saturate(0.92) contrast(0.96);
+}
+
+/* ---------- NEW! 贴纸标签 ---------- */
+.new-sticker {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #e83838;
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 3px 7px;
+  border-radius: 2px;
+  transform: rotate(-12deg);
+  z-index: 20;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.35);
+  text-shadow: 0 0 2px rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+  animation: newPulse 2.5s infinite;
+  font-family: "Tahoma", sans-serif;
+}
+
+@keyframes newPulse {
+  0%, 100% { transform: rotate(-12deg) scale(1); }
+  50% { transform: rotate(-12deg) scale(1.1); }
+}
+
+/* ---------- 访客计数器 ---------- */
+.visitor-counter {
+  position: fixed;
+  bottom: calc(var(--taskbar-height) + 8px);
+  right: 12px;
+  background: #000;
+  color: #00ff00;
+  font-family: "VT323", "Courier New", monospace;
+  font-size: 13px;
+  padding: 3px 10px;
+  border: 2px solid #404040;
+  border-radius: 3px;
+  z-index: 9000;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.visitor-counter-label {
+  color: #888;
+  font-size: 10px;
+}
+
+.visitor-counter-digits {
+  color: #00ff00;
+  text-shadow: 0 0 4px #00ff00;
+  letter-spacing: 2px;
+}
+
+/* ---------- 侧栏装饰区 ---------- */
+.xp-sidebar-deco {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(236, 233, 216, 0.92);
+  border: 1px dashed var(--xp-border);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+html.dark .xp-sidebar-deco {
+  background: rgba(42, 42, 58, 0.92);
+}
+
+.xp-sidebar-deco h5 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: var(--xp-blue-dark);
+  border-bottom: 1px dotted var(--xp-border);
+  padding-bottom: 4px;
+  font-family: "Caveat", cursive;
+  font-size: 16px;
+}
+
+html.dark .xp-sidebar-deco h5 {
+  color: var(--xp-link-dark);
+}
+
+.friend-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.friend-links a {
+  font-size: 12px;
+  color: var(--xp-link);
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 2px;
+  display: block;
+}
+
+.friend-links a:hover {
+  background: var(--xp-hover);
+  color: white;
+}
+
+html.dark .friend-links a {
+  color: var(--xp-link-dark);
+}
+
+/* 搜索框 */
+.xp-search-box {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.xp-search-input {
+  flex: 1;
+  border: 1px inset #aca899;
+  background: #fff;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  width: 100%;
+}
+
+.xp-search-btn {
+  background: linear-gradient(to bottom, #f5f4ed 0%, #d8d7c9 100%);
+  border: 1px outset #aca899;
+  padding: 3px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 小装饰图标 */
+.deco-divider {
+  text-align: center;
+  margin: 8px 0;
+  font-size: 14px;
+  color: var(--xp-border);
+  letter-spacing: 4px;
+}
+
+/* ---------- 底部简易留言板 ---------- */
+.xp-message-board {
+  margin-top: 20px;
+  background: #ffffe0;
+  border: 2px dashed #c0a030;
+  border-radius: 4px;
+  padding: 12px 16px;
+  transform: rotate(-0.5deg);
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+  max-width: 600px;
+}
+
+.xp-message-board h4 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: #806020;
+  font-family: "Caveat", cursive;
+}
+
+.message-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.message-input {
+  flex: 1;
+  border: 1px inset #c0a030;
+  background: #fffef0;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+
+.message-input:focus {
+  border-color: var(--xp-hover);
+}
+
+.message-submit {
+  background: linear-gradient(to bottom, #f5f4ed 0%, #d8d7c9 100%);
+  border: 1px outset #aca899;
+  padding: 5px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.message-submit:hover {
+  background: linear-gradient(to bottom, #fffbf0 0%, #ffd766 100%);
+}
+
+.message-submit:active {
+  border-style: inset;
+}
+
+.message-list {
+  margin-top: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.message-item {
+  padding: 5px 0;
+  border-bottom: 1px dotted #c0a030;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.message-item:last-child {
+  border-bottom: none;
+}
+
+.message-item .msg-name {
+  font-weight: bold;
+  color: #604020;
+}
+
+.message-item .msg-time {
+  color: #a08040;
+  font-size: 11px;
+  margin-left: 6px;
+}
+
+.message-item .msg-text {
+  display: inline;
+}
+
+.message-empty {
+  color: #a09060;
+  font-size: 12px;
+  font-style: italic;
+  text-align: center;
+  padding: 10px 0;
 }
