@@ -35,7 +35,7 @@ layout: xp-page
 <!-- 名字 / 介绍 / 图标 都在 source/_data/profile.yml 里改 -->
 <img class="profile-avatar" src="{% xp_profile avatar %}" alt="{% xp_profile name %} 的头像" width="256" height="256">
 <div class="profile-text">
-<h2>{% xp_profile greeting %} <span class="username">{% xp_profile name %}</span></h2>
+<h2>{% xp_profile_title %}</h2>
 {% xp_profile_lines intro %}
 <div class="profile-icons">
 <!-- GitHub / 邮箱 / B站 / 小红书 等：在 profile.yml 的 contacts 里填地址，留空即隐藏 -->
@@ -265,6 +265,28 @@ layout: xp-page
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
+})();
+</script>
+
+<!-- ========== 网名轮换：名字列表在 source/_data/profile.yml 的 names 里 ========== -->
+<script>
+(function () {
+  var data = window.XP_NAMES || { list: [], rotate: 0 };
+  var list = data.list || [];
+  var el = document.getElementById('xpName');
+  if (!el || list.length < 2) return;
+
+  var idx = Math.floor(Math.random() * list.length);
+  el.textContent = list[idx];
+
+  var seconds = Number(data.rotate) || 0;
+  if (seconds > 0) {
+    setInterval(function () {
+      idx = (idx + 1) % list.length;
+      el.style.opacity = '0';
+      setTimeout(function () { el.textContent = list[idx]; el.style.opacity = '1'; }, 200);
+    }, seconds * 1000);
+  }
 })();
 </script>
 

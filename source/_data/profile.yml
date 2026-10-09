@@ -9,9 +9,16 @@
 # ⚠️ 不要用 /images/avatar.png —— 那是主题自带的占位图，会被它覆盖。
 avatar: /images/site-avatar.png
 
-# 首页大标题会渲染成「<greeting> <name>」，例如「你好，我是 Jawooth」
-greeting: 我是
-name: 用户EE45E4 desu。
+# 首页大标题：渲染成「<网名> 来了！」
+#   names 里想放几个放几个，页面每次打开随机取一个；
+#   想让它在页面停留时也定时轮换，把 name_rotate_seconds 设成秒数（0 = 只在刷新时随机）。
+#   列表里的第一个名字同时用于侧栏「关于我」的用户名与头像 alt 文本。
+names:
+  - 奇世俗人
+  - 誩梧肆
+  - 用户EE45E4
+name_suffix: 来了！
+name_rotate_seconds: 0
 
 # 侧栏「关于我」卡片里的一句话简介（留空则用下面的 tagline）
 bio: 像素风个人角落，画点画、写点东西、做点小玩意。

@@ -1,6 +1,9 @@
 # 维护手册（MAINTENANCE）
 
-这份文档是给**站主本人**和**任何接手改站的 AI 助手**看的。规则很简单：改任何东西之前先看这里，改完按这里的方法验证。
+这份文档是给**站主本人**和**接手改站的 AI 助手**看的。
+
+> **站主只需看第 1–7、11、12 节**（速查 → 目录 → 命令 → 回滚 → 写作 → 样式 → 标签 → 换内容 → 发布）。
+> 第 8–10、13 节是排障细节与给 AI 的约定，不看也不影响你自己改站。
 
 ---
 
@@ -24,8 +27,6 @@
 | 启用首页播放器 / 换歌单 | `source/_data/music.yml` | 同上（可填自有曲目或网易云歌单 id） |
 | 换头像 | 覆盖 `source/images/site-avatar.png` | 同上 |
 | 换浅色壁纸 | 覆盖 `source/images/xp-desktop-bg.jpg` | 同上 |
-| 换深色壁纸 | 覆盖 `source/images/xp-desktop-bg-dark.jpg` | 同上 |
-| 放两侧装饰图 | `source/images/decor/left.png`、`right.png` | 同上（png/gif/webp 都行，≥1500px 才显示） |
 | 换主题色 / 圆角 / 间距 | `source/css/xp-custom.css` 顶部 `:root` 与 `html.dark` | 同上（**浅色深色两处都要改**） |
 | 调首页格子排布 | `source/index.md` 末尾 `<style>`（12 栏 × 96px 行高，按横带排） | 同上 |
 | 改导航菜单 | `_config.minimalism.yml` 的 `menu` | URL **结尾要带 `/`** |
@@ -35,11 +36,9 @@
 
 > **想彻底把示例内容换成自己的 → 直接看第 11 节，那是一份照着做就行的清单。**
 
-本地预览：`npx hexo server -p 4010`，然后浏览器打开 **http://127.0.0.1:4010/**。
+**本地预览**：`npm run server` → **http://127.0.0.1:4010/**（4000 是客户端占用的，别用）。
 
-> ⚠️ **不要用 4000 端口做验证**：装在本仓库里的 Hexo Pro Desktop 客户端自带预览服务，它会占住 `127.0.0.1:4000`，而且**缓存 `source/_data/*.yml`**——你改完数据文件在 4000 上看可能还是旧的，以为"改了没生效"。用 4010（`npm run server` 已改成 4010）看到的一定是磁盘上最新的内容。
-
-> ⚠️ 不要双击 `public/index.html` 打开。站点所有资源路径都是绝对路径（`/css/...`），`file://` 下会全部 404，你会看到没有样式的纯文本。
+> ⚠️ 两个别踩的：① 别用 4000 端口验证（客户端会缓存 `_data/*.yml`，改了看不到变化）；② 别双击 `public/index.html` 打开（资源是绝对路径，`file://` 下会 404 变成纯文本）。
 
 ---
 
@@ -92,11 +91,23 @@ npm run server            # 本地预览 http://127.0.0.1:4010/（4000 被 Hexo 
 .\deploy.ps1              # 清理 + 生成 + 部署到 GitHub Pages
 ```
 
-**构建与预览别同时来**：`npm run build` 会先删 `public/`，如果此时预览服务正在跑，偶尔会出现"构建报成功但 public 没了"。养成习惯：**先停预览服务 → 构建 → 再开预览**（本手册里的验证流程都是这个顺序）。
+### 3.1 改了东西之后要做什么
 
-**为什么默认带 clean**：Hexo 的增量生成**感知不到** `source/_data/*.yml` 与 `scripts/*.js` 的改动——只改这两类文件时，`hexo generate` 会"跑成功了但页面没变"（我实测过：改 `profile.yml` 里的名字，增量生成后首页仍是旧名字，clean 之后才更新）。`npm run build` 先 clean 再生成，永远是对的，代价只是多几秒。
+| 你改了什么 | 要执行什么 |
+|---|---|
+| `source/_data/*.yml`（名字、简介、句子、曲目、待办、清单…） | **`npm run build`**（必须是 clean + generate） |
+| 文章 `source/_posts/*.md` | **`npm run build`** |
+| 图片（头像/壁纸/作品图/装饰图） | **`npm run build`** |
+| 模板 `themes/minimalism/layout/*.ejs` | 预览会自动热加载，刷新即可；发布前 `npm run build` |
+| 样式 `source/css/xp-custom.css` | 刷新即可（顽固时 `Ctrl + F5`；链接带内容版本号，不用清缓存） |
+| `scripts/*.js`（构建期脚本、任务栏、内容标签） | **先重启预览服务**，再 `npm run build` |
+| 想让线上生效 | 以上做完，再 `.\deploy.ps1` |
 
-改了 `scripts/*.js`（构建期脚本）之后，本地预览服务需要**重启**才生效；模板和样式改动不用重启。
+> 一句话记法：**改数据/图片/文章 → build；改模板/样式 → 刷新；改 `scripts/` → 先重启预览再 build。**
+
+两个附带习惯：
+1. **构建前先停预览服务**（两边同时操作 `public/` 偶尔会出现"构建成功但 public 没了"）；
+2. 之所以默认带 clean：Hexo 的增量生成**感知不到** `_data/*.yml` 与 `scripts/*.js` 的改动（实测：改 `profile.yml` 后增量生成仍是旧内容）。
 
 ---
 
@@ -326,7 +337,7 @@ python tools\verify-site.py
 cd D:\tools\hexo
 npm run build                       # 一定要 build（含 clean）
 python tools\verify-site.py         # 自检：断链 / 未渲染标签 / 体积
-npm run server                      # 打开 http://127.0.0.1:4000/ 看效果
+npm run server                      # 打开 http://127.0.0.1:4010/ 看效果
 ```
 
 ### 11.1 身份与自我介绍（一个文件搞定）
@@ -335,31 +346,25 @@ npm run server                      # 打开 http://127.0.0.1:4000/ 看效果
 
 | 字段 | 作用 | 出现在 |
 |---|---|---|
-| `name` / `greeting` | 首页大标题「你好，我是 X」 | 首页、侧栏 |
+| `names` / `name_suffix` | 首页大标题「<网名> 来了！」；多个网名会轮换（`name_rotate_seconds` 设间隔，0 = 每次刷新随机） | 首页；`names` 第一个兼作侧栏用户名 |
 | `bio` | 侧栏一句话简介 | 文章/列表/归档页侧栏 |
 | `avatar` | 头像路径 | 首页、侧栏 |
 | `tagline` / `intro` | 首页正文段落 | 首页 |
-| `chips` | 首页小胶囊（`key:` 是用站点统计自动填的数字，`value:` 是固定文字） | 首页 |
-| `buttons` | 首页三个按钮 | 首页 |
+| `chips` / `buttons` | 备用（首页现在用图标行，这两个键留着随时换回胶囊/按钮） | 首页 |
 | `contacts.*` | 图标行链接（GitHub/B站/小红书/X/邮箱…，**留空就不显示**） | 首页用户账户卡片 |
 | `about.paragraphs` / `about.chips` | 站点风格说明、站点标签 | 首页底部「搜索 · 关于本站 · 致谢」窗口中间一段 |
 
-**多个邮箱怎么放**：图标行里只有一个信封图标；**填了多个地址时，点它会弹出一个小窗列出全部地址**（带标签的显示成小胶囊，点地址直接发信）。只填一个地址时，点图标就是直接发信，不弹窗。
-
-写法（列表项这三种都认，冒号全角半角都行）：
+**多个邮箱**：图标行只有一个信封图标；配了多个地址时点它弹出小窗列出全部（带标签的显示成胶囊），只配一个时点图标直接发信。写法：
 
 ```yaml
 contacts:
   email:
-    - 个人：me@example.com        # 字符串里带标签
+    - 个人：me@example.com        # 字符串带标签（冒号全角半角都行）
     - 工作: work@example.com
-    - backup@example.com          # 不加标签也行
-  # 也可以写成映射：{ 个人: me@example.com }
+    - backup@example.com          # 不带标签也行
 ```
 
-弹窗里那句说明文字取自 `about.contact_desc`（不想显示就把它留空）。
-
-**为什么用弹窗，而不直接排在图标行下面**：用户账户卡片高度固定（两行网格 = 210px），图标行下面再加行会被裁掉；几个一模一样的信封图标并排也分不清哪个是哪个。弹窗用 `position: fixed` 定位（用户账户窗口是 `overflow: hidden`，普通定位会被裁掉），滚动/改窗口大小时会跟着图标重新定位。
+弹窗里的说明文字取自 `about.contact_desc`。**为什么不做在图标行里**：账户卡片高度固定 210px，再加一行会被裁掉；几个相同的信封图标也分不清谁是谁。
 
 ### 11.2 首页句子气泡
 
@@ -484,12 +489,11 @@ git config --global --unset http.version
 
 ### 13.2 已删除的「从不加载」厂商资源（10 个，1.45 MB）
 
-`gitalk`、`twikoo`、`jquery`、`jquery.fancybox`、`simple-lightbox` 的 js+css，以及 `animate.min.css`、`prism.css`。
+`gitalk`、`twikoo`、`jquery`、`jquery.fancybox`、`simple-lightbox` 的 js+css，以及 `animate.min.css`、`prism.css` —— 共 1.45 MB。
 
-- **为什么能删**：它们在主题的 `scripts/helper/start-path.js` 里映射了本地路径，但 `comment.enable`、`image.photo_zoom`、`prismjs.enable` 一关就永远不被引用；而主题的 `source/` 会被整体复制进 `public/`，于是每次部署都白传 1.45 MB。
-- **想启用怎么办**：先把 `_config.minimalism.yml` 的 `cdn.enable` 设为 `true`（走 jsDelivr），或从 npm 包 `hexo-theme-minimalism` 里把对应文件取回 `themes/minimalism/source/`。
-- `tools/verify-site.py` 已加检查：产物里再出现这些文件名就会报错（防止主题升级把它们带回来）。
-- 保留的：`style/main.css`（全站引用）、`js/main.js`（footer 加载）、`fonts/iconfont.*`（页脚社交图标用）。
+- 它们只在 `comment.enable` / `photo_zoom` / `prismjs.enable` 打开时才被引用，而主题的 `source/` 会被整份复制进 `public/`，所以每次部署都白传。
+- 要重新启用：把 `_config.minimalism.yml` 的 `cdn.enable` 设为 `true`（走 CDN），或从 npm 包取回这些文件。
+- `verify-site.py` 已加检查，产物里再出现这些文件名会报错。保留的是 `main.css`、`main.js`、`iconfont.*`（都有实际引用）。
 
 ### 13.3 外链与 noopener
 
@@ -497,12 +501,12 @@ git config --global --unset http.version
 
 ### 13.4 不要把大文件放进仓库
 
-站点仓库就是 `D:\tools\hexo`，而这个目录同时也是 **Hexo Pro Desktop 客户端的安装位置**（`HexoPro/` 600+ MB）。`.gitignore` 已忽略 `HexoPro/`、`data/`、`blogInfoList.json`、`backup/`，但更稳的做法是**把客户端装到仓库外面**（例如 `D:\tools\HexoPro`），避免一次 `git add -A` 又把几百 MB 塞进历史。
+仓库目录 `D:\tools\hexo` 同时也是 **Hexo Pro 客户端的安装位置**（`HexoPro/` 600+ MB，曾误提交过）。`.gitignore` 已忽略 `HexoPro/`、`data/`、`blogInfoList.json`、`backup/`；更稳的是把客户端装到仓库外面（如 `D:\tools\HexoPro`）。
 
 ### 13.5 密钥与隐私
 
-- 评论（gitalk 的 `clientSecret`、twikoo 的 `envId`）、百度统计、algolia 搜索、CDN 开关**全部留空/关闭**；以后要填真实密钥，请先确认不会提交。
-- `.gitignore` 已加入 `.env*`、`*.pem`、`*.key`、`*.p12`、`*.pfx`、`credentials.json`、`*_rsa`。
+- 评论密钥（gitalk `clientSecret`、twikoo `envId`）、统计、algolia、CDN **全部留空/关闭**；填真实密钥前先确认不会被提交。
+- `.gitignore` 已含 `.env*`、`*.pem`、`*.key`、`*.p12`、`*.pfx`、`credentials.json`、`*_rsa`。
 - 提交前快速自检：
 
 ```powershell
@@ -513,8 +517,7 @@ git -C D:\tools\hexo diff --cached | Select-String -Pattern 'secret|token|passwo
 
 ### 13.6 第三方外部依赖（页面会联网请求它们）
 
-**默认状态下，站点不请求任何第三方资源**：手写体 Caveat 已自托管（`source/fonts/caveat-latin.woff2`，73 KB，可变字重 400–700，SIL OFL 1.1，只带 latin 子集，中文走系统楷体回退），评论/统计/CDN/搜索全部关闭。
-下面两个只在你主动启用对应功能时才会出现：
+**默认不请求任何第三方资源**：Caveat 已自托管（`source/fonts/caveat-latin.woff2`，73 KB，SIL OFL 1.1，中文走系统楷体），评论/统计/CDN/搜索全部关闭。下面两个只有你主动开启时才出现：
 
 | 域名 | 用途 | 备注 |
 |---|---|---|

@@ -423,7 +423,7 @@ html.dark .header-chip strong { color: #9cc2ff; }
 }
 .profile-text { flex: 1; min-width: 0; }
 .profile-text h2 { margin: 0 0 10px; font-size: 20px; color: var(--text-heading); }
-.profile-text h2 .username { color: var(--xp-blue-border); font-family: "Caveat", "KaiTi", cursive; font-size: 24px; }
+.profile-text h2 .username { color: var(--xp-blue-border); font-family: "Caveat", "KaiTi", cursive; font-size: 24px; transition: opacity 0.25s; }
 .profile-text p { margin: 8px 0; line-height: 1.6; font-size: 14px; }
 
 .profile-meta { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }

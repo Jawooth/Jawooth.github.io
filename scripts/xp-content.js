@@ -614,7 +614,8 @@ function wordChip(ctx, post) {
 hexo.extend.helper.register('xp_widget_author', function () {
   const cfg = hexo.config;
   const p = profileData();
-  const name = p.name || cfg.author || cfg.title;
+  const names = profileNames();
+  const name = names[0] || p.name || cfg.author || cfg.title;
   const bio = p.bio || cfg.description || '';
   const avatar = p.avatar || '/images/site-avatar.png';
   const body = oneLine(
@@ -765,9 +766,38 @@ function profileParagraphs(list) {
   return oneLine(list.map((t) => `<p>${esc(t)}</p>`).join(''));
 }
 
+/* 首页大标题用的网名：profile.yml 的 names 列表（第一个兼作主名）。
+   没配 names 就退回旧的单个 name / 站点作者。 */
+function profileNames() {
+  const p = profileData();
+  const raw = p.names;
+  let list = [];
+  if (Array.isArray(raw)) list = raw.map((x) => String(x == null ? '' : x).trim()).filter(Boolean);
+  else if (raw) list = [String(raw).trim()];
+  if (list.length) return list;
+  const single = p.name || hexo.config.author || hexo.config.title || '';
+  return single ? [String(single).trim()] : [];
+}
+
 hexo.extend.tag.register('xp_profile', (args) => {
-  const v = profileValue(args[0]);
+  const key = args[0];
+  if (key === 'name') {
+    const list = profileNames();
+    return list.length ? esc(list[0]) : '';
+  }
+  const v = profileValue(key);
   return v == null ? '' : esc(v);
+});
+
+/* 首页大标题整体：「<网名> 来了！」；多个网名时附带轮换配置（脚本在页面底部统一处理） */
+hexo.extend.tag.register('xp_profile_title', () => {
+  const list = profileNames();
+  const suffix = profileValue('name_suffix') || '来了！';
+  const rotate = Number(profileValue('name_rotate_seconds')) || 0;
+  const cfg = (list.length > 1 || rotate > 0)
+    ? `<script>window.XP_NAMES = ${JSON.stringify({ list, rotate })};</script>`
+    : '';
+  return oneLine(`<span class="username" id="xpName">${esc(list[0] || '')}</span> ${esc(suffix)}${cfg}`);
 });
 
 /* 段落列表：{% xp_profile_lines intro %} 或 {% xp_profile_lines about.paragraphs %} */
