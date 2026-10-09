@@ -18,7 +18,7 @@
 <nav class="menu-list">
   <% Object.keys(theme.menu).forEach(function(key) { %>
     <% if (theme.menu[key].openType === 'External') { %>
-      <a class="menu purple-link" href="<%= url_for(theme.menu[key].url) %>" class="menu" target="_blank">
+      <a class="menu purple-link" href="<%= url_for(theme.menu[key].url) %>" class="menu" target="_blank" rel="noopener noreferrer">
         <%= theme.menu[key].name %>
       </a>
     <% } else { %>

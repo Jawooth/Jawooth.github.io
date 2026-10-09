@@ -195,6 +195,16 @@ if "credits-list" not in homes:
 if "sticky-note" in homes:
     fail("首页仍在使用旧便签样式（sticky-note）")
 
+# 主题里那些从不加载的厂商资源（评论/放大/动画库等）应当已被删除，别再被带回产物里
+DEAD_ASSETS = ["gitalk", "twikoo", "jquery.fancybox", "simple-lightbox",
+               "jquery.min.js", "animate.min.css", "prism.css"]
+for root_dir, _, files in os.walk(PUB):
+    for name in files:
+        for pat in DEAD_ASSETS:
+            if pat in name:
+                fail("产物里出现了未使用的厂商资源：%s（应已从主题删除，见 MAINTENANCE 第 13 节）"
+                     % os.path.relpath(os.path.join(root_dir, name), PUB))
+
 # 深色壁纸应当存在
 if not os.path.exists(os.path.join(PUB, "images", "xp-desktop-bg-dark.jpg")):
     warn("缺少深色模式壁纸 images/xp-desktop-bg-dark.jpg（深色下会回退成纯色）")

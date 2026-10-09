@@ -10,6 +10,19 @@ HexoPro/
 data/
 blogInfoList.json
 
+# 本地备份（原图、被替换页面的 .bak 等）：留在磁盘上，不进仓库
+backup/
+
+# 万一以后用到：任何形式的密钥/凭据都不要提交
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+*_rsa
+
 # 编辑器 / 系统
 .vscode/
 .idea/

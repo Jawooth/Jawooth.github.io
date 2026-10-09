@@ -7,9 +7,8 @@ npx hexo clean
 Write-Host "==> 生成静态文件..." -ForegroundColor Cyan
 npx hexo generate
 
-Write-Host "==> 清理敏感文件..." -ForegroundColor Yellow
-Remove-Item "public\js\twikoo.min.js" -ErrorAction SilentlyContinue
-Remove-Item "public\js\gitalk.min.js" -ErrorAction SilentlyContinue
+# 说明：以前这里会删掉 public 下的 twikoo/gitalk 评论脚本。那两个文件（以及其它
+# 从未被加载的厂商资源，共约 1.5 MB）已经从主题里删除，不再需要这一步。
 
 Write-Host "==> 部署到 GitHub..." -ForegroundColor Cyan
 npx hexo deploy
