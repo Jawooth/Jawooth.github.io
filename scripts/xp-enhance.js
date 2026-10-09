@@ -1,13 +1,13 @@
 /* global hexo */
 /**
- * 构建期增强：
- *   1. 正文图片补上原生 loading="lazy" / decoding="async"
- *      （主题自带的 lazyload 依赖 JS 且会把 src 换成占位图，这里改成浏览器原生方案）
- *   2. 文章页把标题变成 XP 窗口标题栏，并补上窗口按钮
- *   3. 归档 / 分类 / 标签 / 杂谈列表页补上窗口标题栏
- *   4. /blog/ 列表页注入待办窗口（原来是运行时 JS 插 DOM，现在服务端渲染）
- *   5. <title> 补站点名、head 补 canonical 与 og:url / og:type
- *   6. 文章正文图片点击放大（轻量 lightbox，只作用于文章正文，不影响卡片链接）
+ * 构建期增强（外壳结构已移到主题模板，这里只做模板做不到的事）
+ *   1. 正文图片补原生 loading="lazy" / decoding="async"
+ *   2. 文章页注入：图片点击放大 + 目录跟随滚动高亮
+ *   3. <title> 补站点名、head 补 canonical 与 og:url / og:type
+ *
+ * 历史：早期版本在这里用字符串替换给文章/列表页注入 XP 窗口外壳，
+ * 一旦主题模板结构变化（例如文章带 hero 图）正则就会匹配失败而静默失效。
+ * 现在结构由 themes/minimalism/layout/{post,page,index,archive,tag}.ejs 直接产出。
  */
 'use strict';
 
@@ -24,9 +24,10 @@ hexo.extend.filter.register('after_post_render', (data) => {
   });
 });
 
-/* ---------------------------------------------------------- 文章页 lightbox */
-const LIGHTBOX = `
+/* ---------------------------------------------------------- 2. 文章页脚本 */
+const POST_SCRIPTS = `
 (function () {
+  /* ---------- 图片放大 ---------- */
   var box = null;
   var lastFocus = null;
   function close() {
@@ -63,46 +64,53 @@ const LIGHTBOX = `
     var target = e.target;
     if (!target || !target.closest) return;
     var img = target.closest('.post-content img');
-    if (img) { open(img); }
+    if (img) open(img);
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && box) { e.stopPropagation(); close(); }
   });
+
+  /* ---------- 目录跟随滚动高亮 ---------- */
+  var toc = document.querySelector('.xp-toc');
+  if (!toc) return;
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]'));
+  if (!links.length) return;
+  var targets = links.map(function (a) {
+    try { return document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1))); }
+    catch (err) { return null; }
+  });
+  function sync() {
+    var best = -1;
+    for (var i = 0; i < targets.length; i++) {
+      var el = targets[i];
+      if (el && el.getBoundingClientRect().top - 90 <= 0) best = i;
+    }
+    if (best < 0) best = 0;   /* 还没滚到第一个标题时，默认高亮第一条 */
+    links.forEach(function (a, i) { a.classList.toggle('current', i === best); });
+  }
+  window.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id;
+      try { id = decodeURIComponent(a.getAttribute('href').slice(1)); } catch (err) { return; }
+      var el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 76, behavior: 'smooth' });
+      if (history.replaceState) history.replaceState(null, '', '#' + encodeURIComponent(id));
+    });
+  });
 })();
 `;
-hexo.extend.injector.register('body_end', `<script>${LIGHTBOX}</script>`, 'post');
+hexo.extend.injector.register('body_end', `<script>${POST_SCRIPTS}</script>`, 'post');
 
-/* ---------------------------------------------------------- 2~5. HTML 后处理 */
-const BULLET = '<span class="xp-window-btns" aria-hidden="true">' +
-  '<i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>';
-
-function titleBar(label) {
-  return `<div class="xp-window-title"><span class="xp-window-title-text">${label}</span>${BULLET}</div>`;
-}
-
-function todoWindow() {
-  const todoMini = hexo.extend.helper.get('xp_todo_mini');
-  const body = todoMini ? todoMini(5) : '';
-  return `<div class="xp-window blog-todo-window">` +
-    `<div class="xp-window-title"><span class="xp-window-title-text">` +
-    `<svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">` +
-    `<rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#003399" stroke-width="0.5"/>` +
-    `<rect x="2" y="1" width="12" height="3" rx="1" fill="#0066cc" stroke="#003399" stroke-width="0.5"/>` +
-    `<rect x="4" y="5.5" width="2" height="2" fill="#66cc66" stroke="#003399" stroke-width="0.8"/>` +
-    `<path d="M4.5 6.5l1 1 2-2" fill="none" stroke="#fff" stroke-width="0.8"/>` +
-    `<line x1="7" y1="6.5" x2="12" y2="6.5" stroke="#003399" stroke-width="0.6"/>` +
-    `<rect x="4" y="8.5" width="2" height="2" fill="none" stroke="#003399" stroke-width="0.8"/>` +
-    `<line x1="7" y1="9.5" x2="12" y2="9.5" stroke="#003399" stroke-width="0.6"/>` +
-    `<rect x="4" y="11.5" width="2" height="2" fill="none" stroke="#003399" stroke-width="0.8"/>` +
-    `<line x1="7" y1="12.5" x2="12" y2="12.5" stroke="#003399" stroke-width="0.6"/>` +
-    `</svg> 待办清单</span>${BULLET}</div>` +
-    `<div class="xp-window-body">${body}</div></div>`;
-}
-
+/* ---------------------------------------------------------- 3. 标题与 SEO */
 hexo.extend.filter.register('after_render:html', (str, data) => {
   const page = (data && data.page) || {};
 
-  /* 5a. <title> 补站点名 */
+  /* <title> 补站点名（主题模板已改成输出 pageTitle，这里是兜底） */
   if (SITE_TITLE) {
     str = str.replace(/<title>([\s\S]*?)<\/title>/, (m, raw) => {
       const title = raw.trim();
@@ -112,7 +120,7 @@ hexo.extend.filter.register('after_render:html', (str, data) => {
     });
   }
 
-  /* 5b. canonical + og:url / og:type */
+  /* canonical + og:url / og:type */
   const base = String(hexo.config.url || '').replace(/\/+$/, '');
   const rel = String((data && data.path) || '').replace(/index\.html$/, '');
   if (base && !/rel="canonical"/.test(str)) {
@@ -122,44 +130,6 @@ hexo.extend.filter.register('after_render:html', (str, data) => {
       `<link rel="canonical" href="${url}">\n` +
       `<meta property="og:url" content="${url}">\n` +
       `<meta property="og:type" content="${type}">\n</head>`);
-  }
-
-  /* 自定义 XP 桌面页（layout: xp-page）自己就是桌面，不再套窗口外壳。
-     用 layout 判断为主，HTML 特征作为兜底。 */
-  const isCustomPage = page.layout === 'xp-page' || /xp-page-fullwidth|home-page/.test(str);
-  if (isCustomPage) return str;
-  if (str.indexOf('class="content-container"') === -1) return str;
-
-  /* 2. 先给所有套壳页面打上 xp-shell 标记（CSS 里文章/列表排版都以它为作用域） */
-  let bar = '';
-  // 主题用同名生成器替换了官方 hexo-generator-index，且没有设置 __index 标记，
-  // 因此这里以「页面里出现 .post-item 列表、且不是标签/分类页」作为杂谈列表的判据。
-  const isBlogIndex = /class="post-item"/.test(str) && !/current-(tag|category)-container/.test(str);
-  if (!page.__post) {
-    if (/class="archives-container"/.test(str)) {
-      bar = titleBar('归档 / 分类');
-    } else if (/class="tags-container"/.test(str)) {
-      bar = titleBar('标签');
-    } else if (page.__index || isBlogIndex) {
-      bar = titleBar('杂谈 · 全部文章') + todoWindow();
-    }
-  }
-  str = str.replace('<div class="content-container">', `<div class="content-container xp-shell">${bar}`);
-
-  /* 3. 文章标题 -> 窗口标题栏（标题与 .post-detail 之间可能夹着 hero 图，用宽松匹配） */
-  if (page.__post) {
-    str = str.replace(
-      /(<h2 class="post-title">)([\s\S]*?)(<\/h2>)/,
-      (m, open, title, close) => `${open}<span class="post-title-text">${title.trim()}</span>${BULLET}${close}`
-    );
-  }
-
-  /* 4. 标签页标题同样变成标题栏 */
-  if (/class="current-tag-container"/.test(str)) {
-    str = str.replace(
-      /(<div class="current-tag-container">[\s\S]*?<h2 class="title">)([\s\S]*?)(<\/h2>)/,
-      (m, open, inner, close) => `${open}<span class="post-title-text">${inner.replace(/<i[^>]*><\/i>/, '').trim()}</span>${BULLET}${close}`
-    );
   }
 
   return str;

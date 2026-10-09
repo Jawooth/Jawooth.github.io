@@ -1,16 +1,27 @@
-<%- include('./includes/header') %>
+<%#
+  单个标签页（/tags/xxx/）
+  ------------------------------------------------------------------
+  与杂谈列表页共用卡片流与侧栏，只是标题与数据源不同。
+%><%- include('./includes/header') %>
 
-<div class="content-container">
+  <div class="content-container xp-shell">
+    <div class="xp-window-title">
+      <span class="xp-window-title-text post-title-text">标签 · <%= page.tag %></span>
+      <%- xp_bullet() %>
+    </div>
 
-  <div class="current-tag-container">
-    <h2 class="title">
-      <i class="icon icon-pricetags-outline"></i> <%= page.tag %>
-    </h2>
+    <div class="post-info">
+      <span><i class="icon icon-pricetags-outline"></i> 共 <%= page.posts ? page.posts.length : 0 %> 篇</span>
+      <a class="xp-chip" href="/tags/">全部标签</a>
+    </div>
+
+    <div class="xp-shell-body">
+      <div class="xp-shell-main">
+        <%- xp_post_cards(page.posts) %>
+      </div>
+
+      <%- include('./includes/xp-aside', { page: page, kind: 'list' }) %>
+    </div>
   </div>
 
-  <%- include('./includes/post-list') %>
-
-</div>
-
 <%- include('./includes/footer') %>
-

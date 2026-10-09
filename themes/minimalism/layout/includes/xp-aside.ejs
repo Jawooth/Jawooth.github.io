@@ -1,0 +1,22 @@
+<%#
+  侧栏 widget 栏
+  ------------------------------------------------------------------
+  参数：
+    page —— 当前页面对象
+    kind —— 'post'（文章页，显示目录）| 'list'（杂谈列表）| 'archive'（归档/分类）| 'page'
+
+  组件长什么样在这里，数据来自 scripts/xp-content.js 里的 xp_widget_* helper。
+  小屏（≤1000px）会自动移到正文下方并横向排布，见 xp-custom.css 第 10 节。
+%>
+<aside class="xp-aside">
+  <% if (kind === 'post') { %>
+    <%- xp_widget_toc(page.content) %>
+  <% } %>
+  <%- xp_widget_author() %>
+  <% if (kind !== 'post') { %>
+    <%- xp_widget_stats() %>
+  <% } %>
+  <%- xp_widget_recent(5) %>
+  <%- xp_widget_tags() %>
+  <%- xp_widget_browse() %>
+</aside>

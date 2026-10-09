@@ -1,53 +1,63 @@
-<%- include('./includes/header') %>
+<%#
+  文章页（XP 窗口外壳 + 两栏 + 目录 + 相关文章）
+  ------------------------------------------------------------------
+  结构：
+    .content-container.xp-shell
+      ├─ .xp-window-title   标题栏（文章标题 + 装饰按钮）
+      ├─ .post-info         日期 / 分类 / 标签 / 字数
+      └─ .xp-shell-body
+           ├─ .xp-shell-main  大图 + 正文 + 相关文章 + 下一篇
+           └─ .xp-aside       侧栏（目录 / 作者 / 最近文章 / 标签云 / 浏览）
+  早期版本这套外壳是用 after_render 过滤器注入 HTML 实现的，现已改为模板直出。
+%><%- include('./includes/header') %>
 
-  <div class="content-container">
-    <div class="post-detail">
-      <% if (page.img && page.img !== '') { %>
-        <div class="feature-container" style="background-image: url('<%= page.img %>')">
-        </div>
+  <div class="content-container xp-shell">
+    <div class="xp-window-title">
+      <span class="xp-window-title-text post-title-text"><%= page.title %></span>
+      <%- xp_bullet() %>
+    </div>
+
+    <div class="post-info">
+      <span><i class="icon icon-calendar-outline"></i> <%= date(page.date, config.date_format) %></span>
+      <% if (page.categories && page.categories.length) { page.categories.forEach(function (c) { %>
+        <a class="xp-chip primary" href="<%- url_for(c.path) %>"><%= c.name %></a>
+      <% }); } %>
+      <% if (page.tags && page.tags.length) { %>
+        <span><i class="icon icon-pricetags-outline"></i>
+          <% page.tags.forEach(function (t, i) { %><a href="<%- url_for(t.path) %>"><%= t.name %></a><% if (i !== page.tags.length - 1) { %>，<% } %><% }); %>
+        </span>
       <% } %>
-      <h2 class="post-title"><%= page.title %></h2>
-      <div class="post-info post-detail-info">
-        <span><i class="icon icon-calendar-outline"></i> <%= date(page.date, config.date_format) %></span>
-        <% if (page.tags && page.tags.length > 0) { %>
-          <span>
-          <i class="icon icon-pricetags-outline"></i>
-            <% page.tags.forEach(function(tag, index) { %>
-              <a href="<%= url_for(tag.path) %>">
-              <%= tag.name %>
-                <% if (index !== page.tags.length - 1) { %>
-                  ，
-                <% } %>
-              </a>
-            <% }); %>
-          </span>
+      <%- xp_words(page) %>
+    </div>
+
+    <div class="xp-shell-body">
+      <div class="xp-shell-main">
+        <% if (page.img && page.img !== '') { %>
+          <div class="feature-container" style="background-image: url('<%= page.img %>')"></div>
         <% } %>
-      </div>
-      <div class="post-content-wrapper">
+
         <div class="post-content">
           <%- page.content %>
         </div>
-          <% if (theme.toc!==false) { %>
-        <div class="top-div">
-          <%- toc(page.content, {class: 'top-box',list_number:false,max_depth:3}) %>
-        </div>
-          <% } %>
-      </div>
-    </div>
 
-    <% if (page.next) { %>
-      <div class="next-post">
-        <a class="purple-link" href="<%- url_for(page.next.path) %>">
-          <h3 class="post-title">
-            <% var lang = config.language || 'zh-CN'; %>
-            <%= lang === 'en' ? 'Next post: ' : '下一篇：' %><%= page.next.title %>
-          </h3>
-        </a>
+        <%- xp_related(page, 3) %>
+
+        <% if (page.next) { %>
+          <div class="next-post">
+            <a class="purple-link" href="<%- url_for(page.next.path) %>">
+              <h3 class="post-title">
+                <% var lang = config.language || 'zh-CN'; %>
+                <%= lang === 'en' ? 'Next post: ' : '下一篇：' %><%= page.next.title %>
+              </h3>
+            </a>
+          </div>
+        <% } %>
       </div>
-    <% } %>
+
+      <%- include('./includes/xp-aside', { page: page, kind: 'post' }) %>
+    </div>
   </div>
 
 <%- include('./includes/comment') %>
-
 
 <%- include('./includes/footer') %>

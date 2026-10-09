@@ -1,0 +1,28 @@
+<%#
+  普通页面模板（layout: page）
+  ------------------------------------------------------------------
+  主题原本没有 page.ejs，Hexo 会按 ['page','post','index'] 回落，
+  于是普通页面被 post.ejs 渲染（多出文章结构、还要靠补丁隐藏标题）。
+  这里给普通页面一个正常的 XP 窗口外壳，且不套文章结构。
+
+  需要「自己画桌面」的页面（首页/作品/游戏/攻略/待办/关于）请用 layout: xp-page。
+%><%- include('./includes/header') %>
+
+  <div class="content-container xp-shell">
+    <div class="xp-window-title">
+      <span class="xp-window-title-text post-title-text"><%= page.title || config.title %></span>
+      <%- xp_bullet() %>
+    </div>
+
+    <div class="xp-shell-body">
+      <div class="xp-shell-main">
+        <div class="post-content">
+          <%- page.content %>
+        </div>
+      </div>
+
+      <%- include('./includes/xp-aside', { page: page, kind: 'page' }) %>
+    </div>
+  </div>
+
+<%- include('./includes/footer') %>

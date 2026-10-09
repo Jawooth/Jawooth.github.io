@@ -1,10 +1,32 @@
-<%- include('./includes/header') %>
+<%#
+  归档 / 分类页（时间线）
+  ------------------------------------------------------------------
+  /archives/、/archives/2026/、/categories/xxx/ 都走这个模板。
+  时间线由 includes/xp-timeline.ejs 渲染。
+%><%- include('./includes/header') %>
 
-  <div class="content-container">
+  <div class="content-container xp-shell">
+    <div class="xp-window-title">
+      <span class="xp-window-title-text post-title-text"><%
+        if (page.category) { %>分类 · <%= page.category %><%
+        } else if (page.year && page.month) { %>归档 · <%= page.year %> 年 <%= page.month %> 月<%
+        } else if (page.year) { %>归档 · <%= page.year %> 年<%
+        } else { %>归档<%
+        } %></span>
+      <%- xp_bullet() %>
+    </div>
 
-    <%- include('./includes/post-list-archives') %>
+    <div class="post-info">
+      <span><i class="icon icon-calendar-outline"></i> 共 <%= page.posts ? page.posts.length : 0 %> 篇</span>
+    </div>
 
+    <div class="xp-shell-body">
+      <div class="xp-shell-main">
+        <%- include('./includes/xp-timeline', { page: page }) %>
+      </div>
+
+      <%- include('./includes/xp-aside', { page: page, kind: 'archive' }) %>
+    </div>
   </div>
 
 <%- include('./includes/footer') %>
-

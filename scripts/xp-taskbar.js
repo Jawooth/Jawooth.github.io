@@ -145,6 +145,20 @@ const taskbarHTML = `
       </svg>
       <span class="xp-start-text">归档</span>
     </a>
+    <a class="xp-start-item" href="/tags/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+        <path d="M2 7l7-5 5 5-7 7-5-7z" fill="#ffff99" stroke="#cc9933" stroke-width="0.5"/>
+        <circle cx="8" cy="7" r="1.6" fill="#cc9933"/>
+      </svg>
+      <span class="xp-start-text">标签</span>
+    </a>
+    <a class="xp-start-item" href="/categories/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+        <rect x="1" y="3" width="14" height="11" rx="1" fill="#ffd68a" stroke="#cc9933" stroke-width="0.5"/>
+        <rect x="1" y="2" width="6" height="3" rx="1" fill="#ffb84d" stroke="#cc9933" stroke-width="0.5"/>
+      </svg>
+      <span class="xp-start-text">分类</span>
+    </a>
     <a class="xp-start-item" href="/about/" role="menuitem">
       <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
         <circle cx="8" cy="5" r="3.5" fill="#ffcc99" stroke="#996633" stroke-width="0.5"/>
@@ -183,7 +197,8 @@ const taskbarJS = `
     var path = window.location.pathname.replace(/index\\.html$/, '');
     var pages = {
       '/': '首页', '/works/': '作品', '/games/': '游戏/工具', '/guides/': '攻略教程',
-      '/todo/': '待办', '/blog/': '杂谈', '/archives/': '归档', '/about/': '关于'
+      '/todo/': '待办', '/blog/': '杂谈', '/archives/': '归档', '/about/': '关于',
+      '/tags/': '标签', '/categories/': '分类'
     };
     var title = pages[path] || document.title || '页面';
     var titleEl = document.getElementById('xpTaskbarTitle');

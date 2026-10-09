@@ -1,0 +1,40 @@
+<%#
+  归档 / 分类时间线
+  ------------------------------------------------------------------
+  接收 page.posts（归档、分类、标签页都带这个字段），按年份分组后
+  以「年份横条 + 带圆点的竖线列表」呈现。
+%>
+<%
+  var rawPosts = page.posts;
+  var list = rawPosts ? (typeof rawPosts.toArray === 'function' ? rawPosts.toArray() : Array.prototype.slice.call(rawPosts)) : [];
+  list = list.slice().sort(function (a, b) { return b.date - a.date; });
+  var groups = [];
+  list.forEach(function (p) {
+    var y = date(p.date, 'YYYY');
+    var g = null;
+    for (var i = 0; i < groups.length; i++) { if (groups[i].year === y) { g = groups[i]; break; } }
+    if (!g) { g = { year: y, posts: [] }; groups.push(g); }
+    g.posts.push(p);
+  });
+%>
+<% if (!list.length) { %>
+  <p class="xp-empty">这里还没有文章</p>
+<% } %>
+<% groups.forEach(function (g) { %>
+  <div class="xp-timeline-year">
+    <span><%= g.year %> 年</span>
+    <span class="count"><%= g.posts.length %> 篇</span>
+  </div>
+  <ul class="xp-timeline-list">
+    <% g.posts.forEach(function (p) { %>
+      <li class="xp-timeline-item">
+        <span class="xp-timeline-dot"></span>
+        <a href="<%- url_for(p.path) %>">
+          <span class="xp-timeline-date"><%= date(p.date, 'MM-DD') %></span>
+          <span class="xp-timeline-title"><%= p.title %></span>
+          <span class="xp-timeline-cat"><%= xp_meta(p) %></span>
+        </a>
+      </li>
+    <% }); %>
+  </ul>
+<% }); %>

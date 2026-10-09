@@ -120,11 +120,37 @@ for f in posts:
     if 'rel="canonical"' not in s:
         fail("%s 缺少 canonical" % rel)
     if "top-box" in s:
-        fail("%s 混进了目录（TOC）" % rel)
+        fail("%s 混进了主题自带目录（TOC）" % rel)
+    if 'class="xp-aside"' not in s:
+        fail("%s 缺少侧栏（xp-aside）" % rel)
 
 blog = read("blog/index.html")
-if "blog-todo-window" not in blog:
-    fail("杂谈页没有注入待办窗口")
+if "todo-mini-list" not in blog:
+    fail("杂谈页缺少待办窗口")
+if "xp-post-card" not in blog:
+    fail("杂谈页没有渲染文章卡片流")
+if 'class="xp-aside"' not in blog:
+    fail("杂谈页缺少侧栏")
+
+arc = read("archives/index.html")
+if "xp-timeline-year" not in arc:
+    fail("归档页没有渲染时间线")
+if 'class="xp-aside"' not in arc:
+    fail("归档页缺少侧栏")
+
+for rel in ["tags/index.html", "categories/index.html"]:
+    s = read(rel)
+    if not s:
+        fail("缺少索引页：%s" % rel)
+    elif "xp-index-item" not in s:
+        fail("%s 没有渲染索引条目" % rel)
+
+# 有标题的文章应当生成目录
+for f in posts:
+    s = open(f, encoding="utf-8", errors="replace").read()
+    if "<h2" in s and "xp-toc" not in s.replace("xp-toc-level", "").replace("xp-toc-item", ""):
+        warn("%s 正文有二级标题但没有生成侧栏目录" % os.path.relpath(f, PUB))
+        break
 
 if not os.path.exists(os.path.join(PUB, "search.json")):
     fail("缺少 search.json（首页搜索会失效）")

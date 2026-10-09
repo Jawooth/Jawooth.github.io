@@ -1,10 +1,42 @@
-<%- include('./includes/header') %>
+<%#
+  杂谈列表页（/blog/）
+  ------------------------------------------------------------------
+  XP 窗口外壳 + 带封面的文章卡片流 + 侧栏，底部注入待办窗口。
+  卡片流由 scripts/xp-content.js 的 xp_post_cards helper 生成。
+%><%- include('./includes/header') %>
 
-  <div class="content-container">
+  <div class="content-container xp-shell">
+    <div class="xp-window-title">
+      <span class="xp-window-title-text post-title-text">杂谈 · 全部文章</span>
+      <%- xp_bullet() %>
+    </div>
 
-    <%- include('./includes/post-list') %>
+    <div class="post-info">
+      <span><i class="icon icon-menu-outline"></i> 共 <%= xp_num_of('posts') %> 篇</span>
+      <% if (page.total > 1) { %>
+        <span>第 <%= page.current %> / <%= page.total %> 页</span>
+      <% } %>
+    </div>
 
+    <div class="xp-shell-body">
+      <div class="xp-shell-main">
+        <%- xp_widget_todo(5) %>
+        <%- xp_post_cards(page.posts) %>
+
+        <% if (page.total > 1) { %>
+          <div class="pagination-container">
+            <% if (page.prev) { %>
+              <a href="<%- url_for(page.prev_link) %>"><i class="icon icon-arrow-ios-back-outline"></i> 上一页</a>
+            <% } else { %><span></span><% } %>
+            <% if (page.next) { %>
+              <a href="<%- url_for(page.next_link) %>">下一页 <i class="icon icon-arrow-ios-forward-outline"></i></a>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+
+      <%- include('./includes/xp-aside', { page: page, kind: 'list' }) %>
+    </div>
   </div>
 
 <%- include('./includes/footer') %>
-

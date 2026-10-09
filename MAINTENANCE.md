@@ -46,11 +46,16 @@ D:\tools\hexo
 │  ├─ images/                    作品图 / 缩略图 / 头像 / 桌面背景
 │  └─ favicon.ico                浏览器标签页图标
 ├─ themes/minimalism/            ← 主题（已「自持」，可自由改，不再走 npm）
-│  ├─ layout/xp-page.ejs         ★ 桌面式页面模板
-│  └─ layout/includes/head.ejs   标题、暗色模式初始化
+│  ├─ layout/xp-page.ejs         桌面式页面模板（layout: xp-page）
+│  ├─ layout/page.ejs            普通页面模板（layout: page，自动套窗口外壳）
+│  ├─ layout/post.ejs            文章页：窗口外壳 + 两栏 + 目录 + 相关文章
+│  ├─ layout/index.ejs           杂谈列表页：卡片流 + 侧栏
+│  ├─ layout/archive.ejs         归档 / 分类页：时间线 + 侧栏
+│  ├─ layout/tag.ejs             单个标签页：卡片流 + 侧栏
+│  └─ layout/includes/xp-aside.ejs、xp-timeline.ejs    侧栏 widget 与时间线
 ├─ scripts/                      ← 构建期脚本（在 Node 里跑，不是浏览器脚本）
-│  ├─ xp-content.js              内容标签 {% xp_xxx %} + 搜索索引生成
-│  ├─ xp-enhance.js              文章/列表页套 XP 窗口、SEO、懒加载、图片放大
+│  ├─ xp-content.js              内容标签 {% xp_xxx %}、侧栏/卡片/索引 helper、搜索索引
+│  ├─ xp-enhance.js              图片懒加载、点击放大、目录跟随、SEO（title/canonical/og）
 │  ├─ xp-taskbar.js              底部任务栏 + 开始菜单
 │  └─ inject-xp-css.js           注入字体与 xp-custom.css
 ├─ tools/                        图片压缩、图标生成、站点核验脚本（手动运行）
@@ -117,12 +122,14 @@ status: done                  # done / doing（作品卡片上的状态角标）
 
 ### 5.2 页面分两类（很重要）
 
-| 类型 | front matter | 渲染方式 | 用途 |
+| 类型 | front matter | 渲染模板 | 用途 |
 |---|---|---|---|
-| **桌面式页面** | `layout: xp-page` | 页面自己画 XP 窗口/便当格 | 首页、作品、游戏、攻略、待办、关于 |
-| **普通页面** | `layout: page` | 构建脚本自动套上 XP 窗口外壳（蓝色标题栏 + 白色窗体） | 以后新增的说明页、留言板之类 |
+| **桌面式页面** | `layout: xp-page` | `layout/xp-page.ejs`：页面自己画 XP 窗口/便当格 | 首页、作品、游戏、攻略、待办、关于、标签、分类 |
+| **普通页面** | `layout: page` | `layout/page.ejs`：自动套 XP 窗口外壳（标题栏 + 两栏 + 侧栏） | 以后新增的说明页、留言板之类 |
+| **文章** | `layout: post`（默认） | `layout/post.ejs`：窗口外壳 + 大图 + 两栏 + 目录 + 相关文章 | 所有 `source/_posts/` 下的文章 |
+| **列表/归档/标签** | 自动 | `index.ejs` / `archive.ejs` / `tag.ejs` | 由生成器决定，不用手动写 |
 
-新增页面时：复制 `source/about/index.md` 就是桌面式；只想写一篇普通长文页面就用 `layout: page`。
+新增页面时：复制 `source/about/index.md` 就是桌面式；只想写一篇普通长文页面就用 `layout: page`；`source/tags/index.md`、`source/categories/index.md` 是两个索引页的现成例子。
 
 ---
 
@@ -146,6 +153,28 @@ status: done                  # done / doing（作品卡片上的状态角标）
 2. 组件写在 `xp-custom.css` 里，**不要在页面里写内联样式**（页面里只允许写「网格排布」这类页面级规则）。
 3. 类名用 `xp-` 前缀（组件）或 `bento-`/`<页面名>-` 前缀（页面级）。
 
+### 6.1 侧栏 widget 栏（文章/列表/归档/标签页）
+
+这几类页面是「两栏」结构：左边正文，右边侧栏。侧栏由 `themes/minimalism/layout/includes/xp-aside.ejs` 决定放哪些卡片，卡片内容由 `scripts/xp-content.js` 里的 `xp_widget_*` helper 生成：
+
+| 想改什么 | 改哪里 |
+|---|---|
+| 侧栏放哪几张卡片、什么顺序 | `includes/xp-aside.ejs`（按 `kind` 区分：post 会多一张目录） |
+| 卡片里显示什么内容 | `scripts/xp-content.js` 里对应的 `xp_widget_xxx` 函数 |
+| 卡片外观、间距、小屏怎么折行 | `xp-custom.css` 第 10 节（`.xp-aside`、`.xp-widget`） |
+| 文章摘要怎么取 | `xp-content.js` 的 `excerptOf()`：优先用 front matter 的 `desc`，否则取正文第一段 |
+
+屏宽 ≤1000px 时侧栏会自动移到正文下方并横向铺开（见 CSS 里的 `@media (max-width: 1000px)`），不需要你做额外处理。
+
+### 6.2 新的页面级组件
+
+| 组件 | 用在哪 | 类名 |
+|---|---|---|
+| 文章卡片流（带封面） | 杂谈列表页、标签页 | `.xp-card-list` / `.xp-post-card`（由 `xp_post_cards` 生成） |
+| 归档时间线 | 归档页、分类页 | `.xp-timeline-*`（由 `includes/xp-timeline.ejs` 生成） |
+| 标签/分类索引卡片 | `/tags/`、`/categories/` | `.xp-index-grid` / `.xp-index-item`（由 `{% xp_tag_index %}`、`{% xp_category_index %}` 生成） |
+| 相关文章 | 文章底部 | `.xp-related`（由 `xp_related(page, 3)` 生成） |
+
 ---
 
 ## 7. 内容标签（页面里能用的 {% xp_xxx %}）
@@ -163,6 +192,7 @@ status: done                  # done / doing（作品卡片上的状态角标）
 | `{% xp_apps %}` | 游戏/工具卡片（按 `_data/apps.yml` 生成） |
 | `{% xp_guides %}` | 攻略清单（按 `_data/guides.yml` 生成） |
 | `{% xp_work_cards %}` / `{% xp_work_filters %}` | 作品页的卡片与筛选按钮 |
+| `{% xp_tag_index %}` / `{% xp_category_index %}` | 标签 / 分类索引页的卡片网格 |
 | `{% xp_music %}` | 播放器曲目与 APlayer（按 `_data/music.yml`） |
 
 ---
@@ -177,6 +207,8 @@ status: done                  # done / doing（作品卡片上的状态角标）
 6. **图片用两套**：卡片用 `*-thumb.jpg`（长边 480），文章大图用原图；压缩脚本在 `tools/optimize-images.py`（会自动把原图备份到 `backup/`）。
 7. **头像文件名固定为 `site-avatar.png`**：不要用 `avatar.png`，那是主题自带的占位图，主题资源后写入会把你的覆盖掉。
 8. **`public/` 是构建产物**：不要手改，也不要提交。
+9. **改了 `scripts/*.js` 必须重启本地预览服务**：文章、模板、样式会热加载，但 `scripts/` 下的构建期脚本只在启动时加载一次。只改了模板或 CSS 不用重启，改了 JS 一定要重启，否则你会看到"改了没效果"然后又去改一遍。
+10. **文章/列表/归档页的外壳结构在主题模板里**，不在构建脚本里。想改标题栏文案、信息条字段、两栏比例，改 `themes/minimalism/layout/{post,index,archive,tag,page}.ejs` 与 `xp-custom.css` 第 10 节。
 
 ---
 
@@ -191,9 +223,10 @@ status: done                  # done / doing（作品卡片上的状态角标）
 | 关注点 | 文件 |
 |---|---|
 | 所有 XP 组件与颜色 | `source/css/xp-custom.css`（分 13 节，含 token 与深色分支） |
-| 页面内容与网格排布 | `source/index.md`、`source/{works,games,guides,todo,about}/index.md` |
-| 数据驱动的内容标签 | `scripts/xp-content.js` |
-| 文章/列表页外壳、SEO、懒加载、lightbox | `scripts/xp-enhance.js` |
+| 页面内容与网格排布 | `source/index.md`、`source/{works,games,guides,todo,about,tags,categories}/index.md` |
+| 页面骨架（外壳/两栏/侧栏） | `themes/minimalism/layout/{post,page,index,archive,tag,xp-page}.ejs` 与 `includes/xp-*.ejs` |
+| 数据驱动的内容标签与 helper | `scripts/xp-content.js` |
+| 懒加载、图片放大、目录跟随、SEO | `scripts/xp-enhance.js` |
 | 任务栏与开始菜单 | `scripts/xp-taskbar.js` |
 | 站点/主题配置 | `_config.yml`、`_config.minimalism.yml` |
 

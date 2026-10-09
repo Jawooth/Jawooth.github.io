@@ -410,6 +410,177 @@ hexo.extend.tag.register('xp_music', () => {
   );
 });
 
+/* ---------------------------------------------------------------- 侧栏 / 卡片 / 索引 片段 */
+/* 这些 helper 供主题模板（themes/minimalism/layout/*.ejs）调用。
+   把「组件长什么样」留在模板里、把「数据是什么」留在这里，
+   这样站主改样式不用碰 JS，改数据不用碰模板。 */
+
+const stripHtml = (html) => String(html || '')
+  .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+  .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/&nbsp;/g, ' ')
+  .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+  .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+/* 统一的侧栏卡片外壳（XP 窗口） */
+function widget(title, body, extraClass) {
+  if (!body) return '';
+  return oneLine(
+    `<div class="xp-window xp-widget ${extraClass || ''}">` +
+    `<div class="xp-window-title"><span class="xp-window-title-text">${esc(title)}</span></div>` +
+    `<div class="xp-window-body">${body}</div></div>`
+  );
+}
+
+/* 卡片摘要：优先用 front matter 的 desc，其次取正文第一段。
+   不要直接截取整篇正文 —— 会把代码块、小节标题（"作品简介"之类）混进来。 */
+function excerptOf(post, len) {
+  if (post.desc) {
+    const d = String(post.desc).trim();
+    return d.length > len ? d.slice(0, len) + '…' : d;
+  }
+  const html = String(post.content || post.excerpt || '');
+  const firstP = html.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+  const text = stripHtml(firstP ? firstP[1] : html);
+  return text.length > len ? text.slice(0, len) + '…' : text;
+}
+
+function wordChip(ctx, post) {
+  try {
+    const wc = hexo.extend.helper.get('wordcount');
+    if (!wc) return '';
+    const n = wc.call(ctx || {}, post.content);
+    if (!n) return '';
+    return `<span class="xp-chip">${n} 字</span>`;
+  } catch (err) {
+    return '';
+  }
+}
+
+hexo.extend.helper.register('xp_widget_author', function () {
+  const cfg = hexo.config;
+  const body = oneLine(
+    `<div class="xp-aside-author">` +
+    `<img src="/images/site-avatar.png" alt="${esc(cfg.author || cfg.title)}" width="256" height="256" loading="lazy" decoding="async">` +
+    `<div class="name">${esc(cfg.author || cfg.title)}</div>` +
+    `<div class="bio">${esc(cfg.description || '')}</div>` +
+    `<div class="links">` +
+    `<a class="xp-btn xp-btn-small" href="/about/">关于我</a>` +
+    `<a class="xp-btn xp-btn-small" href="/works/">作品集</a>` +
+    `<a class="xp-btn xp-btn-small" href="/blog/">全部文章</a>` +
+    `</div></div>`
+  );
+  return widget('关于我', body);
+});
+
+hexo.extend.helper.register('xp_widget_recent', (n) => widget('最近文章', recentPosts(n || 6)));
+hexo.extend.helper.register('xp_widget_tags', () => widget('标签云', tagCloud('pill')));
+hexo.extend.helper.register('xp_widget_stats', () => widget('小站数据', statRows()));
+hexo.extend.helper.register('xp_widget_todo', (n) => widget('待办清单', todoMini(n || 5)));
+hexo.extend.helper.register('xp_meta', (post) => metaOf(post));
+hexo.extend.helper.register('xp_words', function (post) { return wordChip(this, post); });
+hexo.extend.helper.register('xp_widget_browse', () => widget('浏览', oneLine(
+  `<div class="quick-nav-grid">` +
+  `<a class="nav-tile" href="/blog/"><span>全部文章</span></a>` +
+  `<a class="nav-tile" href="/archives/"><span>归档</span></a>` +
+  `<a class="nav-tile" href="/tags/"><span>标签</span></a>` +
+  `<a class="nav-tile" href="/categories/"><span>分类</span></a>` +
+  `<a class="nav-tile" href="/works/"><span>作品</span></a>` +
+  `<a class="nav-tile" href="/about/"><span>关于</span></a>` +
+  `</div>`
+)));
+
+/* 目录：用 Hexo 自带的 toc helper 生成，class 前缀设成 xp-toc 以复用我们的样式 */
+hexo.extend.helper.register('xp_widget_toc', function (content) {
+  const tocHelper = hexo.extend.helper.get('toc');
+  if (!tocHelper || !content) return '';
+  let html = '';
+  try {
+    html = tocHelper.call(this, content, { list_number: false, max_depth: 3, class: 'xp-toc' });
+  } catch (err) {
+    return '';
+  }
+  if (!html || html.indexOf('<li') < 0) return '';
+  return widget('目录', html, 'xp-widget-toc');
+});
+
+/* 相关文章：优先同分类，其次同标签 */
+hexo.extend.helper.register('xp_related', function (page, n) {
+  const limit = n || 3;
+  const cats = catsOf(page);
+  const tags = tagsOf(page);
+  const scored = allPosts()
+    .filter((p) => p.path !== page.path)
+    .map((p) => {
+      let score = 0;
+      catsOf(p).forEach((c) => { if (cats.indexOf(c) >= 0) score += 3; });
+      tagsOf(p).forEach((t) => { if (tags.indexOf(t) >= 0) score += 2; });
+      return { p, score };
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score || (b.p.date - a.p.date))
+    .slice(0, limit);
+  if (!scored.length) return '';
+  const items = scored.map(({ p }) => (
+    `<li><a href="${href(p.path)}">${esc(p.title)}` +
+    `<span class="meta">${fmtDate(p)} · ${esc(metaOf(p))}</span></a></li>`
+  ));
+  return oneLine(`<div class="xp-window xp-widget xp-related">` +
+    `<div class="xp-window-title"><span class="xp-window-title-text">相关文章</span></div>` +
+    `<div class="xp-window-body"><ul class="xp-related-list">${items.join('')}</ul></div></div>`);
+});
+
+/* 文章卡片流（杂谈列表页 / 标签页共用） */
+hexo.extend.helper.register('xp_post_cards', function (posts) {
+  const list = q2a(posts);
+  if (!list.length) return '<p class="xp-empty">这里还没有文章</p>';
+  const cards = list.map((p) => {
+    const cover = p.thumbnail || p.img;
+    return oneLine(
+      `<a class="xp-post-card" href="${href(p.path)}">` +
+      (cover ? `<span class="xp-post-card-cover"><img src="${esc(cover)}" alt="${esc(p.title)}" loading="lazy" decoding="async" width="480" height="320"></span>` : '') +
+      `<span class="xp-post-card-body">` +
+      `<h2 class="xp-post-card-title">${esc(p.title)}</h2>` +
+      `<span class="xp-post-card-excerpt">${esc(excerptOf(p, 96))}</span>` +
+      `<span class="xp-post-card-meta">` +
+      `<span class="xp-chip">${fmtDate(p)}</span>` +
+      `<span class="xp-chip primary">${esc(metaOf(p))}</span>` +
+      wordChip(this, p) +
+      `</span></span></a>`
+    );
+  });
+  return oneLine(`<div class="xp-card-list">${cards.join('')}</div>`);
+});
+
+/* 标签 / 分类索引页（同时注册成 helper 与 markdown 标签，两处复用同一份实现） */
+function tagIndexHtml() {
+  const tags = allTags();
+  if (!tags.length) return '<p class="xp-empty">还没有标签</p>';
+  const items = tags.map((t) => (
+    `<a class="xp-index-item" href="${href(t.path)}"><span class="name">${esc(t.name)}</span>` +
+    `<span class="count">${t.length} 篇</span></a>`
+  ));
+  return oneLine(`<div class="xp-index-grid">${items.join('')}</div>`);
+}
+
+function categoryIndexHtml() {
+  const cats = allCategories().slice().sort((a, b) => b.length - a.length);
+  if (!cats.length) return '<p class="xp-empty">还没有分类</p>';
+  const items = cats.map((c) => (
+    `<a class="xp-index-item" href="${href(c.path)}"><span class="name">${esc(c.name)}</span>` +
+    `<span class="count">${c.length} 篇</span></a>`
+  ));
+  return oneLine(`<div class="xp-index-grid">${items.join('')}</div>`);
+}
+
+hexo.extend.helper.register('xp_tag_index', () => tagIndexHtml());
+hexo.extend.helper.register('xp_category_index', () => categoryIndexHtml());
+registerTag('xp_tag_index', () => tagIndexHtml());
+registerTag('xp_category_index', () => categoryIndexHtml());
+
 /* ---------------------------------------------------------------- 注册 */
 function registerTag(name, fn) {
   hexo.extend.tag.register(name, function (args) {
