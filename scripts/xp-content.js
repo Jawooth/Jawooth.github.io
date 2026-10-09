@@ -842,7 +842,8 @@ const PROFILE_ICONS = {
   },
   xiaohongshu: {
     label: '小红书',
-    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor" opacity="0.16"/><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8.5h8M8 12h8M8 15.5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+    /* 小红书 App 图标的样子：红色圆角方块 + 白色「书」字，20px 下也能认出来 */
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="#ff2442"/><text x="12" y="16.8" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="12.5" font-weight="bold" fill="#ffffff">书</text></svg>'
   },
   x: {
     label: 'X',
@@ -862,29 +863,47 @@ const PROFILE_ICONS = {
   }
 };
 
-/* 邮箱：支持单个字符串，也支持列表（列表项写 "地址" 或 { 标签: 地址 }）。
-   多个邮箱时图标仍只有一个，图标行下方会多出一行带标签的地址链接。 */
+/* 邮箱：支持单个字符串，也支持列表。列表项四种写法都认：
+     - me@example.com                    纯地址
+     - 个人：me@example.com              字符串里带标签（全角/半角冒号都行）
+     - { 个人: me@example.com }          YAML 映射
+     - { label: 个人, address: me@x.com } */
 function profileEmails() {
   const raw = (profileData().contacts || {}).email;
   const out = [];
   const push = (label, address) => {
-    const a = String(address == null ? '' : address).trim();
-    if (a) out.push({ label: String(label || '').trim(), address: a });
+    let a = String(address == null ? '' : address).trim();
+    let l = String(label || '').trim();
+    if (!l && a) {
+      const m = a.match(/^([^:：]{1,14})[:：]\s*(.+)$/);
+      if (m) { l = m[1].trim(); a = m[2].trim(); }
+    }
+    if (a) out.push({ label: l, address: a });
+  };
+  const pushObject = (obj) => {
+    const keys = Object.keys(obj);
+    if (obj.address) {                       /* { label: 个人, address: xxx } */
+      push(obj.label || '', obj.address);
+    } else {                                 /* { 个人: xxx, 工作: yyy } */
+      keys.forEach((k) => push(k, obj[k]));
+    }
   };
   if (Array.isArray(raw)) {
     raw.forEach((it) => {
       if (typeof it === 'string') push('', it);
-      else if (it && typeof it === 'object') Object.keys(it).forEach((k) => push(k, it[k]));
+      else if (it && typeof it === 'object') pushObject(it);
     });
   } else if (raw && typeof raw === 'object') {
-    Object.keys(raw).forEach((k) => push(k, raw[k]));
+    pushObject(raw);
   } else {
     push('', raw);
   }
   return out;
 }
 
-/* 只渲染 profile.yml 里填了地址的平台；email 用第一个地址（其余在下面单列一行） */
+/* 只渲染 profile.yml 里填了地址的平台。
+   邮箱：只有一个地址时，图标直接就是 mailto 链接；
+        有多个地址时，点击图标弹出一个列出所有地址的小窗（见 xp-enhance.js）。 */
 hexo.extend.tag.register('xp_profile_icons', () => {
   const contacts = profileData().contacts || {};
   const emails = profileEmails();
@@ -893,24 +912,56 @@ hexo.extend.tag.register('xp_profile_icons', () => {
     return Boolean(contacts[k]);
   }).map((k) => {
     const icon = PROFILE_ICONS[k];
-    const href = k === 'email' ? `mailto:${emails[0].address}` : String(contacts[k]);
-    const extra = k === 'email' ? '' : ' target="_blank" rel="noopener"';
-    const title = k === 'email' && emails.length > 1 ? `${icon.label}（共 ${emails.length} 个，见下方列表）` : icon.label;
-    return `<a class="profile-icon" href="${esc(href)}"${extra} title="${esc(title)}" aria-label="${esc(icon.label)}">${icon.svg}</a>`;
+    if (k === 'email') {
+      const tip = emails.length > 1 ? `邮箱（共 ${emails.length} 个，点击查看）` : icon.label;
+      return `<a class="profile-icon" href="mailto:${esc(emails[0].address)}" id="xpEmailBtn" ` +
+        `aria-haspopup="${emails.length > 1 ? 'dialog' : 'false'}" aria-expanded="false" ` +
+        `title="${esc(tip)}" aria-label="${esc(icon.label)}">${icon.svg}</a>`;
+    }
+    return `<a class="profile-icon" href="${esc(contacts[k])}" target="_blank" rel="noopener" ` +
+      `title="${icon.label}" aria-label="${icon.label}">${icon.svg}</a>`;
   });
-  return oneLine(html.join(''));
-});
 
-/* 邮箱地址行：一个或多个邮箱都列出来（带标签的会显示成小胶囊）；没有邮箱就不输出 */
-hexo.extend.tag.register('xp_profile_emails', () => {
-  const emails = profileEmails();
-  if (!emails.length) return '';
-  const items = emails.map((e) => (
-    `<a class="profile-email" href="mailto:${esc(e.address)}">` +
-    (e.label ? `<span class="email-label">${esc(e.label)}</span>` : '') +
-    `<span class="email-address">${esc(e.address)}</span></a>`
-  ));
-  return oneLine(`<div class="profile-emails"><span class="emails-title">邮箱</span>${items.join('')}</div>`);
+  /* 多个邮箱时附带一个隐藏的小窗 + 弹出逻辑（定位用 fixed，避免被窗口的 overflow 裁掉） */
+  if (emails.length > 1) {
+    const hint = profileValue('about.contact_desc');
+    const items = emails.map((e) => (
+      `<a class="pop-email" href="mailto:${esc(e.address)}">` +
+      (e.label ? `<span class="email-label">${esc(e.label)}</span>` : '') +
+      `<span class="email-address">${esc(e.address)}</span></a>`
+    ));
+    html.push(
+      `<div class="profile-email-pop" id="xpEmailPop" role="dialog" aria-label="邮箱地址" hidden>` +
+      `<div class="pop-title"><span>邮箱</span>` +
+      `<button type="button" class="pop-close" aria-label="关闭">×</button></div>` +
+      `<div class="pop-body">` +
+      (hint ? `<p class="pop-hint">${esc(hint)}</p>` : '') +
+      items.join('') +
+      `</div></div>`
+    );
+    html.push(oneLine(
+      '<script>(function(){' +
+      'var b=document.getElementById("xpEmailBtn"),p=document.getElementById("xpEmailPop");' +
+      'if(!b||!p)return;' +
+      'function place(){var r=b.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight;' +
+      'var l=Math.max(8,Math.min(r.left,window.innerWidth-w-8)),t=r.bottom+8;' +
+      'if(t+h>window.innerHeight-8)t=Math.max(8,r.top-h-8);' +
+      'p.style.left=l+"px";p.style.top=t+"px";}' +
+      'function close(){p.hidden=true;b.setAttribute("aria-expanded","false");}' +
+      'function open(){p.hidden=false;b.setAttribute("aria-expanded","true");place();}' +
+      'b.addEventListener("click",function(e){if(p.hidden){e.preventDefault();open();}else{close();}});' +
+      'document.addEventListener("click",function(e){if(p.hidden)return;' +
+      'if(b.contains(e.target)||p.contains(e.target))return;close();});' +
+      'document.addEventListener("keydown",function(e){if(e.key==="Escape")close();});' +
+      'var c=p.querySelector(".pop-close");if(c)c.addEventListener("click",close);' +
+      /* 滚动/改窗口大小时跟着按钮走，而不是关掉（避免误触发的 scroll 事件把弹窗吞掉） */
+      'window.addEventListener("scroll",function(){if(!p.hidden)place();},{passive:true});' +
+      'window.addEventListener("resize",function(){if(!p.hidden)place();});' +
+      '})();</script>'
+    ));
+  }
+
+  return oneLine(html.join(''));
 });
 
 /* ---------------------------------------------------------------- 注册 */

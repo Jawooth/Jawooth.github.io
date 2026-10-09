@@ -43,17 +43,21 @@ buttons:
 
 # 首页「用户账户」里的图标行：填了地址的才显示，留空就隐藏。
 # 支持的键：github / email / bilibili / xiaohongshu / x / weibo / pixiv / website
-#   email（邮箱）支持多个地址：写成列表，图标行下面会自动多出一行带标签的地址链接；
-#     只有一个邮箱时只显示图标，不再单列一行。两种写法都行：
+#   email（邮箱）可以写多个地址：写成列表，每个前面可以加个标签。
+#     有多个地址时，点击信封图标会弹出一个小窗列出全部地址；
+#     只有一个地址时，点图标直接就是发信。下面三种写法都认：
 #       email:
-#         - 个人: me@example.com      # 带标签
-#         - work@example.com          # 不带标签
+#         - 个人：me@example.com       # 字符串里带标签（全角/半角冒号都行）
+#         - 工作: work@example.com
+#         - backup@example.com         # 不加标签也行
 #   xiaohongshu 填你的小红书主页链接（App：我 → 右上角 → 分享主页 → 复制链接）
 #   其它平台的键没填就自动不显示
 contacts:
   github: https://github.com/Jawooth
   email:
-    - 2917129582@qq.com
+    - 主要：2917129582@qq.com
+    - 次要：Jawooth@gmail.com
+    - 如果有人需要：Jawooth2917@163.com
   bilibili: https://b23.tv/FWf3XB1
   xiaohongshu: https://xhslink.cn/o/5iSJjTT5dHC
   x: https://x.com/Jawooth
@@ -71,4 +75,5 @@ about:
     - 像素风
     - 绘画
     - 游戏
+  # 下面这句是「邮箱弹窗」里的说明文字（只有一个邮箱时不弹窗，这句也就用不上）
   contact_desc: 想聊两句、约稿或者交换链接，可以发邮件：

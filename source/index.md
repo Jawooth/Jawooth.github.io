@@ -215,9 +215,6 @@ layout: xp-page
 <div class="about-home-meta">
 {% xp_profile_chips about.chips %}
 </div>
-<!-- 邮箱：在 profile.yml 的 contacts.email 里可以写多个，这里会列成一行 -->
-<p class="about-home-contact">{% xp_profile about.contact_desc %}</p>
-{% xp_profile_emails %}
 </div>
 </div>
 </div>

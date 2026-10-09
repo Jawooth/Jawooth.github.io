@@ -962,24 +962,47 @@ a.guide-title:hover { text-decoration: underline; }
 .about-home-title { margin: 0 0 4px; font-size: 17px; color: var(--text-heading); font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; }
 .about-home-body p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--text); }
 .about-home-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-.about-home-contact { margin: 8px 0 0 !important; font-size: 12px !important; color: var(--text-muted) !important; }
 
-/* 邮箱地址行（首页「关于本站」窗口里；profile.yml 的 contacts.email 可以写多个） */
-.profile-emails {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px;
-  font-size: 12px;
+/* 邮箱弹窗（首页邮箱图标：填了多个地址时点开）
+   用 position: fixed —— 用户账户窗口是 overflow: hidden，普通定位会被裁掉 */
+.profile-email-pop {
+  position: fixed;
+  z-index: 300;
+  min-width: 240px;
+  max-width: 340px;
+  background: var(--surface);
+  border: 2px solid var(--xp-blue-border);
+  border-radius: 6px;
+  box-shadow: var(--win-shadow-hover);
+  overflow: hidden;
 }
-.profile-emails .emails-title { color: var(--text-muted); }
-.profile-email { display: inline-flex; align-items: center; gap: 5px; color: var(--link); text-decoration: none; }
-.profile-email:hover .email-address { text-decoration: underline; }
-.profile-email .email-label {
+.profile-email-pop[hidden] { display: none; }
+.profile-email-pop .pop-title {
+  height: 26px; padding: 0 4px 0 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--title-grad); color: #fff;
+  font-size: 12px; font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+.profile-email-pop .pop-close {
+  width: 20px; height: 18px; cursor: pointer; font-family: inherit;
+  color: #fff; font-size: 13px; line-height: 1;
+  background: linear-gradient(to bottom, #e87070 0%, #c03030 100%);
+  border: 1px solid #8a2020; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+}
+.profile-email-pop .pop-close:hover { background: linear-gradient(to bottom, #f08080 0%, #d04040 100%); }
+.profile-email-pop .pop-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 7px; }
+.profile-email-pop .pop-hint { margin: 0 0 2px; font-size: 12px; color: var(--text-muted); }
+.profile-email-pop .pop-email { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--link); text-decoration: none; }
+.profile-email-pop .pop-email:hover .email-address { text-decoration: underline; }
+.profile-email-pop .email-label {
   padding: 1px 6px; border-radius: 8px; font-size: 11px;
   color: var(--text-heading);
   background: rgba(53, 144, 243, 0.12);
   border: 1px solid rgba(53, 144, 243, 0.3);
 }
-.profile-email .email-address { color: var(--link); }
-html.dark .profile-email .email-label { color: var(--link); background: rgba(138, 180, 255, 0.16); border-color: rgba(138, 180, 255, 0.4); }
+html.dark .profile-email-pop .email-label { color: var(--link); background: rgba(138, 180, 255, 0.16); border-color: rgba(138, 180, 255, 0.4); }
 
 /* 手写体标题统一 */
 .profile-text h2,
