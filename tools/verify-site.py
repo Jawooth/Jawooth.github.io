@@ -98,14 +98,19 @@ if "site-search-form" not in home:
 if "top-box" in home:
     fail("首页混进了文章目录（TOC），说明页面模板回落到了 post.ejs")
 
-for rel in ["works/index.html", "games/index.html", "guides/index.html",
-            "todo/index.html"]:
+for rel in ["works/index.html", "games/index.html", "guides/index.html"]:
     s = read(rel)
     if not s:
         fail("缺少页面：%s" % rel)
         continue
     if 'class="post-detail"' in s or 'class="post-content"' in s:
         fail("%s 出现了文章结构，说明 layout 不是 xp-page" % rel)
+
+# /todo/ 页已按站主要求删除（待办清单只保留在杂谈页一处）
+if os.path.exists(os.path.join(PUB, "todo", "index.html")):
+    fail("待办页应当已删除，但仍存在 public/todo/index.html")
+if 'href="/todo/"' in home:
+    fail("首页仍有指向 /todo/ 的死链")
 
 # 「关于」页已按站主要求删除，内容整合进首页的「关于本站」窗口
 if os.path.exists(os.path.join(PUB, "about", "index.html")):

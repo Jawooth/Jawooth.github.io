@@ -4,6 +4,12 @@ public/
 .deploy_git/
 db.json
 
+# 放在仓库里但与站点无关的软件目录（例如 Hexo Pro Desktop 客户端，600+ MB）
+# 只忽略，不删除；磁盘上的文件保持原样
+HexoPro/
+data/
+blogInfoList.json
+
 # 编辑器 / 系统
 .vscode/
 .idea/

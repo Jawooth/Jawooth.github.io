@@ -12,7 +12,7 @@
  *   {% xp_recent_posts 4 %}              最近更新列表
  *   {% xp_recent_works 3 %}              最近作品横栏
  *   {% xp_tag_cloud pill|cloud %}        标签云（pill=首页胶囊 / cloud=作品页）
- *   {% xp_todo mini|full %}              待办（mini=首页与杂谈页 / full=待办页）
+ *   {% xp_todo 4 %}                     待办清单（4=只显示前 4 条；0 或省略=显示全部）
  *   {% xp_apps %}                        游戏/工具卡片（含分组标题条）
  *   {% xp_guides %}                      攻略/教程分组列表
  *   {% xp_work_gallery %}                作品页：原创/同人分栏 + 时间轴 + 标签筛选 + 原地展开
@@ -32,11 +32,6 @@ const CATEGORY_ICON = {
   '素描': 'icon-pencil',
   '角色设计': 'icon-girl',
   '插画': 'icon-frame'
-};
-const STATE_META = {
-  doing: { label: '进行中', cls: 'tag-doing', row: 'doing' },
-  todo: { label: '待做', cls: 'tag-todo', row: 'todo' },
-  done: { label: '已完成', cls: 'tag-done', row: 'done' }
 };
 
 /* ---------------------------------------------------------------- 基础工具 */
@@ -170,14 +165,15 @@ function todoIcon(state) {
 }
 
 function statRows() {
+  /* 待办行不再链到独立页面（该页已删除），只作为数字展示；想看清单去杂谈页 */
   const rows = [
     { cls: 'done', label: '文章', key: 'posts', href: '/blog/' },
     { cls: 'doing', label: '作品', key: 'works', href: '/works/' },
-    { cls: 'todo', label: '待办', key: 'todo_todo', href: '/todo/' }
+    { cls: 'todo', label: '待办', key: 'todo_todo' }
   ];
   return oneLine(rows.map((r) => (
     `<div class="stat-row"><span class="stat-dot ${r.cls}"></span>` +
-    `<span class="stat-label"><a href="${r.href}">${r.label}</a></span>` +
+    `<span class="stat-label">${r.href ? `<a href="${r.href}">${r.label}</a>` : r.label}</span>` +
     `<strong>${num(r.key)}</strong></div>`
   )).join(''));
 }
@@ -228,13 +224,15 @@ function tagCloud(variant) {
   return oneLine(`<div class="tag-cloud">${items.join('')}</div>`);
 }
 
+/* limit <= 0 表示"不限条数"（清单现在只出现在杂谈页，默认显示全部） */
 function todoMini(limit) {
   const order = { doing: 0, todo: 1, done: 2 };
-  const list = dataFile('todo').slice().sort((a, b) => {
+  const sorted = dataFile('todo').slice().sort((a, b) => {
     const sa = a.state || 'todo';
     const sb = b.state || 'todo';
     return order[sa] - order[sb];
-  }).slice(0, limit);
+  });
+  const list = limit > 0 ? sorted.slice(0, limit) : sorted;
   const items = list.map((t) => {
     const state = t.state || 'todo';
     return `<li>${todoIcon(state)}<span class="${state === 'done' ? 'done' : ''}">${esc(t.text)}</span></li>`;
@@ -242,31 +240,8 @@ function todoMini(limit) {
   return oneLine(`<ul class="todo-mini-list">${items.join('')}</ul>`);
 }
 
-function todoFull() {
-  const groups = [
-    { state: 'doing', label: '进行中', icon: 'icon-working' },
-    { state: 'todo', label: '待做', icon: 'icon-todo' },
-    { state: 'done', label: '已完成', icon: 'icon-done' }
-  ];
-  const list = dataFile('todo');
-  const out = groups.map((g) => {
-    const items = list.filter((t) => (t.state || 'todo') === g.state);
-    const rows = items.map((t) => (
-      `<li class="todo-item todo-${g.state}">` +
-      `<span class="todo-checkbox">${todoIcon(g.state)}</span>` +
-      `<span class="todo-text">${esc(t.text)}</span>` +
-      (g.state === 'todo' ? '' : `<span class="todo-tag ${STATE_META[g.state].cls}">${STATE_META[g.state].label}</span>`) +
-      `</li>`
-    ));
-    const body = rows.length ? `<ul class="todo-list">${rows.join('')}</ul>` : '<p class="xp-empty">这一栏还是空的</p>';
-    return (
-      `<div class="todo-item-section"><div class="xp-section-bar">` +
-      `<svg width="18" height="18"><use href="#${g.icon}"/></svg><span>${g.label} (${items.length})</span></div></div>` +
-      `<div class="todo-item-list">${body}</div>`
-    );
-  });
-  return oneLine(out.join(''));
-}
+/* 全量三栏视图（todoFull）已随 /todo/ 页一并删除：
+   待办清单现在只出现在杂谈页一处，显示全部条目并按 进行中 → 待做 → 已完成 排序。 */
 
 function appsGrid() {
   const apps = dataFile('apps');
@@ -659,7 +634,7 @@ hexo.extend.helper.register('xp_widget_author', function () {
 hexo.extend.helper.register('xp_widget_recent', (n) => widget('最近文章', recentPosts(n || 6)));
 hexo.extend.helper.register('xp_widget_tags', () => widget('标签云', tagCloud('pill')));
 hexo.extend.helper.register('xp_widget_stats', () => widget('小站数据', statRows()));
-hexo.extend.helper.register('xp_widget_todo', (n) => widget('待办清单', todoMini(n || 5)));
+hexo.extend.helper.register('xp_widget_todo', (n) => widget('待办清单', todoMini(n == null ? 5 : n)));
 hexo.extend.helper.register('xp_meta', (post) => metaOf(post));
 hexo.extend.helper.register('xp_words', function (post) { return wordChip(this, post); });
 hexo.extend.helper.register('xp_widget_browse', () => widget('浏览', oneLine(
@@ -979,13 +954,12 @@ registerTag('xp_recent_posts', (args) => {
 });
 registerTag('xp_recent_works', (args) => recentWorks(parseInt(args[0], 10) || 3));
 registerTag('xp_tag_cloud', (args) => tagCloud(args[0]));
-registerTag('xp_todo', (args) => (args[0] === 'full' ? todoFull() : todoMini(parseInt(args[0], 10) || 4)));
+registerTag('xp_todo', (args) => todoMini(parseInt(args[0], 10) || 4));
 registerTag('xp_apps', () => appsGrid());
 registerTag('xp_guides', () => guidesList());
 registerTag('xp_work_gallery', () => workGallery());
 
 /* 供注入器 / 过滤器复用（/blog/ 的待办窗口、文章页窗口按钮） */
-hexo.extend.helper.register('xp_todo_mini', (limit) => todoMini(limit || 4));
-hexo.extend.helper.register('xp_todo_full', () => todoFull());
+hexo.extend.helper.register('xp_todo_mini', (limit) => todoMini(limit == null ? 4 : limit));
 hexo.extend.helper.register('xp_bullet', () => BULLET);
 hexo.extend.helper.register('xp_num_of', (key) => num(key));

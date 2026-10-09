@@ -165,7 +165,7 @@ const taskbarJS = `
     var path = window.location.pathname.replace(/index\\.html$/, '');
     var pages = {
       '/': '首页', '/works/': '作品', '/games/': '游戏/工具', '/guides/': '攻略教程',
-      '/todo/': '待办', '/blog/': '杂谈', '/archives/': '归档',
+      '/blog/': '杂谈', '/archives/': '归档',
       '/tags/': '标签', '/categories/': '分类'
     };
     var title = pages[path] || document.title || '页面';

@@ -393,8 +393,7 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .xp-bento > * > .xp-tip-box,
 .xp-bento > * > .xp-section-bar,
 .xp-bento > * > .app-card,
-.xp-bento > * > .guide-list,
-.xp-bento > * > .todo-list { width: 100%; }
+.xp-bento > * > .guide-list { width: 100%; }
 
 /* ============ 7) 首页组件 ============ */
 .profile-content { display: flex; align-items: flex-start; gap: 18px; height: 100%; }
@@ -933,24 +932,8 @@ a.guide-title:hover { text-decoration: underline; }
 .tag-art { background: #4a8f4a; }
 .tag-tech { background: #3f77b5; }
 
-.todo-list { list-style: none; padding: 0; margin: 0; }
-.todo-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px; margin: 4px 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  color: var(--text);
-}
-.todo-item.todo-doing { border-left: 4px solid var(--xp-status-doing); background: var(--surface-2); }
-.todo-item.todo-done { opacity: 0.75; border-left: 4px solid var(--xp-status-done); }
-.todo-item.todo-done .todo-text { text-decoration: line-through; color: var(--text-muted); }
-.todo-checkbox { display: flex; align-items: center; flex-shrink: 0; }
-.todo-text { flex: 1; font-size: 14px; }
-.todo-tag { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 11px; color: #fff; }
-.tag-doing { background: var(--xp-status-doing); }
-.tag-todo { background: var(--xp-status-todo); }
-.tag-done { background: var(--xp-status-done); }
+/* .todo-list / .todo-item / .todo-tag / .tag-doing|todo|done 这些规则
+   只被 /todo/ 的三栏全量视图用到，页面删除后一并移除（清单现在是杂谈页的 .todo-mini-list）。 */
 
 /* 原「关于」页的专用样式已随页面删除（.about-profile-layout / .about-avatar /
    .about-nav-list / .contact-* / .credits-grid / .credit-* 等）。

@@ -20,10 +20,6 @@ menu:
     url: /guides/
     External: false
     name: 攻略教程
-  Todo:
-    url: /todo/
-    External: false
-    name: 待办
   Archives:
     url: /blog/
     External: false

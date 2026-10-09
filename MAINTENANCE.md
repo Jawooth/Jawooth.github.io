@@ -17,7 +17,7 @@
 | **放两边装饰图** | `source/images/decor/left.png` 与 `right.png` | 同上（仅在窗口 ≥1500px 宽时显示） |
 | **换深色模式壁纸** | 覆盖 `source/images/xp-desktop-bg-dark.jpg` | 同上（浅色壁纸是 `xp-desktop-bg.jpg`） |
 | **改开始菜单条目** | `scripts/xp-taskbar.js` 里的开始菜单部分 | 同上（**改完要重启预览服务**） |
-| 改待办事项 | `source/_data/todo.yml` | 同上（首页 / 待办页 / 杂谈页同时更新） |
+| 改待办事项 | `source/_data/todo.yml` | 同上（**只在杂谈页显示**，全部条目按 进行中→待做→已完成 排） |
 | 加游戏或小工具 | `source/_data/apps.yml` | 同上 |
 | 加攻略/教程条目 | `source/_data/guides.yml` | 同上 |
 | 启用首页播放器 / 换歌单 | `source/_data/music.yml` | 同上（可填自有曲目或网易云歌单 id） |
@@ -47,12 +47,12 @@ D:\tools\hexo
 ├─ source/                       ← 站点内容，日常改这里
 │  ├─ _posts/                    文章（文件名即 URL，用英文短横线命名）
 │  ├─ _data/                     数据文件（页面上的清单只在这里维护一份）
-│  │  ├─ todo.yml                待办：首页 + 待办页 + 杂谈页共用
+│  │  ├─ todo.yml                待办：只在杂谈页「待办清单」窗口显示
 │  │  ├─ apps.yml                游戏/工具卡片
 │  │  ├─ guides.yml              攻略/教程清单
 │  │  └─ music.yml               播放器曲目（默认空）
 │  ├─ index.md                   首页（XP 桌面 + 便当格）
-│  ├─ works|games|guides|todo/index.md   其余 4 个桌面式页面
+│  ├─ works|games|guides/index.md   其余 3 个桌面式页面
 │  ├─ css/xp-custom.css          ★ XP 设计系统（唯一真源，约 1300 行）
 │  ├─ images/                    作品图 / 缩略图 / 头像 / 桌面背景
 │  └─ favicon.ico                浏览器标签页图标
@@ -143,7 +143,7 @@ status: done                  # done / doing（作品卡片上的状态角标）
 
 | 类型 | front matter | 渲染模板 | 用途 |
 |---|---|---|---|
-| **桌面式页面** | `layout: xp-page` | `layout/xp-page.ejs`：页面自己画 XP 窗口/便当格 | 首页、作品、游戏、攻略、待办、标签、分类 |
+| **桌面式页面** | `layout: xp-page` | `layout/xp-page.ejs`：页面自己画 XP 窗口/便当格 | 首页、作品、游戏、攻略、标签、分类 |
 | **普通页面** | `layout: page` | `layout/page.ejs`：自动套 XP 窗口外壳（标题栏 + 两栏 + 侧栏） | 以后新增的说明页、留言板之类 |
 | **文章** | `layout: post`（默认） | `layout/post.ejs`：窗口外壳 + 大图 + 两栏 + 目录 + 相关文章 | 所有 `source/_posts/` 下的文章 |
 | **列表/归档/标签** | 自动 | `index.ejs` / `archive.ejs` / `tag.ejs` | 由生成器决定，不用手动写 |
@@ -221,7 +221,7 @@ status: done                  # done / doing（作品卡片上的状态角标）
 | `{% xp_recent_posts 4 %}` | 最近更新列表 |
 | `{% xp_recent_works 3 %}` | 最近作品横栏（含缩略图） |
 | `{% xp_tag_cloud pill\|cloud %}` | 标签云 |
-| `{% xp_todo mini\|full %}` | 待办（mini = 首页小窗；full = 待办页三栏） |
+| `{% xp_todo 4 %}` | 待办清单（`4` = 只显示前 4 条；`0` = 显示全部） |
 | `{% xp_apps %}` | 游戏/工具卡片（按 `_data/apps.yml` 生成） |
 | `{% xp_guides %}` | 攻略清单（按 `_data/guides.yml` 生成） |
 | `{% xp_work_gallery %}` | 作品页：原创/同人分栏 + 时间轴分期折叠 + 标签筛选/屏蔽 + 就地展开全文 |
