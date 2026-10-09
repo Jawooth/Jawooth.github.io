@@ -220,7 +220,9 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 .xp-window-title {
   background: var(--title-grad);
   color: #fff;
-  padding: 5px 10px;
+  /* 固定高度：普通与紧凑标题栏一样高，同一横带里的窗体内容起始位置才会齐平 */
+  height: 26px;
+  padding: 0 10px;
   font-weight: bold;
   font-size: 13px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
@@ -230,7 +232,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   gap: 8px;
   flex-shrink: 0;
 }
-.xp-window-title.compact { padding: 4px 8px; font-size: 12px; }
+.xp-window-title.compact { height: 26px; padding: 0 8px; font-size: 12px; }
 .xp-window-title-text { display: flex; align-items: center; gap: 6px; min-width: 0; }
 
 .xp-window-btns { display: flex; gap: 2px; flex-shrink: 0; }
@@ -404,7 +406,7 @@ html.dark .meta-chip strong { color: #9cc2ff; }
   border: 1px solid #c0a030;
   border-top: none;
   box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
-  padding: 14px 18px 12px;
+  padding: 12px 16px 10px;
   transform: rotate(-1.5deg);
   position: relative;
   margin: 2px 4px;
@@ -413,6 +415,8 @@ html.dark .meta-chip strong { color: #9cc2ff; }
   flex-direction: column;
   justify-content: center;
   color: #3a3000;
+  /* 格子高度固定，长句子宁可裁剪也不让它顶出去压到下一带 */
+  overflow: hidden;
 }
 .sticky-pin {
   position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
@@ -420,7 +424,7 @@ html.dark .meta-chip strong { color: #9cc2ff; }
   background: radial-gradient(circle at 30% 30%, #ff6b6b, #c03030);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
-.sticky-note-content p { margin: 0 0 8px; font-size: 15px; line-height: 1.6; font-style: italic; }
+.sticky-note-content p { margin: 0 0 6px; font-size: 14px; line-height: 1.55; font-style: italic; transition: opacity 0.25s; }
 .hitokoto-from {
   text-align: right; font-size: 12px; color: #806020;
   margin-top: 10px !important; font-style: normal !important;
@@ -442,29 +446,29 @@ html.dark .hitokoto-from { color: #d0c080; }
 .stat-label { flex: 1; color: var(--text-muted); }
 .stat-row a { color: var(--link); }
 
-/* 竖版复古 MP4 播放器 */
+/* 复古 MP4 播放器（紧凑面板：填满所在格子，≈3 栏 × 210px） */
 .retro-mp4-player {
   background: linear-gradient(180deg, #e8e8e0 0%, #d8d8d0 100%);
   border: 2px solid var(--xp-blue-border);
   border-radius: 8px 8px 0 0;
   box-shadow: var(--win-shadow);
-  padding: 12px 14px 14px;
+  padding: 10px 12px;
   display: flex; flex-direction: column; align-items: center;
-  gap: 12px; text-align: center;
-  width: 100%; max-width: 240px; aspect-ratio: 3 / 4;
-  margin: 0 auto;
+  gap: 8px; text-align: center;
+  width: 100%; height: 100%; max-width: none;
+  justify-content: space-between;
   transition: box-shadow 0.2s;
 }
 .retro-mp4-player:hover { box-shadow: var(--win-shadow-hover); }
 .mp4-brand { text-align: center; font-size: 11px; font-weight: bold; color: var(--xp-blue-border); letter-spacing: 1px; }
 .mp4-screen {
   background: #1a1a1a; border: 2px solid #4a4a4a; border-radius: 4px;
-  padding: 14px; width: 100%; box-sizing: border-box;
+  padding: 8px; width: 100%; box-sizing: border-box;
 }
-.mp4-screen-content { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.mp4-screen-content { display: flex; flex-direction: row; gap: 10px; align-items: center; }
 .mp4-cover { flex-shrink: 0; }
 .mp4-cover-placeholder {
-  width: 72px; height: 72px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50%;
   background: linear-gradient(135deg, #2a2a2a 0%, #111 100%);
   border: 2px solid #4a4a4a;
   display: flex; align-items: center; justify-content: center;
@@ -480,36 +484,46 @@ html.dark .hitokoto-from { color: #d0c080; }
   display: inline-block; width: 6px; height: 6px; background: #7cfc00;
   border-radius: 50%; animation: blink 1s infinite; flex-shrink: 0;
 }
-.mp4-song-author { font-size: 11px; color: #b8b8b8; margin-top: 3px; }
-.mp4-song-album { font-size: 10px; color: #a0a0a0; margin-top: 2px; }
-.mp4-progress-wrap { display: flex; flex-direction: column; gap: 4px; width: 100%; }
-.mp4-progress-times { display: flex; justify-content: space-between; font-size: 11px; color: #4a4a4a; }
+.mp4-song-author { font-size: 10px; color: #b8b8b8; margin-top: 2px; }
+.mp4-song-album { font-size: 10px; color: #a0a0a0; margin-top: 1px; }
+.mp4-progress-wrap { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+.mp4-progress-times { display: flex; justify-content: space-between; font-size: 10px; color: #4a4a4a; }
 .mp4-progress-bar {
-  height: 8px; background: #c0c0b8; border: 1px solid #999;
+  height: 7px; background: #c0c0b8; border: 1px solid #999;
   border-radius: 2px; overflow: hidden; cursor: pointer;
 }
 .mp4-progress-fill { height: 100%; width: 0%; background: linear-gradient(to bottom, #7cfc00 0%, #4caf50 100%); }
-.mp4-controls { display: flex; justify-content: center; gap: 10px; }
+.mp4-controls { display: flex; justify-content: center; gap: 8px; }
 .mp4-btn {
-  width: 36px; height: 30px; border: 1px solid var(--btn-border); border-radius: 3px;
+  width: 32px; height: 26px; border: 1px solid var(--btn-border); border-radius: 3px;
   background: var(--face); color: var(--text); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   box-shadow: inset 1px 1px 0 var(--btn-shadow-light), inset -1px -1px 0 var(--btn-shadow-dark);
 }
 .mp4-btn:hover { background: var(--face-hover); }
-.mp4-btn-play { width: 46px; }
-html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }
-html.dark .mp4-brand { color: #9cc2ff; }
+.mp4-btn-play { width: 42px; }
+html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }html.dark .mp4-brand { color: #9cc2ff; }
 html.dark .mp4-progress-times { color: #c8c8d6; }
 html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 
-/* 最近作品横栏 */
+/* 网易云歌单模式：官方外链播放器填满整个格子（不套 XP 皮肤，见 _data/music.yml 说明） */
+.xp-music-embed {
+  width: 100%; height: 100%;
+  border: 2px solid var(--xp-blue-border);
+  border-radius: 8px 8px 0 0;
+  box-shadow: var(--win-shadow);
+  background: var(--surface);
+  overflow: hidden;
+}
+.xp-music-embed iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* 最近作品横栏：卡片压扁成 16:9，使整带（含标题栏与内边距）刚好落在 210px 内 */
 .recent-works-strip {
-  display: flex; gap: 14px; overflow-x: auto;
+  display: flex; gap: 12px; overflow-x: auto;
   padding-bottom: 4px; height: 100%; align-items: stretch;
 }
 .recent-work-item {
-  flex-shrink: 0; width: 150px;
+  flex-shrink: 0; width: 148px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 3px; overflow: hidden;
@@ -517,9 +531,9 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   text-decoration: none; color: inherit;
   display: flex; flex-direction: column;
 }
-.recent-work-item.featured { width: 220px; border-color: var(--xp-blue-border); box-shadow: 0 0 0 1px var(--xp-blue-border); }
+.recent-work-item.featured { width: 196px; border-color: var(--xp-blue-border); box-shadow: 0 0 0 1px var(--xp-blue-border); }
 .recent-work-item.more {
-  width: 120px;
+  width: 112px;
   background: linear-gradient(135deg, #f0f8ff 0%, #d6e8ff 100%);
   align-items: center; justify-content: center; text-align: center;
   border-style: dashed;
@@ -527,8 +541,8 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 .recent-work-item:hover { transform: translateY(-3px); border-color: var(--xp-hover); }
 .recent-work-item.more:hover { background: linear-gradient(135deg, #e6f3ff 0%, #c2dfff 100%); }
 html.dark .recent-work-item.more { background: linear-gradient(135deg, #33384a 0%, #2a3040 100%); }
-.recent-work-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
-.recent-work-info { padding: 8px 10px; flex: 1; }
+.recent-work-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.recent-work-info { padding: 6px 8px; flex: 1; }
 .recent-work-title {
   font-size: 13px; font-weight: bold; margin: 0 0 4px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -870,15 +884,21 @@ html.dark .credit-item.credit-special { background: linear-gradient(135deg, #3a2
 .credit-name { font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; font-size: 17px; }
 .profile-text h2 { font-size: 22px; }
 
-/* ============ 10) 文章 / 列表页 XP 外壳 ============ */
-/* 自定义 XP 桌面页（首页/作品/游戏/攻略/待办/关于）由 post.ejs 兜底渲染，
-   其标题与日期行由这里隐藏；正文排版规则则统一限定在 .xp-shell 内，互不干扰。 */
-body:has(.home-page) .post-detail .post-title,
-body:has(.xp-page-fullwidth) .post-detail .post-title,
-body:has(.home-page) .post-detail .post-info,
-body:has(.xp-page-fullwidth) .post-detail .post-info { display: none; }
+/* ============ 10) 文章 / 列表页 XP 外壳与侧栏 ============ */
+/* 结构由主题模板直接产出（themes/minimalism/layout/ 下的 post / index / archive / tag / page）：
+     .content-container.xp-shell
+       ├─ .xp-window-title          窗口标题栏
+       ├─ .post-info                文章信息条（仅文章页）
+       └─ .xp-shell-body            两栏主体
+            ├─ .xp-shell-main       正文 / 卡片流 / 时间线
+            └─ .xp-aside            侧栏 widget 栏
+   自定义桌面页（layout: xp-page）不走这里，它们自己画桌面。
+   注意：早期版本是用 after_render 过滤器往 HTML 里注入外壳的，已改为模板直出，
+   结构更可靠、也不再有正则匹配失败的风险。 */
 
-/* .xp-shell 由 scripts/xp-enhance.js 在构建期加到文章/列表/归档/标签/分类页上 */
+/* 带侧栏的页面宽一点，正文列才够舒服 */
+.main:has(.xp-shell) { max-width: 1240px; }
+
 .content-container.xp-shell {
   background: var(--surface);
   border: 2px solid var(--xp-blue-border);
@@ -887,56 +907,40 @@ body:has(.xp-page-fullwidth) .post-detail .post-info { display: none; }
   padding: 0;
   margin-top: 14px;
   overflow: hidden;
-  min-height: 40vh;
+  min-height: 50vh;
 }
-.xp-shell > .xp-window-title { margin: 0; }
+.content-container.xp-shell .xp-window-title { margin: 0; }
+.xp-shell .post-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* 文章标题条 = 窗口标题栏 */
-/* 主题把 hero 图（.feature-container）放在标题之前，这里用 flex order 重排，
-   让标题栏始终位于窗口最上方，视觉上才是一个真正的 XP 窗口。 */
-.xp-shell .post-detail { padding: 0; display: flex; flex-direction: column; }
-.xp-shell .post-detail .post-title { order: 1; }
-.xp-shell .post-detail .post-info { order: 2; }
-.xp-shell .post-detail .feature-container { order: 3; }
-.xp-shell .post-detail .post-content-wrapper { order: 4; }
-.xp-shell .post-detail .feature-container {
-  width: 100%;
-  height: 300px;
-  background-size: cover;
-  background-position: center;
-  border-bottom: 1px solid var(--border);
+/* 文章信息条 */
+.xp-shell > .post-info {
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+  padding: 7px 16px; font-size: 12px; color: var(--text-muted);
+  background: var(--surface-2); border-bottom: 1px solid var(--border);
 }
-.xp-shell .post-detail .post-title {
-  margin: 0;
-  padding: 7px 12px;
-  font-size: 15px;
-  font-weight: bold;
-  line-height: 1.5;
-  color: #fff;
-  background: var(--title-grad);
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-html.dark .xp-shell .post-detail .post-title { color: #fff; }
-.xp-shell .post-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.xp-shell .post-detail .post-info {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  padding: 7px 16px;
-  font-size: 12px;
-  color: var(--text-muted);
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--border);
-}
-.xp-shell .post-detail .post-info a { color: var(--link); }
-.xp-shell .post-content-wrapper { display: flex; align-items: flex-start; }
-.xp-shell .post-content { flex-shrink: 1; width: 100%; padding: 16px 18px 20px; color: var(--text); }
+.xp-shell > .post-info a { color: var(--link); text-decoration: none; }
+.xp-shell > .post-info a:hover { text-decoration: underline; }
+.xp-shell > .post-info .icon { margin-right: 3px; }
 
-/* 文章正文排版 */
+/* 两栏主体 */
+.xp-shell-body { display: flex; align-items: flex-start; gap: 18px; padding: 16px 18px 22px; }
+.xp-shell-main { flex: 1 1 auto; min-width: 0; }
+.xp-aside {
+  flex: 0 0 292px; min-width: 0;
+  display: flex; flex-direction: column; gap: 14px;
+  position: sticky; top: 14px;
+}
+
+/* 文章顶部大图 */
+.xp-shell .feature-container {
+  width: 100%; height: 280px;
+  background-size: cover; background-position: center;
+  border: 1px solid var(--border); border-radius: 3px;
+  margin-bottom: 16px;
+}
+
+/* 正文排版 */
+.xp-shell .post-content { color: var(--text); }
 .xp-shell .post-content h1,
 .xp-shell .post-content h2,
 .xp-shell .post-content h3,
@@ -976,7 +980,7 @@ html.dark .xp-shell .post-detail .post-title { color: #fff; }
 .xp-shell .post-content th,
 .xp-shell .post-content td { border: 1px solid var(--border); padding: 6px 10px; }
 
-/* 作品"过程对比"组件（原先文章里用了但没有样式） */
+/* 作品「过程对比」组件 */
 .work-compare { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 16px 0; }
 .work-compare-item {
   background: var(--surface-2);
@@ -1012,113 +1016,182 @@ html.dark .xp-shell .post-detail .post-title { color: #fff; }
 }
 @keyframes xpFadeIn { to { opacity: 1; } }
 
-/* 杂谈列表：每篇文章一张 XP 卡片 */
-.xp-shell > .post-item {
-  margin: 12px 16px;
-  padding: 0;
-  max-height: none;
+/* ---------- 文章卡片流（杂谈 / 标签页） ---------- */
+.xp-card-list { display: flex; flex-direction: column; gap: 14px; }
+.xp-post-card {
+  display: flex; gap: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  text-decoration: none; color: inherit;
   transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-  display: flex;
-  justify-content: space-between;
 }
-.xp-shell > .post-item:hover {
+.xp-post-card:hover {
   transform: translateY(-2px);
   border-color: var(--xp-hover);
   box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.18);
 }
-.xp-shell > .post-item .content { padding: 12px 14px; }
-.xp-shell > .post-item .content .post-title { font-size: 16px; color: var(--text-heading); }
-.xp-shell > .post-item .content .post-abstract { color: var(--text-muted); -webkit-line-clamp: 2; }
-.xp-shell > .post-item .feature-container {
-  margin: 10px 12px; width: 180px; height: 120px;
-  border: 1px solid var(--border); border-radius: 3px;
-  flex-shrink: 0; align-self: center;
+/* 封面用绝对定位：否则竖图的固有宽高比会把卡片撑高，导致每张卡片高度不一致 */
+.xp-post-card-cover { position: relative; flex: 0 0 200px; min-height: 152px; background: var(--surface-3); overflow: hidden; }
+.xp-post-card-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+.xp-post-card:hover .xp-post-card-cover img { transform: scale(1.04); }
+.xp-post-card-body { flex: 1 1 auto; min-width: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.xp-post-card-title { margin: 0; font-size: 16px; color: var(--text-heading); }
+.xp-post-card:hover .xp-post-card-title { text-decoration: underline; }
+.xp-post-card-excerpt {
+  margin: 0; font-size: 13px; line-height: 1.7; color: var(--text-muted);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.xp-shell > .post-item:first-child { margin-top: 16px; }
+.xp-post-card-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.xp-chip {
+  display: inline-block; padding: 1px 8px; border-radius: 3px;
+  font-size: 11px; background: var(--surface-2);
+  border: 1px solid var(--border); color: var(--text-muted);
+  white-space: nowrap;
+}
+.xp-chip.primary { border-color: var(--xp-blue-light); color: var(--text-heading); }
 
 /* 分页 */
-.xp-shell .pagination-container { display: flex; justify-content: space-between; padding: 14px 16px; }
-.xp-shell .pagination-container a { color: var(--link); text-decoration: none; font-size: 13px; }
-.xp-shell .pagination-container a:hover { text-decoration: underline; }
+.xp-shell .pagination-container {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding: 14px 0 0;
+}
+.xp-shell .pagination-container a {
+  display: inline-block; padding: 4px 12px; font-size: 13px;
+  background: var(--face); border: 1px solid var(--btn-border); border-radius: 3px;
+  color: var(--text); text-decoration: none;
+  box-shadow: inset 1px 1px 0 var(--btn-shadow-light), inset -1px -1px 0 var(--btn-shadow-dark);
+}
+.xp-shell .pagination-container a:hover { background: var(--face-hover); }
 
-/* 归档 / 分类 / 标签页 */
-.xp-shell > .archives-container,
-.xp-shell > .tags-container,
-.xp-shell > .current-tag-container { padding: 14px 16px 18px; }
-.archives-container .year {
-  background: var(--title-grad);
-  color: #fff;
-  padding: 5px 12px;
-  margin: 18px -16px 10px;
-  font-size: 14px;
-  font-weight: bold;
+/* ---------- 归档时间线 ---------- */
+.xp-timeline-year {
+  display: flex; justify-content: space-between; align-items: baseline;
+  background: var(--title-grad); color: #fff;
+  padding: 5px 12px; margin: 18px 0 10px;
+  font-size: 14px; font-weight: bold;
+  border-radius: 3px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-.archives-container .year:first-child { margin-top: 0; }
-.archives-container .post { padding: 6px 2px; border-bottom: 1px dashed var(--border); }
-.archives-container .post:last-child { border-bottom: none; }
-.archives-container .post a { text-decoration: none; }
-.archives-container .post .post-title { margin: 0; font-size: 15px; color: var(--text-heading); }
-.archives-container .post .post-title small { color: var(--text-muted); font-size: 12px; margin-left: 8px; }
-.archives-container .post a:hover .post-title { text-decoration: underline; }
-.post-category { text-decoration: none; }
-
-.tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
-.tags-container .tag {
-  display: inline-block;
-  padding: 4px 12px;
-  font-size: 13px;
-  text-decoration: none;
-  border: 1px solid var(--xp-blue-light);
-  border-radius: 3px;
-  background: var(--surface-2);
-  color: var(--text-heading);
+.xp-timeline-year:first-child { margin-top: 0; }
+.xp-timeline-year .count { font-weight: normal; font-size: 12px; opacity: 0.9; }
+.xp-timeline-list { list-style: none; margin: 0; padding: 0 0 0 18px; position: relative; }
+.xp-timeline-list::before {
+  content: ""; position: absolute; left: 4px; top: 8px; bottom: 8px;
+  width: 1px; background: var(--border);
 }
-.tags-container .tag:hover { border-color: var(--xp-hover); background: var(--face-hover); color: #000; }
-
-.current-tag-container .title {
-  margin: 0;
-  padding: 7px 12px;
-  font-size: 14px;
-  color: #fff;
-  background: var(--title-grad);
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-  display: flex; align-items: center; gap: 8px;
+.xp-timeline-item { position: relative; }
+.xp-timeline-item a { display: flex; gap: 10px; align-items: baseline; padding: 5px 0 5px 6px; text-decoration: none; }
+.xp-timeline-dot {
+  position: absolute; left: -18px; top: 11px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--xp-blue-border);
 }
-.current-tag-container { padding: 0 0 4px !important; }
+.xp-timeline-item a:hover .xp-timeline-title { color: var(--xp-blue-border); text-decoration: underline; }
+.xp-timeline-date { flex: 0 0 46px; font-size: 12px; color: var(--text-muted); }
+.xp-timeline-title { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--text-heading); }
+.xp-timeline-cat { flex: 0 0 auto; font-size: 11px; color: var(--text-muted); }
 
-/* 目录（当前 toc:false 关闭；将来开启时按 XP 窗口样式呈现） */
-.top-div { box-sizing: border-box; margin: 0; padding: 0 16px 16px; }
-.top-box {
-  list-style: none;
-  width: 200px;
-  position: sticky;
-  top: 80px;
-  padding: 10px 12px;
-  margin: 0;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 3px;
+/* ---------- 侧栏 widget ---------- */
+.xp-widget .xp-window-body { font-size: 13px; }
+.xp-widget .xp-window-title { font-size: 12px; padding: 4px 8px; }
+
+.xp-aside-author { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+.xp-aside-author img {
+  width: 72px; height: 72px; border-radius: 6px;
+  border: 2px solid var(--xp-blue-border); background: var(--surface-3);
+  image-rendering: pixelated;
 }
-.top-box li a { display: block; color: var(--text-muted); padding: 4px; font-size: 0.9em; text-decoration: none; }
-.top-box li a:hover, .top-box li a.current { color: var(--link); background: var(--surface); }
-@media (max-width: 1400px) { .top-div { display: none; } }
+.xp-aside-author .name { font-family: "Caveat", "KaiTi", "STKaiti", cursive; font-size: 20px; color: var(--text-heading); }
+.xp-aside-author .bio { font-size: 12px; line-height: 1.6; color: var(--text-muted); }
+.xp-aside-author .links { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 
-/* 相邻文章 */
-.next-post { margin: 0 16px 16px; }
-.next-post .post-title { font-size: 14px; margin: 0; }
+/* 目录（跟随滚动） */
+.xp-toc { list-style: none; margin: 0; padding: 0; max-height: 46vh; overflow: auto; }
+.xp-toc a {
+  display: block; padding: 4px 6px; font-size: 12px;
+  color: var(--text-muted); text-decoration: none;
+  border-left: 2px solid transparent;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.xp-toc a:hover { color: var(--xp-blue-border); background: var(--surface-2); }
+.xp-toc a.current { color: var(--xp-blue-border); border-left-color: var(--xp-blue-border); background: var(--surface-2); font-weight: bold; }
+.xp-toc .xp-toc-level-3 a { padding-left: 18px; }
+.xp-toc .xp-toc-level-4 a { padding-left: 28px; font-size: 11px; }
+
+/* 主列里的独立窗口（如杂谈页顶部的待办窗口）与后续内容拉开距离 */
+.xp-shell-main > .xp-widget { margin: 0 0 16px; }
+.xp-shell-main > .xp-widget:last-child { margin-bottom: 0; }
+
+/* 标签 / 分类索引页容器 */
+.xp-index-page { max-width: 900px; margin: 0 auto; }
+
+/* 侧栏里的标签胶囊与统计行沿用已有组件，只调间距 */
+.xp-widget .tag-cloud { gap: 5px; }
+.xp-widget .stat-row { font-size: 12px; padding: 4px 0; }
+.xp-widget .article-mini-list li { padding: 6px 0; }
+.xp-widget .article-title { font-size: 12px; }
+.xp-widget .article-meta { font-size: 11px; }
+
+/* 相关文章 / 上下篇 */
+.xp-related { margin-top: 20px; }
+.xp-related-list { list-style: none; padding: 0; margin: 0; }
+.xp-related-list li { padding: 7px 0; border-bottom: 1px dashed var(--border); }
+.xp-related-list li:last-child { border-bottom: none; }
+.xp-related-list a {
+  display: flex; flex-direction: column; gap: 3px;
+  text-decoration: none; color: var(--text-heading); font-size: 13px;
+}
+.xp-related-list a:hover { color: var(--xp-blue-border); text-decoration: underline; }
+.xp-related-list .meta { font-size: 11px; color: var(--text-muted); }
+.next-post { margin: 16px 0 0; }
+.next-post .post-title { margin: 0; font-size: 14px; }
 .next-post .purple-link { color: var(--link); text-decoration: none; }
 .next-post .purple-link:hover { text-decoration: underline; }
+
+/* 索引页（/tags/ 与 /categories/）*/
+.xp-index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.xp-index-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  text-decoration: none; color: var(--text);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s, border-color 0.15s;
+}
+.xp-index-item:hover { transform: translateY(-2px); border-color: var(--xp-hover); }
+.xp-index-item .name { font-size: 14px; color: var(--text-heading); font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.xp-index-item .count { flex: 0 0 auto; font-size: 11px; color: var(--text-muted); }
 
 /* 页脚 */
 .site-footer { padding: 18px 16px; font-size: 12px; color: var(--text-muted); text-align: center; }
 .site-footer a { color: var(--link); text-decoration: none; }
 .site-footer .social-container { display: flex; justify-content: center; gap: 12px; margin-bottom: 6px; }
 .site-footer .social-container a { font-size: 16px; }
+
+/* 侧栏在中等屏幕移到内容下方 */
+@media (max-width: 1000px) {
+  .xp-shell-body { flex-direction: column; }
+  .xp-aside {
+    position: static; width: 100%; flex: none;
+    flex-direction: row; flex-wrap: wrap; align-items: flex-start;
+  }
+  .xp-aside > * { flex: 1 1 260px; }
+  .xp-toc { max-height: none; }
+}
+@media (max-width: 640px) {
+  .xp-shell-body { padding: 12px 12px 16px; gap: 12px; }
+  .xp-shell .post-content p,
+  .xp-shell .post-content li { font-size: 14px; }
+  .xp-shell .feature-container { height: 190px; }
+  .xp-post-card-cover { display: none; }
+  .xp-aside { flex-direction: column; }
+  .xp-aside > * { flex: none; width: 100%; }
+  .xp-timeline-date { flex-basis: 42px; font-size: 11px; }
+  .xp-timeline-cat { display: none; }
+}
 
 /* ============ 11) 任务栏与开始菜单 ============ */
 .xp-taskbar {
@@ -1227,28 +1300,30 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 .blog-todo-window { margin: 16px 16px 0; }
 
 /* ============ 12) 动画 ============ */
-/* 注意：入场动画只负责「从透明到出现」，基础状态必须是可见的。
-   早期写法把 .xp-bento > * 的基础 opacity 设为 0，一旦动画没跑（低端设备节流、
-   无头渲染、打印、脚本异常）整页内容就彻底不可见。 */
+/* 入场动画必须做到「动画不跑也可读」：
+   早期写法把基础 opacity 设为 0（后来改成 fill-mode: backwards，问题一样）——
+   只要动画时钟没推进（无头渲染、后台标签页、打印、省电模式），内容就整块不可见。
+   现在的起始态是 70% 不透明度 + 下移 12px：正常时是轻微的落位动画，
+   异常时内容仍然看得到。 */
 @keyframes popIn {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0.7; transform: translateY(12px); }
   to { opacity: 1; transform: none; }
 }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-.xp-bento > * { animation: popIn 0.5s ease backwards; }
-.xp-bento > *:nth-child(1) { animation-delay: 0.05s; }
-.xp-bento > *:nth-child(2) { animation-delay: 0.12s; }
-.xp-bento > *:nth-child(3) { animation-delay: 0.19s; }
-.xp-bento > *:nth-child(4) { animation-delay: 0.26s; }
-.xp-bento > *:nth-child(5) { animation-delay: 0.33s; }
-.xp-bento > *:nth-child(6) { animation-delay: 0.40s; }
-.xp-bento > *:nth-child(7) { animation-delay: 0.47s; }
-.xp-bento > *:nth-child(8) { animation-delay: 0.54s; }
-.xp-bento > *:nth-child(9) { animation-delay: 0.61s; }
-.xp-bento > *:nth-child(10) { animation-delay: 0.68s; }
-.xp-bento > *:nth-child(11) { animation-delay: 0.75s; }
-.xp-bento > *:nth-child(12) { animation-delay: 0.82s; }
+.xp-bento > * { animation: popIn 0.45s ease backwards; }
+.xp-bento > *:nth-child(1) { animation-delay: 0.04s; }
+.xp-bento > *:nth-child(2) { animation-delay: 0.09s; }
+.xp-bento > *:nth-child(3) { animation-delay: 0.14s; }
+.xp-bento > *:nth-child(4) { animation-delay: 0.19s; }
+.xp-bento > *:nth-child(5) { animation-delay: 0.24s; }
+.xp-bento > *:nth-child(6) { animation-delay: 0.29s; }
+.xp-bento > *:nth-child(7) { animation-delay: 0.34s; }
+.xp-bento > *:nth-child(8) { animation-delay: 0.39s; }
+.xp-bento > *:nth-child(9) { animation-delay: 0.44s; }
+.xp-bento > *:nth-child(10) { animation-delay: 0.49s; }
+.xp-bento > *:nth-child(11) { animation-delay: 0.54s; }
+.xp-bento > *:nth-child(12) { animation-delay: 0.59s; }
 
 /* 桌面端轻微倾斜（手工感），移动端取消 */
 @media (min-width: 901px) {
@@ -1307,8 +1382,9 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .about-avatar { width: 96px; height: 96px; }
   .about-nav-list span { display: none; }
   .work-compare { grid-template-columns: 1fr; }
-  .post-content { padding: 12px 12px 16px; }
-  .post-content p, .post-content li { font-size: 14px; }
+  .xp-shell .post-content { padding: 12px 12px 16px; }
+  .xp-shell .post-content p,
+  .xp-shell .post-content li { font-size: 14px; }
   .credits-grid { grid-template-columns: 1fr; }
   .content-container > .post-item .feature-container,
   .xp-shell > .post-item .feature-container { display: none; }
