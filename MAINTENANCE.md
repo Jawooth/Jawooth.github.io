@@ -460,3 +460,53 @@ git config --global --unset http.version
 - **代理必须开着**：本机访问 GitHub 走代理（`http.proxy=http://127.0.0.1:7897`）。代理没启动时 git 会一直等到超时；绕过代理**直连是连不通的**。
 - **推送成功后线上不是立刻更新**：GitHub Pages 还要构建，通常半分钟到两分钟。用浏览器打开 https://jawooth.github.io/ 并 `Ctrl + F5` 强刷。
 - **判断线上是不是新版**：首页 HTML 字节数应与本机 `public/index.html` 一致（约 43 KB），样式链接会带内容版本号 `/css/xp-custom.css?v=xxxxxxxx`。
+
+---
+
+## 13. 体积与安全基线（清理后请保持）
+
+### 13.1 当前基线
+
+| 指标 | 数值 | 说明 |
+|---|---|---|
+| 已跟踪文件 | 104 个 | `git -C D:\tools\hexo ls-files` 数一下就知道了 |
+| `.git` 目录 | ≈4 MB | 曾误提交过 600 MB 的客户端目录，已清理 |
+| `public/` 产物 | ≈1.7 MB / 52 文件 | 其中 js 只有 `main.js`(10.8 KB)、style 只有 `main.css`(21.6 KB)、fonts 33 KB |
+| 单页 HTML | 26–48 KB | 具体见 `tools/verify-site.py` 输出的体积表 |
+
+### 13.2 已删除的「从不加载」厂商资源（10 个，1.45 MB）
+
+`gitalk`、`twikoo`、`jquery`、`jquery.fancybox`、`simple-lightbox` 的 js+css，以及 `animate.min.css`、`prism.css`。
+
+- **为什么能删**：它们在主题的 `scripts/helper/start-path.js` 里映射了本地路径，但 `comment.enable`、`image.photo_zoom`、`prismjs.enable` 一关就永远不被引用；而主题的 `source/` 会被整体复制进 `public/`，于是每次部署都白传 1.45 MB。
+- **想启用怎么办**：先把 `_config.minimalism.yml` 的 `cdn.enable` 设为 `true`（走 jsDelivr），或从 npm 包 `hexo-theme-minimalism` 里把对应文件取回 `themes/minimalism/source/`。
+- `tools/verify-site.py` 已加检查：产物里再出现这些文件名就会报错（防止主题升级把它们带回来）。
+- 保留的：`style/main.css`（全站引用）、`js/main.js`（footer 加载）、`fonts/iconfont.*`（页脚社交图标用）。
+
+### 13.3 外链与 noopener
+
+所有 `target="_blank"` 的外链都要带 `rel="noopener noreferrer"`（否则新窗口能通过 `window.opener` 反向控制本站）。主题的 `footer.ejs`、`navigation_bar.ejs` 已补齐 4 处；以后自己写页面/模板时照做。
+
+### 13.4 不要把大文件放进仓库
+
+站点仓库就是 `D:\tools\hexo`，而这个目录同时也是 **Hexo Pro Desktop 客户端的安装位置**（`HexoPro/` 600+ MB）。`.gitignore` 已忽略 `HexoPro/`、`data/`、`blogInfoList.json`、`backup/`，但更稳的做法是**把客户端装到仓库外面**（例如 `D:\tools\HexoPro`），避免一次 `git add -A` 又把几百 MB 塞进历史。
+
+### 13.5 密钥与隐私
+
+- 评论（gitalk 的 `clientSecret`、twikoo 的 `envId`）、百度统计、algolia 搜索、CDN 开关**全部留空/关闭**；以后要填真实密钥，请先确认不会提交。
+- `.gitignore` 已加入 `.env*`、`*.pem`、`*.key`、`*.p12`、`*.pfx`、`credentials.json`、`*_rsa`。
+- 提交前快速自检：
+
+```powershell
+git -C D:\tools\hexo diff --cached | Select-String -Pattern 'secret|token|password|api[_-]?key|PRIVATE KEY'
+```
+
+- `/search.json`（全站搜索索引）和 `/works-bodies.json`（作品正文）都是**公开可下载**的，别往里写不想公开的内容。
+
+### 13.6 第三方外部依赖（页面会联网请求它们）
+
+| 域名 | 用途 | 备注 |
+|---|---|---|
+| `fonts.googleapis.com` | 手写体 Caveat | 每页都会请求；介意隐私/速度可改自托管 |
+| `cdn.jsdelivr.net` | APlayer 播放器 | **只有 `music.yml` 里填了曲目才加载** |
+| `music.163.com` | 网易云歌单 iframe | 只有填了 `netease_playlist` 才出现 |
