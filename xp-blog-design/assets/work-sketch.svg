@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f0f0e8"/>
+  <rect x="100" y="80" width="120" height="140" rx="10" fill="#d4a574" stroke="#8b4513" stroke-width="4"/>
+  <circle cx="260" cy="160" r="50" fill="#ffcc66" stroke="#cc9933" stroke-width="3"/>
+  <path d="M180 120 L220 180 L140 180 Z" fill="#a8c088" stroke="#5a7a3a" stroke-width="3"/>
+  <text x="200" y="270" font-size="18" text-anchor="middle" fill="#666">静物素描 · 陶罐与水果</text>
+</svg>

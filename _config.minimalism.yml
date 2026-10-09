@@ -1,0 +1,130 @@
+# ============================================
+#  Minimalism 主题配置 — 自定义版
+# ============================================
+
+# 导航菜单（URL 统一带尾斜杠，避免 301 与重复 URL）
+menu:
+  Index:
+    url: /
+    External: false
+    name: 首页
+  Works:
+    url: /works/
+    External: false
+    name: 作品
+  Games:
+    url: /games/
+    External: false
+    name: 游戏/工具
+  Guides:
+    url: /guides/
+    External: false
+    name: 攻略教程
+  Todo:
+    url: /todo/
+    External: false
+    name: 待办
+  Archives:
+    url: /blog/
+    External: false
+    name: 杂谈
+  About:
+    url: /about/
+    External: false
+    name: 关于
+
+# 文章目录（TOC）
+# 主题 post.ejs 会对所有页面输出目录，页面缺少 page.ejs 时会回落到文章模板，
+# 导致首页/作品页把卡片标题当成小标题收进目录、并在 >=1400px 时多出一条 200px 的目录列。
+# 内容页的 XP 窗口外壳尚未提供目录样式，因此先全局关闭；将来要开，请同时启用
+# source/css/xp-custom.css 里 ".top-div / .top-box" 的 XP 样式。
+toc: false
+
+# 深色主题
+dark_theme:
+  enable: true
+  mode: auto # 可选 auto、dark
+
+# 联系方式
+contact:
+  github: "https://github.com/Jawooth"
+  twitter:
+  weibo:
+  zhihu:
+  facebook:
+  email: ""
+  bluesky:
+
+# 首页头像图片
+# 注意：不要用 /images/avatar.png —— 那是主题自带的占位头像，
+# 主题资源在站点资源之后写入，同名的站点文件会被覆盖。
+avatar: /images/site-avatar.png
+
+# 站点图标
+favicon: /favicon.ico
+
+# 谷歌统计 跟踪 ID
+ga:
+
+# 百度统计
+baidu_tongji:
+
+# 评论
+comment:
+  enable: false
+  system: twikoo
+  config:
+    gitalk:
+      clientId:
+      clientSecret:
+      repository:
+      owner:
+      createIssueManually: false
+    twikoo:
+      envId:
+      region:
+      mark:
+
+# 底部链接
+bottom_link:
+  rss:
+    url:
+    text: RSS
+  icp:
+    url:
+    text:
+
+# 底部显示来源信息
+bottom_source:
+  enable: false
+
+# 脚注
+footnote:
+  enable: true
+  ignoreCodeBlock: false
+
+# 图片配置
+# 说明：主题自带的懒加载会把 <img src> 换成 loading.svg 占位并依赖 JS 还原，
+# 而本站首页/作品页的卡片缩略图本身包在 <a> 里，再叠加主题的 photo_zoom 会产生
+# <a><a><img></a></a> 的嵌套锚点。因此这里保持关闭，改用：
+#   - scripts/xp-enhance.js 注入原生 loading="lazy" decoding="async"
+#   - 同一脚本为文章正文图片提供轻量点击放大
+image:
+  lazyload_enable: false
+  lazyload_placeholder:
+  photo_zoom: false
+
+# cdn 配置
+cdn:
+  enable: false
+  provider: jsdelivr
+
+# 搜索
+search:
+  enable: false
+  type: algolia
+  placeholder: 输入关键词搜索...
+  algolia:
+    appID: ''
+    apiKey: ''
+    indexName: ''

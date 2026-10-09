@@ -1,0 +1,12 @@
+# 首页 XP-MP4 播放器的曲目表
+#
+# 留空（默认）时：首页不会加载 APlayer（省掉 CDN 的 CSS/JS），播放器显示「未配置曲目」空状态，
+# 不会出现"示例歌曲 / 艺术家 A / w3schools 测试音频"这类假内容。
+#
+# 想启用播放器，把下面的示例取消注释并换成自己的音频地址即可（支持相对路径与 http(s)）：
+#
+# - title: 曲目名
+#   author: 艺术家
+#   album: 专辑名
+#   url: /music/song.mp3
+#   pic: /images/covers/song.jpg

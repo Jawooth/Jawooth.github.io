@@ -1,0 +1,20 @@
+<%#
+  XP 自定义页面模板
+  ---------------------------------------------------------------
+  用途：source/ 下的桌面式页面（首页 / 作品 / 游戏 / 攻略 / 待办 / 关于 …）
+        在 front matter 里写 layout: xp-page 即可。
+
+  为什么需要它：
+  主题原本没有 page.ejs，Hexo 会按 ['page','post','index'] 依次回落，
+  于是这些页面被 post.ejs 渲染 —— 会额外套上 .post-detail / .post-content，
+  还要靠 JS 或 CSS 去隐藏文章标题与日期，主题的目录（TOC）也会混进来。
+
+  这个模板只做三件事：套页面外壳、输出页面内容、收尾。
+  页面自己负责内部结构（XP 窗口 / 便当格布局等）。
+%><%- include('./includes/header') %>
+
+  <div class="content-container">
+    <%- page.content %>
+  </div>
+
+<%- include('./includes/footer') %>

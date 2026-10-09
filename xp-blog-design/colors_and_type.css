@@ -1,0 +1,34 @@
+:root {
+  /* XP 基础色板 */
+  --xp-blue: #0054e3;
+  --xp-blue-light: #3590f3;
+  --xp-blue-dark: #003399;
+  --xp-bg: #ece9d8;
+  --xp-bg-dark: #2a2a3a;
+  --xp-border: #d0cfbf;
+  --xp-hover: #316ac5;
+  --xp-text: #000000;
+  --xp-text-dark: #e0e0e0;
+  --xp-card: #ffffff;
+  --xp-card-dark: #3a3a4a;
+  --xp-link: #0000ee;
+  --xp-link-dark: #7aa7e8;
+  --xp-status-done: #60b060;
+  --xp-status-doing: #f0a040;
+  --xp-status-todo: #888888;
+
+  /* 语义别名（apply-html-head-contract 需要） */
+  --xp-foreground: #000000;
+  --xp-primary: #0054e3;
+  --xp-muted: #888888;
+  --xp-radius-sm: 2px;
+  --xp-radius-md: 4px;
+  --xp-radius-lg: 8px;
+
+  /* 桌面背景 */
+  --desktop-bg: linear-gradient(to bottom, #245edb 0%, #3a7bd5 50%, #00d2ff 100%);
+  --desktop-bg-dark: linear-gradient(to bottom, #0a1628 0%, #1a2a4a 50%, #0d3b5c 100%);
+
+  /* 任务栏 */
+  --taskbar-height: 36px;
+}

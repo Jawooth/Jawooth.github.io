@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XP 博客首页</title>
+    <style id="theme-vars">
+:root {
+  /* XP 基础色板 */
+  --xp-blue: #0054e3;
+  --xp-blue-light: #3590f3;
+  --xp-blue-dark: #003399;
+  --xp-bg: #ece9d8;
+  --xp-bg-dark: #2a2a3a;
+  --xp-border: #d0cfbf;
+  --xp-hover: #316ac5;
+  --xp-text: #000000;
+  --xp-text-dark: #e0e0e0;
+  --xp-card: #ffffff;
+  --xp-card-dark: #3a3a4a;
+  --xp-link: #0000ee;
+  --xp-link-dark: #7aa7e8;
+  --xp-status-done: #60b060;
+  --xp-status-doing: #f0a040;
+  --xp-status-todo: #888888;
+
+  /* 语义别名 */
+  --xp-foreground: #000000;
+  --xp-primary: #0054e3;
+  --xp-muted: #888888;
+  --xp-radius-sm: 2px;
+  --xp-radius-md: 4px;
+  --xp-radius-lg: 8px;
+
+  /* 桌面背景 */
+  --desktop-bg: linear-gradient(135deg, #245edb 0%, #3a7bd5 50%, #00d2ff 100%);
+  --desktop-bg-dark: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0d3b5c 100%);
+
+  /* 任务栏 */
+  --taskbar-height: 36px;
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-foreground: var(--xp-foreground);
+    --color-card: var(--xp-card);
+    --color-primary: var(--xp-primary);
+    --color-muted: var(--xp-muted);
+    --color-border: var(--xp-border);
+    --color-background: var(--xp-bg);
+    --color-ring: var(--xp-link);
+    --radius-sm: var(--xp-radius-sm);
+    --radius-md: var(--xp-radius-md);
+    --radius-lg: var(--xp-radius-lg);
+  }
+  @layer base {
+    body { background: var(--xp-bg); color: var(--xp-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-foreground { background-color: var(--xp-foreground); }
+      .text-foreground { color: var(--xp-foreground); }
+      .border-foreground { border-color: var(--xp-foreground); }
+      .ring-foreground { --tw-ring-color: var(--xp-foreground); }
+      .bg-card { background-color: var(--xp-card); }
+      .text-card { color: var(--xp-card); }
+      .border-card { border-color: var(--xp-card); }
+      .ring-card { --tw-ring-color: var(--xp-card); }
+      .bg-primary { background-color: var(--xp-primary); }
+      .text-primary { color: var(--xp-primary); }
+      .border-primary { border-color: var(--xp-primary); }
+      .ring-primary { --tw-ring-color: var(--xp-primary); }
+      .bg-muted { background-color: var(--xp-muted); }
+      .text-muted { color: var(--xp-muted); }
+      .border-muted { border-color: var(--xp-muted); }
+      .ring-muted { --tw-ring-color: var(--xp-muted); }
+      .bg-border { background-color: var(--xp-border); }
+      .text-border { color: var(--xp-border); }
+      .border-border { border-color: var(--xp-border); }
+      .ring-border { --tw-ring-color: var(--xp-border); }
+      .bg-background { background-color: var(--xp-bg); }
+      .text-background { color: var(--xp-bg); }
+      .border-background { border-color: var(--xp-bg); }
+      .ring-background { --tw-ring-color: var(--xp-bg); }
+      .bg-ring { background-color: var(--xp-link); }
+      .text-ring { color: var(--xp-link); }
+      .border-ring { border-color: var(--xp-link); }
+      .ring-ring { --tw-ring-color: var(--xp-link); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex; align-items: center; justify-content: center;
+        -webkit-mask-size: contain; mask-size: contain;
+        -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+        -webkit-mask-position: center; mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body>
+
+<div class="home-page">
+  <div class="bento-grid">
+
+    <!-- ========== 大格：用户账户窗口（跨 7 列 3 行） ========== -->
+    <div class="bento-item bento-profile">
+      <div class="xp-window">
+        <div class="xp-window-title">
+          <span class="xp-window-title-text">
+            <svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16">
+              <circle cx="8" cy="5" r="3.5" fill="#ffcc99" stroke="#996633" stroke-width="0.5"/>
+              <path d="M2 14c0-4 3-6 6-6s6 2 6 6" fill="#6699cc" stroke="#336699" stroke-width="0.5"/>
+            </svg>
+            用户账户
+          </span>
+          <span class="xp-window-btns"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
+        </div>
+        <div class="xp-window-body">
+          <div class="profile-content">
+            <img class="profile-avatar" src="../assets/avatar.svg" alt="头像">
+            <div class="profile-text">
+              <h2>你好，我是 <span class="username">XXX</span></h2>
+              <p>这里是我的像素风个人角落，存放着画作、攻略、小游戏和碎碎念。</p>
+              <p>欢迎随便逛逛，像操作 XP 桌面一样点击各个小窗口～</p>
+              <div class="profile-meta">
+                <span class="meta-chip"><strong>3</strong> 作品</span>
+                <span class="meta-chip"><strong>5</strong> 标签</span>
+                <span class="meta-chip"><strong>∞</strong> 灵感</span>
+              </div>
+              <div class="profile-links">
+                <a class="xp-btn" href="home.html">关于我</a>
+                <a class="xp-btn" href="works.html">作品集</a>
+                <a class="xp-btn" href="games/index.html">小游戏</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 中格：复古播放器（竖向 3:4，跨 3 列 3 行） ========== -->
+    <div class="bento-item bento-music">
+      <div class="xp-window">
+        <div class="xp-window-title">
+          <span class="xp-window-title-text">
+            <svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16">
+              <rect x="2" y="4" width="10" height="8" rx="1" fill="#333" stroke="#000" stroke-width="0.5"/>
+              <circle cx="11" cy="10" r="3" fill="none" stroke="#fff" stroke-width="1"/>
+              <line x1="5" y1="6" x2="9" y2="6" stroke="#fff" stroke-width="0.8"/>
+            </svg>
+            XP-MP3 播放器
+          </span>
+          <span class="xp-window-btns"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
+        </div>
+        <div class="xp-window-body player-body">
+          <div class="retro-player vertical">
+            <div class="player-cover" id="player-cover">
+              <svg width="40" height="40" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#7cfc00" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="#7cfc00"/></svg>
+            </div>
+            <div class="player-info">
+              <div class="player-title" id="player-title">示例歌曲 1</div>
+              <div class="player-author" id="player-author">艺术家 A</div>
+              <div class="player-progress"><div class="player-progress-bar" id="player-progress-bar"><div class="player-progress-fill"></div></div></div>
+              <div class="player-time"><span id="player-current">00:00</span><span id="player-total">00:00</span></div>
+            </div>
+            <div class="player-controls">
+              <button class="xp-btn player-btn" id="btn-prev">⏮</button>
+              <button class="xp-btn player-btn play" id="btn-play">▶</button>
+              <button class="xp-btn player-btn" id="btn-next">⏭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 小格：随机便签（旋转，跨 3 列） ========== -->
+    <div class="bento-item bento-sticky">
+      <div class="xp-sticky-note">
+        <div class="sticky-pin"></div>
+        <div class="sticky-note-content">
+          <p id="sticky-text">「于是我驻足享受无法复制的瞬间。」</p>
+          <p class="hitokoto-from" id="sticky-from">—— 网易云热评</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 小格：站点统计（跨 2 列） ========== -->
+    <div class="bento-item bento-stats">
+      <div class="xp-window">
+        <div class="xp-window-title compact">
+          <span class="xp-window-title-text">
+            <svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/><path d="M3 12l3-4 3 2 4-6" fill="none" stroke="#60b060" stroke-width="1.5"/></svg>
+            小站数据
+          </span>
+        </div>
+        <div class="xp-window-body compact-body">
+          <div class="stat-row"><span class="stat-dot done"></span><span class="stat-label">文章</span><strong>4</strong></div>
+          <div class="stat-row"><span class="stat-dot doing"></span><span class="stat-label">作品</span><strong>3</strong></div>
+          <div class="stat-row"><span class="stat-dot todo"></span><span class="stat-label">待办</span><strong>1</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 宽格：最近作品（跨 9 列 2 行） ========== -->
+    <div class="bento-item bento-recent">
+      <div class="xp-window">
+        <div class="xp-window-title">
+          <span class="xp-window-title-text">
+            <svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16">
+              <path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"/>
+              <circle cx="5" cy="6" r="1.2" fill="#ff6666"/>
+              <circle cx="11" cy="6" r="1.2" fill="#66cc66"/>
+              <circle cx="5" cy="10" r="1.2" fill="#6666ff"/>
+              <circle cx="10" cy="11" r="1.2" fill="#ffff66"/>
+            </svg>
+            最近作品
+          </span>
+          <span class="xp-window-btns"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
+        </div>
+        <div class="xp-window-body">
+          <div class="recent-works-strip">
+            <a class="recent-work-item featured" href="works.html">
+              <img class="recent-work-thumb" src="../assets/work-sketch.svg" alt="陶罐与水果">
+              <div class="recent-work-info"><h4 class="recent-work-title">陶罐与水果</h4><p class="recent-work-date">2026-10-05 · 素描</p></div>
+            </a>
+            <a class="recent-work-item" href="works.html">
+              <img class="recent-work-thumb" src="../assets/work-char.svg" alt="魔法少女">
+              <div class="recent-work-info"><h4 class="recent-work-title">魔法少女</h4><p class="recent-work-date">2026-10-02 · 角色</p></div>
+            </a>
+            <a class="recent-work-item" href="works.html">
+              <img class="recent-work-thumb" src="../assets/work-landscape.svg" alt="山间小屋">
+              <div class="recent-work-info"><h4 class="recent-work-title">山间小屋</h4><p class="recent-work-date">2026-09-28 · 插画</p></div>
+            </a>
+            <a class="recent-work-item more" href="works.html">
+              <span class="more-works">查看全部<br><strong>3</strong> 件作品 →</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 窄格：待办事项（跨 3 列 2 行） ========== -->
+    <div class="bento-item bento-todo">
+      <div class="xp-window">
+        <div class="xp-window-title compact">
+          <span class="xp-window-title-text">
+            <svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#003399" stroke-width="0.5"/><rect x="2" y="1" width="12" height="3" rx="1" fill="#0066cc" stroke="#003399" stroke-width="0.5"/><rect x="4" y="5.5" width="2" height="2" fill="#66cc66" stroke="#003399" stroke-width="0.8"/><path d="M4.5 6.5l1 1 2-2" fill="none" stroke="#fff" stroke-width="0.8"/></svg>
+            待办事项
+          </span>
+        </div>
+        <div class="xp-window-body compact-body">
+          <ul class="todo-mini-list">
+            <li><input type="checkbox" checked disabled> <span class="done">更新 XP 主题首页</span></li>
+            <li><input type="checkbox" checked disabled> <span class="done">整理作品集页面</span></li>
+            <li><input type="checkbox" disabled> <span>写一篇新的插画过程</span></li>
+            <li><input type="checkbox" disabled> <span>设计像素小游戏</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 中格：快速导航（跨 5 列 2 行） ========== -->
+    <div class="bento-item bento-nav">
+      <div class="xp-window">
+        <div class="xp-window-title compact">
+          <span class="xp-window-title-text">
+            <svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#e0e8ff" stroke="#003399" stroke-width="0.5"/><path d="M8 3v5l3 3" fill="none" stroke="#003399" stroke-width="1.5" stroke-linecap="round"/></svg>
+            快速导航
+          </span>
+        </div>
+        <div class="xp-window-body compact-body">
+          <div class="quick-nav-grid">
+            <a class="nav-tile" href="works.html"><span class="nav-icon">🎨</span><span>作品集</span></a>
+            <a class="nav-tile" href="games/index.html"><span class="nav-icon">🎮</span><span>游戏</span></a>
+            <a class="nav-tile" href="guides/index.html"><span class="nav-icon">📖</span><span>攻略</span></a>
+            <a class="nav-tile" href="blog/index.html"><span class="nav-icon">📝</span><span>杂谈</span></a>
+            <a class="nav-tile" href="todo/index.html"><span class="nav-icon">✅</span><span>待办</span></a>
+            <a class="nav-tile" href="about/index.html"><span class="nav-icon">👤</span><span>关于</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 中格：友情链接 + 搜索（跨 4 列 2 行） ========== -->
+    <div class="bento-item bento-links">
+      <div class="xp-window">
+        <div class="xp-window-title compact">
+          <span class="xp-window-title-text">
+            <svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="#333" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
+            链接 & 搜索
+          </span>
+        </div>
+        <div class="xp-window-body compact-body">
+          <ul class="friend-links">
+            <li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a></li>
+            <li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a></li>
+            <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+          </ul>
+          <div class="xp-search-box">
+            <input type="text" class="xp-search-input" id="site-search-input" placeholder="搜索文章...">
+            <button class="xp-search-btn" onclick="doSearch()">Go</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="xp-taskbar">
+  <div><button class="xp-start-btn">开始</button></div>
+  <div class="xp-taskbar-item">XP 博客首页</div>
+  <div class="xp-taskbar-clock" id="taskbar-clock">12:00</div>
+</div>
+
+<script>lucide.createIcons();</script>
+
+<script>
+  /* 随机便签 */
+  const stickyQuotes = [
+    { text: "于是我驻足享受无法复制的瞬间。", from: "网易云热评" },
+    { text: "我们开始一起攀登，这长长的，长长的坡道。", from: "《Clannad》" },
+    { text: "人生就是一列开往坟墓的列车，路途上会有很多站。", from: "《千与千寻》" },
+    { text: "愿你出走半生，归来仍是少年。", from: "苏轼" },
+    { text: "世界上只有一种真正的英雄主义。", from: "罗曼·罗兰" }
+  ];
+  (function() {
+    const q = stickyQuotes[Math.floor(Math.random() * stickyQuotes.length)];
+    document.getElementById('sticky-text').textContent = '「' + q.text + '」';
+    document.getElementById('sticky-from').textContent = '—— ' + q.from;
+  })();
+
+  /* 播放器模拟 */
+  const songs = [
+    { title: "示例歌曲 1", author: "艺术家 A" },
+    { title: "示例歌曲 2", author: "艺术家 B" },
+    { title: "示例歌曲 3", author: "艺术家 C" }
+  ];
+  let songIdx = 0;
+  let playing = false;
+  let timer = null;
+  let progress = 0;
+  function updateSong() {
+    document.getElementById('player-title').textContent = songs[songIdx].title;
+    document.getElementById('player-author').textContent = songs[songIdx].author;
+  }
+  function togglePlay() {
+    playing = !playing;
+    const btn = document.getElementById('btn-play');
+    btn.textContent = playing ? '⏸' : '▶';
+    if (playing) {
+      timer = setInterval(() => {
+        progress = (progress + 0.5) % 100;
+        document.querySelector('.player-progress-fill').style.width = progress + '%';
+        const cur = Math.floor(progress * 2.4);
+        document.getElementById('player-current').textContent = '00:' + (cur < 10 ? '0' : '') + cur;
+      }, 500);
+    } else {
+      clearInterval(timer);
+    }
+  }
+  document.getElementById('btn-play').addEventListener('click', togglePlay);
+  document.getElementById('btn-prev').addEventListener('click', () => { songIdx = (songIdx - 1 + songs.length) % songs.length; updateSong(); });
+  document.getElementById('btn-next').addEventListener('click', () => { songIdx = (songIdx + 1) % songs.length; updateSong(); });
+
+  /* 搜索 */
+  function doSearch() {
+    const q = document.getElementById('site-search-input').value.trim();
+    if (q) window.location.href = 'blog/index.html?q=' + encodeURIComponent(q);
+  }
+  document.getElementById('site-search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+  /* 任务栏时钟 */
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('taskbar-clock').textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+  }
+  updateClock();
+  setInterval(updateClock, 60000);
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: var(--desktop-bg); background-attachment: fixed;
+    padding: 24px 18px calc(var(--taskbar-height) + 24px);
+    font-family: "Tahoma", "Microsoft YaHei", "PingFang SC", sans-serif;
+    color: var(--xp-text);
+  }
+  html.dark body { background: var(--desktop-bg-dark); color: var(--xp-text-dark); }
+
+  .home-page { max-width: 1100px; margin: 0 auto; }
+
+  /* Bento 网格：错落有致 */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(110px, auto);
+    gap: 18px;
+    align-items: stretch;
+  }
+  .bento-item { display: flex; }
+  .bento-item > .xp-window,
+  .bento-item > .xp-sticky-note { width: 100%; }
+
+  .bento-profile { grid-column: 1 / 8; grid-row: span 3; }
+  .bento-music { grid-column: 8 / 11; grid-row: span 3; }
+  .bento-sticky { grid-column: 11 / 13; grid-row: span 1; }
+  .bento-stats { grid-column: 11 / 13; grid-row: span 2; }
+  .bento-recent { grid-column: 1 / 10; grid-row: span 2; }
+  .bento-todo { grid-column: 10 / 13; grid-row: span 2; }
+  .bento-nav { grid-column: 1 / 6; grid-row: span 2; }
+  .bento-links { grid-column: 6 / 10; grid-row: span 2; }
+
+  /* XP 窗口 */
+  .xp-window {
+    border: 2px solid var(--xp-primary);
+    border-radius: 8px 8px 0 0;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.18), 6px 6px 16px rgba(0,0,0,0.15);
+    overflow: hidden;
+    background: var(--xp-card);
+    display: flex; flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .xp-window:hover { box-shadow: 4px 4px 0 rgba(0,0,0,0.22), 8px 10px 22px rgba(0,0,0,0.18); }
+  html.dark .xp-window { background: var(--xp-card-dark); border-color: #4a6fa5; }
+  .xp-window-title {
+    background: linear-gradient(to bottom, #0058ee 0%, #3590f3 10%, #0058ee 50%, #003399 100%);
+    color: white; padding: 5px 10px; font-weight: bold; font-size: 13px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .xp-window-title.compact { padding: 4px 8px; font-size: 12px; }
+  .xp-window-title-text { display: flex; align-items: center; gap: 6px; }
+  .xp-window-btns { display: flex; gap: 2px; }
+  .xp-window-btn {
+    width: 18px; height: 18px; border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 3px; background: linear-gradient(to bottom, #5ca3f7 0%, #1a6fd6 100%);
+    color: white; font-size: 12px; line-height: 16px; text-align: center;
+  }
+  .xp-window-btn.close { background: linear-gradient(to bottom, #e04343 0%, #b03030 100%); }
+  .xp-window-body { padding: 14px 16px; background: var(--xp-card); flex: 1; }
+  .xp-window-body.compact-body { padding: 10px 12px; }
+  html.dark .xp-window-body { background: var(--xp-card-dark); color: var(--xp-text-dark); }
+
+  /* 用户资料 */
+  .profile-content { display: flex; align-items: flex-start; gap: 18px; height: 100%; }
+  .profile-avatar { width: 120px; height: 120px; border: 2px solid var(--xp-primary); border-radius: 6px; background: var(--xp-bg); object-fit: cover; flex-shrink: 0; }
+  .profile-text { flex: 1; }
+  .profile-text h2 { margin: 0 0 10px 0; font-size: 20px; color: var(--xp-blue-dark); }
+  .profile-text h2 .username { color: var(--xp-primary); }
+  html.dark .profile-text h2 { color: var(--xp-link-dark); }
+  .profile-text p { margin: 8px 0; line-height: 1.6; font-size: 14px; }
+  .profile-meta { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  .meta-chip {
+    background: linear-gradient(to bottom, #f0f8ff 0%, #d6e8ff 100%);
+    border: 1px solid var(--xp-blue-light); border-radius: 3px;
+    padding: 3px 10px; font-size: 12px; color: var(--xp-blue-dark);
+  }
+  .meta-chip strong { color: var(--xp-primary); margin-right: 2px; }
+  .profile-links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .xp-btn {
+    background: linear-gradient(to bottom, #f5f4ed 0%, #e5e4db 50%, #d8d7c9 100%);
+    border: 1px solid #003c74; border-radius: 3px; padding: 4px 14px;
+    font-size: 13px; cursor: pointer; color: var(--xp-text); text-decoration: none; display: inline-block;
+  }
+  .xp-btn:hover { background: linear-gradient(to bottom, #fffbf0 0%, #ffe8b8 50%, #ffd766 100%); }
+
+  /* 复古播放器：竖向 3:4 */
+  .player-body { display: flex; align-items: center; justify-content: center; }
+  .retro-player {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    width: 100%; max-width: 240px; aspect-ratio: 3 / 4;
+    justify-content: space-between; text-align: center;
+  }
+  .player-cover {
+    width: 84px; height: 84px; border: 2px solid #4a4a4a; border-radius: 6px;
+    background: linear-gradient(135deg, #2a2a2a 0%, #111 100%);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: inset 0 0 10px rgba(124,252,0,0.08);
+  }
+  .player-info { width: 100%; min-width: 0; }
+  .player-title { font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #003399; }
+  .player-author { font-size: 12px; color: #666; margin-top: 3px; }
+  .player-progress { height: 8px; background: #d0d0c0; border: 1px solid #999; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .player-progress-bar { height: 100%; background: #e8e8d8; position: relative; }
+  .player-progress-fill { height: 100%; width: 0%; background: linear-gradient(to bottom, #7cfc00 0%, #4caf50 100%); }
+  .player-time { display: flex; justify-content: space-between; font-size: 11px; color: #666; margin-top: 4px; }
+  .player-controls { display: flex; gap: 8px; justify-content: center; }
+  .player-btn { min-width: 36px; height: 30px; padding: 0; text-align: center; }
+  .player-btn.play { min-width: 46px; font-weight: bold; }
+
+  /* 便签 */
+  .xp-sticky-note {
+    background: #ffffc0; border: 1px solid #c0a030; border-top: none;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3); padding: 14px 16px 12px;
+    transform: rotate(-1.5deg); position: relative; margin: 2px 4px; height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  html.dark .xp-sticky-note { background: #6b6b3a; border-color: #8b7030; color: #f0f0d0; }
+  .sticky-pin {
+    position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff6b6b, #c03030);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .sticky-note-content p { margin: 0 0 8px 0; font-size: 14px; line-height: 1.5; font-style: italic; }
+  .hitokoto-from { text-align: right; font-size: 11px; color: #806020; margin-top: 8px; font-style: normal; }
+  html.dark .hitokoto-from { color: #d0c080; }
+
+  /* 统计 */
+  .stat-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; border-bottom: 1px dashed var(--xp-border); }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .stat-dot.done { background: var(--xp-status-done); }
+  .stat-dot.doing { background: var(--xp-status-doing); }
+  .stat-dot.todo { background: var(--xp-status-todo); }
+  .stat-label { flex: 1; color: #666; }
+  html.dark .stat-label { color: #aaa; }
+
+  /* 最近作品 */
+  .recent-works-strip { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px; height: 100%; align-items: stretch; }
+  .recent-work-item {
+    flex-shrink: 0; width: 150px; background: var(--xp-card); border: 1px solid var(--xp-border);
+    border-radius: 3px; overflow: hidden; transition: transform 0.2s, border-color 0.2s;
+    text-decoration: none; color: inherit; display: flex; flex-direction: column;
+  }
+  .recent-work-item.featured { width: 220px; border-color: var(--xp-primary); box-shadow: 0 0 0 1px var(--xp-primary); }
+  .recent-work-item.more {
+    width: 120px; background: linear-gradient(135deg, #f0f8ff 0%, #d6e8ff 100%);
+    align-items: center; justify-content: center; text-align: center; border-style: dashed;
+  }
+  .recent-work-item:hover { transform: translateY(-3px); border-color: var(--xp-hover); }
+  .recent-work-item.more:hover { background: linear-gradient(135deg, #e6f3ff 0%, #c2dfff 100%); }
+  html.dark .recent-work-item { background: var(--xp-card-dark); border-color: #555; }
+  .recent-work-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .recent-work-info { padding: 8px 10px; flex: 1; }
+  .recent-work-title { font-size: 13px; font-weight: bold; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--xp-blue-dark); }
+  html.dark .recent-work-title { color: var(--xp-link-dark); }
+  .recent-work-date { font-size: 11px; color: #888; margin: 0; }
+  .more-works { font-size: 13px; color: var(--xp-primary); line-height: 1.5; }
+  .more-works strong { font-size: 18px; }
+
+  /* 待办 */
+  .todo-mini-list { list-style: none; padding: 0; margin: 0; }
+  .todo-mini-list li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--xp-border); font-size: 13px; }
+  .todo-mini-list li:last-child { border-bottom: none; }
+  .todo-mini-list .done { text-decoration: line-through; opacity: 0.6; }
+
+  /* 快速导航 */
+  .quick-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .nav-tile {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 4px; background: linear-gradient(to bottom, #f8f8f0 0%, #e8e8dc 100%);
+    border: 1px solid var(--xp-border); border-radius: 3px; text-decoration: none; color: var(--xp-text);
+    font-size: 12px; transition: transform 0.15s, background 0.15s;
+  }
+  .nav-tile:hover { transform: translateY(-2px); background: linear-gradient(to bottom, #fffbf0 0%, #ffe8b8 100%); border-color: var(--xp-hover); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+
+  /* 友情链接 & 搜索 */
+  .friend-links { list-style: none; padding: 0; margin: 0 0 12px 0; }
+  .friend-links li { padding: 4px 0; border-bottom: 1px dashed var(--xp-border); }
+  .friend-links li:last-child { border-bottom: none; }
+  .friend-links a { color: var(--xp-link); text-decoration: none; font-size: 13px; }
+  .friend-links a:hover { text-decoration: underline; }
+  .xp-search-box { display: flex; gap: 4px; }
+  .xp-search-input {
+    flex: 1; border: 1px solid #7f9db9; border-radius: 2px; padding: 4px 8px;
+    font-size: 13px; background: #fff;
+  }
+  .xp-search-btn {
+    background: linear-gradient(to bottom, #f5f4ed 0%, #d8d7c9 100%);
+    border: 1px solid #003c74; border-radius: 3px; padding: 3px 12px;
+    font-size: 12px; cursor: pointer;
+  }
+
+  /* 任务栏 */
+  .xp-taskbar {
+    position: fixed; bottom: 0; left: 0; right: 0; height: var(--taskbar-height);
+    background: linear-gradient(to bottom, #245edb 0%, #3a7bd5 10%, #245edb 50%, #1a4ab8 100%);
+    border-top: 2px solid var(--xp-primary); display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px; z-index: 9999; box-shadow: 0 -2px 8px rgba(0,0,0,0.3); color: white;
+  }
+  .xp-start-btn {
+    background: linear-gradient(to bottom, #3a8f3a 0%, #2a6f2a 50%, #1a4f1a 100%);
+    border: 2px solid #0a3a0a; border-radius: 0 10px 10px 0; padding: 2px 12px 2px 8px;
+    color: white; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px;
+    height: 28px; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); font-style: italic;
+  }
+  .xp-taskbar-item {
+    background: linear-gradient(to bottom, #c8d8f0 0%, #a0b8e0 50%, #8098c8 100%);
+    border: 1px solid #003c74; border-radius: 3px; padding: 2px 10px;
+    display: flex; align-items: center; gap: 6px; font-size: 12px; color: #000; height: 24px;
+  }
+  .xp-taskbar-clock { font-size: 12px; padding: 0 6px; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); }
+
+  /* 入场动画 */
+  .bento-item { opacity: 0; transform: translateY(16px); animation: popIn 0.5s ease forwards; }
+  .bento-item:nth-child(1) { animation-delay: 0.05s; }
+  .bento-item:nth-child(2) { animation-delay: 0.12s; }
+  .bento-item:nth-child(3) { animation-delay: 0.19s; }
+  .bento-item:nth-child(4) { animation-delay: 0.26s; }
+  .bento-item:nth-child(5) { animation-delay: 0.33s; }
+  .bento-item:nth-child(6) { animation-delay: 0.40s; }
+  .bento-item:nth-child(7) { animation-delay: 0.47s; }
+  .bento-item:nth-child(8) { animation-delay: 0.54s; }
+  @keyframes popIn { to { opacity: 1; transform: translateY(0); } }
+
+  /* 响应式 */
+  @media (max-width: 900px) {
+    .bento-grid { grid-template-columns: repeat(6, 1fr); }
+    .bento-profile { grid-column: 1 / 7; grid-row: span 2; }
+    .bento-music { grid-column: 1 / 3; grid-row: span 3; }
+    .bento-sticky { grid-column: 3 / 7; grid-row: span 1; }
+    .bento-stats { grid-column: 3 / 7; grid-row: span 2; }
+    .bento-recent { grid-column: 1 / 7; grid-row: span 2; }
+    .bento-todo { grid-column: 1 / 3; grid-row: span 2; }
+    .bento-nav { grid-column: 3 / 7; grid-row: span 2; }
+    .bento-links { grid-column: 1 / 7; grid-row: span 1; }
+    .retro-player { max-width: 180px; }
+  }
+  @media (max-width: 640px) {
+    :root { --taskbar-height: 32px; }
+    body { padding: 12px 8px calc(var(--taskbar-height) + 12px); }
+    .bento-grid { grid-template-columns: 1fr; }
+    .bento-profile, .bento-music, .bento-sticky, .bento-stats, .bento-recent, .bento-todo, .bento-nav, .bento-links {
+      grid-column: 1 / -1; grid-row: span 1;
+    }
+    .retro-player { aspect-ratio: auto; max-width: 280px; flex-direction: row; flex-wrap: wrap; text-align: left; }
+    .player-cover { width: 64px; height: 64px; }
+    .player-info { flex: 1; width: auto; }
+    .profile-content { flex-direction: column; align-items: center; text-align: center; }
+    .profile-avatar { width: 90px; height: 90px; }
+    .xp-sticky-note { transform: none; margin: 0; }
+    .recent-work-item { width: 140px; }
+    .recent-work-item.featured { width: 180px; }
+  }
+</style>
+</body>
+</html>

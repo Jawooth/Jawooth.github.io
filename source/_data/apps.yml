@@ -1,0 +1,33 @@
+# 小游戏 / 小工具清单（唯一真源）
+# status: online(已上线，卡片可点) | planned(开发中，卡片为不可点的空状态)
+# icon 对应页面内 <symbol id="icon-*"> 的 id
+- name: 打砖块
+  desc: 经典打砖块小游戏
+  icon: icon-brick
+  group: game
+  status: planned
+- name: 贪吃蛇
+  desc: 怀旧像素贪吃蛇
+  icon: icon-snake
+  group: game
+  status: planned
+- name: 拼图游戏
+  desc: 图片拼图挑战
+  icon: icon-puzzle
+  group: game
+  status: planned
+- name: 计算器
+  desc: XP 风格计算器
+  icon: icon-calc
+  group: tool
+  status: planned
+- name: 调色板
+  desc: 颜色拾取工具
+  icon: icon-palette
+  group: tool
+  status: planned
+- name: 记事本
+  desc: 在线便签本
+  icon: icon-notepad
+  group: tool
+  status: planned

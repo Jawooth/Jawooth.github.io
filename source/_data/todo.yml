@@ -1,0 +1,21 @@
+# 待办事项（唯一真源）
+# 首页「小站数据」、/todo/ 页面、/blog/ 注入的待办窗口都从这里渲染。
+# state: doing(进行中) | todo(待做) | done(已完成)
+- text: 整理作品集页面
+  state: doing
+- text: 学习插画基础
+  state: doing
+- text: 写一篇新的插画过程
+  state: todo
+- text: 设计像素小游戏
+  state: todo
+- text: 写一篇网站建设教程
+  state: todo
+- text: 上传更多作品
+  state: todo
+- text: 完成个人网站搭建
+  state: done
+- text: 确定网站风格和方向
+  state: done
+- text: 学习 Hexo 基础使用
+  state: done

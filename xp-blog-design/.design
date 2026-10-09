@@ -1,0 +1,133 @@
+{
+  "data": [
+    {
+      "id": "page-home",
+      "type": "page",
+      "name": "首页",
+      "title": "XP 博客首页",
+      "version": 1,
+      "createdAt": 1791480000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1051,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-6f63645b",
+          "measuredAt": 1791542952191
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/home.html",
+        "title": "XP 博客首页"
+      }
+    },
+    {
+      "id": "page-works",
+      "type": "page",
+      "name": "作品页",
+      "title": "XP 博客作品页",
+      "version": 1,
+      "createdAt": 1791480000,
+      "canvasData": {
+        "x": 480,
+        "y": 0,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1179,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-2e09b165",
+          "measuredAt": 1791542952191
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/works.html",
+        "title": "XP 博客作品页"
+      }
+    },
+    {
+      "id": "image-001",
+      "type": "image",
+      "name": "头像占位",
+      "title": "头像占位",
+      "version": 1,
+      "createdAt": 1791480000,
+      "canvasData": {
+        "x": 0,
+        "y": 454,
+        "naturalSize": {
+          "width": 150,
+          "height": 150
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/avatar.svg"
+      }
+    },
+    {
+      "id": "image-002",
+      "type": "image",
+      "name": "素描占位",
+      "title": "素描占位",
+      "version": 1,
+      "createdAt": 1791480000,
+      "canvasData": {
+        "x": 480,
+        "y": 454,
+        "naturalSize": {
+          "width": 200,
+          "height": 150
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/work-sketch.svg"
+      }
+    },
+    {
+      "id": "image-003",
+      "type": "image",
+      "name": "角色占位",
+      "title": "角色占位",
+      "version": 1,
+      "createdAt": 1791480000,
+      "canvasData": {
+        "x": 960,
+        "y": 454,
+        "naturalSize": {
+          "width": 120,
+          "height": 150
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/work-char.svg"
+      }
+    },
+    {
+      "id": "image-004",
+      "type": "image",
+      "name": "风景占位",
+      "title": "风景占位",
+      "version": 1,
+      "createdAt": 1791480000,
+      "canvasData": {
+        "x": 1440,
+        "y": 454,
+        "naturalSize": {
+          "width": 200,
+          "height": 150
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/work-landscape.svg"
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": true,
+    "deviceType": "desktop",
+    "visualEditorEnabled": false
+  }
+}
