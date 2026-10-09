@@ -21,20 +21,16 @@ layout: xp-page
 </div>
 <div class="xp-window-body">
 <div class="profile-content">
-<img class="profile-avatar" src="/images/site-avatar.png" alt="站点头像" width="256" height="256">
+<!-- 名字 / 介绍 / 胶囊 / 按钮 都在 source/_data/profile.yml 里改 -->
+<img class="profile-avatar" src="{% xp_profile avatar %}" alt="{% xp_profile name %} 的头像" width="256" height="256">
 <div class="profile-text">
-<h2>你好，我是 <span class="username">Jawooth</span></h2>
-<p>这里是我的像素风个人角落，存放着画作、攻略、小游戏和碎碎念。</p>
-<p>欢迎随便逛逛，像操作 XP 桌面一样点击各个小窗口~</p>
+<h2>{% xp_profile greeting %} <span class="username">{% xp_profile name %}</span></h2>
+{% xp_profile_lines intro %}
 <div class="profile-meta">
-<span class="meta-chip"><strong>{% xp_num works %}</strong> 作品</span>
-<span class="meta-chip"><strong>{% xp_num tags %}</strong> 标签</span>
-<span class="meta-chip"><strong>∞</strong> 灵感</span>
+{% xp_profile_chips %}
 </div>
 <div class="profile-links">
-<a class="xp-btn" href="/about/">关于我</a>
-<a class="xp-btn" href="/works/">作品集</a>
-<a class="xp-btn" href="/games/">小游戏</a>
+{% xp_profile_buttons %}
 </div>
 </div>
 </div>

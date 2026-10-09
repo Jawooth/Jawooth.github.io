@@ -497,11 +497,15 @@ function wordChip(ctx, post) {
 
 hexo.extend.helper.register('xp_widget_author', function () {
   const cfg = hexo.config;
+  const p = profileData();
+  const name = p.name || cfg.author || cfg.title;
+  const bio = p.bio || cfg.description || '';
+  const avatar = p.avatar || '/images/site-avatar.png';
   const body = oneLine(
     `<div class="xp-aside-author">` +
-    `<img src="/images/site-avatar.png" alt="${esc(cfg.author || cfg.title)}" width="256" height="256" loading="lazy" decoding="async">` +
-    `<div class="name">${esc(cfg.author || cfg.title)}</div>` +
-    `<div class="bio">${esc(cfg.description || '')}</div>` +
+    `<img src="${esc(avatar)}" alt="${esc(name)}" width="256" height="256" loading="lazy" decoding="async">` +
+    `<div class="name">${esc(name)}</div>` +
+    `<div class="bio">${esc(bio)}</div>` +
     `<div class="links">` +
     `<a class="xp-btn xp-btn-small" href="/about/">关于我</a>` +
     `<a class="xp-btn xp-btn-small" href="/works/">作品集</a>` +
@@ -615,6 +619,71 @@ hexo.extend.helper.register('xp_tag_index', () => tagIndexHtml());
 hexo.extend.helper.register('xp_category_index', () => categoryIndexHtml());
 registerTag('xp_tag_index', () => tagIndexHtml());
 registerTag('xp_category_index', () => categoryIndexHtml());
+
+/* ---------------------------------------------------------------- 身份信息（profile.yml） */
+/* 名字、介绍、按钮、联系方式都从这里读，页面里只放 {% xp_profile … %} 标签。
+   支持点号路径，例如 {% xp_profile about.title %}。 */
+function profileData() {
+  const raw = dataFile('profile');
+  return Array.isArray(raw) ? {} : (raw || {});
+}
+
+function profileValue(key) {
+  return String(key || '').split('.').reduce((acc, k) => (acc == null ? acc : acc[k]), profileData());
+}
+
+/* 胶囊：既支持 { key: works, label: 作品 }（数字由站点统计），
+   也支持 { value: "∞", label: 灵感 }，以及 about.chips 里那种纯字符串 */
+function profileChips(list) {
+  if (!Array.isArray(list) || !list.length) return '';
+  return oneLine(list.map((c) => {
+    if (typeof c === 'string') {
+      return `<span class="meta-chip"><strong>${esc(c)}</strong></span>`;
+    }
+    const value = c.key ? String(num(c.key)) : String(c.value == null ? '' : c.value);
+    return `<span class="meta-chip"><strong>${esc(value)}</strong>${c.label ? ' ' + esc(c.label) : ''}</span>`;
+  }).join(''));
+}
+
+function profileParagraphs(list) {
+  if (!Array.isArray(list) || !list.length) return '';
+  return oneLine(list.map((t) => `<p>${esc(t)}</p>`).join(''));
+}
+
+hexo.extend.tag.register('xp_profile', (args) => {
+  const v = profileValue(args[0]);
+  return v == null ? '' : esc(v);
+});
+
+/* 段落列表：{% xp_profile_lines intro %} 或 {% xp_profile_lines about.paragraphs %} */
+hexo.extend.tag.register('xp_profile_lines', (args) => {
+  const key = args[0] || 'intro';
+  const v = profileValue(key);
+  const list = Array.isArray(v) ? v : (v ? [v] : []);
+  if (key === 'intro') {
+    const tagline = profileValue('tagline');
+    if (tagline) list.unshift(tagline);
+  }
+  return profileParagraphs(list);
+});
+
+hexo.extend.tag.register('xp_profile_chips', (args) => profileChips(profileValue(args[0] || 'chips')));
+
+hexo.extend.tag.register('xp_profile_buttons', () => oneLine(
+  (profileData().buttons || [])
+    .map((b) => `<a class="xp-btn" href="${esc(b.url || '#')}">${esc(b.text || '')}</a>`)
+    .join('')
+));
+
+/* 只渲染填了内容的联系方式 */
+hexo.extend.tag.register('xp_profile_contacts', () => {
+  const contacts = profileData().contacts || {};
+  const labels = { github: 'GitHub', email: '邮箱' };
+  return oneLine(Object.keys(labels).filter((k) => contacts[k]).map((k) => {
+    const url = k === 'email' ? `mailto:${contacts[k]}` : contacts[k];
+    return `<a class="xp-btn" href="${esc(url)}" target="_blank" rel="noopener">${labels[k]}</a>`;
+  }).join(''));
+});
 
 /* ---------------------------------------------------------------- 注册 */
 function registerTag(name, fn) {

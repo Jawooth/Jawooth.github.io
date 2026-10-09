@@ -74,15 +74,13 @@ layout: xp-page
 </div>
 <div class="xp-window-body">
 <div class="about-profile-layout">
-<img class="about-avatar" src="/images/site-avatar.png" alt="站点头像" width="256" height="256">
+<!-- 头像 / 标题 / 段落 / 标签 都在 source/_data/profile.yml 里改 -->
+<img class="about-avatar" src="{% xp_profile avatar %}" alt="{% xp_profile name %} 的头像" width="256" height="256">
 <div class="about-text">
-<h2>你好，欢迎来到我的小站！</h2>
-<p>这里是我的个人角落，存放着我的画作、攻略、小游戏和一些碎碎念。</p>
-<p>站点整体采用 Windows XP 桌面风格，希望给你带来一点复古又温馨的感觉。</p>
+<h2>{% xp_profile about.title %}</h2>
+{% xp_profile_lines about.paragraphs %}
 <div class="about-meta">
-<span class="meta-chip"><strong>像素风</strong></span>
-<span class="meta-chip"><strong>绘画</strong></span>
-<span class="meta-chip"><strong>游戏</strong></span>
+{% xp_profile_chips about.chips %}
 </div>
 </div>
 </div>
@@ -115,9 +113,10 @@ layout: xp-page
 <span class="xp-window-title-text"><svg class="inline-icon" width="14" height="14" aria-hidden="true"><use href="#icon-mail"/></svg> 联系方式</span>
 </div>
 <div class="xp-window-body compact-body">
-<p class="contact-desc">欢迎来 GitHub 找我，或者去首页逛逛：</p>
+<p class="contact-desc">{% xp_profile about.contact_desc %}</p>
 <div class="contact-links">
-<a class="xp-btn" href="https://github.com/Jawooth" target="_blank" rel="noopener">GitHub</a>
+<!-- GitHub / 邮箱 从 profile.yml 的 contacts 读取；留空则不显示 -->
+{% xp_profile_contacts %}
 <a class="xp-btn" href="/blog/">杂谈</a>
 <a class="xp-btn" href="/">首页</a>
 </div>
