@@ -40,7 +40,7 @@
 
 | 入口 | 是什么 | 特点 |
 |---|---|---|
-| **http://localhost:4000/** | **HexoHub 客户端**的「启动服务器」（它真的跑 `hexo server`） | 读磁盘、就是标准预览 ✓ 改完用 `构建.cmd` 或客户端里的【清理】+【生成】即可。注意它会**自动杀掉占用 4000 的进程**，所以别同时开两个客户端 |
+| **http://localhost:4000/** | **HexoHub 客户端**（`D:\tools\HexoHub`，Tauri 版）的「启动服务器」，它真的跑 `hexo server` | 读磁盘、就是标准预览 ✓ 改完用 `构建.cmd` 或客户端里的【清理】+【生成】即可。注意它会**自动杀掉占用 4000 的进程**，所以别同时开两个客户端 |
 | **http://127.0.0.1:4010/** | 命令行预览：`npm run server` / `预览.cmd` | 读磁盘、自动热更新；客户端没开时用这个 |
 
 > ⚠️ 别双击 `public/index.html` 打开（资源是绝对路径，`file://` 下会 404 变成纯文本）。
@@ -267,7 +267,7 @@ status: done                  # done / doing（作品卡片上的状态角标）
 12. **改了 `_data/*.yml` 却"没生效"**：增量 `hexo generate` 感知不到数据文件与 `scripts/*.js` 的变化，必须 `npm run build`（内部先 clean）。这是实测过的行为，不是你的错觉。
 13. **含中文的文件不要用 PowerShell 的 `-replace` / `Set-Content` 去改**：会把中文写成 `?`，YAML/CSS 直接损坏（排查时非常容易误判成"功能没生效"）。要批量改就用编辑器，或用 Python 以 UTF-8 读写。
 14. **窄屏下 `flex-basis` 会变成「高度」**：底部「搜索 & 致谢」窗口里 `.links-col { flex: 1 1 420px }`、`.credits-col { flex: 0 1 460px }`，一旦在媒体查询里把容器改成 `flex-direction: column`，这两个 basis 就变成高度，窗口被撑到 800+px（移动端就是这样变长的）。规则：**凡是把容器改成纵向排列的地方，都要同时把子项的 flex-basis 复位**（`flex: 0 0 auto` 或改用 `width`）。
-15. **客户端的选择与坑（2026-10 实测）**：现在用 **HexoHub**（装在 `HexoHub\`，已 gitignore）。
+15. **客户端的选择与坑（2026-10 实测）**：现在用 **HexoHub（Tauri 版，`D:\tools\HexoHub`）**；下面的 Hexo Pro 部分已卸载，作为"选客户端"的教训保留。
     - HexoHub 的预览就是标准 `hexo server`（端口 4000），**读磁盘**，没有缓存问题 ✓
     - 旧的 **Hexo Pro Desktop 建议不要再打开**：它会用自己那份 Hexo 实例渲染（不读 `public/`）、把 `data/*.db`／`_yaml_templates/`／`blogInfoList.json`／`deploy_config.json`／`source/_discarded/` 写进仓库、**直接删掉图片**，而且**重写 `_config.yml`**（把 `deploy.repo` 拼成了 `https://github.com/https://jawooth.github.io/.git`、`branch` 改成 `main`，会让部署失败）——这些都实际发生过
     - 两个客户端都会抢 4000 端口；HexoHub 检测到占用会**自动结束占用进程**
@@ -518,7 +518,10 @@ git config --global --unset http.version
 
 ### 13.4 不要把大文件放进仓库
 
-仓库目录 `D:\tools\hexo` 同时也是 **Hexo Pro 客户端的安装位置**（`HexoPro/` 600+ MB，曾误提交过）。`.gitignore` 已忽略 `HexoPro/`、`data/`、`blogInfoList.json`、`backup/`；更稳的是把客户端装到仓库外面（如 `D:\tools\HexoPro`）。
+**客户端一律装在仓库外面**（这是踩过坑的结论）。
+
+- 2026-10 之前用的 Hexo Pro Desktop 装在仓库里（600+ MB，曾误提交），已卸载；它在仓库留下的 `data/`、`_yaml_templates/`、`deploy_config.json`、`blogInfoList.json`、`_admin-config.yml` 也已全部删除，并在 `.gitignore` 里留了防护条目。
+- 现在的客户端是 **HexoHub（Tauri 版，约 20 MB）**，装在 **`D:\tools\HexoHub`**，在仓库外面 ✓
 
 ### 13.5 密钥与隐私
 

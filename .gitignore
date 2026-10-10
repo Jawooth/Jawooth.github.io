@@ -46,3 +46,6 @@ deploy_config.json
 # HexoHub 客户端（也装在了仓库目录里，别让它进 git）
 HexoHub/
 HexoHub*.exe
+
+# 客户端生成的空配置（曾被误提交，已清理）
+_admin-config.yml
