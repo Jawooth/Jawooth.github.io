@@ -82,7 +82,7 @@
      · 描边：漫画感的深一点的颜色
      · 拖尾：一块实心三角形，从气泡右缘直接指向「用户账户」里的头像。
        len = 长度；half = 根部高度的一半 —— 这个数越大尾巴越钝，越小越尖；
-       tilt = 倾斜角，负数是让尾巴尖往上翘一点，0 就是完全水平。
+       lift = 尾巴尖相对根部中心偏多少（= 倾斜量），0 就是完全不翘。
        因为气泡宽度只占格子的 --bubble-w（桌面端 92%），右边空出来的部分
        正好由这条拖尾填上，所以「气泡越窄 → 拖尾可以越长」。
      · min-h / max-h：气泡高度随文字长短变化，但不会比 min-h 更矮，
@@ -92,10 +92,11 @@
        觉得高度不合适就调这两个数。 */
   --bubble-bg: linear-gradient(180deg, #fffbe8 0%, #ffe9a8 100%);
   --bubble-border: #c9922b;
-  /* 拖尾填充色：必须对上气泡渐变在「拖尾那一高度」（拖动条的 top:40% 处）
-     的颜色，取的是 #fff4ce。改了 --bubble-bg 的话这行也要跟着调，
-     否则拖尾和气泡之间会看出一条色差接缝。 */
-  --bubble-tail: #fff4ce;
+  /* 拖尾填充色：桌面端那条拖尾**直接用气泡的渐变**（所以完全没有色差接缝），
+     这个纯色只给窄屏「朝下」那条用 —— 它落在气泡外面，接不上渐变。
+     它接在气泡的**下缘**，所以取的是 --bubble-bg 的**末端**颜色（不是 40% 处的）；
+     改了 --bubble-bg 记得跟着调，否则窄屏下会看到一条比气泡略浅的尾巴。 */
+  --bubble-tail: #ffe9a8;
   --bubble-min-h: 104px;
   --bubble-max-h: 190px;
   /* 桌面端气泡宽度（占所在格子的比例）：略微收窄，右侧留空间给长拖尾。
@@ -104,8 +105,10 @@
   --bubble-tail-len: 42px;
   /* half 从 11px 调到 16px：根部更宽 → 尖角更钝，不再像一根针 */
   --bubble-tail-half: 18px;
-  /* 略微上翘，跟气泡本身 -0.8deg 的手工感一致；0deg 就是水平 */
-  --bubble-tail-tilt: -8deg;
+  /* 倾斜量：桌面端＝尾巴尖比根部中心抬高多少；窄屏＝尖角向左偏多少。
+     用「偏移尖角」而不是「整体旋转」：旋转会把根部也转斜、与气泡边缘对不齐，
+     会看出一条小台阶；偏移尖角则根部始终是水平/垂直贴着气泡，接缝干净。 */
+  --bubble-tail-lift: 6px;
 
   /* 断点参考：1200 / 900 / 640（全站统一） */
 }
@@ -145,10 +148,10 @@ html.dark {
 
   /* 句子气泡（深色）：暖黄换成「昏暗的暖褐黄」，描边也压暗，
      否则浅色气泡在深色桌面上会亮得刺眼。
-     拖尾色同样取 --bubble-bg 在 40% 处的颜色。 */
+     拖尾色取的是深色渐变的末端色（窄屏那条接在气泡下缘）。 */
   --bubble-bg: linear-gradient(180deg, #4a4128 0%, #3a3220 100%);
   --bubble-border: #a3812f;
-  --bubble-tail: #443b25;
+  --bubble-tail: #3a3220;   /* = 深色渐变的末端色（窄屏那条接在下缘） */
 }
 
 /* ============ 2) 基础与桌面 ============ */
@@ -503,31 +506,44 @@ html.dark .profile-icon { color: var(--link); }
 /* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则拖尾（在盒子外面）会被裁掉 */
 .bubble-content { overflow: hidden; }
 
-/* 拖尾：说话气泡的实心三角。
-   做法：把左边框染成描边色、上下边框留透明，就得到一个朝右的尖角；
-   ::before 是描边层（整体大 2px），::after 是填充层盖在上面，
-   于是两条腰上各露出 2px 描边，和气泡看起来是一体的。
-   top: 40% 是「瞄准头像」的高度：气泡在格子里是垂直居中的，而用户账户里的
-   头像偏上，实测 40% 处正好对着头像中心；因为居中，这个比例对长句短句都成立。 */
+/* 拖尾：说话气泡的实心三角（桌面端）。
+   做法不是「画一个三角形」，而是画一块与气泡同高的长方形、用 clip-path 裁成三角。
+   这样它就能直接用 background-image: var(--bubble-bg) 接上气泡的渐变 ——
+   拖尾与气泡之间连一点色差接缝都不会有（用 border 画三角上不了渐变，
+   之前那条浅色接缝就是这么来的）。
+   两层：::before 是描边层（整体大一圈），::after 是填充层盖在上面。
+   位置：left:100% 是气泡 padding box 的右缘，再往外 2px 才是边框外缘，
+   所以描边层从 100% 起、填充层从 calc(100% + 2px) 起，正好接上气泡那 2px 边框。
+   高度：top:0/bottom:0 = 与气泡同高，渐变才能对齐。
+   纵向 40% 是「瞄准头像」的高度：气泡在格子里垂直居中，用户账户的头像偏上，
+   实测 40% 正对头像中心，而且对长句短句都成立。 */
 .xp-bubble::before,
 .xp-bubble::after {
   content: '';
   position: absolute;
-  width: 0; height: 0;
-  border-style: solid;
-  border-color: transparent;
-  top: 40%;
-  transform: translateY(-50%) rotate(var(--bubble-tail-tilt));
+  top: 0; bottom: 0;
 }
 .xp-bubble::before {
-  right: calc(-1 * var(--bubble-tail-len));
-  border-width: var(--bubble-tail-half) 0 var(--bubble-tail-half) var(--bubble-tail-len);
-  border-left-color: var(--bubble-border);
+  left: 100%;
+  width: calc(var(--bubble-tail-len) + 4px);
+  background: var(--bubble-border);
+  clip-path: polygon(
+    0 calc(40% - var(--bubble-tail-half) - 2px),
+    0 calc(40% + var(--bubble-tail-half) + 2px),
+    100% calc(40% - var(--bubble-tail-lift) - 2px)
+  );
 }
 .xp-bubble::after {
-  right: calc(-1 * (var(--bubble-tail-len) - 2px));
-  border-width: calc(var(--bubble-tail-half) - 2px) 0 calc(var(--bubble-tail-half) - 2px) calc(var(--bubble-tail-len) - 2px);
-  border-left-color: var(--bubble-tail);
+  left: calc(100% + 2px);
+  width: var(--bubble-tail-len);
+  background-image: var(--bubble-bg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  clip-path: polygon(
+    0 calc(40% - var(--bubble-tail-half)),
+    0 calc(40% + var(--bubble-tail-half)),
+    100% calc(40% - var(--bubble-tail-lift))
+  );
   z-index: 1;
 }
 .bubble-content p { margin: 0 0 6px; font-size: 14px; line-height: 1.55; font-style: italic; transition: opacity 0.25s; }
@@ -1519,25 +1535,34 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .content-container.xp-shell { padding: 0; }
   .xp-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
   /* 窄屏：气泡移到「用户账户」上方，拖尾改为朝下指着头像。
-     朝下的三角形要把「上边框」染成描边色（朝右那版染的是左边框），
-     所以左右边框必须显式改回透明。
-     margin-bottom 决定拖尾末端与下方窗口之间留多少：格子间距 12px，
-     这里再留 8px，于是尾巴尖离窗口约 4px，看着是「指着」而不是「顶住」。 */
+     这条拖尾落在气泡外面、接不上气泡的渐变，所以仍用 border 画三角 + 纯色
+     --bubble-tail；因此必须把桌面端那套 clip-path / 渐变背景全部清掉。
+     朝下时的倾斜改用「左右边框不等宽」实现（左窄右宽 → 尖角偏左，朝头像那侧），
+     这样根部依然平贴着气泡下缘，不会出现台阶。
+     margin-bottom 决定尾巴尖与下方窗口之间留多少：格子间距 12px，
+     这里再留 8px，于是尖端离窗口约 4px，看着是「指着」而不是「顶住」。 */
   .xp-bubble { margin-bottom: calc(var(--bubble-tail-len) - 8px); }
+  .xp-bubble::before,
+  .xp-bubble::after {
+    top: 100%; bottom: auto;
+    left: 50%; width: 0; height: 0;
+    clip-path: none;
+    background: none;
+    border-style: solid;
+    border-color: transparent;
+  }
   .xp-bubble::before {
-    right: auto; bottom: auto; top: 100%;
-    left: 50%; margin-left: calc(-1 * var(--bubble-tail-half));
-    transform: rotate(6deg);   /* 朝下时也略微倾斜：让尖角偏向左边（头像那一侧） */
-    border-width: var(--bubble-tail-len) var(--bubble-tail-half) 0 var(--bubble-tail-half);
-    border-left-color: transparent;
+    margin-left: calc(-1 * var(--bubble-tail-half));
+    border-width: var(--bubble-tail-len)
+      calc(var(--bubble-tail-half) + var(--bubble-tail-lift)) 0
+      calc(var(--bubble-tail-half) - var(--bubble-tail-lift));
     border-top-color: var(--bubble-border);
   }
   .xp-bubble::after {
-    right: auto; bottom: auto; top: 100%;
-    left: 50%; margin-left: calc(-1 * (var(--bubble-tail-half) - 2px));
-    transform: rotate(6deg);
-    border-width: calc(var(--bubble-tail-len) - 2px) calc(var(--bubble-tail-half) - 2px) 0 calc(var(--bubble-tail-half) - 2px);
-    border-left-color: transparent;
+    margin-left: calc(-1 * (var(--bubble-tail-half) - 2px));
+    border-width: calc(var(--bubble-tail-len) - 2px)
+      calc(var(--bubble-tail-half) + var(--bubble-tail-lift) - 2px) 0
+      calc(var(--bubble-tail-half) - var(--bubble-tail-lift) - 2px);
     border-top-color: var(--bubble-tail);
   }
   .work-featured-layout { grid-template-columns: 1fr; }
