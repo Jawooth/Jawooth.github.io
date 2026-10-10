@@ -364,8 +364,9 @@ layout: xp-page
 
   function initPlayer() {
     if (!songs.length || typeof APlayer === 'undefined') { renderEmpty(); return; }
-    /* 随机播放：每次打开页面把曲目顺序洗一遍（所以第一首也是随机的），
-       再让 APlayer 用 random 模式接管下一首/上一首 */
+    /* 随机播放：每次打开页面把曲目顺序洗一遍（所以第一首也是随机的）。
+       注意：**不要**给 APlayer 设 order: 'random' —— 它会让 APlayer 自己挑曲目，
+       导致界面显示的封面/歌名与实际播放的音频对不上，上一首/下一首也会失效。 */
     songs = songs.slice();
     for (var i = songs.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -376,10 +377,24 @@ layout: xp-page
       audio: songs.map(function (s) {
         return { name: s.title, artist: s.author, url: s.url, cover: s.pic || '' };
       }),
-      order: 'random',
       volume: 0.7
     });
     updateSongInfo(index);
+
+    /* 让界面始终跟着 APlayer 的真实曲目走：任何原因切换曲目都同步封面与文字 */
+    ap.on('listswitch', function (info) {
+      /* 注意：APlayer 是先触发 listswitch（带新 index）、**之后**才更新 list.index，
+         所以这里必须用事件参数，不能读 ap.list.index（会慢一拍）。 */
+      if (info && typeof info.index === 'number') index = info.index;
+      updateSongInfo(index);
+    });
+
+    /* 某首歌播不了（下架/地区限制/直链失效）就自动跳到下一首，连续失败超过一轮就停 */
+    var errCount = 0;
+    ap.on('error', function () {
+      errCount += 1;
+      if (errCount < songs.length) next();
+    });
 
     ap.on('timeupdate', function () {
       var current = ap.audio.currentTime || 0;
@@ -417,14 +432,14 @@ layout: xp-page
   function prev() {
     if (!ap) return;
     index = (index - 1 + songs.length) % songs.length;
-    ap.switchMusic(index);
+    ap.switchAudio(index);
     updateSongInfo(index);
     if (isPlaying) ap.play();
   }
   function next() {
     if (!ap) return;
     index = (index + 1) % songs.length;
-    ap.switchMusic(index);
+    ap.switchAudio(index);
     updateSongInfo(index);
     if (isPlaying) ap.play();
   }

@@ -56,6 +56,7 @@ BAD_EXTERNAL = {
     "Press+Start+2P": "全站未使用的字体家族",
     "fonts.googleapis.com": "字体已自托管，不应再请求 Google Fonts（见 xp-custom.css 第 0 节）",
     "fonts.gstatic.com": "字体已自托管，不应再请求 Google Fonts",
+    "cdn.jsdelivr.net": "APlayer 已自托管到 source/vendor/aplayer/，不应再请求 jsDelivr",
     "VT323": "全站未使用的像素字体",
 }
 

@@ -551,8 +551,8 @@ hexo.extend.tag.register('xp_music', () => {
   const config = `<script>window.XP_MUSIC = ${JSON.stringify(tracks)};</script>`;
   if (!tracks.length) return config;
   return oneLine(
-    '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">' +
-    '<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>' + config
+    '<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css">' +
+    '<script src="/vendor/aplayer/APlayer.min.js"></script>' + config
   );
 });
 

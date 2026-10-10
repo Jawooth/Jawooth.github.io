@@ -271,7 +271,13 @@ status: done                  # done / doing（作品卡片上的状态角标）
     - HexoHub 的预览就是标准 `hexo server`（端口 4000），**读磁盘**，没有缓存问题 ✓
     - 旧的 **Hexo Pro Desktop 建议不要再打开**：它会用自己那份 Hexo 实例渲染（不读 `public/`）、把 `data/*.db`／`_yaml_templates/`／`blogInfoList.json`／`deploy_config.json`／`source/_discarded/` 写进仓库、**直接删掉图片**，而且**重写 `_config.yml`**（把 `deploy.repo` 拼成了 `https://github.com/https://jawooth.github.io/.git`、`branch` 改成 `main`，会让部署失败）——这些都实际发生过
     - 两个客户端都会抢 4000 端口；HexoHub 检测到占用会**自动结束占用进程**
-17. **改 `source/_data/*.yml` 后，正在跑的预览不会更新**（实测：改 `quotes.yml` 后等 6 秒，4010 返回的仍是旧内容）—— `hexo server` 在启动时就把 `_data` 读进内存了，涉及它的改动必须**重启预览服务器**：客户端里是「停止服务器 → 重新启动」，命令行预览就关掉窗口重开。这是"改了没生效"的第二个常见来源（第一个是 hexo-pro 的内存渲染缓存）。
+18. **APlayer 的 API 与事件有两个坑**（2026-10 实际踩到，表现是"上一首/下一首没反应"和"封面歌名与音频对不上"）：
+    - 换曲目要用 **`ap.switchAudio(index)`**，**没有** `switchMusic` 这个方法（写错了会在点击时抛错、什么都不发生）；
+    - **不要**给 APlayer 设 `order: 'random'`：它会自己挑曲目播放，导致我们界面（用自己 index 显示封面歌名）与音频不同步。
+      要做随机播放，正确做法是**自己把曲目数组洗牌**（首页播放器就是这么做的），APlayer 保持默认 list 顺序；
+    - `listswitch` 事件是**先触发、后更新** `ap.list.index`，所以监听里必须用事件参数 `info.index`，
+      读 `ap.list.index` 会慢一拍（界面慢一首歌）。
+19. **改 `source/_data/*.yml` 后，正在跑的预览不会更新**（实测：改 `quotes.yml` 后等 6 秒，4010 返回的仍是旧内容）—— `hexo server` 在启动时就把 `_data` 读进内存了，涉及它的改动必须**重启预览服务器**：客户端里是「停止服务器 → 重新启动」，命令行预览就关掉窗口重开。这是"改了没生效"的第二个常见来源（第一个是 hexo-pro 的内存渲染缓存）。
 18. **`source/` 里下划线开头的文件/目录会被 Hexo 忽略**（约定俗成的"私有文件"）：`_posts/__test.md` 不会生成页面。给测试稿起名时别用 `_` 开头（可用 `draft-` 之类）。
 16. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
     需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
@@ -419,8 +425,7 @@ contacts:
 > **为什么不用网易云官方外链播放器**：它只有两种形态 —— 歌单列表（约 430px 高、样式固定）
 > 和单曲条；**没有**「封面 + 歌名 + 换歌 + 进度条」这种紧凑样式。
 > 所以歌单 iframe 只在「没有任何曲目列表」时才作为兜底启用，且必须是公开歌单、格子里要上下滚动才看得全。
-> 站内播放器需要加载 APlayer（`cdn.jsdelivr.net`）；要彻底去掉这个第三方请求，
-> 可以把 APlayer 自托管到 `source/js/`（跟 Caveat 字体一样），需要时让 AI 做。
+> 站内播放器需要加载 APlayer，**已自托管**在 `source/vendor/aplayer/`（升级时覆盖那两个文件即可）。
 
 ### 11.4 图片
 
@@ -565,5 +570,5 @@ git -C D:\tools\hexo diff --cached | Select-String -Pattern 'secret|token|passwo
 
 | 域名 | 用途 | 备注 |
 |---|---|---|
-| `cdn.jsdelivr.net` | APlayer 播放器 | **只有 `music.yml` 里填了曲目才加载** |
+| ~~`cdn.jsdelivr.net`~~ | APlayer 播放器 | **已自托管**到 `source/vendor/aplayer/`，页面不再请求它 |
 | `music.163.com` | 网易云歌单 iframe | 只有填了 `netease_playlist` 才出现 |
