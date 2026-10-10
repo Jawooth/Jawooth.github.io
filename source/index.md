@@ -15,7 +15,8 @@ layout: xp-page
      下面 data-* 里的「」只是"脚本没跑时"的兜底，会被 quotes.yml 的值覆盖。
 注意：这个便签元素全页只有这一处；xp_quotes 标签只输出数据与符号，不再输出元素。 -->
 <p class="bubble-quote" id="sticky-quote" data-left="「" data-right="」"><span id="sticky-text">加载中…</span></p>
-<p class="bubble-from" id="sticky-from">—— 小站碎碎念</p>
+<!-- 出处那一行：quotes.yml 里那句没写 from（或写成 from: ''）时，脚本会自动把这一行整行藏起来 -->
+<p class="bubble-from" id="sticky-from"></p>
 </div>
 </div>
 </div>
@@ -219,7 +220,13 @@ layout: xp-page
     quoteEl.style.opacity = '0';
     setTimeout(function () {
       textEl.textContent = q.text || '';
-      if (fromEl) fromEl.textContent = q.from ? ('—— ' + q.from) : '—— 小站碎碎念';
+      /* 出处：quotes.yml 里那句没写 from、或写成 from: ''，这里就把整行藏起来。
+         （以前没写出处会被兜底成「—— 小站碎碎念」，等于替句子硬加了一个来源。） */
+      var fromText = (q.from === null || q.from === undefined) ? '' : String(q.from).trim();
+      if (fromEl) {
+        fromEl.textContent = fromText ? ('—— ' + fromText) : '';
+        fromEl.style.display = fromText ? '' : 'none';
+      }
       quoteEl.style.opacity = '1';
     }, 220);
   }

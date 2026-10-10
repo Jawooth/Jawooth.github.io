@@ -75,6 +75,23 @@
   --decor-right: url('/images/decor/right.png');
   --taskbar-height: 36px;
 
+  /* ---- 首页句子气泡（漫画「思考气泡」）---------------------------------
+     想换成别的颜色/大小，改下面这几个数就够了（浅色和深色各一份，
+     深色那份在本节末尾的 html.dark 里）。
+     · 填充色：从上面的浅黄渐变到下面的暖黄
+     · 描边：漫画感的深一点的颜色
+     · 拖尾小圆：用和填充一样的颜色，看起来才像同一个气泡鼓出来的
+     · min-h / max-h：气泡高度随文字长短变化，但不会比 min-h 更矮，
+       也不会比 max-h 更高。max-h 必须小于右边「用户账户」窗口的高度，
+       否则长句子会把气泡撑得比它还高（实测用户账户窗口高约 205px，
+       所以这里留了余量取 190px）。以后若改了头像尺寸或介绍文字行数，
+       觉得高度不合适就调这两个数。 */
+  --bubble-bg: linear-gradient(180deg, #fffbe8 0%, #ffe9a8 100%);
+  --bubble-border: #c9922b;
+  --bubble-tail: #ffe9a8;
+  --bubble-min-h: 104px;
+  --bubble-max-h: 190px;
+
   /* 断点参考：1200 / 900 / 640（全站统一） */
 }
 
@@ -110,6 +127,12 @@ html.dark {
   /* 深色模式桌面背景：换图就替换 source/images/xp-desktop-bg-dark.jpg
      （末尾的 #1a1a2e 是纯色兜底：图片缺失时也不会变成白底） */
   --desktop-bg: url('/images/xp-desktop-bg-dark.jpg') center/cover no-repeat fixed #1a1a2e;
+
+  /* 句子气泡（深色）：暖黄换成「昏暗的暖褐黄」，描边也压暗，
+     否则浅色气泡在深色桌面上会亮得刺眼 */
+  --bubble-bg: linear-gradient(180deg, #4a4128 0%, #3a3220 100%);
+  --bubble-border: #a3812f;
+  --bubble-tail: #3a3220;
 }
 
 /* ============ 2) 基础与桌面 ============ */
@@ -438,37 +461,46 @@ html.dark .meta-chip strong { color: #9cc2ff; }
 .profile-icon:focus-visible { outline: 2px solid var(--xp-hover); outline-offset: 2px; }
 html.dark .profile-icon { color: var(--link); }
 
-/* 气泡（首页：箭头指向右侧的用户账户窗口） */
+/* 气泡（首页：漫画「思考气泡」，拖尾小圆指向右侧的「用户账户」） */
+/* 不要把格子撑满：让气泡自己按文字长短决定高度（min/max 见 :root 里的变量） */
+.bento-bubble { align-self: center; }
 .xp-bubble {
   position: relative;
-  background: linear-gradient(180deg, #ffffff 0%, #eef5ff 100%);
-  border: 2px solid var(--xp-blue-border);
-  border-radius: 12px;
+  background: var(--bubble-bg);
+  border: 2px solid var(--bubble-border);
+  border-radius: 18px 22px 16px 20px;   /* 四个角故意不相等，做出手绘的随意感 */
   box-shadow: var(--win-shadow);
   padding: 14px 16px;
-  height: 100%;
+  /* 高度随文字长短自己长：最矮 --bubble-min-h，最高 --bubble-max-h（不会顶到右边的用户账户） */
+  height: auto;
+  min-height: var(--bubble-min-h);
+  max-height: var(--bubble-max-h);
   display: flex;
   flex-direction: column;
   justify-content: center;
   color: var(--text);
 }
-/* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则尾巴（在盒子外面）会被裁掉 */
+/* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则拖尾（在盒子外面）会被裁掉 */
 .bubble-content { overflow: hidden; }
-/* 尾巴：朝右指向「用户账户」（两层三角形做出描边效果） */
-.xp-bubble::after,
-.xp-bubble::before {
+
+/* 拖尾：漫画思考气泡那种「一串越来越小的圆」，斜着朝右下指向「用户账户」。
+   刻意走斜线而不是平着指：右边两个格子之间只有约 18px 空隙，
+   平着指很快就戳进「用户账户」窗口里；斜着往下走能在同样的空隙里
+   排出更长的尾巴，看起来更像漫画里的思考气泡。
+   想加长/缩短就改下面的 right / top / 尺寸。 */
+.xp-bubble::before,
+.xp-bubble::after {
   content: '';
   position: absolute;
-  top: 50%;
-  width: 0; height: 0;
-  border: 8px solid transparent;
+  border-radius: 50%;
+  background: var(--bubble-tail);
+  border: 2px solid var(--bubble-border);
 }
-.xp-bubble::after { right: -18px; transform: translateY(-50%); border-left-color: var(--xp-blue-border); }
-.xp-bubble::before {
-  right: -13px; transform: translateY(-50%);
-  border-width: 6px;
-  border-left-color: #f6faff;
-  z-index: 1;
+.xp-bubble::before { right: -16px; top: 46%; width: 14px; height: 14px; }
+.xp-bubble::after {
+  right: -25px; top: 66%; width: 9px; height: 9px;
+  /* 末尾最小的那个圆点：用阴影画一个实心小圆（比元素本身小 4px） */
+  box-shadow: 6px 12px 0 -2px var(--bubble-border);
 }
 .bubble-content p { margin: 0 0 6px; font-size: 14px; line-height: 1.55; font-style: italic; transition: opacity 0.25s; }
 /* 句子本体（含两侧符号）：整块的淡入淡出，符号跟着一起换。
@@ -481,8 +513,10 @@ html.dark .profile-icon { color: var(--link); }
   text-align: right; font-size: 12px; color: var(--text-muted);
   margin-top: 10px !important; font-style: normal !important;
 }
-html.dark .xp-bubble { background: linear-gradient(180deg, #3a3f52 0%, #2f3444 100%); }
-html.dark .xp-bubble::before { border-left-color: #343a4c; }
+/* 句子没有「出处」时这一行整行不显示（脚本会把它的内容清空、并 display:none；
+   这里再加一道 :empty 兜底，避免出现一个空的空行） */
+.bubble-from:empty { display: none; }
+html.dark .bubble-from { color: #c3b48c; }   /* 深色下用暖一点的灰，配褐色气泡 */
 
 /* 小站数据 */
 .stat-row {
@@ -1456,19 +1490,18 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .content-container { padding: 10px 12px; }
   .content-container.xp-shell { padding: 0; }
   .xp-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-  /* 气泡在窄屏移到「用户账户」上方，尾巴改为朝下 */
-  .xp-bubble { margin-bottom: 10px; }
-  .xp-bubble::after,
+  /* 气泡在窄屏移到「用户账户」上方，拖尾改为朝下、同样斜着走。
+     拖尾现在是一串小圆而不是三角形，所以要重新摆位置（不能只改边框颜色）。 */
+  .xp-bubble { margin-bottom: 32px; }
   .xp-bubble::before {
-    top: auto; right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left-color: transparent;
-    border-right-color: transparent;
+    right: auto; top: auto;
+    left: 50%; margin-left: -18px; bottom: -18px;
   }
-  .xp-bubble::after { bottom: -18px; border-top-color: var(--xp-blue-border); }
-  .xp-bubble::before { bottom: -13px; border-top-color: #f6faff; }
-  html.dark .xp-bubble::before { border-top-color: #343a4c; }
+  .xp-bubble::after {
+    right: auto; top: auto;
+    left: 50%; margin-left: -2px; bottom: -32px;
+    box-shadow: 7px 9px 0 -2px var(--bubble-border);
+  }
   .work-featured-layout { grid-template-columns: 1fr; }
   .header-body { flex-direction: column; align-items: flex-start; }
   .retro-mp4-player { max-width: 200px; }
