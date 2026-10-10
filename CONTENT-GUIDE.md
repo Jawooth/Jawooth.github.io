@@ -149,10 +149,68 @@ contacts:
 |---|---|---|---|
 | `rotate_seconds` | 可选 | 秒数；`0` = 只在刷新时随机取一句 | `0` |
 | `quotes` | 可选 | 列表，每项 `text`（句子，建议 ≤60 字）+ `from`（出处，可留空） | 便签会一直停在「加载中…」 |
+| `quote_left` | 可选 | 句子**左侧**的符号 | `「` |
+| `quote_right` | 可选 | 句子**右侧**的符号 | `」` |
 
 - 每句**建议不超过 60 字**——便签格子高度固定，太长会被裁掉。
-- `from` 留空时显示 `—— 小站碎碎念`；`text` 不写会显示一对空引号 `「」`。
+- `from` 留空时显示 `—— 小站碎碎念`；`text` 不写只会显示一对符号。
 - ⚠️ 句子里的**冒号后面跟空格**、或者有 `#`，请给整句加引号，否则 YAML 会解析错乱。
+
+### 3.1 去掉（或换掉）句子两侧的「」
+
+```yaml
+quote_left: ''      # 单引号里什么都不填 = 不要左侧符号
+quote_right: ''     # 右侧同理
+```
+
+于是便签就从 `「喵」` 变成干净的 `喵`。
+
+想换成别的符号（例如 `『』`、`“”`、`《》`、`※`）：
+
+```yaml
+quote_left: '『'
+quote_right: '』'
+```
+
+**三个要点**：
+
+1. **不写这两行** = 用默认的 `「` `」`（所以旧配置不会坏）。
+2. **只写左边**，右边会自动回落到 `」`（两边各自独立）。
+3. ⚠️ **不要写成 `quote_left: '"'`** —— 在 YAML 里那是语法错误（引号套引号）。
+   要英文引号就这样写：`quote_left: '"'` 不行，改成 `quote_left: "''"` 或直接用全角 `“`。
+
+> 符号的实现方式：`scripts/xp-content.js` 把符号写进 `data-left` / `data-right`，
+> 由 `source/css/xp-custom.css` 的 `.bubble-quote::before / ::after` 用
+> `content: attr(data-left)` 画出来。**所以改 symbols 不用碰 CSS，改 CSS 也不用碰这里。**
+
+### 3.2 换气泡的样子（不需要懂 CSS 也能改）
+
+> 颜色变量、字体、图片、图标这些**可用素材的完整清单**见 **[ASSETS.md](ASSETS.md)**。
+
+气泡本体在 `source\css\xp-custom.css` 的 `.xp-bubble` 一节（第 7 节「首页组件」里，
+搜 `.xp-bubble` 就能找到）。**改完刷新页面即可，不用重新生成。**
+
+| 想改什么 | 改哪一行 | 说明 |
+|---|---|---|
+| 气泡底色 | `background: linear-gradient(180deg, #ffffff 0%, #eef5ff 100%);` | 换成 `background: #fffbe6;` 就是纯色；渐变写法见下行 |
+| 边框颜色 / 粗细 | `border: 2px solid var(--xp-blue-border);` | 用 `var(--...)` 才会跟着深色模式走 |
+| 圆角 | `border-radius: 12px;` | 越大越圆；`0` 就是方角（更"XP"） |
+| 阴影 | `box-shadow: var(--win-shadow);` | 想去掉就写 `none` |
+| 内边距 | `padding: 14px 16px;` | `上下 左右` |
+| 倾斜（现在有一点点歪） | `source\index.md` 里 `class="bento-item bento-bubble tilt-note"` | 去掉 `tilt-note` 就不歪了 |
+| 文字字号 / 行距 | `.bubble-content p { font-size: 14px; line-height: 1.55; }` | 句子放不下就调这里 |
+| 文字斜体 | `.bubble-content p` 的 `font-style: italic;` | 去掉 `italic` 变正体 |
+| 句子轮换的淡入淡出 | `.bubble-quote { transition: opacity 0.25s; }` | 时长秒数，`0s` 就是直接切换 |
+| **深色模式下的气泡** | `html.dark .xp-bubble { … }` | **必须和上面成对改**，否则深色下看不清 |
+| 尾巴的方向 / 大小 | `.xp-bubble::after` 与 `::before` | 现在朝右指「用户账户」；`border-left-color` 是尾巴颜色，`8px` 是大小 |
+| 尾巴在窄屏改成朝下 | 文件末尾 `@media (max-width: 1000px)` 里的 `.xp-bubble::after` | 窄屏时窗口变上下排列，尾巴跟着改方向 |
+
+**改颜色时优先用现成的「旋钮」**（都在 `xp-custom.css` 最上面的 `:root` 与 `html.dark` 里，
+同一行两处都要改）：`--xp-blue-border`（边框/主色）、`--surface`（窗口底）、
+`--text`（正文）、`--text-muted`（次要文字）、`--border`、`--link`、`--win-shadow`（阴影）。
+
+**别把页面里的临时样式当成正式改法**：`source\index.md` 里只允许写「网格排布」这类页面级规则，
+组件外观一律放进 `xp-custom.css`——否则下次改版会找不到它。
 
 ---
 

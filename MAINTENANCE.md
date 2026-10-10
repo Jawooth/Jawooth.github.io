@@ -8,7 +8,7 @@
 
 > **站主只需看第 1–7、11、12 节**（速查 → 目录 → 命令 → 回滚 → 写作 → 样式 → 标签 → 换内容 → 发布）。
 > 第 8–10、13 节是排障细节与给 AI 的约定，不看也不影响你自己改站。
-> 日常改内容（文章 / 网名 / 图片 / 待办）请看 [README.md](README.md)，字段级说明看 [CONTENT-GUIDE.md](CONTENT-GUIDE.md)。
+> 日常改内容（文章 / 网名 / 图片 / 待办）请看 [README.md](README.md)，字段级说明看 [CONTENT-GUIDE.md](CONTENT-GUIDE.md)，素材与配色看 [ASSETS.md](ASSETS.md)。
 
 ---
 
@@ -85,6 +85,7 @@ D:\tools\hexo
 ├─ backup/                       原图备份（不会被发布）
 ├─ README.md                     ★ 零基础改站指南（站主日常看这份）
 ├─ CONTENT-GUIDE.md              内容字段手册（每个字段能填什么）
+├─ ASSETS.md                     素材清单（颜色变量/字体/图片/图标）
 ├─ MAINTENANCE.md                本文件（技术手册）
 ├─ _config.yml                   站点配置
 ├─ _config.minimalism.yml        主题配置
@@ -237,6 +238,20 @@ status: done                  # done / doing（作品卡片上的状态角标）
 | 展开全文 / 收起 | `.work-expand` / `.work-card-full` | **按需加载** `/works-bodies.json`（见第 8 节第 14 条） |
 
 分期区间集中在 `scripts/xp-content.js` 顶部的 `WORK_ERAS`：`from` 含、`to` 不含，最后一档 `to: null` 表示"至今"。**改完必须重启预览服务**（它是构建期脚本）。
+
+### 6.4 首页便签的句子与两侧符号（2026-10 重构过）
+
+- 句子数据在 `source/_data/quotes.yml`（`quotes[]`、`rotate_seconds`），符号是新增的
+  `quote_left` / `quote_right` 两个键，**不写就用默认的「」**，写空字符串就是不要符号。
+- 实现方式：`xp_quotes` 标签只输出一个空壳
+  `<span class="bubble-quote" data-left data-right><span id="sticky-text"></span></span>`，
+  符号由 `xp-custom.css` 的 `.bubble-quote::before/::after { content: attr(data-left/right) }` 画；
+  `source/index.md` 里另有一份静态回退（`<p class="bubble-quote">…加载中…</p>`）。
+- ⚠️ **踩过的坑**：最初把符号当文本节点放在 `#sticky-text` 两侧，脚本里 `textEl.textContent = …`
+  会把**兄弟文本节点一起清掉**（`textContent` 赋值会移除所有子节点），结果是符号永远不显示、
+  且首帧还会闪一下。所以改成了现在的 CSS `attr()` 方案——**脚本只写文字，不碰符号节点**。
+  以后要动这块，请保持这个分工。
+- 便签外观（底色/圆角/阴影/尾巴方向）见 `ASSETS.md` 与 `CONTENT-GUIDE.md` 第 3.2 节。
 
 ---
 

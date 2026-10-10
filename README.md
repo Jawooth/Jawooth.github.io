@@ -66,7 +66,7 @@ HexoHub 是这个博客的「操作面板」，管的是**文章 + 图片 + 建�
 | 我想改… | 用记事本打开这个文件 |
 |---|---|
 | **网名、头像、自我介绍、社交图标链接、多个邮箱** | `source\_data\profile.yml` |
-| **首页便签上轮换的句子** | `source\_data\quotes.yml` |
+| **首页便签上轮换的句子** | `source\_data\quotes.yml`（两侧的「」也能在这里去掉或换掉） |
 | **待办清单**（显示在杂谈页） | `source\_data\todo.yml` |
 | **游戏/工具卡片**（游戏页） | `source\_data\apps.yml` |
 | **攻略/教程清单**（攻略页） | `source\_data\guides.yml` |
@@ -280,6 +280,7 @@ D:\tools\hexo
 ├─ public\                  ← 构建产物，**不要手动改**，每次生成都会被覆盖
 ├─ README.md                本文件（零基础看这份）
 ├─ CONTENT-GUIDE.md         字段怎么填的详细说明
+├─ ASSETS.md                可用素材清单（颜色/字体/图片/图标）
 ├─ MAINTENANCE.md           技术手册（改版式或交给 AI 时看）
 ├─ 构建.cmd                 双击：重新生成网站
 ├─ 预览.cmd                 双击：本机预览（4010 端口）
@@ -372,6 +373,7 @@ D:\tools\hexo
 |---|---|---|
 | **本文（README.md）** | 日常改内容 | 站主本人，零基础 |
 | [CONTENT-GUIDE.md](CONTENT-GUIDE.md) | 每个数据文件、每个 front matter 字段的逐项说明 | 想改得更细的站主 |
+| [ASSETS.md](ASSETS.md) | 颜色变量、字体、图片、图标等**可用素材清单**，以及气泡/配色的改法 | 想换外观时 |
 | [MAINTENANCE.md](MAINTENANCE.md) | 目录结构、脚本、样式、排障、部署细节、给 AI 的交接说明 | 想改版式 / 交给 AI 改站时 |
 | [HexoHub 官方说明](https://github.com/forever218/HexoHub) | 这个客户端本身怎么用、怎么更新 | 想了解软件功能时 |
 

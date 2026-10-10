@@ -575,7 +575,19 @@ hexo.extend.tag.register('xp_quotes', () => {
   const isList = Array.isArray(raw);
   const list = isList ? raw : (raw.quotes || []);
   const rotate = isList ? 0 : (Number(raw.rotate_seconds) || 0);
-  return `<script>window.XP_QUOTES = ${JSON.stringify({ rotate, list })};</script>`;
+
+  /* 句子两侧的符号（想改成别的、或整个去掉，都改 quotes.yml）。
+     注意：只有「键完全没写」才用默认的「」；写成空字符串 '' 就是真的不要符号。 */
+  const ui = isList ? {} : raw;
+  const hasUi = (k) => ui && Object.prototype.hasOwnProperty.call(ui, k);
+  const left = hasUi('quote_left') ? String(ui.quote_left) : '「';
+  const right = hasUi('quote_right') ? String(ui.quote_right) : '」';
+
+  /* 只输出「符号 + 空壳」：符号由 CSS 的 ::before / ::after 从 data-* 渲染，
+     文字由前端脚本填进内层 span。这样脚本改文字时不会碰到符号。 */
+  return `<span class="bubble-quote" id="sticky-quote" data-left="${esc(left)}" data-right="${esc(right)}">`
+    + '<span id="sticky-text"></span></span>'
+    + `<script>window.XP_QUOTES = ${JSON.stringify({ rotate, list })};</script>`;
 });
 
 /* ---------------------------------------------------------------- 侧栏 / 卡片 / 索引 片段 */

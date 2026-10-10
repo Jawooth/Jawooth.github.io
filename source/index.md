@@ -10,8 +10,9 @@ layout: xp-page
 <div class="bento-item bento-bubble tilt-note">
 <div class="xp-bubble">
 <div class="bubble-content">
-<!-- 句子在 source/_data/quotes.yml 里维护，按 rotate_seconds 自动轮换 -->
-<p id="sticky-text">加载中…</p>
+<!-- 句子在 source/_data/quotes.yml 里维护，按 rotate_seconds 自动轮换；
+     两侧的「」也可以在那里改（quote_left / quote_right），留空即不显示符号。 -->
+<p class="bubble-quote" id="sticky-quote" data-left="「" data-right="」"><span id="sticky-text">加载中…</span></p>
 <p class="bubble-from" id="sticky-from">—— 小站碎碎念</p>
 </div>
 </div>
@@ -239,19 +240,22 @@ layout: xp-page
 (function () {
   var data = window.XP_QUOTES || { rotate: 0, list: [] };
   var list = data.list || [];
+  var quoteEl = document.getElementById('sticky-quote');
   var textEl = document.getElementById('sticky-text');
   var fromEl = document.getElementById('sticky-from');
-  if (!list.length || !textEl) return;
+  if (!list.length || !textEl || !quoteEl) return;
 
+  /* 符号由 CSS 从 data-left / data-right 渲染（见 xp-custom.css 的 .bubble-quote），
+     这里只负责把句子文字写进内层 span，不去碰兄弟节点。 */
   var idx = Math.floor(Math.random() * list.length);
 
   function render(i) {
     var q = list[((i % list.length) + list.length) % list.length];
-    textEl.style.opacity = '0';
+    quoteEl.style.opacity = '0';
     setTimeout(function () {
-      textEl.textContent = '「' + (q.text || '') + '」';
+      textEl.textContent = q.text || '';
       if (fromEl) fromEl.textContent = q.from ? ('—— ' + q.from) : '—— 小站碎碎念';
-      textEl.style.opacity = '1';
+      quoteEl.style.opacity = '1';
     }, 220);
   }
 
