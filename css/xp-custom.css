@@ -423,7 +423,7 @@ html.dark .header-chip strong { color: #9cc2ff; }
 }
 .profile-text { flex: 1; min-width: 0; }
 .profile-text h2 { margin: 0 0 10px; font-size: 20px; color: var(--text-heading); }
-.profile-text h2 .username { color: var(--xp-blue-border); font-family: "Caveat", "KaiTi", cursive; font-size: 24px; }
+.profile-text h2 .username { color: var(--xp-blue-border); font-family: "Caveat", "KaiTi", cursive; font-size: 24px; transition: opacity 0.25s; }
 .profile-text p { margin: 8px 0; line-height: 1.6; font-size: 14px; }
 
 .profile-meta { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
@@ -696,13 +696,14 @@ html.dark .tag-clannad { --pill-fg: #ff8f8f; }
 html.dark .tag-life { --pill-fg: #86d68a; }
 
 /* 友情链接 + 搜索 */
-/* 首页底部通栏：左边链接与搜索，右边致谢（致谢条目已从「关于」页搬到这里） */
-.links-body { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-.links-col { flex: 1 1 420px; min-width: 260px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-.credits-col { flex: 0 1 460px; min-width: 260px; border-left: 1px dashed var(--border); padding-left: 18px; }
-.credits-title { font-size: 12px; font-weight: bold; color: var(--text-heading); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-.credits-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 20px; }
-.credits-list li { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+/* 首页底部通栏：搜索 · 关于本站 · 致谢 三段（原「关于本站」窗口已并入这里） */
+.links-body { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; overflow-y: auto; }
+.links-col { flex: 1 1 300px; min-width: 240px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.about-col { flex: 1 1 300px; min-width: 240px; }
+.credits-col { flex: 1 1 380px; min-width: 240px; border-left: 1px dashed var(--border); padding-left: 18px; }
+.credits-title { font-size: 12px; font-weight: bold; color: var(--text-heading); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+.credits-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 3px 16px; }
+.credits-list li { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
 .credits-list a { color: var(--link); text-decoration: none; font-weight: bold; }
 .credits-list a:hover { text-decoration: underline; }
 /* 原来的 .friend-links（底部友情链接按钮）已按站主要求删除 */
@@ -1514,7 +1515,13 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bubble { transform: none; margin: 0; }
   .recent-work-item { width: 140px; }
   .recent-work-item.featured { width: 180px; }
-  .links-body { flex-direction: column; align-items: flex-start; }
+  /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，
+     否则 .links-col/.credits-col 的 420px/460px 会被当成"高度"，窗口被撑到 800+px */
+  .links-body { flex-direction: column; align-items: stretch; gap: 12px; }
+  .links-col,
+  .about-col,
+  .credits-col { flex: 0 0 auto; width: 100%; min-width: 0; }
+  .credits-col { border-left: none; border-top: 1px dashed var(--border); padding: 12px 0 0; }
   .xp-search-box { width: 100%; }
   .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
   .about-profile-layout { flex-direction: column; align-items: center; text-align: center; }
