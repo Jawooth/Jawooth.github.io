@@ -43,7 +43,8 @@ source/_discarded/
 # Hexo Pro 客户端的部署设置（它还会顺带重写 _config.yml，见手册）
 deploy_config.json
 
-# HexoHub 客户端（也装在了仓库目录里，别让它进 git）
+# HexoHub 客户端（现在装在仓库外面 D:\tools\HexoHub，见手册 13.4）
+# 这两行只是保险：万一客户端又被放进仓库目录，也不会被提交
 HexoHub/
 HexoHub*.exe
 
