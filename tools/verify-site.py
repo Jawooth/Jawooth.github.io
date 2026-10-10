@@ -327,6 +327,46 @@ try:
 except ImportError:
     warn("没装 PyYAML，跳过数据文件与菜单校验（py -3 -m pip install PyYAML）")
 
+# 6.5 文档链接必须指向真实存在的文件（改文档时最容易留死链）
+for doc in sorted(glob.glob(os.path.join(ROOT, "*.md"))):
+    dtxt = open(doc, encoding="utf-8", errors="replace").read()
+    for m in re.finditer(r"\]\((?!https?:|#|mailto:)([^)]+)\)", dtxt):
+        target = m.group(1).split("#")[0].strip()
+        if target and not os.path.exists(os.path.join(ROOT, target.replace("/", os.sep))):
+            fail("%s 里的链接指向不存在的文件：%s" % (os.path.basename(doc), m.group(1)))
+
+# 6.6 文档与注释别再教「已经删掉的东西」。
+#     2026-10 整理时，6 个 .cmd + deploy.ps1 + tools\backup.ps1 合并成了一个入口
+#     （1 开始使用.cmd + tools\hexo-ui.ps1）。这里只提醒、不判失败：
+#     文档里可能是在讲「以前是什么样」的历史说明，机器分不清历史与指令。
+#     扫描范围包含 source/_data/*.yml 与 tools/*.py —— 本轮就曾在
+#     music.yml / works.yml / fetch-netease.py 的注释里留下过时的启动器名。
+STALE_IN_DOCS = {
+    "重新生成.cmd": "已合并进「1 开始使用.cmd」的菜单 [2]",
+    "看效果.cmd": "已合并进菜单 [2]",
+    "发布上线.cmd": "已合并进菜单 [3]",
+    "更新歌单.cmd": "已合并进菜单 [6]",
+    "写文章打开 HexoHub.cmd": "已合并进菜单 [1]",
+    "先备份.cmd": "已合并进菜单 [4]",
+    "deploy.ps1": "逻辑已并入 tools\\hexo-ui.ps1",
+    "backup.ps1": "逻辑已并入 tools\\hexo-ui.ps1",
+    "WORK_ERAS": "作品分期已改到 source/_data/works.yml",
+    "WORK_ORIGINS": "作品栏目已改到 source/_data/works.yml",
+    "python tools": "本机 python 是商店占位程序，要用 py -3",
+}
+_doc_targets = sorted(glob.glob(os.path.join(ROOT, "*.md")))
+_doc_targets += sorted(glob.glob(os.path.join(ROOT, "source", "_data", "*.yml")))
+_doc_targets += sorted(glob.glob(os.path.join(ROOT, "tools", "*.py")))
+for doc in _doc_targets:
+    # verify-site.py 自己就写着这些名字（就是下面这张表），跳过
+    if os.path.basename(doc) == "verify-site.py":
+        continue
+    dtxt = open(doc, encoding="utf-8", errors="replace").read()
+    for pat, why in STALE_IN_DOCS.items():
+        if pat in dtxt:
+            warn("%s 里提到「%s」（%s）—— 若是在教用户这么做，请改掉"
+                 % (os.path.relpath(doc, ROOT), pat, why))
+
 # ---------------------------------------------------------------- 汇总
 print("\n== 结果 ==")
 if warnings:

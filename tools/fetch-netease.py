@@ -14,7 +14,7 @@
        py -3 tools\fetch-netease.py --proxy http://127.0.0.1:7897   # 需要代理时
        py -3 tools\fetch-netease.py --playlist 18472717518          # 直接指定歌单
        py -3 tools\fetch-netease.py --no-verify                     # 不逐首测试（更快）
-  3. 双击「2 重新生成.cmd」，再双击「3 看效果.cmd」
+  3. 双击仓库根目录的「1 开始使用.cmd」，按 2 看效果（会重新生成并打开预览）
 
 本脚本**只写 source/_data/music-tracks.yml**，不会改动 music.yml。
 能播放的是免费/可试听的歌；VIP、版权或地区受限的会自动跳过并列出。
@@ -167,7 +167,7 @@ def main():
         "# 本文件由 tools/fetch-netease.py 自动生成，请不要手工编辑。",
         "# 来源歌单：%s（%s）" % (pl.get("name"), pid),
         "# 生成时间：%s" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "# 重新生成：双击仓库根目录的「5 更新歌单.cmd」（或 cd 到仓库根目录后 py -3 tools/fetch-netease.py）",
+        "# 重新生成：双击仓库根目录的「1 开始使用.cmd」，按 6 重新抓取；再按 2 重新生成",
         "tracks:",
     ]
     for r in rows:
@@ -184,7 +184,7 @@ def main():
     if skipped:
         print("跳过 %d 首（不可播，多为 VIP/版权/地区限制）：%s"
               % (len(skipped), "、".join(s or "?" for s in skipped)))
-    print("下一步：双击「2 重新生成.cmd」重新生成网站（必须带 clean，否则新曲目不会生效）")
+    print("下一步：双击「1 开始使用.cmd」，按 2 看效果（会重新生成，必须带 clean，否则新曲目不生效）")
 
 
 if __name__ == "__main__":
