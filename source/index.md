@@ -11,7 +11,9 @@ layout: xp-page
 <div class="xp-bubble">
 <div class="bubble-content">
 <!-- 句子在 source/_data/quotes.yml 里维护，按 rotate_seconds 自动轮换；
-     两侧的「」也可以在那里改（quote_left / quote_right），留空即不显示符号。 -->
+     两侧的「」也在那里改（quote_left / quote_right），留空即不显示符号。
+     下面 data-* 里的「」只是"脚本没跑时"的兜底，会被 quotes.yml 的值覆盖。
+     注意：这个便签元素全页只有这一处；{% xp_quotes %} 只输出数据与符号，不再输出元素。 -->
 <p class="bubble-quote" id="sticky-quote" data-left="「" data-right="」"><span id="sticky-text">加载中…</span></p>
 <p class="bubble-from" id="sticky-from">—— 小站碎碎念</p>
 </div>
@@ -53,7 +55,7 @@ layout: xp-page
 <!-- 曲目 / 歌单都在 source/_data/music.yml 里配置；这里只是播放器外观 -->
 {% xp_music %}
 <div class="retro-mp4-player">
-<div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg> {% xp_music_title %} <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg></div>
+<div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg> {% xp_music_title %} <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg></div>
 <div class="mp4-screen">
 <div class="mp4-screen-content">
 <div class="mp4-cover">
@@ -245,8 +247,12 @@ layout: xp-page
   var fromEl = document.getElementById('sticky-from');
   if (!list.length || !textEl || !quoteEl) return;
 
-  /* 符号由 CSS 从 data-left / data-right 渲染（见 xp-custom.css 的 .bubble-quote），
-     这里只负责把句子文字写进内层 span，不去碰兄弟节点。 */
+  /* 符号与句子都来自 quotes.yml（符号经 window.XP_QUOTES 传进来）。
+     写成 data-* 是为了让 CSS 的 ::before/::after 用 attr() 渲染，
+     这样改文字不会碰到符号节点；data-* 里的值同时是"脚本没跑时"的兜底。 */
+  if (data.left != null) quoteEl.setAttribute('data-left', data.left);
+  if (data.right != null) quoteEl.setAttribute('data-right', data.right);
+
   var idx = Math.floor(Math.random() * list.length);
 
   function render(i) {

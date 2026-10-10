@@ -73,6 +73,18 @@ for f in pages:
         if pat in s:
             fail("%s 残留外部依赖：%s（%s）" % (rel, pat, why))
 
+    # 重复 id：页面上同一 id 出现两次时 getElementById 只会命中靠前的那个，
+    # 另一个永远拿不到更新（2026-10 便签的 quote_left/quote_right 就是这么静默失效的）。
+    # 先去掉注释，避免把注释里提到的 id 当成元素。
+    strip = re.sub(r"<!--.*?-->", " ", s, flags=re.S)
+    strip = re.sub(r"<script[\s\S]*?</script>", " ", strip)
+    seen_ids = {}
+    for m in re.finditer(r'\sid="([^"]+)"', strip):
+        seen_ids[m.group(1)] = seen_ids.get(m.group(1), 0) + 1
+    for dup, cnt in seen_ids.items():
+        if cnt > 1:
+            fail("%s 里有重复 id=%s（出现 %d 次，getElementById 只会命中第一个）" % (rel, dup, cnt))
+
     styles = re.findall(r"<style[^>]*>(.*?)</style>", s, re.S)
     scripts = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", s, re.S)
     sizes.append((rel, len(s.encode()),

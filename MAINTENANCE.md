@@ -327,6 +327,13 @@ status: done                  # done / doing（作品卡片上的状态角标）
     - `2 重新生成.cmd` / `4 发布上线.cmd` 开头用 `netstat | findstr ":4000 "` 检测 HexoHub 预览；占用时提示并可选 `taskkill`。**原因**：`hexo clean` 会删掉 `public\`，而 HexoHub 检测到端口被占会杀掉我们的 node 进程，于是构建半途而废（实测复现）。
     - `4 发布上线.cmd` 有菜单：`[1] 只重传`（`deploy.ps1 -SkipBuild`，跳过 clean/generate 只推送）与 `[2] 重建并上传`。代理抖动（`TLS connect error`）时用 `[1]`，几秒就能补推，不必重新生成。
     - **判断"到底传上去了没有"**：`git -C .deploy_git log -1` 看是否有刚刚时间的 `Site updated: ...`。比"打开线上页面看"可靠——线上还有 GitHub Pages 构建延迟与浏览器缓存两层干扰。
+23. **同一 `id` 在页面里只能出现一次**（2026-10 审计发现，曾静默废掉一个配置项）：`{% xp_quotes %}` 早期既输出数据、又输出一个带 `id="sticky-quote"` 的 `<span>`，而首页 `source/index.md` 里本来就有一个同样 id 的 `<p>`。
+    - 后果一：`document.getElementById('sticky-quote')` 只拿到靠前的那个，另一个永远不更新。
+    - 后果二：两处都带 `class="bubble-quote"`，而 `.bubble-quote::before { content: attr(data-left) }` 特异性相同、**后声明者胜** → 符号被后一个元素的空 `data-left` 覆盖。
+    - 最终表现：**站主在 `quotes.yml` 里改 `quote_left`/`quote_right` 完全没反应**，而且不报错。
+    - 现在的约定：**数据/符号由 `{% xp_quotes %}` 输出到 `window.XP_QUOTES`（含 `left`/`right`），页面里那份 HTML 由 `source/index.md` 独占**，脚本启动时把符号写回它的 `data-*`。
+    - `tools/verify-site.py` 已新增**重复 id 检查**（会先剔除注释与 `<script>` 内容），此类问题以后构建自检就会红。
+24. **改任何 `source/_data/*.yml` 的验证姿势**：`hexo server` 在**启动时**就把 `_data` 读进内存，改文件后同一个预览进程永远返回旧数据（实测：连测三个变体都返回同一份）。**验证配置是否生效必须重启预览服务**，否则会误判成"改了没反应"。`2 重新生成.cmd` 与 `3 看效果.cmd` 的组合就是为了这个流程。
 
 ---
 

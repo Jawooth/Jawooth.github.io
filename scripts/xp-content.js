@@ -583,11 +583,15 @@ hexo.extend.tag.register('xp_quotes', () => {
   const left = hasUi('quote_left') ? String(ui.quote_left) : '「';
   const right = hasUi('quote_right') ? String(ui.quote_right) : '」';
 
-  /* 只输出「符号 + 空壳」：符号由 CSS 的 ::before / ::after 从 data-* 渲染，
-     文字由前端脚本填进内层 span。这样脚本改文字时不会碰到符号。 */
-  return `<span class="bubble-quote" id="sticky-quote" data-left="${esc(left)}" data-right="${esc(right)}">`
-    + '<span id="sticky-text"></span></span>'
-    + `<script>window.XP_QUOTES = ${JSON.stringify({ rotate, list })};</script>`;
+  /* 只输出「数据 + 符号配置」。句子本体那份 HTML 在 source/index.md 里
+     （那是首页的排版位置，由页面决定）；这里把符号交给前端脚本去写。
+
+     ⚠️ 这里**故意不再输出**便签元素本身（即页面里那个带 sticky-quote 的 <p>）：
+     2026-10 踩过 —— 页面里已经有一个，再输出一个就出现**重复 id**，
+     getElementById 只会拿到靠前的那个，另一个永远不更新；而且两条
+     `.bubble-quote::before` 规则特异性相同、后声明者胜，符号会被空串覆盖，
+     结果就是「在 quotes.yml 里改 quote_left/quote_right 完全没反应」。 */
+  return `<script>window.XP_QUOTES = ${JSON.stringify({ rotate, list, left, right })};</script>`;
 });
 
 /* ---------------------------------------------------------------- 侧栏 / 卡片 / 索引 片段 */

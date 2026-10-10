@@ -95,6 +95,10 @@ html.dark {
   --border: #4a4a5e;
   --border-strong: #5f5f78;
   --link: #8ab4ff;
+  /* 交互态用的蓝色。浅色下是深蓝 #316ac5，深色下必须换成浅蓝，
+     否则图标/文字 hover 时反而"塌"进深底（对比度约 2.6:1）。
+     2026-10 审计发现漏了这一条，影响 --xp-hover 的 11 处引用。 */
+  --xp-hover: #7ea8e8;
   --face: linear-gradient(to bottom, #4a4a5c 0%, #3c3c4e 50%, #333344 100%);
   --face-hover: linear-gradient(to bottom, #5a5a70 0%, #4a4a60 50%, #40405a 100%);
   --face-active: linear-gradient(to bottom, #333344 0%, #3c3c4e 100%);
@@ -305,7 +309,6 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 
 /* 内联小图标 */
 .inline-icon { display: inline-block; vertical-align: middle; margin-right: 4px; margin-top: -2px; }
-.view-arrow { display: inline-block; vertical-align: middle; }
 
 /* ============ 5) XP 控件 ============ */
 .xp-btn {
@@ -367,26 +370,6 @@ html.dark .xp-tip-box { background: #43401f; border-color: #8b7030; color: #f0e8
 .header-chip strong { color: var(--xp-blue-border); margin-right: 2px; }
 html.dark .header-chip { background: rgba(53, 144, 243, 0.16); border-color: #3f6fa8; color: #cfe0ff; }
 html.dark .header-chip strong { color: #9cc2ff; }
-
-/* 筛选按钮 */
-.filter-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.filter-btn {
-  background: var(--face);
-  border: 1px solid var(--btn-border);
-  border-radius: 3px;
-  padding: 4px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  color: var(--text);
-  font-family: inherit;
-}
-.filter-btn:hover { background: var(--face-hover); }
-.filter-btn.active {
-  background: linear-gradient(to bottom, #0058ee 0%, #003399 100%);
-  color: #fff;
-  border-color: #002266;
-}
-.filter-btn[aria-pressed="true"] { cursor: default; }
 
 /* ============ 6) 便当格 ============ */
 /* 轨道用 minmax(0, 1fr)：否则「最近作品」这类 overflow-x 横栏的 min-content
@@ -718,6 +701,8 @@ html.dark .tag-life { --pill-fg: #86d68a; }
   flex: 1; border: 1px solid #7f9db9; border-radius: 2px; padding: 4px 8px;
   font-size: 13px; background: #fff; color: #000; font-family: inherit;
 }
+/* 深色模式：输入框必须跟着走，否则深底上嵌一块纯白 */
+html.dark .xp-search-input { background: var(--surface-2); color: var(--text); border-color: var(--border); }
 .xp-search-btn {
   background: var(--face);
   border: 1px solid var(--btn-border); border-radius: 3px;
@@ -915,7 +900,6 @@ html.dark .mini-stat strong { color: #9cc2ff; }
 .upcoming-content p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
 /* ============ 9) 游戏 / 攻略 / 待办 / 关于 ============ */
-.app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 .app-card {
   position: relative;
   background: var(--surface);
@@ -964,7 +948,6 @@ a.guide-title:hover { text-decoration: underline; }
 
 /* 首页「关于本站」窗口（原「关于」页的内容，已整合到首页） */
 .about-home-body { display: flex; flex-direction: column; gap: 6px; }
-.about-home-title { margin: 0 0 4px; font-size: 17px; color: var(--text-heading); font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; }
 .about-home-body p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--text); }
 .about-home-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 
@@ -1252,7 +1235,6 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 .xp-toc a:hover { color: var(--xp-blue-border); background: var(--surface-2); }
 .xp-toc a.current { color: var(--xp-blue-border); border-left-color: var(--xp-blue-border); background: var(--surface-2); font-weight: bold; }
 .xp-toc .xp-toc-level-3 a { padding-left: 18px; }
-.xp-toc .xp-toc-level-4 a { padding-left: 28px; font-size: 11px; }
 
 /* 主列里的独立窗口（如杂谈页顶部的待办窗口）与后续内容拉开距离 */
 .xp-shell-main > .xp-widget { margin: 0 0 16px; }
@@ -1429,9 +1411,6 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 
-/* 杂谈页注入的待办窗口 */
-.blog-todo-window { margin: 16px 16px 0; }
-
 /* ============ 12) 动画 ============ */
 /* 入场动画必须做到「动画不跑也可读」：
    早期写法把基础 opacity 设为 0（后来改成 fill-mode: backwards，问题一样）——
@@ -1530,14 +1509,8 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .credits-col { border-left: none; border-top: 1px dashed var(--border); padding: 12px 0 0; }
   .xp-search-box { width: 100%; }
   .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
-  .about-profile-layout { flex-direction: column; align-items: center; text-align: center; }
-  .about-avatar { width: 96px; height: 96px; }
-  .about-nav-list span { display: none; }
   .work-compare { grid-template-columns: 1fr; }
   .xp-shell .post-content { padding: 12px 12px 16px; }
   .xp-shell .post-content p,
   .xp-shell .post-content li { font-size: 14px; }
-  .credits-grid { grid-template-columns: 1fr; }
-  .content-container > .post-item .feature-container,
-  .xp-shell > .post-item .feature-container { display: none; }
 }

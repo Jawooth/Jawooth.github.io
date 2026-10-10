@@ -1,10 +1,19 @@
-"""生成站点的 favicon.ico 与像素风头像 avatar.png（写入 D:\\tools\\hexo\\source）。"""
+"""生成站点的 favicon.ico 与像素风头像 avatar.png（写入 <仓库>/source）。"""
 import io
 import struct
 import os
+import sys
 from PIL import Image, ImageDraw
 
-ROOT = r"D:\tools\hexo"
+# Windows 控制台默认 GBK，中文输出会变成乱码
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except (AttributeError, ValueError):
+    pass
+
+# 从脚本位置反推仓库根目录（本文件在 <仓库>/tools/ 下），
+# 这样把仓库挪到别的盘或别的路径也能直接用，不必改代码。
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "source")
 
 # ---------------------------------------------------------------- favicon 16x16
@@ -25,6 +34,7 @@ def favicon_16():
 
 
 def write_ico(path, base, sizes=(16, 32, 48)):
+    """把一张 16x16 像素图打包成多尺寸 .ico（32/48 用 NEAREST 放大以保留像素感）。"""
     frames = []
     for s in sizes:
         img = base if s == 16 else base.resize((s, s), Image.NEAREST)
@@ -76,6 +86,15 @@ write_ico(fav, favicon_16())
 print("favicon.ico", os.path.getsize(fav), "bytes")
 
 os.makedirs(os.path.join(SRC, "images"), exist_ok=True)
-av = os.path.join(SRC, "images", "avatar.png")
+
+# ⚠️ 这里**故意不写** source/images/avatar.png：
+# 那是主题自带的占位头像（themes/minimalism/source/images/avatar.png），
+# 主题资源在站点资源之后写入，同名文件会被它覆盖；文档也反复写「不要用 avatar.png」。
+# 这个脚本以前会生成它，结果只在 source/images/ 里留下一个 954 字节的孤儿文件
+# （未跟踪、也不会生效），既不生效又容易让人以为换过头像。
+# 站点真正用的是 source/images/site-avatar.png（由 profile.yml / 主题配置指向）。
+# 因此样例头像改名输出，避免再与主题占位图撞名。
+av = os.path.join(SRC, "images", "avatar-sample.png")
 avatar_32().resize((256, 256), Image.NEAREST).save(av, optimize=True)
-print("avatar.png", os.path.getsize(av), "bytes")
+print("avatar-sample.png", os.path.getsize(av), "bytes")
+print("（真正的头像请覆盖 source/images/site-avatar.png，不要用 avatar.png）")

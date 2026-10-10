@@ -36,6 +36,10 @@ npm-debug.log*
 *.tmp
 *.bak
 
+# Python 运行产物（tools/ 下跑脚本会生成，例如 py -3 -m py_compile）
+__pycache__/
+*.pyc
+
 # Hexo Pro 客户端自己的东西：模板目录与「丢弃区」（被丢弃的文件会移到这里）
 _yaml_templates/
 source/_discarded/
