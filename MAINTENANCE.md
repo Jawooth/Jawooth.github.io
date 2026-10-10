@@ -29,7 +29,7 @@
 | 改待办事项 | `source/_data/todo.yml` | 同上（**只在杂谈页显示**，全部条目按 进行中→待做→已完成 排） |
 | 加游戏或小工具 | `source/_data/apps.yml` | 同上 |
 | 加攻略/教程条目 | `source/_data/guides.yml` | 同上 |
-| **改首页播放器的歌单** | `source/_data/music.yml` 的 `netease_playlist` → 双击 `更新歌单.cmd` | 再 `npm run build`（**并重启预览**） |
+| **改首页播放器的歌单** | `source/_data/music.yml` 的 `netease_playlist` → 双击 `5 更新歌单.cmd` | 再 `npm run build`（**并重启预览**） |
 | 换头像 | 覆盖 `source/images/site-avatar.png` | 同上 |
 | 换浅色壁纸 | 覆盖 `source/images/xp-desktop-bg.jpg` | 同上 |
 | 换主题色 / 圆角 / 间距 | `source/css/xp-custom.css` 顶部 `:root` 与 `html.dark` | 同上（**浅色深色两处都要改**） |
@@ -45,8 +45,8 @@
 
 | 入口 | 是什么 | 特点 |
 |---|---|---|
-| **http://localhost:4000/** | **HexoHub 客户端**（`D:\tools\HexoHub`，Tauri 版）的「启动服务器」，它真的跑 `hexo server` | 读磁盘、就是标准预览 ✓ 改完用 `构建.cmd` 或客户端里的【清理】+【生成】即可。注意它会**自动杀掉占用 4000 的进程**，所以别同时开两个客户端 |
-| **http://127.0.0.1:4010/** | 命令行预览：`npm run server` / `预览.cmd` | 读磁盘、自动热更新；客户端没开时用这个 |
+| **http://localhost:4000/** | **HexoHub 客户端**（`D:\tools\HexoHub`，Tauri 版）的「启动服务器」，它真的跑 `hexo server` | 读磁盘、就是标准预览 ✓ 改完用 `2 重新生成.cmd` 或客户端里的【清理】+【生成】即可。注意它会**自动杀掉占用 4000 的进程**，所以别同时开两个客户端 |
+| **http://127.0.0.1:4010/** | 命令行预览：`npm run server` / `3 看效果.cmd` | 读磁盘、自动热更新；客户端没开时用这个 |
 
 > ⚠️ 别双击 `public/index.html` 打开（资源是绝对路径，`file://` 下会 404 变成纯文本）。
 
@@ -89,8 +89,15 @@ D:\tools\hexo
 ├─ MAINTENANCE.md                本文件（技术手册）
 ├─ _config.yml                   站点配置
 ├─ _config.minimalism.yml        主题配置
-├─ 构建.cmd / 预览.cmd / 发布.cmd / 备份.cmd / 更新歌单.cmd    双击即用
-└─ public/                       ← 构建产物，**不要手改**，每次 generate 会覆盖
+├─ public/                       ← 构建产物，**不要手改**，每次 generate 会覆盖
+│
+├─ 1 写文章打开 HexoHub.cmd      双击：打开编辑器（只是启动客户端）
+├─ 避免踩坑 先备份.cmd           双击：备份文章/图片/数据到 backup\
+├─ 2 重新生成.cmd                双击：clean + generate（带 4000 端口守卫）
+├─ 3 看效果.cmd                  双击：自动找/起预览并打开浏览器
+├─ 4 发布上线.cmd                双击：生成并上传（带端口守卫、可只重传）
+├─ deploy.ps1                    被 4 号脚本调用；支持 -SkipBuild
+└─ 5 更新歌单.cmd                双击：按 music.yml 的歌单 id 重抓曲目
 ```
 
 ---
@@ -295,7 +302,8 @@ status: done                  # done / doing（作品卡片上的状态角标）
     - HexoHub 的预览就是标准 `hexo server`（端口 4000），**读磁盘**，没有缓存问题 ✓
     - 旧的 **Hexo Pro Desktop 建议不要再打开**：它会用自己那份 Hexo 实例渲染（不读 `public/`）、把 `data/*.db`／`_yaml_templates/`／`blogInfoList.json`／`deploy_config.json`／`source/_discarded/` 写进仓库、**直接删掉图片**，而且**重写 `_config.yml`**（把 `deploy.repo` 拼成了 `https://github.com/https://jawooth.github.io/.git`、`branch` 改成 `main`，会让部署失败）——这些都实际发生过
     - 两个客户端都会抢 4000 端口；HexoHub 检测到占用会**自动结束占用进程**
-    - ⚠️ **构建/发布前先把 HexoHub 的预览服务器停掉**：它会自动杀掉占用 4000 的进程，而构建时两边同时操作 `public/` 偶尔会出现"构建成功但 public 没了"
+    - ⚠️ **构建/发布前先把 HexoHub 的预览服务器停掉**：它会自动杀掉占用 4000 的进程，而构建时两边同时操作 `public/` 会出现"构建成功但 public 没了"。**现在 `2 重新生成.cmd` 与 `4 发布上线.cmd` 会自动检测并询问**（见第 22 条），所以手动操作时反而容易忘——尽量走脚本。
+    - 🚨 **2026-10 实测的完整故障链**：HexoHub 预览开着 → 双击发布 → `hexo clean` 删掉 `public\` → HexoHub 杀掉构建进程 → 构建中断但窗口只显示乱码/无错误 → 用户以为"没改动"。**根因其实是 `deploy.ps1` 的中文编码问题（第 21 条），端口才是放大器**；两处都已修。
 16. **APlayer 的 API 与事件有两个坑**（2026-10 实际踩到，表现是"上一首/下一首没反应"和"封面歌名与音频对不上"）：
     - 换曲目要用 **`ap.switchAudio(index)`**，**没有** `switchMusic` 这个方法（写错了会在点击时抛错、什么都不发生）；
     - **不要**给 APlayer 设 `order: 'random'`：它会自己挑曲目播放，导致我们界面（用自己 index 显示封面歌名）与音频不同步。
@@ -306,9 +314,19 @@ status: done                  # done / doing（作品卡片上的状态角标）
 18. **`source/` 里下划线开头的文件/目录会被 Hexo 忽略**（约定俗成的"私有文件"）：`_posts/__test.md` 不会生成页面。给测试稿起名时别用 `_` 开头（可用 `draft-` 之类）。
 19. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
     需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
-20. **中文文件名的 `.cmd` 里不能出现非 ASCII 字符**（2026-10 实测，非常隐蔽）：根目录那几个脚本为了中文提示都带 `chcp 65001`，但如果**脚本正文里再出现中文**（例如提示语里写「双击 构建.cmd」），cmd.exe 的行读取会失步——**之后每一行都会丢掉第一个字符**，于是 `if errorlevel` 变成 `f errorlevel`、`echo` 变成 `cho`、`pause` 变成 `ause`，报一堆 "'rrorlevel' is not recognized" 却仍能跑完，极难判断。
-    - 规则：**这些 `.cmd` 的文件名可以是中文，但正文必须保持纯 ASCII**。要写中文提示就交给被调用的 Python/PowerShell 脚本（它们自己会 `sys.stdout.reconfigure(encoding="utf-8")`）。
+20. **中文文件名的 `.cmd` 里不能出现非 ASCII 字符**（2026-10 实测，非常隐蔽）：根目录那几个脚本为了中文提示都带 `chcp 65001`，但如果**脚本正文里再出现中文**（例如提示语里写「双击 2 重新生成.cmd」），cmd.exe 的行读取会失步——**之后每一行都会丢掉第一个字符**，于是 `if errorlevel` 变成 `f errorlevel`、`echo` 变成 `cho`、`pause` 变成 `ause`，报一堆 "'rrorlevel' is not recognized" 却仍能跑完，极难判断。
+    - 规则：**这些 `.cmd` 的文件名可以是中文，但正文必须保持纯 ASCII**。要写中文提示就交给被调用的 Python 脚本（它们自己会 `sys.stdout.reconfigure(encoding="utf-8")`）。
     - 自检：`[System.IO.File]::ReadAllBytes($f) | Where-Object { $_ -gt 127 }` 应当为空。
+21. **`.ps1` 也必须纯 ASCII**（2026-10 实测，是「发布了但线上没变」的真凶）：`.cmd` 用 **Windows PowerShell 5.1**（`powershell -File`）调用 `.ps1`，而 5.1 把**无 BOM 的 UTF-8** 当 ANSI 解码。
+    - 症状一：中文提示变乱码（`==> 娓呴櫎鏃ф枃浠?`）。
+    - 症状二（更致命）：**解析器会把后续行吞掉或错位**。实测 `deploy.ps1` 里带中文注释与 `Write-Host` 时，脚本在 `hexo clean` 之后就停了 —— `public\` 被清空、`generate`/`deploy` 都没跑，而窗口只留下一行乱码，看起来就是"没改动"。
+    - 规则：**`deploy.ps1`、`tools\backup.ps1` 一律纯 ASCII**，中文提示写在 `.cmd` 里。本机**没有 `pwsh`（PowerShell 7）**，不要指望用 7 来规避：`(Get-Command pwsh)` 为空。
+    - 自检：与第 20 条相同（非 ASCII 字节数必须为 0）。
+    - 若将来一定要在 `.ps1` 里写中文：文件必须存为**带 BOM 的 UTF-8**，否则 5.1 必定读错。
+22. **发布链路的三处配套防护**（都是为了同一个故障不再发生）：
+    - `2 重新生成.cmd` / `4 发布上线.cmd` 开头用 `netstat | findstr ":4000 "` 检测 HexoHub 预览；占用时提示并可选 `taskkill`。**原因**：`hexo clean` 会删掉 `public\`，而 HexoHub 检测到端口被占会杀掉我们的 node 进程，于是构建半途而废（实测复现）。
+    - `4 发布上线.cmd` 有菜单：`[1] 只重传`（`deploy.ps1 -SkipBuild`，跳过 clean/generate 只推送）与 `[2] 重建并上传`。代理抖动（`TLS connect error`）时用 `[1]`，几秒就能补推，不必重新生成。
+    - **判断"到底传上去了没有"**：`git -C .deploy_git log -1` 看是否有刚刚时间的 `Site updated: ...`。比"打开线上页面看"可靠——线上还有 GitHub Pages 构建延迟与浏览器缓存两层干扰。
 
 ---
 
@@ -429,7 +447,7 @@ contacts:
 - **front matter 没有专门的表单**：客户端只为「标题 / 标签 / 分类 / 摘要」提供输入框，`origin`、`thumbnail`、`status`、`short_title`、`era` 等要自己在那段 `---` 里手写。
 - 新建文章会读 `scaffolds/post.md`（本仓库已放好带中文说明的模板），所以新文章自带字段提示。
 - 客户端的「外部编辑器」= 用系统默认程序打开**当前选中的文章**，不能用来打开任意文件；要改 `_data`/CSS 就自己在资源管理器里右键打开。
-- 客户端里删文章/图片仍**不要用它的删除按钮**，按第 12 节的做法走（先 `备份.cmd` + 提交，再删，再 `verify-site.py` 查断链）。
+- 客户端里删文章/图片仍**不要用它的删除按钮**，按第 12 节的做法走（先 `避免踩坑 先备份.cmd` + 提交，再删，再 `verify-site.py` 查断链）。
 
 ### 11.2 首页句子气泡
 

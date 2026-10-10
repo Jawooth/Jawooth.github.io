@@ -7,8 +7,8 @@ rem
 rem  Double-click this file (no need to cd anywhere first).
 rem  Before running: put the playlist id (digits only) into
 rem      source\_data\music.yml  ->  netease_playlist
-rem  After running : double-click the build script (JIANGGOU.cmd
-rem      is its pinyin-free name: see README.md) to rebuild.
+rem  After running : double-click the "regenerate" script in this
+rem      folder (its name starts with "2 ") to rebuild the site.
 rem
 rem  NOTE FOR MAINTAINERS: keep this file pure ASCII. A Chinese
 rem  filename inside the body, after "chcp 65001", desynchronises
@@ -41,7 +41,7 @@ echo.
 echo ------------------------------------------------------------
 if errorlevel 1 goto failed
 echo  OK - the music track list was regenerated.
-echo  Next: run the build script to rebuild the site.
+echo  Next: run the "regenerate" script (starts with 2) to rebuild the site.
 echo ------------------------------------------------------------
 pause
 goto :eof

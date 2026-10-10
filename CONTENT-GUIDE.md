@@ -300,7 +300,7 @@ icon-calc      icon-palette icon-notepad icon-bulb
 **三种模式，优先级从高到低**：
 
 1. **自己的歌**：`tracks` 里直接填曲目（音频放 `source\music\`，或填 `https://` 直链）。
-2. **网易云歌单（推荐）**：`netease_playlist` 填歌单 id → **双击仓库根目录的 `更新歌单.cmd`**
+2. **网易云歌单（推荐）**：`netease_playlist` 填歌单 id → **双击仓库根目录的 `5 更新歌单.cmd`**
    （它会运行 `py -3 tools\fetch-netease.py`）→ 生成 `source\_data\music-tracks.yml` → 重新生成网站。
 3. **兜底**：什么曲目都没有时，才会嵌网易云的官方歌单播放器（丑，约 430px 高，要歌单是公开的）。
 
