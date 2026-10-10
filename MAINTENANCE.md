@@ -418,6 +418,10 @@ contacts:
 注意：能放的是免费/可试听的歌，VIP/版权/地区受限的会被自动跳过（脚本会列出跳过几首）；
 换歌单就改 id 再跑一次脚本。封面已强制用 https（否则 https 站点会把 http 图当混合内容拦掉）。
 
+> **播放器上的文字**：窗口标题与「没配曲目」的提示都在 `source/_data/music.yml` 里改：
+> `player_title: 'XP-MP4'`（顶部标题）、`player_empty_text: '未配置曲目'`（空状态提示）。
+> 不用改页面或代码。实测：改成「小站留声机」后首页标题立刻跟着变。
+
 **② 自己的歌 / 本地文件**
 
 `music.yml` 的 `tracks:` 里填 `title/author/album/url/pic`，音频放 `source/music/`（或任何 `https://` 直链）。

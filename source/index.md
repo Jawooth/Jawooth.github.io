@@ -52,7 +52,7 @@ layout: xp-page
 <!-- 曲目 / 歌单都在 source/_data/music.yml 里配置；这里只是播放器外观 -->
 {% xp_music %}
 <div class="retro-mp4-player">
-<div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg> XP-MP4 <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg></div>
+<div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg> {% xp_music_title %} <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg></div>
 <div class="mp4-screen">
 <div class="mp4-screen-content">
 <div class="mp4-cover">
@@ -315,7 +315,7 @@ layout: xp-page
 
   function renderEmpty() {
     var title = $('mp4-title');
-    if (title) title.textContent = '未配置曲目';
+    if (title) title.textContent = (window.XP_MUSIC_UI || {}).empty || '未配置曲目';
     ['mp4-play', 'mp4-prev', 'mp4-next'].forEach(function (id) {
       var btn = $(id);
       if (btn) { btn.disabled = true; btn.setAttribute('aria-disabled', 'true'); }

@@ -534,6 +534,18 @@ function musicData() {
   return { tracks, netease: tracks.length ? null : (id && id !== '0' ? id : null) };
 }
 
+/* 播放器界面上的文案（music.yml 可改） */
+function musicUi() {
+  const raw = dataFile('music') || {};
+  const cfg = Array.isArray(raw) ? {} : raw;
+  return {
+    title: String(cfg.player_title || 'XP-MP4'),
+    empty: String(cfg.player_empty_text || '未配置曲目')
+  };
+}
+
+hexo.extend.tag.register('xp_music_title', () => esc(musicUi().title));
+
 hexo.extend.tag.register('xp_music', () => {
   const { tracks, netease } = musicData();
 
@@ -541,7 +553,8 @@ hexo.extend.tag.register('xp_music', () => {
   if (netease) {
     const src = '//music.163.com/outchain/player?type=0&id=' + encodeURIComponent(netease) + '&auto=0&height=430';
     return oneLine(
-      '<script>window.XP_MUSIC = []; window.XP_MUSIC_EMBED = true;</script>' +
+      '<script>window.XP_MUSIC = []; window.XP_MUSIC_EMBED = true;' +
+        `window.XP_MUSIC_UI = ${JSON.stringify(musicUi())};</script>` +
       '<div class="xp-music-embed"><iframe src="' + src + '" width="100%" height="100%" frameborder="0" ' +
       'loading="lazy" title="网易云音乐歌单播放器"></iframe></div>'
     );
