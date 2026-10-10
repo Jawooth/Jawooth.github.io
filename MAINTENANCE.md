@@ -394,10 +394,19 @@ contacts:
 
 ### 11.1.1 在客户端里写文章/放图片（HexoHub）
 
+> 详细版见 [README.md 第 2 节](README.md)；下面是与本仓库结构相关的技术要点。
+> 能力边界（读源码确认，`src/app/page.tsx`、`src/components/*`）：客户端**只有**文章、
+> 图片、`_config.yml`、以及 `clean/generate/deploy/server` 这几件事有界面；
+> `source/_data/*.yml`、`_config.minimalism.yml`、`themes/`、`source/css/` **都没有界面**。
+
 - `_config.yml` 的 **`post_asset_folder: true` 已打开**：客户端里拖图进正文会自动生成 `{% asset_img 文件名 "描述" %}`，并把图片复制到 `source/_posts/<文章文件名>/` 下、随文章一起输出（实测通过）。不用这个功能也完全没问题。
+  - 客户端只在配置里**存在** `post_asset_folder: false` 时才弹窗问你要不要自动改成 `true`；本仓库已经是 `true`，所以不会弹。
 - ⚠️ **卡片封面只认 front matter**：首页「最近作品」和作品页卡片的缩略图取自文章 front matter 的 `img:` / `thumbnail:`（也就是 `source/images/works/` 那套）。用客户端拖图方式插入的图**不会自动成为封面**。想让新作品有封面，二选一：
   1. 把封面另存一份到 `source/images/works/xxx.jpg`（顺手生成 `xxx-thumb.jpg`），在 front matter 写 `img: /images/works/xxx.jpg`；
   2. 直接用现有约定（图片放 `source/images/works/`，front matter 写 `img:`），正文里再用 `{% asset_img %}` 插内文图也可以。
+- **front matter 没有专门的表单**：客户端只为「标题 / 标签 / 分类 / 摘要」提供输入框，`origin`、`thumbnail`、`status`、`short_title`、`era` 等要自己在那段 `---` 里手写。
+- 新建文章会读 `scaffolds/post.md`（本仓库已放好带中文说明的模板），所以新文章自带字段提示。
+- 客户端的「外部编辑器」= 用系统默认程序打开**当前选中的文章**，不能用来打开任意文件；要改 `_data`/CSS 就自己在资源管理器里右键打开。
 - 客户端里删文章/图片仍**不要用它的删除按钮**，按第 12 节的做法走（先 `备份.cmd` + 提交，再删，再 `verify-site.py` 查断链）。
 
 ### 11.2 首页句子气泡
