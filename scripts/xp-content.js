@@ -519,15 +519,19 @@ hexo.extend.generator.register('xp-search-index', () => {
 });
 
 /* ---------------------------------------------------------------- 播放器与便签 */
-/* 曲目表：兼容两种写法
-   - 纯列表（旧格式）：直接当作 tracks
-   - 映射格式：{ tracks: [...], netease_playlist: <歌单id> } */
+/* 曲目表来源，按优先级：
+   - source/_data/music.yml 的 tracks（手工填的曲目）
+   - source/_data/music-tracks.yml（tools/fetch-netease.py 从网易云歌单生成）
+   - 都没有、但有 netease_playlist 时才退回网易云官方外链播放器
+   （纯列表格式的老写法也兼容） */
 function musicData() {
-  const raw = dataFile('music');
-  if (Array.isArray(raw)) return { tracks: raw, netease: null };
-  const tracks = Array.isArray(raw.tracks) ? raw.tracks : [];
-  const id = raw.netease_playlist ? String(raw.netease_playlist).trim() : '';
-  return { tracks, netease: id && id !== '0' ? id : null };
+  const raw = dataFile('music') || {};
+  const gen = dataFile('music-tracks');
+  const genTracks = Array.isArray(gen) ? gen : (gen && Array.isArray(gen.tracks) ? gen.tracks : []);
+  const ownTracks = Array.isArray(raw) ? raw : (Array.isArray(raw.tracks) ? raw.tracks : []);
+  const tracks = ownTracks.length ? ownTracks : genTracks;
+  const id = !Array.isArray(raw) && raw.netease_playlist ? String(raw.netease_playlist).trim() : '';
+  return { tracks, netease: tracks.length ? null : (id && id !== '0' ? id : null) };
 }
 
 hexo.extend.tag.register('xp_music', () => {

@@ -332,6 +332,22 @@ layout: xp-page
     if ($('mp4-title')) $('mp4-title').textContent = song.title || '';
     if ($('mp4-author')) $('mp4-author').textContent = song.author || '';
     if ($('mp4-album')) $('mp4-album').textContent = song.album || '';
+    /* 封面铺到屏幕那块（曲目里的 pic；没有就露出占位图标） */
+    var cover = $('mp4-cover');
+    if (cover) {
+      var ph = cover.querySelector('svg');
+      if (song.pic) {
+        cover.style.backgroundImage = 'url("' + song.pic + '")';
+        cover.style.backgroundSize = 'cover';
+        cover.style.backgroundPosition = 'center';
+        cover.classList.add('has-cover');
+        if (ph) ph.style.display = 'none';
+      } else {
+        cover.style.backgroundImage = '';
+        cover.classList.remove('has-cover');
+        if (ph) ph.style.display = '';
+      }
+    }
   }
 
   function setPlaying(playing) {
