@@ -40,8 +40,8 @@
 
 | 入口 | 是什么 | 特点 |
 |---|---|---|
-| **http://localhost:4000/** | Hexo Pro 客户端自带预览（打开客户端就在跑） | 用**它自己那份 Hexo 实例**渲染，**不读磁盘 `public/`**；改完内容要在客户端里刷新/重新生成（或重启客户端）才看到 |
-| **http://127.0.0.1:4010/** | 命令行预览：`npm run server` | 读磁盘、自动热更新，**永远是最新的**；需要时再起（默认只留客户端那台） |
+| **http://localhost:4000/** | **HexoHub 客户端**的「启动服务器」（它真的跑 `hexo server`） | 读磁盘、就是标准预览 ✓ 改完用 `构建.cmd` 或客户端里的【清理】+【生成】即可。注意它会**自动杀掉占用 4000 的进程**，所以别同时开两个客户端 |
+| **http://127.0.0.1:4010/** | 命令行预览：`npm run server` / `预览.cmd` | 读磁盘、自动热更新；客户端没开时用这个 |
 
 > ⚠️ 别双击 `public/index.html` 打开（资源是绝对路径，`file://` 下会 404 变成纯文本）。
 
@@ -267,7 +267,11 @@ status: done                  # done / doing（作品卡片上的状态角标）
 12. **改了 `_data/*.yml` 却"没生效"**：增量 `hexo generate` 感知不到数据文件与 `scripts/*.js` 的变化，必须 `npm run build`（内部先 clean）。这是实测过的行为，不是你的错觉。
 13. **含中文的文件不要用 PowerShell 的 `-replace` / `Set-Content` 去改**：会把中文写成 `?`，YAML/CSS 直接损坏（排查时非常容易误判成"功能没生效"）。要批量改就用编辑器，或用 Python 以 UTF-8 读写。
 14. **窄屏下 `flex-basis` 会变成「高度」**：底部「搜索 & 致谢」窗口里 `.links-col { flex: 1 1 420px }`、`.credits-col { flex: 0 1 460px }`，一旦在媒体查询里把容器改成 `flex-direction: column`，这两个 basis 就变成高度，窗口被撑到 800+px（移动端就是这样变长的）。规则：**凡是把容器改成纵向排列的地方，都要同时把子项的 flex-basis 复位**（`flex: 0 0 auto` 或改用 `width`）。
-15. **`localhost:4000` 与 `127.0.0.1:4010` 是两套预览，别混**：4000 是 Hexo Pro 客户端的预览，它用自己那份 Hexo 实例渲染，**完全不读磁盘 `public/`**（实测：我用 `clean` 删掉 `public/` 后它照样返回旧的 41 628 字节；我 build 出 42 313 字节的新页面它也不变），所以"改了没生效"通常是它 —— 需要在客户端里刷新/重新生成。4010 是 `npm run server`，读磁盘、热更新，永远最新，我做验证用它。两套同时起时，端口 4000 会因被占而只绑到 IPv6，两个进程"各回答一半请求"，更难排查。
+15. **客户端的选择与坑（2026-10 实测）**：现在用 **HexoHub**（装在 `HexoHub\`，已 gitignore）。
+    - HexoHub 的预览就是标准 `hexo server`（端口 4000），**读磁盘**，没有缓存问题 ✓
+    - 旧的 **Hexo Pro Desktop 建议不要再打开**：它会用自己那份 Hexo 实例渲染（不读 `public/`）、把 `data/*.db`／`_yaml_templates/`／`blogInfoList.json`／`deploy_config.json`／`source/_discarded/` 写进仓库、**直接删掉图片**，而且**重写 `_config.yml`**（把 `deploy.repo` 拼成了 `https://github.com/https://jawooth.github.io/.git`、`branch` 改成 `main`，会让部署失败）——这些都实际发生过
+    - 两个客户端都会抢 4000 端口；HexoHub 检测到占用会**自动结束占用进程**
+16. **`source/` 里下划线开头的文件/目录会被 Hexo 忽略**（约定俗成的"私有文件"）：`_posts/__test.md` 不会生成页面。给测试稿起名时别用 `_` 开头（可用 `draft-` 之类）。
 16. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
     需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
 
@@ -370,6 +374,14 @@ contacts:
 ```
 
 弹窗里的说明文字取自 `about.contact_desc`。**为什么不做在图标行里**：账户卡片高度固定 210px，再加一行会被裁掉；几个相同的信封图标也分不清谁是谁。
+
+### 11.1.1 在客户端里写文章/放图片（HexoHub）
+
+- `_config.yml` 的 **`post_asset_folder: true` 已打开**：客户端里拖图进正文会自动生成 `{% asset_img 文件名 "描述" %}`，并把图片复制到 `source/_posts/<文章文件名>/` 下、随文章一起输出（实测通过）。不用这个功能也完全没问题。
+- ⚠️ **卡片封面只认 front matter**：首页「最近作品」和作品页卡片的缩略图取自文章 front matter 的 `img:` / `thumbnail:`（也就是 `source/images/works/` 那套）。用客户端拖图方式插入的图**不会自动成为封面**。想让新作品有封面，二选一：
+  1. 把封面另存一份到 `source/images/works/xxx.jpg`（顺手生成 `xxx-thumb.jpg`），在 front matter 写 `img: /images/works/xxx.jpg`；
+  2. 直接用现有约定（图片放 `source/images/works/`，front matter 写 `img:`），正文里再用 `{% asset_img %}` 插内文图也可以。
+- 客户端里删文章/图片仍**不要用它的删除按钮**，按第 12 节的做法走（先 `备份.cmd` + 提交，再删，再 `verify-site.py` 查断链）。
 
 ### 11.2 首页句子气泡
 
