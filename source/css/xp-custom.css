@@ -665,7 +665,13 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   padding-bottom: 4px; height: 100%; align-items: stretch;
 }
 .recent-work-item {
-  flex-shrink: 0; width: 148px;
+  /* 所有卡片（含末尾的「查看全部」）统一宽度 —— 原来第一张加 .featured 是 196px
+     并带蓝色描边，末尾「查看全部」是 112px 虚线框，一排放出来大小不一。
+     ⚠ 宽度不要随便改大：缩略图是 16/9、高度由宽度算出来，
+       而这条横栏的高度受网格行（.bento-recent 占 2 行）限制，
+       卡片一宽、缩略图就变高，底下的标题和日期会被 overflow 裁掉。
+       要放进更多卡片请让它横向滚动，而不是把每张压扁/拉大。 */
+  flex-shrink: 0; width: 170px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 3px; overflow: hidden;
@@ -673,20 +679,20 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   text-decoration: none; color: inherit;
   display: flex; flex-direction: column;
 }
-.recent-work-item.featured { width: 196px; border-color: var(--xp-blue-border); box-shadow: 0 0 0 1px var(--xp-blue-border); }
+/* 「最近作品」条：所有卡片（含末尾的「查看全部」）宽度、边框、圆角完全一致 ——
+   原来第一张会加 .featured（196px + 蓝色描边 + 蓝色外圈）、
+   末尾「查看全部」是 112px 虚线框，一排放出来大小不一、蓝色描边还很扎眼。 */
+.recent-work-item:hover { transform: translateY(-3px); border-color: var(--xp-hover); }
 .recent-work-item.more {
-  width: 112px;
   background: linear-gradient(135deg, #f0f8ff 0%, #d6e8ff 100%);
   align-items: center; justify-content: center; text-align: center;
-  border-style: dashed;
 }
-.recent-work-item:hover { transform: translateY(-3px); border-color: var(--xp-hover); }
 .recent-work-item.more:hover { background: linear-gradient(135deg, #e6f3ff 0%, #c2dfff 100%); }
 html.dark .recent-work-item.more { background: linear-gradient(135deg, #33384a 0%, #2a3040 100%); }
 .recent-work-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 .recent-work-info { padding: 6px 8px; flex: 1; }
 .recent-work-title {
-  font-size: 16px; font-weight: bold; margin: 0 0 4px;
+  font-size: 16px; margin: 0 0 4px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   color: var(--text-heading);
 }
@@ -1572,8 +1578,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .profile-content { flex-direction: column; align-items: center; text-align: center; }
   .profile-avatar { width: 96px; height: 96px; }
   .xp-bubble { transform: none; }   /* 不要写 margin:0 —— 那会把 ≤900px 里给向下拖尾留出的空间清零 */
-  .recent-work-item { width: 140px; }
-  .recent-work-item.featured { width: 180px; }
+  .recent-work-item { width: 150px; }
   /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，
      否则 .links-col/.credits-col 的 420px/460px 会被当成"高度"，窗口被撑到 800+px */
   .links-body { flex-direction: column; align-items: stretch; gap: 12px; }

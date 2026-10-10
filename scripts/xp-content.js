@@ -198,8 +198,9 @@ function recentPosts(limit, excludeCategory) {
 
 function recentWorks(limit) {
   const posts = workPosts().filter((p) => p.thumbnail).slice(0, limit);
-  const cards = posts.map((p, i) => (
-    `<a class="recent-work-item${i === 0 ? ' featured' : ''}" href="${href(p.path)}">` +
+  // 不再给第一张加 .featured：所有卡片大小一致（原来第一张更宽、还带蓝色描边）
+  const cards = posts.map((p) => (
+    `<a class="recent-work-item" href="${href(p.path)}">` +
     `<img class="recent-work-thumb" src="${esc(p.thumbnail)}" alt="${esc(p.title)}" loading="lazy" decoding="async" width="480" height="360">` +
     `<div class="recent-work-info"><h4 class="recent-work-title">${esc(p.short_title || p.title)}</h4>` +
     `<p class="recent-work-date">${fmtDate(p)} · ${esc(metaOf(p))}</p></div></a>`
