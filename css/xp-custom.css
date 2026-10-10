@@ -492,6 +492,12 @@ html.dark .profile-icon { color: var(--link); }
   z-index: 1;
 }
 .bubble-content p { margin: 0 0 6px; font-size: 14px; line-height: 1.55; font-style: italic; transition: opacity 0.25s; }
+/* 句子本体（含两侧符号）：整块的淡入淡出，符号跟着一起换。
+   符号用 ::before / ::after 画，内容取自 data-left / data-right（来自 quotes.yml），
+   这样脚本只改内层 span 的文字，不会误删符号节点。 */
+.bubble-quote { transition: opacity 0.25s; }
+.bubble-quote::before { content: attr(data-left); }
+.bubble-quote::after { content: attr(data-right); }
 .bubble-from {
   text-align: right; font-size: 12px; color: var(--text-muted);
   margin-top: 10px !important; font-style: normal !important;
