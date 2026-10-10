@@ -81,7 +81,8 @@
      · 填充色：从上面的浅黄渐变到下面的暖黄
      · 描边：漫画感的深一点的颜色
      · 拖尾：一块实心三角形，从气泡右缘直接指向「用户账户」里的头像。
-       len 是它的长度，half 是根部高度的一半。
+       len = 长度；half = 根部高度的一半 —— 这个数越大尾巴越钝，越小越尖；
+       tilt = 倾斜角，负数是让尾巴尖往上翘一点，0 就是完全水平。
        因为气泡宽度只占格子的 --bubble-w（桌面端 92%），右边空出来的部分
        正好由这条拖尾填上，所以「气泡越窄 → 拖尾可以越长」。
      · min-h / max-h：气泡高度随文字长短变化，但不会比 min-h 更矮，
@@ -101,7 +102,10 @@
      窄屏是整行铺满，不受这个值影响（见 ≤900px 的媒体查询）。 */
   --bubble-w: 92%;
   --bubble-tail-len: 42px;
-  --bubble-tail-half: 11px;
+  /* half 从 11px 调到 16px：根部更宽 → 尖角更钝，不再像一根针 */
+  --bubble-tail-half: 18px;
+  /* 略微上翘，跟气泡本身 -0.8deg 的手工感一致；0deg 就是水平 */
+  --bubble-tail-tilt: -8deg;
 
   /* 断点参考：1200 / 900 / 640（全站统一） */
 }
@@ -513,7 +517,7 @@ html.dark .profile-icon { color: var(--link); }
   border-style: solid;
   border-color: transparent;
   top: 40%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) rotate(var(--bubble-tail-tilt));
 }
 .xp-bubble::before {
   right: calc(-1 * var(--bubble-tail-len));
@@ -1523,7 +1527,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bubble::before {
     right: auto; bottom: auto; top: 100%;
     left: 50%; margin-left: calc(-1 * var(--bubble-tail-half));
-    transform: none;
+    transform: rotate(6deg);   /* 朝下时也略微倾斜：让尖角偏向左边（头像那一侧） */
     border-width: var(--bubble-tail-len) var(--bubble-tail-half) 0 var(--bubble-tail-half);
     border-left-color: transparent;
     border-top-color: var(--bubble-border);
@@ -1531,7 +1535,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bubble::after {
     right: auto; bottom: auto; top: 100%;
     left: 50%; margin-left: calc(-1 * (var(--bubble-tail-half) - 2px));
-    transform: none;
+    transform: rotate(6deg);
     border-width: calc(var(--bubble-tail-len) - 2px) calc(var(--bubble-tail-half) - 2px) 0 calc(var(--bubble-tail-half) - 2px);
     border-left-color: transparent;
     border-top-color: var(--bubble-tail);
