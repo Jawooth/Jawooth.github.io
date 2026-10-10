@@ -1,9 +1,14 @@
 # 维护手册（MAINTENANCE）
 
+> **这是「技术手册」，不是入门文档。**
+> 只想改文章、网名、图片、待办这些**日常内容**，请看 [README.md](README.md)（零基础版）和 [CONTENT-GUIDE.md](CONTENT-GUIDE.md)（字段逐项说明）。
+> 这份手册讲的是：目录结构、构建脚本、样式、排障细节、部署、给接手 AI 的约定。
+
 这份文档是给**站主本人**和**接手改站的 AI 助手**看的。
 
 > **站主只需看第 1–7、11、12 节**（速查 → 目录 → 命令 → 回滚 → 写作 → 样式 → 标签 → 换内容 → 发布）。
 > 第 8–10、13 节是排障细节与给 AI 的约定，不看也不影响你自己改站。
+> 日常改内容（文章 / 网名 / 图片 / 待办）请看 [README.md](README.md)，字段级说明看 [CONTENT-GUIDE.md](CONTENT-GUIDE.md)。
 
 ---
 
@@ -271,15 +276,16 @@ status: done                  # done / doing（作品卡片上的状态角标）
     - HexoHub 的预览就是标准 `hexo server`（端口 4000），**读磁盘**，没有缓存问题 ✓
     - 旧的 **Hexo Pro Desktop 建议不要再打开**：它会用自己那份 Hexo 实例渲染（不读 `public/`）、把 `data/*.db`／`_yaml_templates/`／`blogInfoList.json`／`deploy_config.json`／`source/_discarded/` 写进仓库、**直接删掉图片**，而且**重写 `_config.yml`**（把 `deploy.repo` 拼成了 `https://github.com/https://jawooth.github.io/.git`、`branch` 改成 `main`，会让部署失败）——这些都实际发生过
     - 两个客户端都会抢 4000 端口；HexoHub 检测到占用会**自动结束占用进程**
-18. **APlayer 的 API 与事件有两个坑**（2026-10 实际踩到，表现是"上一首/下一首没反应"和"封面歌名与音频对不上"）：
+    - ⚠️ **构建/发布前先把 HexoHub 的预览服务器停掉**：它会自动杀掉占用 4000 的进程，而构建时两边同时操作 `public/` 偶尔会出现"构建成功但 public 没了"
+16. **APlayer 的 API 与事件有两个坑**（2026-10 实际踩到，表现是"上一首/下一首没反应"和"封面歌名与音频对不上"）：
     - 换曲目要用 **`ap.switchAudio(index)`**，**没有** `switchMusic` 这个方法（写错了会在点击时抛错、什么都不发生）；
     - **不要**给 APlayer 设 `order: 'random'`：它会自己挑曲目播放，导致我们界面（用自己 index 显示封面歌名）与音频不同步。
       要做随机播放，正确做法是**自己把曲目数组洗牌**（首页播放器就是这么做的），APlayer 保持默认 list 顺序；
     - `listswitch` 事件是**先触发、后更新** `ap.list.index`，所以监听里必须用事件参数 `info.index`，
       读 `ap.list.index` 会慢一拍（界面慢一首歌）。
-19. **改 `source/_data/*.yml` 后，正在跑的预览不会更新**（实测：改 `quotes.yml` 后等 6 秒，4010 返回的仍是旧内容）—— `hexo server` 在启动时就把 `_data` 读进内存了，涉及它的改动必须**重启预览服务器**：客户端里是「停止服务器 → 重新启动」，命令行预览就关掉窗口重开。这是"改了没生效"的第二个常见来源（第一个是 hexo-pro 的内存渲染缓存）。
+17. **改 `source/_data/*.yml` 后，正在跑的预览不会更新**（实测：改 `quotes.yml` 后等 6 秒，4010 返回的仍是旧内容）—— `hexo server` 在启动时就把 `_data` 读进内存了，涉及它的改动必须**重启预览服务器**：客户端里是「停止服务器 → 重新启动」，命令行预览就关掉窗口重开。这是"改了没生效"最常见的来源（配合第 12 条一起看）。
 18. **`source/` 里下划线开头的文件/目录会被 Hexo 忽略**（约定俗成的"私有文件"）：`_posts/__test.md` 不会生成页面。给测试稿起名时别用 `_` 开头（可用 `draft-` 之类）。
-16. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
+19. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
     需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
 
 ---
@@ -336,14 +342,18 @@ $edge = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 **核验脚本**：
 
 ```powershell
-python tools\verify-site.py
-# 或使用 DSH 内置 Python：
+py -3 tools\verify-site.py
+# 注意：本机 `python` 是 Windows 商店的占位程序（敲了会提示 "Python was not found"），
+# 真正的解释器要用 py -3（Python 3.13，已装 Pillow）。DSH 内置 Python 也可用：
 & "C:\Users\ASUS\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\python.exe" tools\verify-site.py
 ```
 
 ---
 
 ## 11. 把示例内容换成你自己的
+
+> **这一节现在有更友好的版本**：[README.md 第 9 节](README.md) 有一份「照着做就行」的清单，
+> 每个字段的完整说明在 **[CONTENT-GUIDE.md](CONTENT-GUIDE.md)**。下面是同一件事的技术版摘要。
 
 现在站上的文字和图片大多是搭站时填的**示例**。照下面顺序替换即可，全部在 `source/` 与几个配置文件里，**不需要改任何代码**。
 
@@ -352,7 +362,7 @@ python tools\verify-site.py
 ```powershell
 cd D:\tools\hexo
 npm run build                       # 一定要 build（含 clean）
-python tools\verify-site.py         # 自检：断链 / 未渲染标签 / 体积
+py -3 tools\verify-site.py          # 自检：断链 / 未渲染标签 / 体积
 npm run server                      # 打开 http://127.0.0.1:4010/ 看效果
 ```
 
@@ -407,7 +417,7 @@ contacts:
 
    ```powershell
    cd D:\tools\hexo
-   python tools\fetch-netease.py
+   py -3 tools\fetch-netease.py
    ```
 
    它会生成 `source/_data/music-tracks.yml`（封面/歌名/歌手/直链，**不要手工编辑**）；
@@ -444,10 +454,10 @@ contacts:
 导入作品图（把你的画放进任意位置，然后运行）：
 
 ```powershell
-python tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage --title "风景插画·山间小屋" --desc "一句话简介"
+py -3 tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage --title "风景插画·山间小屋" --desc "一句话简介"
 ```
 
-它会生成 `source/images/works/landscape-cottage.jpg`（长边 1200，文章大图）与 `...-thumb.jpg`（长边 480，卡片缩略图），把原图备份到 `backup/`，并打印一段可直接粘贴的 front matter（含 `origin:` 那一行）。若提示缺 Pillow：`pip install Pillow`。
+它会生成 `source/images/works/landscape-cottage.jpg`（长边 1200，文章大图）与 `...-thumb.jpg`（长边 480，卡片缩略图），把原图备份到 `backup/`，并打印一段可直接粘贴的 front matter（含 `origin:` 那一行）。若提示缺 Pillow：`py -3 -m pip install Pillow`（本机已装好）。
 
 ### 11.5 示例文章
 
@@ -471,10 +481,12 @@ python tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage --
 | `_config.yml` | `title`（站名）、`description`（一句话描述，也用于搜索与分享卡片）、`author` |
 | `_config.minimalism.yml` | `menu`（导航菜单，**URL 结尾要带 `/`**）、`contact`（页脚社交图标）、`bottom_link.rss`（想开 RSS 再填） |
 
+> 这两份配置里**刻意保持关闭**的开关（`toc`、`image.lazyload_enable`、`image.photo_zoom`、`cdn`、`search`、`comment.enable`）都在原处写了原因，**不要随手打开**。`permalink` 与 `markdown.html` 也不要改（前者会让所有旧链接失效，后者会毁掉全站版式）。
+
 ### 11.7 收尾自检
 
 1. `npm run build` —— 退出码 0、没有 `WARN/ERROR`；
-2. `python tools\verify-site.py` —— 输出「全部通过」，没有断链、没有未渲染的 `{% %}`；
+2. `py -3 tools\verify-site.py` —— 输出「全部通过」，没有断链、没有未渲染的 `{% %}`；
 3. 本地打开首页 / 作品页 / 杂谈页 / 一篇文章，确认名字、介绍、图片、句子气泡、播放器都是你要的样子；
 4. 满意就 `git add -A ; git commit -m "换成我自己的内容"`，然后 `.\deploy.ps1` 发布。
 

@@ -21,6 +21,13 @@ import os
 import shutil
 import sys
 
+# Windows 控制台默认是 GBK，直接 print 中文会变成乱码（下面那段 front matter 会没法看）
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, ValueError):
+    pass
+
 try:
     from PIL import Image
 except ImportError:

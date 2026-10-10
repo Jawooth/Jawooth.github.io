@@ -1,6 +1,10 @@
 @echo off
-rem Back up posts + images + data into backup\<date_time>\ before deleting anything.
-rem backup\ is git-ignored, so it is never committed or deployed.
+chcp 65001 >nul
+rem ============================================================
+rem  Back up posts + images + data into backup\<date_time>\
+rem  Run this BEFORE deleting or replacing anything.
+rem  backup\ is git-ignored: never committed, never deployed.
+rem ============================================================
 cd /d "%~dp0"
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\backup.ps1"
 pause
