@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """作品图导入工具 —— 把你的画变成站点需要的「主图 + 缩略图」，并打印 front matter。
 
-用法（在仓库根目录运行）：
+用法（在仓库根目录运行；注意是 py -3，本机 python 是系统商店的占位程序）：
 
-    python tools/add-artwork.py "D:\\我的画\\山间小屋.png" landscape-cottage
+    py -3 tools\add-artwork.py "D:\我的画\山间小屋.png" landscape-cottage
 
     # 可选参数
-    python tools/add-artwork.py <图片路径> <英文短名> --title "风景插画·山间小屋" --desc "一句话简介"
+    py -3 tools\add-artwork.py <图片路径> <英文短名> --title "风景插画·山间小屋" --desc "一句话简介"
 
 它会做四件事：
     1. 生成 source/images/works/<英文短名>.jpg      —— 文章页大图（长边 1200，JPEG 质量 84）

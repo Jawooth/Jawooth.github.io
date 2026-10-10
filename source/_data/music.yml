@@ -1,10 +1,14 @@
-# 首页 XP-MP4 播放器 —— 配置说明（改完记得 npm run build 或客户端【清理】+【生成】）
+# 首页 XP-MP4 播放器 —— 配置说明
+# 改完怎么生效：关掉预览窗口 → 双击「2 重新生成.cmd」→ 双击「3 看效果.cmd」
 #
 # ── 方式 1（最推荐）：网易云歌单 → 站内自带播放器 ──
 #   把歌单 id 填到下面的 netease_playlist（**只要数字**，不要贴整条链接，
 #   也不要填 creatorId —— 那是用户 id，不是歌单 id），然后运行一次：
 #
-#       python tools/fetch-netease.py
+#       py -3 tools\fetch-netease.py
+#
+#   （注意是 py -3 不是 python：这台电脑的 python 是系统商店的占位程序，
+#     直接敲 python 会提示 "Python was not found"。）
 #
 #   它会生成 source/_data/music-tracks.yml（封面 / 歌名 / 歌手 / 直链），首页就用
 #   自带那个 XP 播放器播放这些歌：外观是「封面 + 歌名 + 换歌 + 进度条」，

@@ -1,24 +1,21 @@
-menu:
-  Index:
-    url: /
-    External: false
-    name: 首页
-  Tags:
-    url: /tags
-    External: false
-    name: 标签
-#  Categories:
-#    url: /categories
-#    External: false
-#    name: 分类
-  Archives:
-    url: /archives
-    External: false
-    name: 归档
-  About:
-    url: /about
-    External: false
-    name: 关于
+# ============================================================
+#  ⚠ 这个文件不是给你改的。
+#     要改站，请打开仓库根目录的：  _config.minimalism.yml
+#  ------------------------------------------------------------
+#  本文件 = 主题自带的「默认值」。Hexo 的加载顺序是：
+#
+#        themes/minimalism/_config.yml  ← 本文件（默认值）
+#                    ↓ 被覆盖
+#        _config.minimalism.yml         ← 你的设置（优先）
+#
+#  所以：只要 _config.minimalism.yml 里也写了同一个键，
+#  你在这里做的修改就会被无声地覆盖掉 —— 现象就是「改了没反应」。
+#  结论：只改 _config.minimalism.yml，本文件留作查阅。
+#
+#  这里原本还有一小段示例菜单，指向本站并不存在的 /about、/tags 页面。
+#  已删除：万一有人清空 _config.minimalism.yml 的 menu，
+#  那段示例菜单就会顶上来产生死链。现在没有示例，就没有这种意外。
+# ============================================================
 
 # 深色主题
 dark_theme:
@@ -27,13 +24,13 @@ dark_theme:
 
 # 联系方式
 contact:
-  github: "https://github.com/f-dong"
+  github: ""
   twitter:
   weibo:
   zhihu:
   facebook:
   email:
-  bluesky: 
+  bluesky:
 
 # 首页头像图片
 avatar: /images/avatar.png
@@ -46,7 +43,7 @@ ga:
 
 # 百度统计 The baidu web analytics
 baidu_tongji:
-  
+
 comment:
   enable: false
   system: twikoo # 可选 gitalk、twikoo
@@ -56,11 +53,11 @@ comment:
       clientSecret:
       repository: # 仓库名
       owner: # 仓库所有者
-      createIssueManually: false # 如果当前页面没有相应的 isssue 且登录的用户属于 admin，则会自动创建 issue。如果设置为 true，则显示一个初始化页面，创建 issue 需要点击 init 按钮。
+      createIssueManually: false
     twikoo:
-      envId: #  腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
-      region: # 环境地域，腾讯云传
-      mark: # 一个twikoo服务端应用于多个内容时，可填写此项
+      envId:
+      region:
+      mark:
 
 # 底部链接
 bottom_link:
@@ -68,8 +65,8 @@ bottom_link:
     url:
     text: RSS
   icp:
-    url: # beian.miit.gov.cn
-    text: # 沪ICP备 09007032号-1
+    url:
+    text:
 
 # 底部显示来源信息
 bottom_source:
@@ -85,16 +82,15 @@ image:
   lazyload_enable: true # 图片懒加载
   lazyload_placeholder: # 图片懒加载占位图
   photo_zoom: simple-lightbox # 可选 simple-lightbox、fancybox、false(禁用)
-  
+
 # cdn 配置
 cdn:
   enable: false
-  # CDN 提供者
   provider: jsdelivr # 可选 jsdelivr、unpkg、bootcdn
 
 search:
   enable: false # 是否启用搜索
-  type: algolia   # 可选：json 或 algolia
+  type: algolia # 可选：json 或 algolia
   placeholder: 输入关键词搜索...
   algolia:
     appID: ''

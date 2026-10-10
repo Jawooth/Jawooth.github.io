@@ -17,7 +17,7 @@
 <div class="menu-container" style="height: 0;opacity: 0;">
 <nav class="menu-list">
   <% Object.keys(theme.menu).forEach(function(key) { %>
-    <% if (theme.menu[key].openType === 'External') { %>
+    <% /* External: true（本仓库 _config.minimalism.yml 的写法）或 openType: 'External'（主题旧写法）都认，否则外链的「新标签页打开」会静默失效 */ if (theme.menu[key].External === true || theme.menu[key].openType === 'External') { %>
       <a class="menu purple-link" href="<%= url_for(theme.menu[key].url) %>" target="_blank" rel="noopener noreferrer">
         <%= theme.menu[key].name %>
       </a>

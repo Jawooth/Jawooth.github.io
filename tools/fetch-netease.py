@@ -8,12 +8,13 @@
 
 用法：
   1. 在 source/_data/music.yml 里把歌单 id 填到 netease_playlist（只要数字）
-  2. 运行：
-       python tools/fetch-netease.py
-       python tools/fetch-netease.py --proxy http://127.0.0.1:7897   # 需要代理时
-       python tools/fetch-netease.py --playlist 18472717518          # 直接指定歌单
-       python tools/fetch-netease.py --no-verify                     # 不逐首测试（更快）
-  3. 双击「构建小站」（或 npm run build）
+  2. 运行（注意是 py -3，不是 python；本机 python 是系统商店的占位程序，
+     直接敲 python 会提示 "Python was not found"）：
+       py -3 tools\fetch-netease.py
+       py -3 tools\fetch-netease.py --proxy http://127.0.0.1:7897   # 需要代理时
+       py -3 tools\fetch-netease.py --playlist 18472717518          # 直接指定歌单
+       py -3 tools\fetch-netease.py --no-verify                     # 不逐首测试（更快）
+  3. 双击「2 重新生成.cmd」，再双击「3 看效果.cmd」
 
 本脚本**只写 source/_data/music-tracks.yml**，不会改动 music.yml。
 能播放的是免费/可试听的歌；VIP、版权或地区受限的会自动跳过并列出。

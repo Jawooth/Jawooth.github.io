@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """站点核验脚本 —— 每次改完跑一遍，确认没有把站改坏。
 
-用法（在仓库根目录）：
-    python tools/verify-site.py
-或使用本机可用的 Python 解释器。
+用法（在仓库根目录；注意是 py -3，本机 python 是系统商店的占位程序）：
+    py -3 tools\verify-site.py
 
 检查项：
     1. 是否有未渲染的模板标签（{% xp_xxx %} 原样输出到页面里）
@@ -48,8 +47,10 @@ print("站点根目录：%s" % ROOT)
 print("生成页面数：%d\n" % len(pages))
 
 # ---------------------------------------------------------------- 1/2/5 逐页扫描
-BAD_TAGS = ["{%", "{{", "xp_num", "xp_recent", "xp_tag_cloud", "xp_todo",
-            "xp_apps", "xp_guides", "xp_work", "xp_music", "xp_stat_rows"]
+# 未渲染的模板标签：只认真正的标签起始符。
+# 旧版这里还列了 "xp_num" 之类的裸标签名，结果页面上任何一处提到这些词
+# （比如注释、文档、script 里的字符串）都会误报，所以改成匹配起始符本身。
+BAD_TAG_RE = re.compile(r"\{%|\{\{")
 BAD_EXTERNAL = {
     "picsum.photos": "第三方随机图床（示例图应换成本地图片）",
     "unpkg.com/xp.css": "未使用的 XP.css CDN",
@@ -65,9 +66,9 @@ for f in pages:
     rel = os.path.relpath(f, PUB)
     s = open(f, encoding="utf-8", errors="replace").read()
 
-    for pat in BAD_TAGS:
-        if pat in s:
-            fail("%s 里有未渲染的模板标签：%s" % (rel, pat))
+    m = BAD_TAG_RE.search(s)
+    if m:
+        fail("%s 里有未渲染的模板标签：%s" % (rel, s[m.start():m.start() + 40].replace("\n", " ")))
 
     for pat, why in BAD_EXTERNAL.items():
         if pat in s:
@@ -260,6 +261,71 @@ for sz, rel in imgs[:6]:
     print("   %8.1f KB  %s" % (sz / 1024.0, rel))
 if total_img > 1.5 * 1048576:
     warn("图片总量 %.2f MB 偏大（可用 tools/optimize-images.py 压缩）" % (total_img / 1048576.0))
+
+# ---------------------------------------------------------------- 6 静默失效三查
+# 下面这些问题都不会让构建报错，只会在页面上「悄悄少一块」，
+# 所以必须由脚本盯住（2026-10 审计一次就发现三类）。
+
+# 6.1 <use href="#x"> 必须有对应的 <symbol id="x">
+#     SVG 的 <use> 找不到目标时不会报错，只是什么都不画。
+#     每个页面各自带一份 <defs>，所以按页检查。
+for f in pages:
+    rel = os.path.relpath(f, PUB)
+    s = open(f, encoding="utf-8", errors="replace").read()
+    syms = set(re.findall(r'<symbol[^>]*\bid="([^"]+)"', s))
+    used = set(re.findall(r'<use[^>]*\bhref="#([^"]+)"', s))
+    for name in sorted(used - syms):
+        fail('%s 引用了不存在的图标 <use href="#%s">（页面上不会画出任何东西）' % (rel, name))
+
+# 6.2 CSS 里 url('/...') 指向的文件必须真的存在
+#     背景图缺失同样不报错，只是没有背景。
+#     /images/decor/ 下两张是可选的（CSS 注释写明「不想要就留空」），所以列白名单。
+OPTIONAL_ASSETS = {"/images/decor/left.png", "/images/decor/right.png"}
+for f in glob.glob(os.path.join(ROOT, "source", "css", "**", "*.css"), recursive=True):
+    s = open(f, encoding="utf-8", errors="replace").read()
+    rel = os.path.relpath(f, ROOT)
+    for u in sorted(set(re.findall(r"url\(\s*['\"]?(/[^'\")]+)['\"]?\s*\)", s))):
+        if u in OPTIONAL_ASSETS:
+            continue
+        tgt = urllib.parse.unquote(u).lstrip("/").replace("/", os.sep)
+        if not os.path.exists(os.path.join(PUB, tgt)):
+            fail("%s 里的 url(%s) 指向不存在的文件" % (rel, u))
+
+# 6.3 数据文件必须是合法 YAML（写错一个缩进，整块数据会静默变空）
+try:
+    import yaml as _yaml
+
+    for f in sorted(glob.glob(os.path.join(ROOT, "source", "_data", "*.yml"))):
+        try:
+            _yaml.safe_load(open(f, encoding="utf-8").read())
+        except Exception as exc:  # noqa: BLE001
+            fail("数据文件 %s 不是合法 YAML：%s" % (os.path.relpath(f, ROOT), exc))
+
+    _music = _yaml.safe_load(open(os.path.join(ROOT, "source", "_data", "music.yml"), encoding="utf-8").read()) or {}
+    if os.path.exists(os.path.join(ROOT, "source", "_data", "music-tracks.yml")) and not (_music.get("tracks") or []):
+        warn("music.yml 的 tracks 是空的，播放器实际用的是自动生成的 music-tracks.yml"
+             "（tools/fetch-netease.py 写入）；想手填曲目就改 music.yml 的 tracks")
+
+    # 6.4 导航菜单每项都要有 url 和 name，且站内 url 必须能打开
+    _menu_cfg = os.path.join(ROOT, "_config.minimalism.yml")
+    if os.path.exists(_menu_cfg):
+        _cfg = _yaml.safe_load(open(_menu_cfg, encoding="utf-8").read()) or {}
+        for key, item in (_cfg.get("menu") or {}).items():
+            if not isinstance(item, dict):
+                fail("_config.minimalism.yml 的 menu.%s 写错了：应当有 url 和 name 两行" % key)
+                continue
+            for field in ("url", "name"):
+                if not item.get(field):
+                    fail("_config.minimalism.yml 的 menu.%s 缺少 %s" % (key, field))
+            u = str(item.get("url") or "")
+            if u.startswith("/") and not item.get("External"):
+                p = urllib.parse.unquote(u).lstrip("/")
+                if u.endswith("/"):
+                    p += "index.html"
+                if p and not os.path.exists(os.path.join(PUB, p.replace("/", os.sep))):
+                    fail("导航菜单 menu.%s 指向的页面不存在：%s" % (key, u))
+except ImportError:
+    warn("没装 PyYAML，跳过数据文件与菜单校验（py -3 -m pip install PyYAML）")
 
 # ---------------------------------------------------------------- 汇总
 print("\n== 结果 ==")

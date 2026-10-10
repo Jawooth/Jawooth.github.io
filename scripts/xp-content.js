@@ -28,12 +28,6 @@ const PILL_CLASSES = [
   'tag-pixel', 'tag-char', 'tag-landscape', 'tag-sketch', 'tag-illust',
   'tag-guide', 'tag-essay', 'tag-game', 'tag-clannad', 'tag-life'
 ];
-const CATEGORY_ICON = {
-  '素描': 'icon-pencil',
-  '角色设计': 'icon-girl',
-  '插画': 'icon-frame'
-};
-
 /* ---------------------------------------------------------------- 基础工具 */
 const esc = (s) => String(s === null || s === undefined ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -86,13 +80,21 @@ function allPosts() {
 }
 
 function allTags() {
+  /* 排序规则：先按文章数从多到少，同数量的再按名字排。
+     第二级排序不能省：hexo.database 里标签的初始顺序取决于各个
+     处理器异步完成的先后，每次构建都不一样；只按文章数排的话，
+     同数量的标签每次都换位置 —— 现象就是「没改任何东西，构建出来的
+     页面却次次不同」，标签云顺序乱跳，diff 也没法看。 */
   return q2a(hexo.database.model('Tag').find({}, { lean: false }))
     .filter((t) => t.length)
-    .sort((a, b) => b.length - a.length);
+    .sort((a, b) => (b.length - a.length) || String(a.name).localeCompare(String(b.name), 'zh'));
 }
 
 function allCategories() {
-  return q2a(hexo.database.model('Category').find({}, { lean: false })).filter((c) => c.length);
+  /* 同上：加一个确定的排序，保证每次构建结果一致 */
+  return q2a(hexo.database.model('Category').find({}, { lean: false }))
+    .filter((c) => c.length)
+    .sort((a, b) => (b.length - a.length) || String(a.name).localeCompare(String(b.name), 'zh'));
 }
 
 const catsOf = (post) => q2a(post.categories).map((c) => c.name);
