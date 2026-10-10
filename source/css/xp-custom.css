@@ -75,12 +75,15 @@
   --decor-right: url('/images/decor/right.png');
   --taskbar-height: 36px;
 
-  /* ---- 首页句子气泡（漫画「思考气泡」）---------------------------------
+  /* ---- 首页句子气泡（说话气泡：暖黄底 + 实心三角拖尾指向头像）---------
      想换成别的颜色/大小，改下面这几个数就够了（浅色和深色各一份，
      深色那份在本节末尾的 html.dark 里）。
      · 填充色：从上面的浅黄渐变到下面的暖黄
      · 描边：漫画感的深一点的颜色
-     · 拖尾小圆：用和填充一样的颜色，看起来才像同一个气泡鼓出来的
+     · 拖尾：一块实心三角形，从气泡右缘直接指向「用户账户」里的头像。
+       len 是它的长度，half 是根部高度的一半。
+       因为气泡宽度只占格子的 --bubble-w（桌面端 92%），右边空出来的部分
+       正好由这条拖尾填上，所以「气泡越窄 → 拖尾可以越长」。
      · min-h / max-h：气泡高度随文字长短变化，但不会比 min-h 更矮，
        也不会比 max-h 更高。max-h 必须小于右边「用户账户」窗口的高度，
        否则长句子会把气泡撑得比它还高（实测用户账户窗口高约 205px，
@@ -88,9 +91,17 @@
        觉得高度不合适就调这两个数。 */
   --bubble-bg: linear-gradient(180deg, #fffbe8 0%, #ffe9a8 100%);
   --bubble-border: #c9922b;
-  --bubble-tail: #ffe9a8;
+  /* 拖尾填充色：必须对上气泡渐变在「拖尾那一高度」（拖动条的 top:40% 处）
+     的颜色，取的是 #fff4ce。改了 --bubble-bg 的话这行也要跟着调，
+     否则拖尾和气泡之间会看出一条色差接缝。 */
+  --bubble-tail: #fff4ce;
   --bubble-min-h: 104px;
   --bubble-max-h: 190px;
+  /* 桌面端气泡宽度（占所在格子的比例）：略微收窄，右侧留空间给长拖尾。
+     窄屏是整行铺满，不受这个值影响（见 ≤900px 的媒体查询）。 */
+  --bubble-w: 92%;
+  --bubble-tail-len: 42px;
+  --bubble-tail-half: 11px;
 
   /* 断点参考：1200 / 900 / 640（全站统一） */
 }
@@ -129,10 +140,11 @@ html.dark {
   --desktop-bg: url('/images/xp-desktop-bg-dark.jpg') center/cover no-repeat fixed #1a1a2e;
 
   /* 句子气泡（深色）：暖黄换成「昏暗的暖褐黄」，描边也压暗，
-     否则浅色气泡在深色桌面上会亮得刺眼 */
+     否则浅色气泡在深色桌面上会亮得刺眼。
+     拖尾色同样取 --bubble-bg 在 40% 处的颜色。 */
   --bubble-bg: linear-gradient(180deg, #4a4128 0%, #3a3220 100%);
   --bubble-border: #a3812f;
-  --bubble-tail: #3a3220;
+  --bubble-tail: #443b25;
 }
 
 /* ============ 2) 基础与桌面 ============ */
@@ -461,7 +473,7 @@ html.dark .meta-chip strong { color: #9cc2ff; }
 .profile-icon:focus-visible { outline: 2px solid var(--xp-hover); outline-offset: 2px; }
 html.dark .profile-icon { color: var(--link); }
 
-/* 气泡（首页：漫画「思考气泡」，拖尾小圆指向右侧的「用户账户」） */
+/* 气泡（首页：说话气泡。实心三角拖尾从右缘指向「用户账户」里的头像） */
 /* 不要把格子撑满：让气泡自己按文字长短决定高度（min/max 见 :root 里的变量） */
 .bento-bubble { align-self: center; }
 .xp-bubble {
@@ -480,27 +492,39 @@ html.dark .profile-icon { color: var(--link); }
   justify-content: center;
   color: var(--text);
 }
+/* 桌面端把气泡收窄一点，右侧空出来的地方正好留给拖尾 */
+@media (min-width: 901px) {
+  .xp-bento > * > .xp-bubble { width: var(--bubble-w); }
+}
 /* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则拖尾（在盒子外面）会被裁掉 */
 .bubble-content { overflow: hidden; }
 
-/* 拖尾：漫画思考气泡那种「一串越来越小的圆」，斜着朝右下指向「用户账户」。
-   刻意走斜线而不是平着指：右边两个格子之间只有约 18px 空隙，
-   平着指很快就戳进「用户账户」窗口里；斜着往下走能在同样的空隙里
-   排出更长的尾巴，看起来更像漫画里的思考气泡。
-   想加长/缩短就改下面的 right / top / 尺寸。 */
+/* 拖尾：说话气泡的实心三角。
+   做法：把左边框染成描边色、上下边框留透明，就得到一个朝右的尖角；
+   ::before 是描边层（整体大 2px），::after 是填充层盖在上面，
+   于是两条腰上各露出 2px 描边，和气泡看起来是一体的。
+   top: 40% 是「瞄准头像」的高度：气泡在格子里是垂直居中的，而用户账户里的
+   头像偏上，实测 40% 处正好对着头像中心；因为居中，这个比例对长句短句都成立。 */
 .xp-bubble::before,
 .xp-bubble::after {
   content: '';
   position: absolute;
-  border-radius: 50%;
-  background: var(--bubble-tail);
-  border: 2px solid var(--bubble-border);
+  width: 0; height: 0;
+  border-style: solid;
+  border-color: transparent;
+  top: 40%;
+  transform: translateY(-50%);
 }
-.xp-bubble::before { right: -16px; top: 46%; width: 14px; height: 14px; }
+.xp-bubble::before {
+  right: calc(-1 * var(--bubble-tail-len));
+  border-width: var(--bubble-tail-half) 0 var(--bubble-tail-half) var(--bubble-tail-len);
+  border-left-color: var(--bubble-border);
+}
 .xp-bubble::after {
-  right: -25px; top: 66%; width: 9px; height: 9px;
-  /* 末尾最小的那个圆点：用阴影画一个实心小圆（比元素本身小 4px） */
-  box-shadow: 6px 12px 0 -2px var(--bubble-border);
+  right: calc(-1 * (var(--bubble-tail-len) - 2px));
+  border-width: calc(var(--bubble-tail-half) - 2px) 0 calc(var(--bubble-tail-half) - 2px) calc(var(--bubble-tail-len) - 2px);
+  border-left-color: var(--bubble-tail);
+  z-index: 1;
 }
 .bubble-content p { margin: 0 0 6px; font-size: 14px; line-height: 1.55; font-style: italic; transition: opacity 0.25s; }
 /* 句子本体（含两侧符号）：整块的淡入淡出，符号跟着一起换。
@@ -1490,17 +1514,27 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .content-container { padding: 10px 12px; }
   .content-container.xp-shell { padding: 0; }
   .xp-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-  /* 气泡在窄屏移到「用户账户」上方，拖尾改为朝下、同样斜着走。
-     拖尾现在是一串小圆而不是三角形，所以要重新摆位置（不能只改边框颜色）。 */
-  .xp-bubble { margin-bottom: 32px; }
+  /* 窄屏：气泡移到「用户账户」上方，拖尾改为朝下指着头像。
+     朝下的三角形要把「上边框」染成描边色（朝右那版染的是左边框），
+     所以左右边框必须显式改回透明。
+     margin-bottom 决定拖尾末端与下方窗口之间留多少：格子间距 12px，
+     这里再留 8px，于是尾巴尖离窗口约 4px，看着是「指着」而不是「顶住」。 */
+  .xp-bubble { margin-bottom: calc(var(--bubble-tail-len) - 8px); }
   .xp-bubble::before {
-    right: auto; top: auto;
-    left: 50%; margin-left: -18px; bottom: -18px;
+    right: auto; bottom: auto; top: 100%;
+    left: 50%; margin-left: calc(-1 * var(--bubble-tail-half));
+    transform: none;
+    border-width: var(--bubble-tail-len) var(--bubble-tail-half) 0 var(--bubble-tail-half);
+    border-left-color: transparent;
+    border-top-color: var(--bubble-border);
   }
   .xp-bubble::after {
-    right: auto; top: auto;
-    left: 50%; margin-left: -2px; bottom: -32px;
-    box-shadow: 7px 9px 0 -2px var(--bubble-border);
+    right: auto; bottom: auto; top: 100%;
+    left: 50%; margin-left: calc(-1 * (var(--bubble-tail-half) - 2px));
+    transform: none;
+    border-width: calc(var(--bubble-tail-len) - 2px) calc(var(--bubble-tail-half) - 2px) 0 calc(var(--bubble-tail-half) - 2px);
+    border-left-color: transparent;
+    border-top-color: var(--bubble-tail);
   }
   .work-featured-layout { grid-template-columns: 1fr; }
   .header-body { flex-direction: column; align-items: flex-start; }
@@ -1520,7 +1554,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bento > * > .retro-mp4-player { max-width: 320px; aspect-ratio: auto; }
   .profile-content { flex-direction: column; align-items: center; text-align: center; }
   .profile-avatar { width: 96px; height: 96px; }
-  .xp-bubble { transform: none; margin: 0; }
+  .xp-bubble { transform: none; }   /* 不要写 margin:0 —— 那会把 ≤900px 里给向下拖尾留出的空间清零 */
   .recent-work-item { width: 140px; }
   .recent-work-item.featured { width: 180px; }
   /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，
