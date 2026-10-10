@@ -185,7 +185,7 @@ layout: xp-page
 <li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a> · XP 风格灵感</li>
 <li><a href="https://npmjs.com/package/hexo-theme-minimalism" target="_blank" rel="noopener">minimalism</a> · 主题基础框架</li>
 <li><a href="https://aplayer.js.org/" target="_blank" rel="noopener">APlayer</a> · 音乐播放器（可选）</li>
-<li><a href="https://fonts.google.com/specimen/Caveat" target="_blank" rel="noopener">Caveat</a> · 手写英文字体</li>
+<li><a href="https://github.com/TakWolf/ark-pixel-font" target="_blank" rel="noopener">Ark Pixel</a> · 像素中文字体（OFL）</li>
 <li>AI 助手 · 协助搭建与设计</li>
 </ul>
 </div>
