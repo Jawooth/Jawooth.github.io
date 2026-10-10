@@ -54,7 +54,7 @@
   padding: 0.7em 1em;
   border: 1px solid #eee;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 16px;
   outline: none;
   margin-bottom: 1em;
   box-sizing: border-box;
@@ -84,12 +84,12 @@
 .search-title {
   font-weight: 600;
   color: #222;
-  font-size: 12px;
+  font-size: 16px;
   margin-bottom: 0.2em;
 }
 .search-summary {
   color: #888;
-  font-size: 12px;
+  font-size: 16px;
   margin-top: 0.1em;
   line-height: 1.5;
   word-break: break-all;
@@ -194,7 +194,7 @@ html.dark #search-float-btn:hover {
     max-height: 100vh;
   }
   #search-input {
-    font-size: 12px;
+    font-size: 16px;
     padding: 0.6em 0.7em;
   }
   #search-float-btn {
