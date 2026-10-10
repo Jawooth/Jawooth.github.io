@@ -293,6 +293,14 @@ layout: xp-page
 <!-- ========== 复古 MP4 播放器（曲目来自 source/_data/music.yml） ========== -->
 <script>
 (function () {
+  /* 网易云歌单模式：iframe 已经铺满整个格子，把自带的假播放器界面藏起来，
+     否则会同时出现「未配置曲目」和真的播放器 */
+  if (window.XP_MUSIC_EMBED) {
+    var fakePlayer = document.querySelector('.bento-music .retro-mp4-player');
+    if (fakePlayer) fakePlayer.style.display = 'none';
+    return;
+  }
+
   var songs = window.XP_MUSIC || [];
   var $ = function (id) { return document.getElementById(id); };
   var index = 0;
