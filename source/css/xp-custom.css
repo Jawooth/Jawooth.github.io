@@ -408,8 +408,6 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .profile-text h2 { margin: 0 0 10px; font-size: 20px; color: var(--text-heading); }
 .profile-text h2 .username { color: var(--xp-blue-border); font-family: "Caveat", "KaiTi", cursive; font-size: 24px; transition: opacity 0.25s; }
 .profile-text p { margin: 8px 0; line-height: 1.6; font-size: 14px; }
-
-.profile-meta { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
 .meta-chip {
   background: var(--surface);
   border: 1px solid var(--xp-blue-light);
@@ -422,8 +420,6 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .meta-chip strong { color: var(--xp-blue-border); margin-right: 3px; }
 html.dark .meta-chip { background: rgba(53, 144, 243, 0.14); color: #cfe0ff; }
 html.dark .meta-chip strong { color: #9cc2ff; }
-
-.profile-links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* 图标行（首页用户账户卡片用）：GitHub / 邮箱 / B站 / 小红书 等 */
 .profile-icons { margin-top: 12px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
@@ -1234,7 +1230,6 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 }
 .xp-toc a:hover { color: var(--xp-blue-border); background: var(--surface-2); }
 .xp-toc a.current { color: var(--xp-blue-border); border-left-color: var(--xp-blue-border); background: var(--surface-2); font-weight: bold; }
-.xp-toc .xp-toc-level-3 a { padding-left: 18px; }
 
 /* 主列里的独立窗口（如杂谈页顶部的待办窗口）与后续内容拉开距离 */
 .xp-shell-main > .xp-widget { margin: 0 0 16px; }
@@ -1443,8 +1438,6 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .tilt-right { transform: rotate(0.5deg); }
   .tilt-note .xp-bubble { transform: rotate(-0.8deg); }
   .tilt-soft { transform: rotate(0.3deg); }
-  .tilt-drop { transform: translateY(4px) rotate(-0.6deg); }
-  .tilt-rise { transform: translateY(-2px) rotate(0.4deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1456,7 +1449,6 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 /* ============ 13) 响应式（统一 640 / 900 / 1200） ============ */
 @media (max-width: 1200px) {
   .xp-bento { gap: 14px; }
-  .work-featured-layout { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 900px) {
@@ -1477,9 +1469,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bubble::after { bottom: -18px; border-top-color: var(--xp-blue-border); }
   .xp-bubble::before { bottom: -13px; border-top-color: #f6faff; }
   html.dark .xp-bubble::before { border-top-color: #343a4c; }
-  .credits-grid { grid-template-columns: repeat(2, 1fr); }
   .work-featured-layout { grid-template-columns: 1fr; }
-  .work-featured-thumb { min-height: 180px; }
   .header-body { flex-direction: column; align-items: flex-start; }
   .retro-mp4-player { max-width: 200px; }
   .guide-list li { flex-wrap: wrap; }

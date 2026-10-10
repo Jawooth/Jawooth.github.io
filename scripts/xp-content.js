@@ -304,22 +304,55 @@ function guidesList() {
 }
 
 /* ---------------------------------------------------------------- 作品集（分栏目 + 时间轴 + 筛选） */
-/* 时间轴分期：想改分期就改这里。from 含、to 不含；最后一档 to: null 表示"至今"。
-   "最新的一档"会默认展开，其余默认折叠（点击展开）。 */
-const WORK_ERAS = [
-  { label: '远古期', from: '0000-01-01', to: '2024-01-01' },
-  { label: '2024 年', from: '2024-01-01', to: '2025-01-01' },
-  { label: '2025 年', from: '2025-01-01', to: '2026-01-01' },
-  { label: '2026 年上半年', from: '2026-01-01', to: '2026-06-01' },
-  { label: '2026 年 6-10 月', from: '2026-06-01', to: null }
-];
+/* 栏目与时间轴分期都放在 source/_data/works.yml 里（以前写死在这里，
+   注释还写着「想改分期就改这里」—— 那个文件是代码，非程序员改不动）。
+   下面这份 DEFAULT 只是 works.yml 缺失/写坏时的兜底。
 
-const WORK_ORIGINS = ['原创', '同人'];
+   为什么要有缓存：下面 eraOrder() 会在排序的比较函数里反复用到分期表，
+   每调一次都去读一遍 YAML 会把构建拖慢。所以每次生成开始时读一次并缓存，
+   generateBefore 时清掉。 */
+const WORK_DEFAULTS = {
+  origins: ['原创', '同人'],
+  eras: [
+    { label: '远古期', from: '0000-01-01', to: '2024-01-01' },
+    { label: '2024 年', from: '2024-01-01', to: '2025-01-01' },
+    { label: '2025 年', from: '2025-01-01', to: '2026-01-01' },
+    { label: '2026 年上半年', from: '2026-01-01', to: '2026-06-01' },
+    { label: '2026 年 6-10 月', from: '2026-06-01', to: null }
+  ]
+};
+
+let worksCache = null;
+hexo.on('generateBefore', () => { worksCache = null; });
+
+function worksConfig() {
+  if (worksCache) return worksCache;
+  const raw = dataFile('works') || {};
+  const cfg = Array.isArray(raw) ? {} : raw;
+
+  const origins = (Array.isArray(cfg.origins) && cfg.origins.length)
+    ? cfg.origins.map((o) => String(o)).filter((o) => o)
+    : WORK_DEFAULTS.origins;
+
+  const eras = (Array.isArray(cfg.eras) && cfg.eras.length ? cfg.eras : WORK_DEFAULTS.eras)
+    .filter((e) => e && e.label)
+    .map((e) => ({
+      label: String(e.label),
+      from: String(e.from || '0000-01-01'),
+      to: e.to ? String(e.to) : null
+    }));
+
+  worksCache = { origins: origins.length ? origins : WORK_DEFAULTS.origins, eras };
+  return worksCache;
+}
+
+const workOrigins = () => worksConfig().origins;
+const workEras = () => worksConfig().eras;
 
 /* 栏目：文章里写 origin: 同人，没写就当原创 */
 function workOrigin(post) {
   const raw = String(post.origin || '').trim();
-  return WORK_ORIGINS.indexOf(raw) >= 0 ? raw : WORK_ORIGINS[0];
+  return workOrigins().indexOf(raw) >= 0 ? raw : workOrigins()[0];
 }
 
 /* 分期：文章里写 era: 2025 年 可以手动覆盖，否则按日期自动归入 */
@@ -327,17 +360,17 @@ function workEraLabel(post) {
   const override = String(post.era || '').trim();
   if (override) return override;
   const t = new Date(post.date).getTime();
-  for (let i = 0; i < WORK_ERAS.length; i += 1) {
-    const era = WORK_ERAS[i];
+  for (let i = 0; i < workEras().length; i += 1) {
+    const era = workEras()[i];
     const from = new Date(era.from + 'T00:00:00').getTime();
     const to = era.to ? new Date(era.to + 'T00:00:00').getTime() : Infinity;
     if (t >= from && t < to) return era.label;
   }
-  return WORK_ERAS[WORK_ERAS.length - 1].label;
+  return workEras()[workEras().length - 1].label;
 }
 
 function eraOrder(label) {
-  const idx = WORK_ERAS.map((e) => e.label).indexOf(label);
+  const idx = workEras().map((e) => e.label).indexOf(label);
   if (idx >= 0) return idx;
   const year = parseInt(String(label).replace(/[^\d]/g, '').slice(0, 4), 10);
   return Number.isFinite(year) ? 100 + year : 9999;   /* 自定义 label 排在预置分期之后 */
@@ -382,7 +415,7 @@ function workGallery() {
   posts.forEach((p) => tagsOf(p).forEach((t) => { tagCount[t] = (tagCount[t] || 0) + 1; }));
   const tags = Object.keys(tagCount).sort((a, b) => tagCount[b] - tagCount[a]);
 
-  const tabs = WORK_ORIGINS.map((o, i) => {
+  const tabs = workOrigins().map((o, i) => {
     const n = posts.filter((p) => workOrigin(p) === o).length;
     return `<button type="button" class="work-tab${i === 0 ? ' is-active' : ''}" data-origin="${esc(o)}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}">${esc(o)} <span class="tab-count">${n}</span></button>`;
   }).join('');
@@ -391,7 +424,7 @@ function workGallery() {
     `<button type="button" class="filter-pill" data-tag="${esc(t)}" aria-pressed="false">${esc(t)} <span class="pill-count">${tagCount[t]}</span></button>`
   )).join('');
 
-  const panes = WORK_ORIGINS.map((origin) => {
+  const panes = workOrigins().map((origin) => {
     const mine = posts.filter((p) => workOrigin(p) === origin);
     /* 按分期分组，分期从新到旧，最新的一档默认展开 */
     const groups = {};
@@ -408,7 +441,7 @@ function workGallery() {
       `</details>`
     )).join('');
     return (
-      `<div class="work-pane${origin === WORK_ORIGINS[0] ? ' is-active' : ''}" data-origin="${esc(origin)}" role="tabpanel"${origin === WORK_ORIGINS[0] ? '' : ' hidden'}>` +
+      `<div class="work-pane${origin === workOrigins()[0] ? ' is-active' : ''}" data-origin="${esc(origin)}" role="tabpanel"${origin === workOrigins()[0] ? '' : ' hidden'}>` +
       (eras || '<p class="xp-empty">这个栏目还没有作品</p>') +
       `</div>`
     );
