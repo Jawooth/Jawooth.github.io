@@ -100,7 +100,7 @@ npm run server            # 本地预览 http://127.0.0.1:4010/（4000 被 Hexo 
 
 | 你改了什么 | 要执行什么 |
 |---|---|
-| `source/_data/*.yml`（名字、简介、句子、曲目、待办、清单…） | **`npm run build`**（必须 clean + generate）；用客户端看效果的话，回客户端**刷新/重新生成**一次 |
+| `source/_data/*.yml`（名字、简介、句子、曲目、待办、清单…） | **`npm run build`**（必须 clean + generate）；预览服务器**必须重启**才会读到新数据（见坑 17） |
 | 文章 `source/_posts/*.md` | **`npm run build`** |
 | 图片（头像/壁纸/作品图/装饰图） | **`npm run build`** |
 | 模板 `themes/minimalism/layout/*.ejs` | 预览会自动热加载，刷新即可；发布前 `npm run build` |
@@ -271,7 +271,8 @@ status: done                  # done / doing（作品卡片上的状态角标）
     - HexoHub 的预览就是标准 `hexo server`（端口 4000），**读磁盘**，没有缓存问题 ✓
     - 旧的 **Hexo Pro Desktop 建议不要再打开**：它会用自己那份 Hexo 实例渲染（不读 `public/`）、把 `data/*.db`／`_yaml_templates/`／`blogInfoList.json`／`deploy_config.json`／`source/_discarded/` 写进仓库、**直接删掉图片**，而且**重写 `_config.yml`**（把 `deploy.repo` 拼成了 `https://github.com/https://jawooth.github.io/.git`、`branch` 改成 `main`，会让部署失败）——这些都实际发生过
     - 两个客户端都会抢 4000 端口；HexoHub 检测到占用会**自动结束占用进程**
-16. **`source/` 里下划线开头的文件/目录会被 Hexo 忽略**（约定俗成的"私有文件"）：`_posts/__test.md` 不会生成页面。给测试稿起名时别用 `_` 开头（可用 `draft-` 之类）。
+17. **改 `source/_data/*.yml` 后，正在跑的预览不会更新**（实测：改 `quotes.yml` 后等 6 秒，4010 返回的仍是旧内容）—— `hexo server` 在启动时就把 `_data` 读进内存了，涉及它的改动必须**重启预览服务器**：客户端里是「停止服务器 → 重新启动」，命令行预览就关掉窗口重开。这是"改了没生效"的第二个常见来源（第一个是 hexo-pro 的内存渲染缓存）。
+18. **`source/` 里下划线开头的文件/目录会被 Hexo 忽略**（约定俗成的"私有文件"）：`_posts/__test.md` 不会生成页面。给测试稿起名时别用 `_` 开头（可用 `draft-` 之类）。
 16. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
     需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
 
@@ -405,6 +406,8 @@ contacts:
 
    它会生成 `source/_data/music-tracks.yml`（封面/歌名/歌手/直链，**不要手工编辑**）；
 3. `npm run build`（或客户端【清理】+【生成】）。
+
+**随机播放**：首页播放器每次打开都会把曲目顺序洗一遍（所以第一首也是随机的），并把 APlayer 设为 `order: 'random'`，下一首/上一首都是随机挑。不想随机就把 `source/index.md` 里播放器脚本中的洗牌那段和 `order: 'random'` 去掉。
 
 注意：能放的是免费/可试听的歌，VIP/版权/地区受限的会被自动跳过（脚本会列出跳过几首）；
 换歌单就改 id 再跑一次脚本。封面已强制用 https（否则 https 站点会把 http 图当混合内容拦掉）。

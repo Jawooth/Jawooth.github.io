@@ -364,11 +364,19 @@ layout: xp-page
 
   function initPlayer() {
     if (!songs.length || typeof APlayer === 'undefined') { renderEmpty(); return; }
+    /* 随机播放：每次打开页面把曲目顺序洗一遍（所以第一首也是随机的），
+       再让 APlayer 用 random 模式接管下一首/上一首 */
+    songs = songs.slice();
+    for (var i = songs.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = songs[i]; songs[i] = songs[j]; songs[j] = tmp;
+    }
     ap = new APlayer({
       container: $('aplayer-hidden'),
       audio: songs.map(function (s) {
         return { name: s.title, artist: s.author, url: s.url, cover: s.pic || '' };
       }),
+      order: 'random',
       volume: 0.7
     });
     updateSongInfo(index);
