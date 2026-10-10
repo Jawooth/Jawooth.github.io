@@ -26,6 +26,14 @@ import re
 import sys
 import urllib.request
 
+# Windows 控制台默认是 GBK，直接 print 中文会变成乱码；必须在任何输出之前设置。
+# （原来这行放在 __main__ 里且在 main() 之后，报错信息仍然是乱码。）
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, ValueError):
+    pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MUSIC_YML = os.path.join(ROOT, "source", "_data", "music.yml")
 OUT_YML = os.path.join(ROOT, "source", "_data", "music-tracks.yml")
@@ -158,7 +166,7 @@ def main():
         "# 本文件由 tools/fetch-netease.py 自动生成，请不要手工编辑。",
         "# 来源歌单：%s（%s）" % (pl.get("name"), pid),
         "# 生成时间：%s" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "# 重新生成：python tools/fetch-netease.py",
+        "# 重新生成：双击仓库根目录的「更新歌单.cmd」（或 cd 到仓库根目录后 py -3 tools/fetch-netease.py）",
         "tracks:",
     ]
     for r in rows:
@@ -175,9 +183,8 @@ def main():
     if skipped:
         print("跳过 %d 首（不可播，多为 VIP/版权/地区限制）：%s"
               % (len(skipped), "、".join(s or "?" for s in skipped)))
-    print("下一步：双击「构建小站」（或 npm run build）")
+    print("下一步：双击「构建.cmd」重新生成网站（必须带 clean，否则新曲目不会生效）")
 
 
 if __name__ == "__main__":
-    sys.stdout.reconfigure(encoding="utf-8")
     main()

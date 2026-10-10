@@ -70,7 +70,7 @@ HexoHub 是这个博客的「操作面板」，管的是**文章 + 图片 + 建�
 | **待办清单**（显示在杂谈页） | `source\_data\todo.yml` |
 | **游戏/工具卡片**（游戏页） | `source\_data\apps.yml` |
 | **攻略/教程清单**（攻略页） | `source\_data\guides.yml` |
-| **首页播放器的歌单、窗口标题** | `source\_data\music.yml`（换歌单后要跑 `py -3 tools\fetch-netease.py`） |
+| **首页播放器的歌单、窗口标题** | `source\_data\music.yml`（换歌单后**双击 `更新歌单.cmd`**） |
 | 头像 / 壁纸 / 作品图 | 直接**覆盖** `source\images\` 里的同名图片（见第 5 节） |
 | 导航菜单、页脚图标、RSS | `_config.minimalism.yml`（**进阶**，改前先备份） |
 
@@ -278,10 +278,14 @@ D:\tools\hexo
 ├─ tools\                   图片压缩、作品导入、站点自检等小工具
 ├─ backup\                  自动备份（不进仓库、不会被发布）
 ├─ public\                  ← 构建产物，**不要手动改**，每次生成都会被覆盖
+├─ README.md                本文件（零基础看这份）
+├─ CONTENT-GUIDE.md         字段怎么填的详细说明
+├─ MAINTENANCE.md           技术手册（改版式或交给 AI 时看）
 ├─ 构建.cmd                 双击：重新生成网站
 ├─ 预览.cmd                 双击：本机预览（4010 端口）
 ├─ 发布.cmd                 双击：一键发布上线
-└─ 备份.cmd                 双击：动手前先备份
+├─ 备份.cmd                 双击：动手前先备份
+└─ 更新歌单.cmd             双击：按 music.yml 的歌单 id 重抓曲目
 ```
 
 ---
@@ -336,6 +340,7 @@ D:\tools\hexo
 | 样式改了没反应 | 浏览器缓存 | 按 **Ctrl + F5** 强制刷新 |
 | 双击 `public\index.html` 打开，页面是纯文字、图全没了 | 这是构建产物，不能用 `file://` 直接打开 | 老老实实用 4000 或 4010 端口预览 |
 | 中文变成 `?` 或 `??` | 用 PowerShell 命令改过中文文件 | 用 `git checkout -- .` 撤回，改用记事本改 |
+| 敲 `py -3 tools\xxx.py` 报 `can't open file ...\tools\xxx.py` | 你不在博客目录里（例如在 `C:\Users\你的名字`） | 双击对应的 `.cmd` 最省事；或在命令前加 `cd /d D:\tools\hexo` |
 | 页面里冒出一堆 `{% xp_xxx %}` 原文 | 模板标签没被渲染（多半是缩进/注释踩坑） | 跑 `py -3 tools\verify-site.py` 看是哪一页，再对照 MAINTENANCE 第 8 节 |
 | 发布卡在 `Writing objects: 100%` | 代理 + HTTP/2 的老毛病 | 见 [MAINTENANCE.md 第 12 节](MAINTENANCE.md) |
 | 网站整个打不开了 | 先别慌，看是不是改坏了 | 双击 `备份.cmd` 留底 → `git checkout -- .` 撤回 → 重新生成 |
@@ -345,7 +350,7 @@ D:\tools\hexo
 
 ---
 
-## 11. 常用的四个双击按钮
+## 11. 常用的五个双击按钮
 
 | 文件 | 干什么 | 什么时候用 |
 |---|---|---|
@@ -353,6 +358,11 @@ D:\tools\hexo
 | `预览.cmd` | 本机预览，开在 4010 端口 | 想在自己电脑上看效果 |
 | `发布.cmd` | 生成并上传到线上 | 满意了要对外发布 |
 | `备份.cmd` | 把文章、图片、数据备份到 `backup\` | **动手删东西之前** |
+| `更新歌单.cmd` | 按 `music.yml` 里的歌单 id 重新抓曲目 | 换了网易云歌单之后 |
+
+> **这些脚本不要求你先 `cd` 到哪里**——双击就行，脚本自己会切到博客目录。
+> 只有自己在 PowerShell 里敲命令时，才需要先 `cd /d D:\tools\hexo`；
+> 否则会出现 `can't open file 'C:\Users\...\tools\xxx.py'` 这种「找不到文件」的报错。
 
 ---
 

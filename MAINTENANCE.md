@@ -29,7 +29,7 @@
 | 改待办事项 | `source/_data/todo.yml` | 同上（**只在杂谈页显示**，全部条目按 进行中→待做→已完成 排） |
 | 加游戏或小工具 | `source/_data/apps.yml` | 同上 |
 | 加攻略/教程条目 | `source/_data/guides.yml` | 同上 |
-| 启用首页播放器 / 换歌单 | `source/_data/music.yml` | 同上（可填自有曲目或网易云歌单 id） |
+| **改首页播放器的歌单** | `source/_data/music.yml` 的 `netease_playlist` → 双击 `更新歌单.cmd` | 再 `npm run build`（**并重启预览**） |
 | 换头像 | 覆盖 `source/images/site-avatar.png` | 同上 |
 | 换浅色壁纸 | 覆盖 `source/images/xp-desktop-bg.jpg` | 同上 |
 | 换主题色 / 圆角 / 间距 | `source/css/xp-custom.css` 顶部 `:root` 与 `html.dark` | 同上（**浅色深色两处都要改**） |
@@ -81,10 +81,14 @@ D:\tools\hexo
 │  ├─ xp-enhance.js              图片懒加载、点击放大、目录跟随、SEO（title/canonical/og）
 │  ├─ xp-taskbar.js              底部任务栏 + 开始菜单
 │  └─ inject-xp-css.js           注入字体与 xp-custom.css
-├─ tools/                        图片压缩、图标生成、站点核验脚本（手动运行）
+├─ tools/                        图片压缩、图标生成、站点核验、歌单抓取脚本（手动运行）
 ├─ backup/                       原图备份（不会被发布）
+├─ README.md                     ★ 零基础改站指南（站主日常看这份）
+├─ CONTENT-GUIDE.md              内容字段手册（每个字段能填什么）
+├─ MAINTENANCE.md                本文件（技术手册）
 ├─ _config.yml                   站点配置
 ├─ _config.minimalism.yml        主题配置
+├─ 构建.cmd / 预览.cmd / 发布.cmd / 备份.cmd / 更新歌单.cmd    双击即用
 └─ public/                       ← 构建产物，**不要手改**，每次 generate 会覆盖
 ```
 
@@ -287,6 +291,9 @@ status: done                  # done / doing（作品卡片上的状态角标）
 18. **`source/` 里下划线开头的文件/目录会被 Hexo 忽略**（约定俗成的"私有文件"）：`_posts/__test.md` 不会生成页面。给测试稿起名时别用 `_` 开头（可用 `draft-` 之类）。
 19. **源码页面（`source/*/index.md`）渲染时，文章的 `content` 还没写入**。这是六、七次踩到的同一类顺序问题：在页面里用标签读文章正文会拿到空字符串（读 front matter 字段、`thumbnail`、`desc` 都没问题，读 `content` 不行）。
     需要"页面渲染后才知道全量数据"的东西，一律用**生成器**输出成 JSON 再由前端按需取——作品页的「展开全文」就是这么做的（`scripts/xp-content.js` 里的 `xp-work-bodies` 生成器 → `/works-bodies.json` → 点开时才 fetch）。同理，统计数字那种要在加载期就正确的，直接查 `hexo.database.model('Post')` 而不要用 `hexo.locals`。
+20. **中文文件名的 `.cmd` 里不能出现非 ASCII 字符**（2026-10 实测，非常隐蔽）：根目录那几个脚本为了中文提示都带 `chcp 65001`，但如果**脚本正文里再出现中文**（例如提示语里写「双击 构建.cmd」），cmd.exe 的行读取会失步——**之后每一行都会丢掉第一个字符**，于是 `if errorlevel` 变成 `f errorlevel`、`echo` 变成 `cho`、`pause` 变成 `ause`，报一堆 "'rrorlevel' is not recognized" 却仍能跑完，极难判断。
+    - 规则：**这些 `.cmd` 的文件名可以是中文，但正文必须保持纯 ASCII**。要写中文提示就交给被调用的 Python/PowerShell 脚本（它们自己会 `sys.stdout.reconfigure(encoding="utf-8")`）。
+    - 自检：`[System.IO.File]::ReadAllBytes($f) | Where-Object { $_ -gt 127 }` 应当为空。
 
 ---
 
