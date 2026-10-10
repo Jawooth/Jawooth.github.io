@@ -22,6 +22,8 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
+/* 播放器的「外观」与「行为」放在单独文件里，见 scripts/xp-player.js */
+const playerView = require('./xp-player');
 
 const WORK_CATEGORY = '作品';
 const PILL_CLASSES = [
@@ -546,29 +548,35 @@ function musicUi() {
   };
 }
 
-hexo.extend.tag.register('xp_music_title', () => esc(musicUi().title));
-
+/* 首页只需要写一行 {% xp_music %}，这里把它拼成完整的一块：
+     资源（APlayer）→ 数据（window.XP_MUSIC）→ 外观 → 驱动脚本
+   ⚠️ 外观和驱动脚本都**不能**过 oneLine()：驱动脚本里有 // 注释与依赖换行的
+   语句，压成一行会把注释后面的代码整段吃掉。 */
 hexo.extend.tag.register('xp_music', () => {
   const { tracks, netease } = musicData();
+  const ui = musicUi();
+  const shell = playerView.markup(ui.title);
+  const driver = '<script>' + playerView.driver + '</script>';
 
-  /* 模式 B：网易云歌单 —— 用官方外链播放器 iframe，不加载 APlayer */
+  /* 模式 B：网易云歌单 —— 用官方外链播放器 iframe，不加载 APlayer。
+     iframe 会铺满整个格子，前端脚本负责把上面那份「假播放器」外观隐藏掉。 */
   if (netease) {
     const src = '//music.163.com/outchain/player?type=0&id=' + encodeURIComponent(netease) + '&auto=0&height=430';
     return oneLine(
       '<script>window.XP_MUSIC = []; window.XP_MUSIC_EMBED = true;' +
-        `window.XP_MUSIC_UI = ${JSON.stringify(musicUi())};</script>` +
+        `window.XP_MUSIC_UI = ${JSON.stringify(ui)};</script>` +
       '<div class="xp-music-embed"><iframe src="' + src + '" width="100%" height="100%" frameborder="0" ' +
       'loading="lazy" title="网易云音乐歌单播放器"></iframe></div>'
-    );
+    ) + '\n' + shell + '\n' + driver;
   }
 
   /* 模式 A：自己的曲目 —— 只有真的填了曲目才加载 APlayer（省流量） */
   const config = `<script>window.XP_MUSIC = ${JSON.stringify(tracks)};</script>`;
-  if (!tracks.length) return config;
-  return oneLine(
-    '<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css">' +
-    '<script src="/vendor/aplayer/APlayer.min.js"></script>' + config
-  );
+  const assets = tracks.length
+    ? '<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css">' +
+      '<script src="/vendor/aplayer/APlayer.min.js"></script>'
+    : '';
+  return assets + config + '\n' + shell + '\n' + driver;
 });
 
 /* 便签句子：从 source/_data/quotes.yml 读取，供首页脚本轮换 */
