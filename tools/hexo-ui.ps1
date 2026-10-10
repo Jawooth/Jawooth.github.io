@@ -593,6 +593,15 @@ while ($running) {
   Show-Menu
   $choice = Read-Host "  输入数字后按回车"
 
+  # 输入已经被关掉的情况（例如用管道把输入喂完、或从没有输入的地方启动）：
+  # Read-Host 会一直返回空，再往下走就变成死循环空转，所以这里直接退出。
+  # 双击运行时 IsInputRedirected 是 false，不受影响。
+  if ([string]::IsNullOrWhiteSpace($choice) -and [Console]::IsInputRedirected) {
+    Write-Line
+    Write-Line "  没有更多输入了，退出。"
+    break
+  }
+
   switch ($choice) {
     '1' { Invoke-WritePost }
     '2' { Invoke-Look }
