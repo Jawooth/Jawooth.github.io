@@ -27,8 +27,9 @@
         （既没变大多少，不匀还更明显）。详见 手册.md §8.3。
       收录简体汉字约 1.8 万；站点里少数没收录的字（实测 10 个汉字、共出现 17 次）
       会自动落到后面的系统字体，不会出现豆腐块。
-   ② 强调文字（用户名标题、卡片标题、侧栏作者名）：**不额外加载字体文件**，
-      用 --font-display + --bold-12/--bold-24 做「点阵粗体」，详见 :root 里的说明。
+   ② 强调文字（只有 24px 的用户名标题与侧栏作者名）：**不额外加载字体文件**，
+      用 --font-display + --bold-24 做「点阵粗体」，详见 :root 里的说明。
+      16px 的卡片标题用普通正文，不加粗（会糊）。
       原先的手写体 Caveat（拉丁）＋楷体（中文）已全部移除：那一套在中文行里是
       系统字体兜底，同一行会混出两种字形（例如「Hexo 建站全流程记录」）。
    换字体：替换 woff2 文件并同步改这里的 family 名与 :root 里的 --font-ui。 */
@@ -47,16 +48,16 @@
      想换回原来的系统字体：把这行改成 "Tahoma", "Microsoft YaHei", "PingFang SC", sans-serif; */
   --font-ui: 'Ark Pixel 12px', "Microsoft YaHei", "PingFang SC", sans-serif;
 
-  /* 强调文字（用户名标题、卡片标题、侧栏作者名）：不用第二套字体，
+  /* 强调文字（只有 24px 的用户名标题 / 侧栏作者名用）：不用第二套字体，
      而是用「点阵粗体」—— 同一串文字往右再画一遍，笔画就加粗了，
      而且**完全落在像素网格上**（位移是整数像素，不会糊）。
      这也是老式点阵系统的做法：bold = 画两次、错开 1 像素。
      为什么不用第二个字体：免费 + 允许网页嵌入 + 汉字收录够全的像素字体里，
      目前找不到体积可接受的第二套（详见提交说明里的调研数据）。
-     ⚠ 只用「水平 1px」这一种位移：实测在 12px 中文下，往下/往左再加会让
-       笔画粘连、字肚子被填死（试样对比见提交说明）。24px 的字用 2px。 */
+     ⚠ 只有 24px 的字能这么加粗：偏移 2px 相对 24px 只有 1/12，笔画不会粘连。
+       16px 的卡片标题**不要**用（1px 偏移在 16px 中文下会把字糊成一团），
+       那些标题改用蓝色字色来区分层级。 */
   --font-display: 'Ark Pixel 12px', "Microsoft YaHei", "PingFang SC", sans-serif;
-  --bold-12: 1px 0 0 currentColor;
   --bold-24: 2px 0 0 currentColor;
 
   /* XP 主色板 */
@@ -1077,13 +1078,18 @@ a.guide-title:hover { text-decoration: underline; }
 }
 html.dark .profile-email-pop .email-label { color: var(--link); background: rgba(138, 180, 255, 0.16); border-color: rgba(138, 180, 255, 0.4); }
 
-/* 强调标题统一（点阵粗体，见 :root 里的 --font-display / --bold-12） */
-.profile-text h2,
+/* 卡片类标题：用**正文字体**，不加点阵粗体。
+   原因：正文已经放大到 16px，「往右错 1 像素再画一遍」在 16px 中文下会把笔画连成
+   一片、字看着又粗又脏（尤其「陶罐与水果」「魔法少女」这种笔画多的）。
+   现在靠**蓝色字色**来区分标题与下面的灰色日期，和侧栏「最近文章」的写法一致。
+   只有 24px 的用户名还保留加粗（2px 偏移相对于 24px 只有 1/12，不会糊，见下方规则）。 */
 .recent-work-title,
 .work-card-title,
 .app-info h4,
-.guide-title { font-family: var(--font-display); text-shadow: var(--bold-12); font-size: 16px; }
-.profile-text h2 { font-size: 24px; }
+.guide-title { font-family: var(--font-ui); font-size: 16px; }
+
+/* 首页大标题（用户名）：24px 仍是点阵的锐利尺寸，2px 偏移足以加粗而不糊 */
+.profile-text h2 { font-family: var(--font-display); text-shadow: var(--bold-24); font-size: 24px; }
 
 /* ============ 10) 文章 / 列表页 XP 外壳与侧栏 ============ */
 /* 结构由主题模板直接产出（themes/minimalism/layout/ 下的 post / index / archive / tag / page）：
