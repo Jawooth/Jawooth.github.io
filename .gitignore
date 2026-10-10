@@ -39,3 +39,6 @@ npm-debug.log*
 # Hexo Pro 客户端自己的东西：模板目录与「丢弃区」（被丢弃的文件会移到这里）
 _yaml_templates/
 source/_discarded/
+
+# Hexo Pro 客户端的部署设置（它还会顺带重写 _config.yml，见手册）
+deploy_config.json
