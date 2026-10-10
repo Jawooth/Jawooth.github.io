@@ -16,11 +16,26 @@
    ============================================================ */
 
 /* ============ 0) 字体（自托管，不再请求 Google Fonts） ============
-   手写体 Caveat（SIL Open Font License 1.1，作者 Impallari Type）
-   文件：source/fonts/caveat-latin.woff2 —— 可变字体，一个文件覆盖 400–700。
-   只带 latin 子集（约 73 KB）；中文与其它字符由下面的 fallback 走系统字体
-   （KaiTi / STKaiti / Microsoft YaHei），因此不会出现豆腐块。
-   换字体：替换 woff2 文件并同步改这里的 family 名与各处的 font-family 列表。 */
+   ① 正文像素字体：方舟像素 12px（Ark Pixel Font，作者 TakWolf）
+      文件：source/fonts/ark-pixel-12px-zh_hans.woff2（约 540 KB，未做任何修改）
+      授权：SIL Open Font License 1.1 —— 允许网页嵌入与再分发，许可证原件
+            随字体一起放在 source/fonts/ark-pixel-OFL.txt（OFL 要求随附）。
+      ⚠ 它是**点阵字体**：只有设计尺寸 12px 下才是最锐利的（upem 1200 = 100 单位/像素）。
+        非 12px 的整数倍（例如 13px、14px）会被缩放，笔画粗细会不匀 —— 这正是
+        下面把常用字号统一到 12px 的原因。真要改字号，请用 12 的整数倍。
+      收录简体汉字约 1.8 万；站点里少数没收录的字（实测 10 个汉字、共出现 17 次）
+      会自动落到后面的系统字体，不会出现豆腐块。
+   ② 手写体 Caveat（SIL Open Font License 1.1，作者 Impallari Type）
+      文件：source/fonts/caveat-latin.woff2 —— 可变字体，一个文件覆盖 400–700。
+      只带 latin 子集（约 73 KB）；中文由 fallback 走系统字体。
+   换字体：替换 woff2 文件并同步改这里的 family 名与 :root 里的 --font-ui。 */
+@font-face {
+  font-family: 'Ark Pixel 12px';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ark-pixel-12px-zh_hans.woff2') format('woff2');
+}
 @font-face {
   font-family: 'Caveat';
   font-style: normal;
@@ -32,6 +47,11 @@
 
 /* ============ 1) 设计令牌 ============ */
 :root {
+  /* 全站正文字体：像素字体优先。它没收录的少数汉字与 emoji 会自动落到后面的
+     系统字体，所以不会出现豆腐块。
+     想换回原来的系统字体：把这行改成 "Tahoma", "Microsoft YaHei", "PingFang SC", sans-serif; */
+  --font-ui: 'Ark Pixel 12px', "Microsoft YaHei", "PingFang SC", sans-serif;
+
   /* XP 主色板 */
   --xp-blue: #0058ee;
   --xp-blue-light: #3590f3;
@@ -91,7 +111,7 @@
   --bubble-paper: linear-gradient(180deg, #fff8b5 0%, #f6e78a 100%);
   --bubble-fold: #dfcc70;
   --bubble-crease: rgba(70, 52, 0, 0.18);
-  --bubble-ink: #4a3d18;
+  --bubble-ink: #1a1508;
   --bubble-ink-soft: #85743f;
   --bubble-shadow: 0 7px 16px rgba(70, 52, 0, 0.22), 0 1px 3px rgba(70, 52, 0, 0.16);
   --bubble-min-h: 104px;
@@ -156,7 +176,7 @@ body {
   margin: 0;
   padding: 20px 10px;
   padding-bottom: calc(var(--taskbar-height) + 20px);
-  font-family: "Tahoma", "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-family: var(--font-ui);
   color: var(--text);
   overflow-x: hidden;
 }
@@ -1369,7 +1389,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   padding: 0 4px;
   z-index: 9999;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
-  font-family: "Tahoma", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-ui);
 }
 .xp-taskbar-left { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .xp-start-btn {
@@ -1434,7 +1454,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   box-shadow: -2px -2px 8px rgba(0, 0, 0, 0.3);
   z-index: 10000;
   display: none;
-  font-family: "Tahoma", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-ui);
   overflow: hidden;
 }
 .xp-start-menu.show { display: block; }
