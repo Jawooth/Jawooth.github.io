@@ -16,22 +16,57 @@
    ============================================================ */
 
 /* ============ 0) 字体（自托管，不再请求 Google Fonts） ============
-   手写体 Caveat（SIL Open Font License 1.1，作者 Impallari Type）
-   文件：source/fonts/caveat-latin.woff2 —— 可变字体，一个文件覆盖 400–700。
-   只带 latin 子集（约 73 KB）；中文与其它字符由下面的 fallback 走系统字体
-   （KaiTi / STKaiti / Microsoft YaHei），因此不会出现豆腐块。
-   换字体：替换 woff2 文件并同步改这里的 family 名与各处的 font-family 列表。 */
+   ① 正文像素字体：缝合像素 12px（Fusion Pixel Font，作者 TakWolf）
+      文件：source/fonts/fusion-pixel-12px-proportional-zh_hans.woff2（约 650 KB，未做修改）
+      授权：SIL Open Font License 1.1 —— 允许网页嵌入与再分发，许可证原件
+            随字体一起放在 source/fonts/fusion-pixel-OFL.txt（OFL 要求随附）。
+      ⚠ 它是**点阵字体**：设计尺寸是 12px（upem 1200 = 100 单位/像素），
+        理论上只有 12 的整数倍缩放才完全锐利。但 12px 中文偏小，
+        本站**选择可读性优先**：正文用 16px（= 12 放大 1.33 倍），代价是笔画
+        有极轻微的粗细不匀。想恢复完全锐利就把正文改回 12px；不要用 13~15px
+        （既没变大多少，不匀还更明显）。详见 手册.md §8.3。
+      为什么从「方舟像素」换成「缝合像素」（2026-10）：同为 TakWolf 出品、同为
+      黑体 12px，但缝合版是「方舟 + 其它同尺寸字体」的合集，常用汉字覆盖率更高。
+      实测本站用到的 884 个非 ASCII 字符：方舟缺 25 个，缝合只缺 7 个 ——
+      而且那 7 个全是 ∞ ≥ ⚠ ✨ 🎨 这类符号/emoji。汉字已经不再掉出像素字体。
+   ② 强调文字（只有 24px 的用户名标题与侧栏作者名）：**真·粗体**，
+      用缝合粗像素 12px，不再靠 text-shadow 假加粗。
+      它只渲染几个网名字，没必要驮完整的 660 KB，因此安装时裁成子集
+      （GB2312 常用字 + 仓库里实际出现过的字），约 180 KB。
+      裁剪/安装脚本：tools/make-pixel-fonts.py（改了网名后重跑一次即可）。
+      授权同样是 SIL OFL 1.1，原件在 source/fonts/fusion-bold-pixel-OFL.txt。
+   ③ 16px 的卡片标题用普通正文，不加粗（像素字体在非整数倍缩放后加粗会糊）。
+      原先的手写体 Caveat（拉丁）＋楷体（中文）已全部移除：那一套在中文行里是
+      系统字体兜底，同一行会混出两种字形（例如「Hexo 建站全流程记录」）。
+   换字体：替换 woff2 文件并同步改这里的 family 名与 :root 里的 --font-ui。 */
 @font-face {
-  font-family: 'Caveat';
+  font-family: 'Fusion Pixel 12px';
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 400;
   font-display: swap;
-  src: url('/fonts/caveat-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url('/fonts/fusion-pixel-12px-proportional-zh_hans.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fusion Bold Pixel 12px';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/fusion-bold-pixel-12px-proportional-zh_hans-subset.woff2') format('woff2');
 }
 
 /* ============ 1) 设计令牌 ============ */
 :root {
+  /* 全站正文字体：像素字体优先。它没收录的少数符号与 emoji 会自动落到后面的
+     系统字体，所以不会出现豆腐块。
+     想换回原来的系统字体：把这行改成 "Tahoma", "Microsoft YaHei", "PingFang SC", sans-serif; */
+  --font-ui: 'Fusion Pixel 12px', "Microsoft YaHei", "PingFang SC", sans-serif;
+
+  /* 强调文字（只有 24px 的用户名标题 / 侧栏作者名用）：命中上面第二个
+     @font-face（weight 700 的真·粗体像素字体）。
+     以前这里是用 text-shadow 往右再画一遍来"假加粗"（--bold-24），
+     现在有真粗体了就别再叠 —— 两者同时用会让笔画发毛。 */
+  --font-display: 'Fusion Bold Pixel 12px', "Microsoft YaHei", "PingFang SC", sans-serif;
+
   /* XP 主色板 */
   --xp-blue: #0058ee;
   --xp-blue-light: #3590f3;
@@ -40,7 +75,9 @@
   --xp-hover: #316ac5;
   --xp-bg: #ece9d8;
   --xp-status-done: #3f8f3f;
-  --xp-status-doing: #c07818;
+  /* 浅色下的「进行中」橙：必须压到这个深度才能在近白底上达到 4.5:1
+     （原 #c07818 只有 3.5:1，角标文字读起来发虚）。深色模式另有更亮的一份。 */
+  --xp-status-doing: #9a5c10;
   --xp-status-todo: #6b6b6b;
 
   /* 语义层（浅色） */
@@ -75,6 +112,29 @@
   --decor-right: url('/images/decor/right.png');
   --taskbar-height: 36px;
 
+  /* ---- 首页句子便利贴（复古便利贴：暖黄纸面 + 直角 + 右下角卷边）---------
+     想换成别的颜色/大小，改下面这几个数就够了（浅色和深色各一份，
+     深色那份在本节末尾的 html.dark 里）。
+     · paper：纸面颜色（上下两个色做出纸的层次）
+     · fold：右下角卷起来那一小块纸（背面）的颜色，比纸面深一档
+     · crease：卷角投在纸面上的那道细阴影
+     · ink / ink-soft：字色（正文 / 出处）
+     · shadow：把纸「抬起来」的投影 —— 便利贴没有描边，全靠它和纸色跟桌面区分
+     · w：便利贴宽度（占所在格子的比例，只作用于桌面端；窄屏是整行铺满）
+     · min-h / max-h：高度随文字长短变化，但不会比 min-h 更矮，也不会比
+       max-h 更高。max-h 必须小于右边「用户账户」窗口的高度，否则长句子会把
+       便利贴撑得比它还高（实测用户账户窗口高约 205px，所以这里取 190px）。
+       以后若改了头像尺寸或介绍文字行数，觉得高度不合适就调这两个数。 */
+  --bubble-paper: linear-gradient(180deg, #fff8b5 0%, #f6e78a 100%);
+  --bubble-fold: #dfcc70;
+  --bubble-crease: rgba(70, 52, 0, 0.18);
+  --bubble-ink: #1a1508;
+  --bubble-ink-soft: #85743f;
+  --bubble-shadow: 0 7px 16px rgba(70, 52, 0, 0.22), 0 1px 3px rgba(70, 52, 0, 0.16);
+  --bubble-min-h: 104px;
+  --bubble-max-h: 190px;
+  --bubble-w: 95%;
+
   /* 断点参考：1200 / 900 / 640（全站统一） */
 }
 
@@ -95,6 +155,10 @@ html.dark {
   --border: #4a4a5e;
   --border-strong: #5f5f78;
   --link: #8ab4ff;
+  /* 交互态用的蓝色。浅色下是深蓝 #316ac5，深色下必须换成浅蓝，
+     否则图标/文字 hover 时反而"塌"进深底（对比度约 2.6:1）。
+     2026-10 审计发现漏了这一条，影响 --xp-hover 的 11 处引用。 */
+  --xp-hover: #7ea8e8;
   --face: linear-gradient(to bottom, #4a4a5c 0%, #3c3c4e 50%, #333344 100%);
   --face-hover: linear-gradient(to bottom, #5a5a70 0%, #4a4a60 50%, #40405a 100%);
   --face-active: linear-gradient(to bottom, #333344 0%, #3c3c4e 100%);
@@ -106,6 +170,15 @@ html.dark {
   /* 深色模式桌面背景：换图就替换 source/images/xp-desktop-bg-dark.jpg
      （末尾的 #1a1a2e 是纯色兜底：图片缺失时也不会变成白底） */
   --desktop-bg: url('/images/xp-desktop-bg-dark.jpg') center/cover no-repeat fixed #1a1a2e;
+
+  /* 句子便利贴（深色）：暖黄纸换成「昏暗的牛皮纸」，字色提亮，
+     否则浅色纸在深色桌面上会亮得刺眼 */
+  --bubble-paper: linear-gradient(180deg, #4c4527 0%, #3b3520 100%);
+  --bubble-fold: #2f2a18;
+  --bubble-crease: rgba(0, 0, 0, 0.45);
+  --bubble-ink: #ece3bd;
+  --bubble-ink-soft: #b9ac7d;
+  --bubble-shadow: 0 7px 18px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 /* ============ 2) 基础与桌面 ============ */
@@ -120,7 +193,7 @@ body {
   margin: 0;
   padding: 20px 10px;
   padding-bottom: calc(var(--taskbar-height) + 20px);
-  font-family: "Tahoma", "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-family: var(--font-ui);
   color: var(--text);
   overflow-x: hidden;
 }
@@ -175,7 +248,7 @@ body {
 }
 .menu-list { padding: 5px 10px !important; }
 .menu-list .menu {
-  font-size: 13px;
+  font-size: 16px;
   border: 1px solid transparent;
   border-radius: 2px;
   display: block !important;
@@ -232,15 +305,15 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   border: 1px dashed var(--border);
   border-radius: 4px;
   background: var(--surface-2);
-  font-size: 13px;
+  font-size: 16px;
 }
-.xp-empty strong { display: block; color: var(--text-heading); font-size: 14px; margin-bottom: 6px; }
+.xp-empty strong { display: block; color: var(--text-heading); font-size: 16px; margin-bottom: 6px; }
 
 .xp-badge {
   display: inline-block;
   padding: 1px 6px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 16px;
   background: var(--surface-3);
   border: 1px solid var(--border);
   color: var(--text-muted);
@@ -267,7 +340,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   height: 26px;
   padding: 0 10px;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 16px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -275,7 +348,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   gap: 8px;
   flex-shrink: 0;
 }
-.xp-window-title.compact { height: 26px; padding: 0 8px; font-size: 12px; }
+.xp-window-title.compact { height: 26px; padding: 0 8px; font-size: 16px; }
 .xp-window-title-text { display: flex; align-items: center; gap: 6px; min-width: 0; }
 
 .xp-window-btns { display: flex; gap: 2px; flex-shrink: 0; }
@@ -289,7 +362,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   border-radius: 3px;
   background: linear-gradient(to bottom, #5ca3f7 0%, #1a6fd6 100%);
   color: #fff;
-  font-size: 12px;
+  font-size: 16px;
   line-height: 16px;
   text-align: center;
   font-style: normal;
@@ -305,7 +378,6 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 
 /* 内联小图标 */
 .inline-icon { display: inline-block; vertical-align: middle; margin-right: 4px; margin-top: -2px; }
-.view-arrow { display: inline-block; vertical-align: middle; }
 
 /* ============ 5) XP 控件 ============ */
 .xp-btn {
@@ -313,7 +385,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   border: 1px solid var(--btn-border);
   border-radius: 3px;
   padding: 4px 14px;
-  font-size: 13px;
+  font-size: 16px;
   cursor: pointer;
   color: var(--text);
   font-family: inherit;
@@ -323,7 +395,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 }
 .xp-btn:hover { background: var(--face-hover); }
 .xp-btn:active { background: var(--face-active); }
-.xp-btn-small { font-size: 12px; padding: 2px 8px; }
+.xp-btn-small { font-size: 16px; padding: 2px 8px; }
 
 /* 分区标题条（蓝色渐变长条） */
 .xp-section-bar {
@@ -331,7 +403,7 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   color: #fff;
   padding: 8px 14px;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 16px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -347,46 +419,26 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   border-left: 4px solid #f0c040;
   color: #4a3c10;
   padding: 12px 16px;
-  font-size: 13px;
+  font-size: 16px;
   border-radius: 2px;
 }
 html.dark .xp-tip-box { background: #43401f; border-color: #8b7030; color: #f0e8c0; }
 
 /* 页头窗口内容 */
 .header-body { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.header-body p { margin: 0; font-size: 14px; color: var(--text-sub); }
+.header-body p { margin: 0; font-size: 16px; color: var(--text-sub); }
 .header-stats { display: flex; gap: 8px; flex-wrap: wrap; }
 .header-chip {
   background: linear-gradient(to bottom, #f0f8ff 0%, #d6e8ff 100%);
   border: 1px solid var(--xp-blue-light);
   border-radius: 3px;
   padding: 3px 10px;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-heading);
 }
 .header-chip strong { color: var(--xp-blue-border); margin-right: 2px; }
 html.dark .header-chip { background: rgba(53, 144, 243, 0.16); border-color: #3f6fa8; color: #cfe0ff; }
 html.dark .header-chip strong { color: #9cc2ff; }
-
-/* 筛选按钮 */
-.filter-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.filter-btn {
-  background: var(--face);
-  border: 1px solid var(--btn-border);
-  border-radius: 3px;
-  padding: 4px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  color: var(--text);
-  font-family: inherit;
-}
-.filter-btn:hover { background: var(--face-hover); }
-.filter-btn.active {
-  background: linear-gradient(to bottom, #0058ee 0%, #003399 100%);
-  color: #fff;
-  border-color: #002266;
-}
-.filter-btn[aria-pressed="true"] { cursor: default; }
 
 /* ============ 6) 便当格 ============ */
 /* 轨道用 minmax(0, 1fr)：否则「最近作品」这类 overflow-x 横栏的 min-content
@@ -411,9 +463,14 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .xp-bento > * > .guide-list { width: 100%; }
 
 /* ============ 7) 首页组件 ============ */
-.profile-content { display: flex; align-items: flex-start; gap: 18px; height: 100%; }
+/* 正文放大到 16px 之后，这张卡片的高度也得跟着调 —— 卡片高度受同一横带里的
+   「复古 MP4 播放器」约束（都是 210px 左右，占 1~3 行），原来按 12px 正文配的
+   间距会把图标那一排挤出窗口（.xp-window 是 overflow:hidden，挤出去就看不见了）。
+   做法：头像稍放大压住左栏，正文/标题/图标的纵向间距收紧。
+   ⚠ 以后改 tagline/intro 的文字长度后，若发现图标又被挤掉，先调这里的间距。 */
+.profile-content { display: flex; align-items: flex-start; gap: 16px; height: 100%; }
 .profile-avatar {
-  width: 120px; height: 120px;
+  width: 132px; height: 132px;
   border: 2px solid var(--xp-blue-border);
   border-radius: 6px;
   background: var(--surface-3);
@@ -422,17 +479,15 @@ html.dark .header-chip strong { color: #9cc2ff; }
   image-rendering: pixelated;
 }
 .profile-text { flex: 1; min-width: 0; }
-.profile-text h2 { margin: 0 0 10px; font-size: 20px; color: var(--text-heading); }
-.profile-text h2 .username { color: var(--xp-blue-border); font-family: "Caveat", "KaiTi", cursive; font-size: 24px; transition: opacity 0.25s; }
-.profile-text p { margin: 8px 0; line-height: 1.6; font-size: 14px; }
-
-.profile-meta { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+.profile-text h2 { margin: 0 0 4px; font-size: 24px; color: var(--text-heading); }
+.profile-text h2 .username { color: var(--xp-blue-border); font-family: var(--font-display); font-weight: 700; font-size: 24px; transition: opacity 0.25s; }
+.profile-text p { margin: 4px 0; line-height: 1.4; font-size: 16px; }
 .meta-chip {
   background: var(--surface);
   border: 1px solid var(--xp-blue-light);
   border-radius: 12px;
   padding: 3px 10px;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-heading);
   box-shadow: inset 1px 1px 0 var(--btn-shadow-light);
 }
@@ -440,10 +495,8 @@ html.dark .header-chip strong { color: #9cc2ff; }
 html.dark .meta-chip { background: rgba(53, 144, 243, 0.14); color: #cfe0ff; }
 html.dark .meta-chip strong { color: #9cc2ff; }
 
-.profile-links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
-
 /* 图标行（首页用户账户卡片用）：GitHub / 邮箱 / B站 / 小红书 等 */
-.profile-icons { margin-top: 12px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.profile-icons { margin-top: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .profile-icon {
   width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
@@ -459,39 +512,63 @@ html.dark .meta-chip strong { color: #9cc2ff; }
 .profile-icon:focus-visible { outline: 2px solid var(--xp-hover); outline-offset: 2px; }
 html.dark .profile-icon { color: var(--link); }
 
-/* 气泡（首页：箭头指向右侧的用户账户窗口） */
+/* 句子便利贴（首页左上角那张纸）。
+   复古便利贴的要点：暖黄纸面、几乎直角、靠一层软投影把纸「抬」起来、
+   右下角有个卷起来的纸角，再加上 .tilt-note 给的 -0.8deg 轻微倾斜 ——
+   看着就是随手贴在桌面上的。大小与位置跟原来的说话气泡完全一致。 */
+/* 不要把格子撑满：让便利贴自己按文字长短决定高度（min/max 见 :root 里的变量） */
+.bento-bubble { align-self: center; }
 .xp-bubble {
   position: relative;
-  background: linear-gradient(180deg, #ffffff 0%, #eef5ff 100%);
-  border: 2px solid var(--xp-blue-border);
-  border-radius: 12px;
-  box-shadow: var(--win-shadow);
-  padding: 14px 16px;
-  height: 100%;
+  background: var(--bubble-paper);
+  border: none;                        /* 便利贴没有描边，靠纸色与投影跟桌面区分 */
+  border-radius: 2px;                  /* 几乎直角：纸是方的 */
+  box-shadow: var(--bubble-shadow);
+  padding: 16px 18px;
+  /* 高度随文字长短自己长：最矮 --bubble-min-h，最高 --bubble-max-h（不会顶到右边的用户账户） */
+  height: auto;
+  min-height: var(--bubble-min-h);
+  max-height: var(--bubble-max-h);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  color: var(--text);
+  color: var(--bubble-ink);
+  /* 便签上的字用正文字体即可（纸面已经足够区分它，不需要再换一套字体） */
+  /* 便签上的字用正文字体即可（纸面已经足够区分它，不需要再换一套字体） */
+  font-family: var(--font-ui);
 }
-/* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则尾巴（在盒子外面）会被裁掉 */
+/* 桌面端把便利贴收窄一点（与原来说话气泡的宽度一致） */
+@media (min-width: 901px) {
+  .xp-bento > * > .xp-bubble { width: var(--bubble-w); }
+}
+/* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则右下角卷边会被裁掉 */
 .bubble-content { overflow: hidden; }
-/* 尾巴：朝右指向「用户账户」（两层三角形做出描边效果） */
-.xp-bubble::after,
+
+/* 右下角卷边：把一块 20×20 的方块沿对角线（左下 → 右上）切成两半，只保留靠右下
+   的那一半，就成了一块翻起来的纸角。用 background 的线性渐变来切，比用 border
+   画三角好控制，也不会破坏纸张的圆角。
+   注意 315deg = 朝左上，所以渐变的 0% 端在右下角 —— 前半段染色正好盖住右下那一半。 */
+.xp-bubble::after {
+  content: '';
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 20px; height: 20px;
+  background: linear-gradient(315deg, var(--bubble-fold) 0 50%, transparent 50%);
+  border-bottom-right-radius: 2px;
+}
+/* 卷角投在纸面上的那道细阴影：沿同一条对角线、从折痕往里约 2px，
+   让纸角看着是翘起来的（不想要这个效果就把这条 ::before 整段删掉）。 */
 .xp-bubble::before {
   content: '';
   position: absolute;
-  top: 50%;
-  width: 0; height: 0;
-  border: 8px solid transparent;
+  right: 0; bottom: 0;
+  width: 20px; height: 20px;
+  background: linear-gradient(315deg,
+    transparent 0 50%, var(--bubble-crease) 50% 60%, transparent 60%);
+  border-bottom-right-radius: 2px;
 }
-.xp-bubble::after { right: -18px; transform: translateY(-50%); border-left-color: var(--xp-blue-border); }
-.xp-bubble::before {
-  right: -13px; transform: translateY(-50%);
-  border-width: 6px;
-  border-left-color: #f6faff;
-  z-index: 1;
-}
-.bubble-content p { margin: 0 0 6px; font-size: 14px; line-height: 1.55; font-style: italic; transition: opacity 0.25s; }
+/* 便签正文：不用斜体（点阵字再斜就糊了），字号行距微调，读起来不挤 */
+.bubble-content p { margin: 0 0 6px; font-size: 16px; line-height: 1.6; transition: opacity 0.25s; }
 /* 句子本体（含两侧符号）：整块的淡入淡出，符号跟着一起换。
    符号用 ::before / ::after 画，内容取自 data-left / data-right（来自 quotes.yml），
    这样脚本只改内层 span 的文字，不会误删符号节点。 */
@@ -499,16 +576,17 @@ html.dark .profile-icon { color: var(--link); }
 .bubble-quote::before { content: attr(data-left); }
 .bubble-quote::after { content: attr(data-right); }
 .bubble-from {
-  text-align: right; font-size: 12px; color: var(--text-muted);
+  text-align: right; font-size: 16px; color: var(--bubble-ink-soft);
   margin-top: 10px !important; font-style: normal !important;
 }
-html.dark .xp-bubble { background: linear-gradient(180deg, #3a3f52 0%, #2f3444 100%); }
-html.dark .xp-bubble::before { border-left-color: #343a4c; }
+/* 句子没有「出处」时这一行整行不显示（脚本会把它的内容清空、并 display:none；
+   这里再加一道 :empty 兜底，避免出现一个空的空行） */
+.bubble-from:empty { display: none; }
 
 /* 小站数据 */
 .stat-row {
   display: flex; align-items: center; gap: 8px;
-  padding: 5px 0; font-size: 13px;
+  padding: 5px 0; font-size: 16px;
   border-bottom: 1px dashed var(--border);
 }
 .stat-row:last-child { border-bottom: none; }
@@ -533,7 +611,7 @@ html.dark .xp-bubble::before { border-left-color: #343a4c; }
   transition: box-shadow 0.2s;
 }
 .retro-mp4-player:hover { box-shadow: var(--win-shadow-hover); }
-.mp4-brand { text-align: center; font-size: 11px; font-weight: bold; color: var(--xp-blue-border); letter-spacing: 1px; }
+.mp4-brand { text-align: center; font-size: 16px; font-weight: bold; color: var(--xp-blue-border); letter-spacing: 1px; }
 .mp4-screen {
   background: #1a1a1a; border: 2px solid #4a4a4a; border-radius: 4px;
   padding: 8px; width: 100%; box-sizing: border-box;
@@ -549,7 +627,7 @@ html.dark .xp-bubble::before { border-left-color: #343a4c; }
 }
 .mp4-song-info { width: 100%; min-width: 0; color: #7cfc00; }
 .mp4-song-title {
-  font-size: 13px; font-weight: bold; color: #7cfc00;
+  font-size: 16px; font-weight: bold; color: #7cfc00;
   display: flex; align-items: center; justify-content: center; gap: 6px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -557,10 +635,10 @@ html.dark .xp-bubble::before { border-left-color: #343a4c; }
   display: inline-block; width: 6px; height: 6px; background: #7cfc00;
   border-radius: 50%; animation: blink 1s infinite; flex-shrink: 0;
 }
-.mp4-song-author { font-size: 10px; color: #b8b8b8; margin-top: 2px; }
-.mp4-song-album { font-size: 10px; color: #a0a0a0; margin-top: 1px; }
+.mp4-song-author { font-size: 16px; color: #b8b8b8; margin-top: 2px; }
+.mp4-song-album { font-size: 16px; color: #a0a0a0; margin-top: 1px; }
 .mp4-progress-wrap { display: flex; flex-direction: column; gap: 3px; width: 100%; }
-.mp4-progress-times { display: flex; justify-content: space-between; font-size: 10px; color: #4a4a4a; }
+.mp4-progress-times { display: flex; justify-content: space-between; font-size: 16px; color: #4a4a4a; }
 .mp4-progress-bar {
   height: 7px; background: #c0c0b8; border: 1px solid #999;
   border-radius: 2px; overflow: hidden; cursor: pointer;
@@ -590,13 +668,20 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 }
 .xp-music-embed iframe { display: block; width: 100%; height: 100%; border: 0; }
 
-/* 最近作品横栏：卡片压扁成 16:9，使整带（含标题栏与内边距）刚好落在 210px 内 */
+/* 最近作品横栏：卡片缩略图用 16:9。
+   注意这里**刻意不写 height:100%** —— 横栏按内容高度排布，整条横带再由网格
+   自动长高去容纳它（见 source/index.md 的 grid-auto-rows: minmax(96px, auto)）。
+   写死高度 + overflow:hidden 就是 2026-10 那次「卡片日期被截掉」的成因。 */
 .recent-works-strip {
   display: flex; gap: 12px; overflow-x: auto;
-  padding-bottom: 4px; height: 100%; align-items: stretch;
+  padding-bottom: 4px; align-items: stretch;
 }
 .recent-work-item {
-  flex-shrink: 0; width: 148px;
+  /* 所有卡片（含末尾的「查看全部」）统一宽度 —— 原来第一张加 .featured 是 196px
+     并带蓝色描边，末尾「查看全部」是 112px 虚线框，一排放出来大小不一。
+     宽度可以调：缩略图是 16/9、高度由宽度算出来，卡片变宽整条横带也会跟着变高
+     （不再有"被网格行固定高度裁掉"的问题）。要放进更多卡片仍建议横向滚动。 */
+  flex-shrink: 0; width: 170px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 3px; overflow: hidden;
@@ -604,33 +689,33 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   text-decoration: none; color: inherit;
   display: flex; flex-direction: column;
 }
-.recent-work-item.featured { width: 196px; border-color: var(--xp-blue-border); box-shadow: 0 0 0 1px var(--xp-blue-border); }
+/* 「最近作品」条：所有卡片（含末尾的「查看全部」）宽度、边框、圆角完全一致 ——
+   原来第一张会加 .featured（196px + 蓝色描边 + 蓝色外圈）、
+   末尾「查看全部」是 112px 虚线框，一排放出来大小不一、蓝色描边还很扎眼。 */
+.recent-work-item:hover { transform: translateY(-3px); border-color: var(--xp-hover); }
 .recent-work-item.more {
-  width: 112px;
   background: linear-gradient(135deg, #f0f8ff 0%, #d6e8ff 100%);
   align-items: center; justify-content: center; text-align: center;
-  border-style: dashed;
 }
-.recent-work-item:hover { transform: translateY(-3px); border-color: var(--xp-hover); }
 .recent-work-item.more:hover { background: linear-gradient(135deg, #e6f3ff 0%, #c2dfff 100%); }
 html.dark .recent-work-item.more { background: linear-gradient(135deg, #33384a 0%, #2a3040 100%); }
 .recent-work-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 .recent-work-info { padding: 6px 8px; flex: 1; }
 .recent-work-title {
-  font-size: 13px; font-weight: bold; margin: 0 0 4px;
+  font-size: 16px; margin: 0 0 4px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   color: var(--text-heading);
 }
-.recent-work-date { font-size: 12px; color: var(--text-muted); margin: 0; }
-.more-works { font-size: 13px; color: var(--xp-blue-border); line-height: 1.5; }
-.more-works strong { font-size: 18px; }
+.recent-work-date { font-size: 16px; color: var(--text-muted); margin: 0; }
+.more-works { font-size: 16px; color: var(--xp-blue-border); line-height: 1.5; }
+.more-works strong { font-size: 24px; }
 html.dark .more-works { color: #9cc2ff; }
 
 /* 迷你待办 */
 .todo-mini-list { list-style: none; padding: 0; margin: 0; }
 .todo-mini-list li {
   display: flex; align-items: center; gap: 8px;
-  padding: 6px 0; font-size: 13px;
+  padding: 6px 0; font-size: 16px;
   border-bottom: 1px dashed var(--border);
 }
 .todo-mini-list li:last-child { border-bottom: none; }
@@ -645,11 +730,11 @@ html.dark .more-works { color: #9cc2ff; }
 .article-link { text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 3px; }
 .article-link:hover .article-title { color: var(--xp-blue-border); text-decoration: underline; }
 .article-title {
-  font-size: 13px; font-weight: bold; color: var(--text-heading);
+  font-size: 16px; font-weight: bold; color: var(--text-heading);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 html.dark .article-link:hover .article-title { color: #9cc2ff; }
-.article-meta { font-size: 12px; color: var(--text-muted); }
+.article-meta { font-size: 16px; color: var(--text-muted); }
 
 /* 快速导航 */
 .quick-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -661,16 +746,16 @@ html.dark .article-link:hover .article-title { color: #9cc2ff; }
   border-radius: 3px;
   text-decoration: none;
   color: var(--text);
-  font-size: 12px;
+  font-size: 16px;
   transition: transform 0.15s, background 0.15s, border-color 0.15s;
 }
 .nav-tile:hover { transform: translateY(-2px); background: var(--face-hover); border-color: var(--xp-hover); }
-.nav-icon { font-size: 20px; line-height: 1; }
+.nav-icon { font-size: 24px; line-height: 1; }
 
 /* 标签云 */
 .tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
 .tag-pill {
-  display: inline-block; padding: 3px 10px; border-radius: 3px; font-size: 12px;
+  display: inline-block; padding: 3px 10px; border-radius: 3px; font-size: 16px;
   text-decoration: none;
   border: 1px solid var(--pill-fg, var(--border));
   background: var(--pill-bg, var(--surface-2));
@@ -678,7 +763,7 @@ html.dark .article-link:hover .article-title { color: #9cc2ff; }
   transition: transform 0.15s;
 }
 .tag-pill:hover { transform: translateY(-2px); }
-.tag-pill .tag-count { opacity: 0.7; margin-left: 3px; font-size: 11px; }
+.tag-pill .tag-count { opacity: 0.7; margin-left: 3px; font-size: 16px; }
 html.dark .tag-pill { background: rgba(255, 255, 255, 0.08); }
 .tag-pixel { --pill-bg: #e6f3ff; --pill-fg: #0054e3; }
 .tag-char { --pill-bg: #ffe6f0; --pill-fg: #c2185b; }
@@ -707,21 +792,23 @@ html.dark .tag-life { --pill-fg: #86d68a; }
 .links-col { flex: 1 1 300px; min-width: 240px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .about-col { flex: 1 1 300px; min-width: 240px; }
 .credits-col { flex: 1 1 380px; min-width: 240px; border-left: 1px dashed var(--border); padding-left: 18px; }
-.credits-title { font-size: 12px; font-weight: bold; color: var(--text-heading); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+.credits-title { font-size: 16px; font-weight: bold; color: var(--text-heading); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
 .credits-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 3px 16px; }
-.credits-list li { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
+.credits-list li { font-size: 16px; color: var(--text-muted); line-height: 1.45; }
 .credits-list a { color: var(--link); text-decoration: none; font-weight: bold; }
 .credits-list a:hover { text-decoration: underline; }
 /* 原来的 .friend-links（底部友情链接按钮）已按站主要求删除 */
 .xp-search-box { display: flex; gap: 4px; flex: 1; min-width: 220px; }
 .xp-search-input {
   flex: 1; border: 1px solid #7f9db9; border-radius: 2px; padding: 4px 8px;
-  font-size: 13px; background: #fff; color: #000; font-family: inherit;
+  font-size: 16px; background: #fff; color: #000; font-family: inherit;
 }
+/* 深色模式：输入框必须跟着走，否则深底上嵌一块纯白 */
+html.dark .xp-search-input { background: var(--surface-2); color: var(--text); border-color: var(--border); }
 .xp-search-btn {
   background: var(--face);
   border: 1px solid var(--btn-border); border-radius: 3px;
-  padding: 3px 12px; font-size: 12px; cursor: pointer; color: var(--text);
+  padding: 3px 12px; font-size: 16px; cursor: pointer; color: var(--text);
   font-family: inherit;
 }
 .xp-search-btn:hover { background: var(--face-hover); }
@@ -733,21 +820,21 @@ html.dark .tag-life { --pill-fg: #86d68a; }
 .xp-search-results li { border-bottom: 1px dashed var(--border); }
 .xp-search-results li:last-child { border-bottom: none; }
 .xp-search-results a {
-  display: block; padding: 6px 8px; font-size: 13px;
+  display: block; padding: 6px 8px; font-size: 16px;
   color: var(--text-heading); text-decoration: none;
 }
 .xp-search-results a:hover { background: var(--surface-2); }
-.xp-search-results .res-meta { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.xp-search-hint { font-size: 12px; color: var(--text-muted); margin: 4px 0 0; }
+.xp-search-results .res-meta { display: block; font-size: 16px; color: var(--text-muted); margin-top: 2px; }
+.xp-search-hint { font-size: 16px; color: var(--text-muted); margin: 4px 0 0; }
 
 /* ============ 8) 作品页组件 ============ */
-.filter-status { margin: 8px 0 0; font-size: 12px; color: var(--text-muted); }
+.filter-status { margin: 8px 0 0; font-size: 16px; color: var(--text-muted); }
 
 /* ---- 作品集画廊：栏目切换 + 标签筛选 + 时间轴折叠 + 均等卡片 ---- */
 .work-toolbar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
 .work-tabs { display: flex; gap: 0; }
 .work-tab {
-  font-family: inherit; font-size: 13px; font-weight: bold;
+  font-family: inherit; font-size: 16px; font-weight: bold;
   padding: 6px 18px; cursor: pointer;
   color: var(--text);
   background: var(--face);
@@ -766,16 +853,16 @@ html.dark .tag-life { --pill-fg: #86d68a; }
   margin-bottom: -1px;
   z-index: 1;
 }
-.work-tab .tab-count { font-weight: normal; font-size: 11px; color: var(--text-muted); }
+.work-tab .tab-count { font-weight: normal; font-size: 16px; color: var(--text-muted); }
 .work-filter-bar {
   display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   padding: 8px 2px;
 }
-.filter-label { font-size: 12px; color: var(--text-muted); }
+.filter-label { font-size: 16px; color: var(--text-muted); }
 .filter-pill {
-  font-family: inherit; font-size: 12px; cursor: pointer;
+  font-family: inherit; font-size: 16px; cursor: pointer;
   padding: 3px 9px; border-radius: 11px;
   color: var(--text-heading);
   background: rgba(53, 144, 243, 0.12);
@@ -784,10 +871,10 @@ html.dark .tag-life { --pill-fg: #86d68a; }
 }
 .filter-pill:hover { background: rgba(53, 144, 243, 0.24); }
 .filter-pill.is-active { background: var(--xp-blue-border); border-color: var(--xp-blue-border); color: #fff; }
-.filter-pill .pill-count { opacity: 0.75; margin-left: 2px; font-size: 11px; }
-.filter-block { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); margin-left: 6px; cursor: pointer; }
+.filter-pill .pill-count { opacity: 0.75; margin-left: 2px; font-size: 16px; }
+.filter-block { display: inline-flex; align-items: center; gap: 5px; font-size: 16px; color: var(--text-muted); margin-left: 6px; cursor: pointer; }
 .filter-clear {
-  font-family: inherit; font-size: 12px; cursor: pointer;
+  font-family: inherit; font-size: 16px; cursor: pointer;
   padding: 3px 10px; border-radius: 3px;
   color: var(--text); background: var(--face);
   border: 1px solid var(--btn-border);
@@ -800,18 +887,18 @@ html.dark .tag-life { --pill-fg: #86d68a; }
 .work-era-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   padding: 7px 12px; cursor: pointer; list-style: none;
-  font-size: 13px; font-weight: bold; color: var(--text-heading);
+  font-size: 16px; font-weight: bold; color: var(--text-heading);
   background: linear-gradient(to bottom, var(--surface) 0%, var(--surface-3) 100%);
   border-bottom: 1px solid var(--border);
 }
 .work-era-bar::-webkit-details-marker { display: none; }
 .work-era-bar::before {
-  content: '▸'; display: inline-block; margin-right: 6px; font-size: 11px;
+  content: '▸'; display: inline-block; margin-right: 6px; font-size: 16px;
   color: var(--xp-blue-border); transition: transform 0.15s;
 }
 .work-era[open] > .work-era-bar::before { transform: rotate(90deg); }
 .era-name { flex: 1 1 auto; }
-.era-count { font-weight: normal; font-size: 12px; color: var(--text-muted); }
+.era-count { font-weight: normal; font-size: 16px; color: var(--text-muted); }
 .work-era:not([open]) > .work-era-bar { border-bottom: none; }
 
 .work-grid {
@@ -833,25 +920,25 @@ html.dark .tag-life { --pill-fg: #86d68a; }
 .work-card:hover .work-thumb img { transform: scale(1.05); }
 .work-thumb .work-status { position: absolute; top: 6px; right: 6px; background: rgba(255, 255, 255, 0.86); }
 .work-card-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1 1 auto; }
-.work-card-title { margin: 0; font-size: 14px; line-height: 1.35; }
+.work-card-title { margin: 0; font-size: 16px; line-height: 1.35; }
 .work-card-title a { color: var(--text-heading); text-decoration: none; }
 .work-card-title a:hover { text-decoration: underline; }
-.work-card-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 11px; color: var(--text-muted); }
+.work-card-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 16px; color: var(--text-muted); }
 .work-cat { padding: 1px 7px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--border); }
 .work-card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 .work-tag {
-  font-family: inherit; font-size: 11px; cursor: pointer;
+  font-family: inherit; font-size: 16px; cursor: pointer;
   padding: 2px 8px; border-radius: 9px;
   color: var(--text-heading);
   background: rgba(53, 144, 243, 0.12);
   border: 1px solid rgba(53, 144, 243, 0.3);
 }
 .work-tag:hover { background: rgba(53, 144, 243, 0.26); }
-.work-card-full { font-size: 13px; line-height: 1.7; color: var(--text); border-top: 1px dashed var(--border); padding-top: 8px; }
+.work-card-full { font-size: 16px; line-height: 1.7; color: var(--text); border-top: 1px dashed var(--border); padding-top: 8px; }
 .work-card-full img { max-width: 100%; height: auto; border-radius: 3px; }
 .work-card-foot { padding: 0 12px 10px; }
 .work-expand {
-  font-family: inherit; font-size: 12px; cursor: pointer;
+  font-family: inherit; font-size: 16px; cursor: pointer;
   width: 100%; padding: 5px 0; border-radius: 3px;
   color: var(--text); background: var(--face);
   border: 1px solid var(--btn-border);
@@ -871,7 +958,7 @@ html.dark .work-era-bar { background: linear-gradient(to bottom, var(--surface-2
 
 .work-status {
   display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; padding: 1px 6px; border-radius: 2px;
+  font-size: 16px; padding: 1px 6px; border-radius: 2px;
   background: var(--surface-3); color: var(--text); border: 1px solid var(--border);
 }
 .work-status::before {
@@ -888,11 +975,11 @@ html.dark .work-era-bar { background: linear-gradient(to bottom, var(--surface-2
   border: 1px solid var(--xp-blue-light);
   border-radius: 3px;
   padding: 2px 8px;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-heading);
   text-decoration: none;
 }
-.cloud-tag.big { font-size: 14px; padding: 3px 10px; }
+.cloud-tag.big { font-size: 16px; padding: 3px 10px; }
 .cloud-tag:hover { border-color: var(--xp-hover); }
 html.dark .cloud-tag { background: rgba(53, 144, 243, 0.16); border-color: #3f6fa8; color: #cfe0ff; }
 
@@ -905,17 +992,16 @@ html.dark .cloud-tag { background: rgba(53, 144, 243, 0.16); border-color: #3f6f
   padding: 8px 4px; text-align: center;
   display: flex; flex-direction: column; gap: 2px;
 }
-.mini-stat strong { font-size: 18px; color: var(--xp-blue-border); }
+.mini-stat strong { font-size: 24px; color: var(--xp-blue-border); }
 html.dark .mini-stat strong { color: #9cc2ff; }
-.mini-stat span { font-size: 11px; color: var(--text-muted); }
+.mini-stat span { font-size: 16px; color: var(--text-muted); }
 
 /* 创作中 */
 .upcoming-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; padding: 10px; }
 .upcoming-icon { line-height: 1; }
-.upcoming-content p { margin: 0; font-size: 13px; color: var(--text-muted); }
+.upcoming-content p { margin: 0; font-size: 16px; color: var(--text-muted); }
 
 /* ============ 9) 游戏 / 攻略 / 待办 / 关于 ============ */
-.app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 .app-card {
   position: relative;
   background: var(--surface);
@@ -931,8 +1017,8 @@ html.dark .mini-stat strong { color: #9cc2ff; }
 .app-card.is-link:hover { transform: translateY(-3px); box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.25); border-color: var(--xp-hover); }
 .app-card.is-planned { border-style: dashed; opacity: 0.92; }
 .app-icon { line-height: 1; }
-.app-info h4 { margin: 0 0 4px; font-size: 15px; color: var(--text-heading); }
-.app-desc { margin: 0; font-size: 12px; color: var(--text-muted); }
+.app-info h4 { margin: 0 0 4px; font-size: 16px; color: var(--text-heading); }
+.app-desc { margin: 0; font-size: 16px; color: var(--text-muted); }
 .app-link { position: absolute; inset: 0; z-index: 10; }
 
 .guide-list { list-style: none; padding: 0; margin: 0; }
@@ -945,11 +1031,11 @@ html.dark .mini-stat strong { color: #9cc2ff; }
   transition: background 0.2s, border-color 0.2s;
 }
 .guide-list li:hover { background: var(--surface-2); border-color: var(--xp-hover); }
-.guide-date { font-size: 12px; color: var(--text-muted); flex-shrink: 0; width: 90px; }
-.guide-title { flex: 1; font-size: 14px; color: var(--text-heading); text-decoration: none; }
+.guide-date { font-size: 16px; color: var(--text-muted); flex-shrink: 0; width: 90px; }
+.guide-title { flex: 1; font-size: 16px; color: var(--text-heading); text-decoration: none; }
 a.guide-title:hover { text-decoration: underline; }
 .guide-title.is-planned { color: var(--text-sub); }
-.guide-tag { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 11px; color: #fff; flex-shrink: 0; }
+.guide-tag { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 16px; color: #fff; flex-shrink: 0; }
 .tag-game { background: #c0504d; }
 .tag-art { background: #4a8f4a; }
 .tag-tech { background: #3f77b5; }
@@ -964,8 +1050,7 @@ a.guide-title:hover { text-decoration: underline; }
 
 /* 首页「关于本站」窗口（原「关于」页的内容，已整合到首页） */
 .about-home-body { display: flex; flex-direction: column; gap: 6px; }
-.about-home-title { margin: 0 0 4px; font-size: 17px; color: var(--text-heading); font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; }
-.about-home-body p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--text); }
+.about-home-body p { margin: 0; font-size: 16px; line-height: 1.7; color: var(--text); }
 .about-home-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 
 /* 邮箱弹窗（首页邮箱图标：填了多个地址时点开）
@@ -986,36 +1071,41 @@ a.guide-title:hover { text-decoration: underline; }
   height: 26px; padding: 0 4px 0 10px;
   display: flex; align-items: center; justify-content: space-between;
   background: var(--title-grad); color: #fff;
-  font-size: 12px; font-weight: bold;
+  font-size: 16px; font-weight: bold;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .profile-email-pop .pop-close {
   width: 20px; height: 18px; cursor: pointer; font-family: inherit;
-  color: #fff; font-size: 13px; line-height: 1;
+  color: #fff; font-size: 16px; line-height: 1;
   background: linear-gradient(to bottom, #e87070 0%, #c03030 100%);
   border: 1px solid #8a2020; border-radius: 3px;
   display: flex; align-items: center; justify-content: center;
 }
 .profile-email-pop .pop-close:hover { background: linear-gradient(to bottom, #f08080 0%, #d04040 100%); }
 .profile-email-pop .pop-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 7px; }
-.profile-email-pop .pop-hint { margin: 0 0 2px; font-size: 12px; color: var(--text-muted); }
-.profile-email-pop .pop-email { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--link); text-decoration: none; }
+.profile-email-pop .pop-hint { margin: 0 0 2px; font-size: 16px; color: var(--text-muted); }
+.profile-email-pop .pop-email { display: flex; align-items: center; gap: 6px; font-size: 16px; color: var(--link); text-decoration: none; }
 .profile-email-pop .pop-email:hover .email-address { text-decoration: underline; }
 .profile-email-pop .email-label {
-  padding: 1px 6px; border-radius: 8px; font-size: 11px;
+  padding: 1px 6px; border-radius: 8px; font-size: 16px;
   color: var(--text-heading);
   background: rgba(53, 144, 243, 0.12);
   border: 1px solid rgba(53, 144, 243, 0.3);
 }
 html.dark .profile-email-pop .email-label { color: var(--link); background: rgba(138, 180, 255, 0.16); border-color: rgba(138, 180, 255, 0.4); }
 
-/* 手写体标题统一 */
-.profile-text h2,
+/* 卡片类标题：用**正文字体**，不加点阵粗体。
+   原因：正文已经放大到 16px，「往右错 1 像素再画一遍」在 16px 中文下会把笔画连成
+   一片、字看着又粗又脏（尤其「陶罐与水果」「魔法少女」这种笔画多的）。
+   现在靠**蓝色字色**来区分标题与下面的灰色日期，和侧栏「最近文章」的写法一致。
+   只有 24px 的用户名还保留加粗（2px 偏移相对于 24px 只有 1/12，不会糊，见下方规则）。 */
 .recent-work-title,
 .work-card-title,
 .app-info h4,
-.guide-title { font-family: "Caveat", "KaiTi", "STKaiti", "Microsoft YaHei", cursive; font-size: 17px; }
-.profile-text h2 { font-size: 22px; }
+.guide-title { font-family: var(--font-ui); font-size: 16px; }
+
+/* 首页大标题（用户名）：24px 仍是点阵的锐利尺寸，2px 偏移足以加粗而不糊 */
+.profile-text h2 { font-family: var(--font-display); font-weight: 700; font-size: 24px; }
 
 /* ============ 10) 文章 / 列表页 XP 外壳与侧栏 ============ */
 /* 结构由主题模板直接产出（themes/minimalism/layout/ 下的 post / index / archive / tag / page）：
@@ -1029,8 +1119,12 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
    注意：早期版本是用 after_render 过滤器往 HTML 里注入外壳的，已改为模板直出，
    结构更可靠、也不再有正则匹配失败的风险。 */
 
-/* 带侧栏的页面宽一点，正文列才够舒服 */
-.main:has(.xp-shell) { max-width: 1240px; }
+/* 带侧栏的页面（文章 / 杂谈 / 归档 / 标签 / 分类）宽度。
+   这个数字直接决定「一行有多少字」：主列 = 总宽 − 边框 4 − 内边距 36 − 间距 18 − 侧栏 292。
+   1060 → 主列 710px → 16px 中文每行约 44 字（中文舒适区 30–45 字/行）。
+   原来 1240 时主列 890px ≈ 56 字/行，一行太长、换行时容易看丢行。
+   ⚠ 改大之前先想清楚：再大就超出舒适区了，收益是负的。 */
+.main:has(.xp-shell) { max-width: 1060px; }
 
 .content-container.xp-shell {
   background: var(--surface);
@@ -1048,7 +1142,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 /* 文章信息条 */
 .xp-shell > .post-info {
   display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
-  padding: 7px 16px; font-size: 12px; color: var(--text-muted);
+  padding: 7px 16px; font-size: 16px; color: var(--text-muted);
   background: var(--surface-2); border-bottom: 1px solid var(--border);
 }
 .xp-shell > .post-info a { color: var(--link); text-decoration: none; }
@@ -1085,7 +1179,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 }
 .xp-shell .post-content a { color: var(--link); }
 .xp-shell .post-content p,
-.xp-shell .post-content li { line-height: 1.75; font-size: 15px; }
+.xp-shell .post-content li { line-height: 1.75; font-size: 16px; }
 .xp-shell .post-content blockquote {
   margin: 14px 0; padding: 8px 14px;
   background: var(--surface-2);
@@ -1106,7 +1200,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   padding: 2px 5px;
   border: 1px solid var(--border);
   border-radius: 2px;
-  font-size: 13px;
+  font-size: 16px;
 }
 .xp-shell .post-content pre { background: var(--surface-2); border: 1px solid var(--border); padding: 10px; overflow-x: auto; border-radius: 2px; }
 .xp-shell .post-content table { border-collapse: collapse; width: 100%; }
@@ -1121,9 +1215,9 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   border-radius: 4px;
   padding: 10px 12px;
 }
-.work-compare-item h4 { margin: 0 0 8px; font-size: 14px; color: var(--text-heading); border: none; padding: 0; }
+.work-compare-item h4 { margin: 0 0 8px; font-size: 16px; color: var(--text-heading); border: none; padding: 0; }
 .work-compare-item img { margin: 0 0 8px; width: 100%; }
-.work-compare-item p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.work-compare-item p { margin: 0; font-size: 16px; color: var(--text-muted); line-height: 1.6; }
 
 /* 图片放大（xp-enhance.js 注入的轻量 lightbox） */
 .xp-lightbox {
@@ -1174,13 +1268,13 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 .xp-post-card-title { margin: 0; font-size: 16px; color: var(--text-heading); }
 .xp-post-card:hover .xp-post-card-title { text-decoration: underline; }
 .xp-post-card-excerpt {
-  margin: 0; font-size: 13px; line-height: 1.7; color: var(--text-muted);
+  margin: 0; font-size: 16px; line-height: 1.7; color: var(--text-muted);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .xp-post-card-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
 .xp-chip {
   display: inline-block; padding: 1px 8px; border-radius: 3px;
-  font-size: 11px; background: var(--surface-2);
+  font-size: 16px; background: var(--surface-2);
   border: 1px solid var(--border); color: var(--text-muted);
   white-space: nowrap;
 }
@@ -1192,7 +1286,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   padding: 14px 0 0;
 }
 .xp-shell .pagination-container a {
-  display: inline-block; padding: 4px 12px; font-size: 13px;
+  display: inline-block; padding: 4px 12px; font-size: 16px;
   background: var(--face); border: 1px solid var(--btn-border); border-radius: 3px;
   color: var(--text); text-decoration: none;
   box-shadow: inset 1px 1px 0 var(--btn-shadow-light), inset -1px -1px 0 var(--btn-shadow-dark);
@@ -1204,12 +1298,12 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   display: flex; justify-content: space-between; align-items: baseline;
   background: var(--title-grad); color: #fff;
   padding: 5px 12px; margin: 18px 0 10px;
-  font-size: 14px; font-weight: bold;
+  font-size: 16px; font-weight: bold;
   border-radius: 3px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .xp-timeline-year:first-child { margin-top: 0; }
-.xp-timeline-year .count { font-weight: normal; font-size: 12px; opacity: 0.9; }
+.xp-timeline-year .count { font-weight: normal; font-size: 16px; opacity: 0.9; }
 .xp-timeline-list { list-style: none; margin: 0; padding: 0 0 0 18px; position: relative; }
 .xp-timeline-list::before {
   content: ""; position: absolute; left: 4px; top: 8px; bottom: 8px;
@@ -1223,13 +1317,13 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   background: var(--surface); border: 2px solid var(--xp-blue-border);
 }
 .xp-timeline-item a:hover .xp-timeline-title { color: var(--xp-blue-border); text-decoration: underline; }
-.xp-timeline-date { flex: 0 0 46px; font-size: 12px; color: var(--text-muted); }
-.xp-timeline-title { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--text-heading); }
-.xp-timeline-cat { flex: 0 0 auto; font-size: 11px; color: var(--text-muted); }
+.xp-timeline-date { flex: 0 0 46px; font-size: 16px; color: var(--text-muted); }
+.xp-timeline-title { flex: 1 1 auto; min-width: 0; font-size: 16px; color: var(--text-heading); }
+.xp-timeline-cat { flex: 0 0 auto; font-size: 16px; color: var(--text-muted); }
 
 /* ---------- 侧栏 widget ---------- */
-.xp-widget .xp-window-body { font-size: 13px; }
-.xp-widget .xp-window-title { font-size: 12px; padding: 4px 8px; }
+.xp-widget .xp-window-body { font-size: 16px; }
+.xp-widget .xp-window-title { font-size: 16px; padding: 4px 8px; }
 
 .xp-aside-author { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
 .xp-aside-author img {
@@ -1237,22 +1331,20 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   border: 2px solid var(--xp-blue-border); background: var(--surface-3);
   image-rendering: pixelated;
 }
-.xp-aside-author .name { font-family: "Caveat", "KaiTi", "STKaiti", cursive; font-size: 20px; color: var(--text-heading); }
-.xp-aside-author .bio { font-size: 12px; line-height: 1.6; color: var(--text-muted); }
+.xp-aside-author .name { font-family: var(--font-display); font-weight: 700; font-size: 24px; color: var(--text-heading); }
+.xp-aside-author .bio { font-size: 16px; line-height: 1.6; color: var(--text-muted); }
 .xp-aside-author .links { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 
 /* 目录（跟随滚动） */
 .xp-toc { list-style: none; margin: 0; padding: 0; max-height: 46vh; overflow: auto; }
 .xp-toc a {
-  display: block; padding: 4px 6px; font-size: 12px;
+  display: block; padding: 4px 6px; font-size: 16px;
   color: var(--text-muted); text-decoration: none;
   border-left: 2px solid transparent;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .xp-toc a:hover { color: var(--xp-blue-border); background: var(--surface-2); }
 .xp-toc a.current { color: var(--xp-blue-border); border-left-color: var(--xp-blue-border); background: var(--surface-2); font-weight: bold; }
-.xp-toc .xp-toc-level-3 a { padding-left: 18px; }
-.xp-toc .xp-toc-level-4 a { padding-left: 28px; font-size: 11px; }
 
 /* 主列里的独立窗口（如杂谈页顶部的待办窗口）与后续内容拉开距离 */
 .xp-shell-main > .xp-widget { margin: 0 0 16px; }
@@ -1263,10 +1355,10 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 
 /* 侧栏里的标签胶囊与统计行沿用已有组件，只调间距 */
 .xp-widget .tag-cloud { gap: 5px; }
-.xp-widget .stat-row { font-size: 12px; padding: 4px 0; }
+.xp-widget .stat-row { font-size: 16px; padding: 4px 0; }
 .xp-widget .article-mini-list li { padding: 6px 0; }
-.xp-widget .article-title { font-size: 12px; }
-.xp-widget .article-meta { font-size: 11px; }
+.xp-widget .article-title { font-size: 16px; }
+.xp-widget .article-meta { font-size: 16px; }
 
 /* 相关文章 / 上下篇 */
 .xp-related { margin-top: 20px; }
@@ -1275,12 +1367,12 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 .xp-related-list li:last-child { border-bottom: none; }
 .xp-related-list a {
   display: flex; flex-direction: column; gap: 3px;
-  text-decoration: none; color: var(--text-heading); font-size: 13px;
+  text-decoration: none; color: var(--text-heading); font-size: 16px;
 }
 .xp-related-list a:hover { color: var(--xp-blue-border); text-decoration: underline; }
-.xp-related-list .meta { font-size: 11px; color: var(--text-muted); }
+.xp-related-list .meta { font-size: 16px; color: var(--text-muted); }
 .next-post { margin: 16px 0 0; }
-.next-post .post-title { margin: 0; font-size: 14px; }
+.next-post .post-title { margin: 0; font-size: 16px; }
 .next-post .purple-link { color: var(--link); text-decoration: none; }
 .next-post .purple-link:hover { text-decoration: underline; }
 
@@ -1295,11 +1387,11 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   transition: transform 0.15s, border-color 0.15s;
 }
 .xp-index-item:hover { transform: translateY(-2px); border-color: var(--xp-hover); }
-.xp-index-item .name { font-size: 14px; color: var(--text-heading); font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.xp-index-item .count { flex: 0 0 auto; font-size: 11px; color: var(--text-muted); }
+.xp-index-item .name { font-size: 16px; color: var(--text-heading); font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.xp-index-item .count { flex: 0 0 auto; font-size: 16px; color: var(--text-muted); }
 
 /* 页脚 */
-.site-footer { padding: 18px 16px; font-size: 12px; color: var(--text-muted); text-align: center; }
+.site-footer { padding: 18px 16px; font-size: 16px; color: var(--text-muted); text-align: center; }
 .site-footer a { color: var(--link); text-decoration: none; }
 .site-footer .social-container { display: flex; justify-content: center; gap: 12px; margin-bottom: 6px; }
 .site-footer .social-container a { font-size: 16px; }
@@ -1317,12 +1409,12 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 @media (max-width: 640px) {
   .xp-shell-body { padding: 12px 12px 16px; gap: 12px; }
   .xp-shell .post-content p,
-  .xp-shell .post-content li { font-size: 14px; }
+  .xp-shell .post-content li { font-size: 16px; }
   .xp-shell .feature-container { height: 190px; }
   .xp-post-card-cover { display: none; }
   .xp-aside { flex-direction: column; }
   .xp-aside > * { flex: none; width: 100%; }
-  .xp-timeline-date { flex-basis: 42px; font-size: 11px; }
+  .xp-timeline-date { flex-basis: 42px; font-size: 16px; }
   .xp-timeline-cat { display: none; }
 }
 
@@ -1336,7 +1428,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   padding: 0 4px;
   z-index: 9999;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
-  font-family: "Tahoma", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-ui);
 }
 .xp-taskbar-left { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .xp-start-btn {
@@ -1344,7 +1436,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   border: 2px solid #0a3a0a;
   border-radius: 0 10px 10px 0;
   padding: 2px 12px 2px 8px;
-  color: #fff; font-weight: bold; font-size: 13px; font-style: italic;
+  color: #fff; font-weight: bold; font-size: 16px; font-style: italic;
   cursor: pointer;
   display: flex; align-items: center; gap: 4px;
   height: 28px;
@@ -1361,7 +1453,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
   border-radius: 3px;
   padding: 2px 10px;
   display: flex; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--text);
+  font-size: 16px; color: var(--text);
   max-width: 200px; height: 24px;
 }
 .xp-taskbar-item.active {
@@ -1386,11 +1478,11 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 }
 .xp-tray-btn:hover { background: rgba(255, 255, 255, 0.2); }
 .xp-taskbar-clock {
-  color: #fff; font-size: 12px; padding: 0 6px;
+  color: #fff; font-size: 16px; padding: 0 6px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   white-space: nowrap; text-align: center; line-height: 1.15;
 }
-.xp-clock-date { display: block; font-size: 10px; opacity: 0.9; }
+.xp-clock-date { display: block; font-size: 16px; opacity: 0.9; }
 
 .xp-start-menu {
   position: fixed; bottom: var(--taskbar-height); left: 4px;
@@ -1401,7 +1493,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   box-shadow: -2px -2px 8px rgba(0, 0, 0, 0.3);
   z-index: 10000;
   display: none;
-  font-family: "Tahoma", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-ui);
   overflow: hidden;
 }
 .xp-start-menu.show { display: block; }
@@ -1409,7 +1501,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   background: var(--title-grad);
   color: #fff; padding: 10px 15px;
   border-radius: 6px 6px 0 0;
-  font-weight: bold; font-size: 14px;
+  font-weight: bold; font-size: 16px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .xp-start-menu-user { display: flex; align-items: center; gap: 8px; }
@@ -1417,7 +1509,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 .xp-start-item {
   display: flex; align-items: center; gap: 10px;
   padding: 6px 10px;
-  color: var(--text); text-decoration: none; font-size: 13px;
+  color: var(--text); text-decoration: none; font-size: 16px;
   border-radius: 2px; margin: 2px 0;
 }
 .xp-start-item:hover { background: var(--xp-hover); color: #fff; }
@@ -1425,12 +1517,9 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 .xp-start-menu-footer {
   background: var(--tray-grad);
   padding: 6px 15px; text-align: right;
-  color: #fff; font-size: 11px;
+  color: #fff; font-size: 16px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-
-/* 杂谈页注入的待办窗口 */
-.blog-todo-window { margin: 16px 16px 0; }
 
 /* ============ 12) 动画 ============ */
 /* 入场动画必须做到「动画不跑也可读」：
@@ -1464,8 +1553,6 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .tilt-right { transform: rotate(0.5deg); }
   .tilt-note .xp-bubble { transform: rotate(-0.8deg); }
   .tilt-soft { transform: rotate(0.3deg); }
-  .tilt-drop { transform: translateY(4px) rotate(-0.6deg); }
-  .tilt-rise { transform: translateY(-2px) rotate(0.4deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1477,7 +1564,6 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 /* ============ 13) 响应式（统一 640 / 900 / 1200） ============ */
 @media (max-width: 1200px) {
   .xp-bento { gap: 14px; }
-  .work-featured-layout { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 900px) {
@@ -1485,29 +1571,16 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .content-container { padding: 10px 12px; }
   .content-container.xp-shell { padding: 0; }
   .xp-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-  /* 气泡在窄屏移到「用户账户」上方，尾巴改为朝下 */
-  .xp-bubble { margin-bottom: 10px; }
-  .xp-bubble::after,
-  .xp-bubble::before {
-    top: auto; right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left-color: transparent;
-    border-right-color: transparent;
-  }
-  .xp-bubble::after { bottom: -18px; border-top-color: var(--xp-blue-border); }
-  .xp-bubble::before { bottom: -13px; border-top-color: #f6faff; }
-  html.dark .xp-bubble::before { border-top-color: #343a4c; }
-  .credits-grid { grid-template-columns: repeat(2, 1fr); }
+  /* 窄屏：便利贴会移到「用户账户」上方。便签没有拖尾，所以这里不再需要任何
+     针对拖尾的处理（原来给「朝下拖尾」预留的 margin-bottom 也一并去掉）。 */
   .work-featured-layout { grid-template-columns: 1fr; }
-  .work-featured-thumb { min-height: 180px; }
   .header-body { flex-direction: column; align-items: flex-start; }
   .retro-mp4-player { max-width: 200px; }
   .guide-list li { flex-wrap: wrap; }
   .guide-date { width: auto; order: 3; }
   .xp-taskbar { height: 32px; }
   .xp-taskbar-right { padding: 0 4px; }
-  .xp-start-btn { height: 24px; padding: 2px 8px 2px 6px; font-size: 12px; }
+  .xp-start-btn { height: 24px; padding: 2px 8px 2px 6px; font-size: 16px; }
   .xp-taskbar-title { max-width: 90px; }
   .xp-start-menu { width: 250px; }
 }
@@ -1518,9 +1591,8 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bento > * > .retro-mp4-player { max-width: 320px; aspect-ratio: auto; }
   .profile-content { flex-direction: column; align-items: center; text-align: center; }
   .profile-avatar { width: 96px; height: 96px; }
-  .xp-bubble { transform: none; margin: 0; }
-  .recent-work-item { width: 140px; }
-  .recent-work-item.featured { width: 180px; }
+  .xp-bubble { transform: none; }   /* 不要写 margin:0 —— 那会把 ≤900px 里给向下拖尾留出的空间清零 */
+  .recent-work-item { width: 150px; }
   /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，
      否则 .links-col/.credits-col 的 420px/460px 会被当成"高度"，窗口被撑到 800+px */
   .links-body { flex-direction: column; align-items: stretch; gap: 12px; }
@@ -1530,14 +1602,8 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .credits-col { border-left: none; border-top: 1px dashed var(--border); padding: 12px 0 0; }
   .xp-search-box { width: 100%; }
   .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
-  .about-profile-layout { flex-direction: column; align-items: center; text-align: center; }
-  .about-avatar { width: 96px; height: 96px; }
-  .about-nav-list span { display: none; }
   .work-compare { grid-template-columns: 1fr; }
   .xp-shell .post-content { padding: 12px 12px 16px; }
   .xp-shell .post-content p,
-  .xp-shell .post-content li { font-size: 14px; }
-  .credits-grid { grid-template-columns: 1fr; }
-  .content-container > .post-item .feature-container,
-  .xp-shell > .post-item .feature-container { display: none; }
+  .xp-shell .post-content li { font-size: 16px; }
 }

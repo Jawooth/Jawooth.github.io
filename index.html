@@ -24,7 +24,7 @@
 
   <!-- hexo injector head_end start -->
   <!-- 本站 XP 风格设计系统（字体 @font-face 自托管，见该文件第 0 节） -->
-  <link rel="stylesheet" href="/css/xp-custom.css?v=27fb4da1">
+  <link rel="stylesheet" href="/css/xp-custom.css?v=55ef0b4f">
 <!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="canonical" href="https://Jawooth.github.io/">
 <meta property="og:url" content="https://Jawooth.github.io/">
 <meta property="og:type" content="website">
@@ -95,9 +95,12 @@
 <div class="xp-bubble">
 <div class="bubble-content">
 <!-- 句子在 source/_data/quotes.yml 里维护，按 rotate_seconds 自动轮换；
-     两侧的「」也可以在那里改（quote_left / quote_right），留空即不显示符号。 -->
+     两侧的「」也在那里改（quote_left / quote_right），留空即不显示符号。
+     下面 data-* 里的「」只是"脚本没跑时"的兜底，会被 quotes.yml 的值覆盖。
+注意：这个便签元素全页只有这一处；xp_quotes 标签只输出数据与符号，不再输出元素。 -->
 <p class="bubble-quote" id="sticky-quote" data-left="「" data-right="」"><span id="sticky-text">加载中…</span></p>
-<p class="bubble-from" id="sticky-from">—— 小站碎碎念</p>
+<!-- 出处那一行：quotes.yml 里那句没写 from（或写成 from: ''）时，脚本会自动把这一行整行藏起来 -->
+<p class="bubble-from" id="sticky-from"></p>
 </div>
 </div>
 </div>
@@ -134,10 +137,12 @@
 
 <!-- ========== 带 1：复古 MP4 播放器 ========== -->
 <div class="bento-item bento-music">
-<!-- 曲目 / 歌单都在 source/_data/music.yml 里配置；这里只是播放器外观 -->
-<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css"><script src="/vendor/aplayer/APlayer.min.js"></script><script>window.XP_MUSIC = [{"title":"我想 （正式版）feat.泠风","author":"法老 / 泠风","album":"东海岸","url":"https://music.163.com/song/media/outer/url?id=444323757.mp3","pic":"https://p1.music.126.net/z253qn2_rIiK0NvaD5_btA==/109951162817129061.jpg"},{"title":"自缚灵","author":"立入禁止","album":"地縛霊たち","url":"https://music.163.com/song/media/outer/url?id=2736157649.mp3","pic":"https://p1.music.126.net/Gs9Ax_eb5RbwyeoP_wbwpg==/109951171864751046.jpg"},{"title":"昼寝","author":"立入禁止","album":"昼寝","url":"https://music.163.com/song/media/outer/url?id=2731082184.mp3","pic":"https://p1.music.126.net/WhHBg-1emYBwhDMv_zyYtw==/109951171513089424.jpg"},{"title":"惊蛰正中央","author":"诗岸 / 歌爱ユキ / 立入禁止","album":"惊蛰正中央","url":"https://music.163.com/song/media/outer/url?id=2728468840.mp3","pic":"https://p1.music.126.net/e_ycZ6eO2R7NWN8qYxpGTw==/109951171500993975.jpg"},{"title":"幽体離脱 (feat. 初音ミク)","author":"きくお / 初音ミク","album":"幽体離脱","url":"https://music.163.com/song/media/outer/url?id=1953839808.mp3","pic":"https://p1.music.126.net/C_wMk6RgWrYmuADkjSYNGA==/109951167519882590.jpg"},{"title":"ゾンビメイカー [Long Version] (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU DET EP","url":"https://music.163.com/song/media/outer/url?id=32364854.mp3","pic":"https://p1.music.126.net/SEJOVbMqnGOv_oRfMofS_Q==/109951164626924977.jpg"},{"title":"ロスト・デリュージョン","author":"フロクロ / 重音テト","album":"ロスト・デリュージョン","url":"https://music.163.com/song/media/outer/url?id=1930178096.mp3","pic":"https://p1.music.126.net/c8w1vDt_HAymxOD6ltvRCg==/109951167177238581.jpg"},{"title":"カルマ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980716362.mp3","pic":"https://p1.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"沈める街","author":"倉橋ヨエコ","album":"人间辞めても","url":"https://music.163.com/song/media/outer/url?id=597852.mp3","pic":"https://p1.music.126.net/MJqUluC5yoisi85RMjF3iQ==/827932255715398.jpg"},{"title":"Forest Mixtape","author":"Christina Kuong","album":"Tsuki's Odyssey (Original Game Soundtrack) Vol. 2","url":"https://music.163.com/song/media/outer/url?id=1908182683.mp3","pic":"https://p1.music.126.net/lbaNBDgE_fgFjlPIcvHGxA==/109951169410329444.jpg"},{"title":"矢張政志 ～事件の陰にやっぱりオレ～","author":"","url":"https://music.163.com/song/media/outer/url?id=4919660.mp3"},{"title":"L'amore dice ciao (From \"La matriarca\")","author":"","url":"https://music.163.com/song/media/outer/url?id=492959864.mp3"},{"title":"きらいきらいきらいって","author":"","url":"https://music.163.com/song/media/outer/url?id=2031954438.mp3"},{"title":"Candle In The Night (Released Track)","author":"","url":"https://music.163.com/song/media/outer/url?id=16437599.mp3"},{"title":"叁BAOZIS!!! 贰EGGS!!!（忘买粥了）","author":"","url":"https://music.163.com/song/media/outer/url?id=2149175151.mp3"}];</script>
+<!-- 曲目 / 歌单 / 播放器标题都在 source/_data/music.yml 里配置；
+     播放器的外观与行为由下面那一个 xp_music 标签输出（要改长相或行为才需要看 scripts/xp-player.js） -->
+<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css"><script src="/vendor/aplayer/APlayer.min.js"></script><script>window.XP_MUSIC = [{"title":"悲しき宇宙船","author":"きくお","album":"KIKUOWORLD2","url":"https://music.163.com/song/media/outer/url?id=26218689.mp3","pic":"https://p1.music.126.net/ob0-pkiHB5j-xRYupW220A==/109951165759682176.jpg"},{"title":"LOST (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980721087.mp3","pic":"https://p1.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"パンドラ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 4","url":"https://music.163.com/song/media/outer/url?id=1416752957.mp3","pic":"https://p1.music.126.net/YJVLK_gP2neTVEn6_S3mRw==/109951164626937069.jpg"},{"title":"冬に一人","author":"きくお","album":"略してきくおミク0","url":"https://music.163.com/song/media/outer/url?id=35778153.mp3","pic":"https://p1.music.126.net/-mMwZQ9rV5XTJ93FpfV8LA==/3283141721769793.jpg"},{"title":"预言的勇者","author":"卦者灵风 / 秀三岁","album":"预言的勇者","url":"https://music.163.com/song/media/outer/url?id=1957601442.mp3","pic":"https://p1.music.126.net/GYnx4JURFl05MN8m21nbow==/109951167572642593.jpg"},{"title":"縛","author":"でんの子P / 可不","url":"https://music.163.com/song/media/outer/url?id=1989151258.mp3","pic":"https://p1.music.126.net/P9PoEegjyI90SeUgiOC8BA==/109951167962413021.jpg"},{"title":"もうどくちゅうい","author":"でんの子P / 蒼姫ラピス","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805381913.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"私とっても不器用で","author":"でんの子P","album":"VOCALOID STEW","url":"https://music.163.com/song/media/outer/url?id=2125754632.mp3","pic":"https://p1.music.126.net/qLwg3KAkomvEXhvjjbLWrw==/109951169329441943.jpg"},{"title":"愛くらい浅い言葉など無い","author":"でんの子P","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805380131.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"我想 （正式版）feat.泠风","author":"法老 / 泠风","album":"东海岸","url":"https://music.163.com/song/media/outer/url?id=444323757.mp3","pic":"https://p1.music.126.net/z253qn2_rIiK0NvaD5_btA==/109951162817129061.jpg"},{"title":"自缚灵","author":"立入禁止","album":"地縛霊たち","url":"https://music.163.com/song/media/outer/url?id=2736157649.mp3","pic":"https://p1.music.126.net/Gs9Ax_eb5RbwyeoP_wbwpg==/109951171864751046.jpg"},{"title":"昼寝","author":"立入禁止","album":"昼寝","url":"https://music.163.com/song/media/outer/url?id=2731082184.mp3","pic":"https://p1.music.126.net/WhHBg-1emYBwhDMv_zyYtw==/109951171513089424.jpg"},{"title":"惊蛰正中央","author":"诗岸 / 歌爱ユキ / 立入禁止","album":"惊蛰正中央","url":"https://music.163.com/song/media/outer/url?id=2728468840.mp3","pic":"https://p1.music.126.net/e_ycZ6eO2R7NWN8qYxpGTw==/109951171500993975.jpg"},{"title":"幽体離脱 (feat. 初音ミク)","author":"きくお / 初音ミク","album":"幽体離脱","url":"https://music.163.com/song/media/outer/url?id=1953839808.mp3","pic":"https://p1.music.126.net/C_wMk6RgWrYmuADkjSYNGA==/109951167519882590.jpg"},{"title":"ゾンビメイカー [Long Version] (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU DET EP","url":"https://music.163.com/song/media/outer/url?id=32364854.mp3","pic":"https://p1.music.126.net/SEJOVbMqnGOv_oRfMofS_Q==/109951164626924977.jpg"},{"title":"ロスト・デリュージョン","author":"フロクロ / 重音テト","album":"ロスト・デリュージョン","url":"https://music.163.com/song/media/outer/url?id=1930178096.mp3","pic":"https://p1.music.126.net/c8w1vDt_HAymxOD6ltvRCg==/109951167177238581.jpg"},{"title":"カルマ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980716362.mp3","pic":"https://p1.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"沈める街","author":"倉橋ヨエコ","album":"人间辞めても","url":"https://music.163.com/song/media/outer/url?id=597852.mp3","pic":"https://p1.music.126.net/MJqUluC5yoisi85RMjF3iQ==/827932255715398.jpg"},{"title":"Forest Mixtape","author":"Christina Kuong","album":"Tsuki's Odyssey (Original Game Soundtrack) Vol. 2","url":"https://music.163.com/song/media/outer/url?id=1908182683.mp3","pic":"https://p1.music.126.net/lbaNBDgE_fgFjlPIcvHGxA==/109951169410329444.jpg"},{"title":"矢張政志 ～事件の陰にやっぱりオレ～","author":"岩垂徳行","album":"逆転裁判サウンドBOX (逆転裁判 苏る逆転~逆転裁判3)","url":"https://music.163.com/song/media/outer/url?id=4919660.mp3","pic":"https://p1.music.126.net/5dMOmAQO8YtlMib9IoSXDA==/5851600883154880.jpg"},{"title":"L'amore dice ciao (From \"La matriarca\")","author":"Armando Trovajoli","album":"Ciao Bella ! - Italian Music Collection Vol. 1","url":"https://music.163.com/song/media/outer/url?id=492959864.mp3","pic":"https://p1.music.126.net/qmMJj2xL3Ii3Sv9cm_zW9Q==/109951163097724482.jpg"},{"title":"きらいきらいきらいって","author":"きくお","album":"きくおミク7","url":"https://music.163.com/song/media/outer/url?id=2031954438.mp3","pic":"https://p1.music.126.net/0ErUNx0pD-gSlsQKN5Sqpw==/109951168484216482.jpg"},{"title":"Candle In The Night (Released Track)","author":"Almora","album":"Gates Of Time","url":"https://music.163.com/song/media/outer/url?id=16437599.mp3","pic":"https://p1.music.126.net/fmuUwDgWBob0SBPuQYTkow==/568447511601730.jpg"},{"title":"叁BAOZIS!!! 贰EGGS!!!（忘买粥了）","author":"Sxxking Ball","album":"Special Ops","url":"https://music.163.com/song/media/outer/url?id=2149175151.mp3","pic":"https://p1.music.126.net/IbX-Yc7xMv6xzmFreMjUJg==/109951169389881625.jpg"}];</script>
+
 <div class="retro-mp4-player">
-<div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg> 梦到哪首放哪首了 <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="#0054e3" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="#0054e3"/><circle cx="12" cy="11" r="2.2" fill="#0054e3"/></svg></div>
+<div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg> 梦到哪首放哪首了 <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg></div>
 <div class="mp4-screen">
 <div class="mp4-screen-content">
 <div class="mp4-cover">
@@ -178,207 +183,7 @@
 </div>
 <div id="aplayer-hidden" style="display:none"></div>
 </div>
-</div>
 
-<!-- ========== 带 2：最近作品 ========== -->
-<div class="bento-item bento-recent">
-<div class="xp-window">
-<div class="xp-window-title">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-<path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"></path>
-<circle cx="5" cy="6" r="1.2" fill="#ff6666"></circle>
-<circle cx="11" cy="6" r="1.2" fill="#66cc66"></circle>
-<circle cx="5" cy="10" r="1.2" fill="#6666ff"></circle>
-<circle cx="10" cy="11" r="1.2" fill="#ffff66"></circle>
-</svg>
-最近作品
-</span>
-<span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
-</div>
-<div class="xp-window-body">
-<div class="recent-works-strip"><a class="recent-work-item featured" href="/2026/10/05/work-still-life-sketch/"><img class="recent-work-thumb" src="/images/works/sketch-thumb.jpg" alt="静物素描·陶罐与水果" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">陶罐与水果</h4><p class="recent-work-date">2026-10-05 · 素描</p></div></a><a class="recent-work-item" href="/2026/10/02/work-character-practice/"><img class="recent-work-thumb" src="/images/works/character-thumb.jpg" alt="角色练习·魔法少女" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">魔法少女</h4><p class="recent-work-date">2026-10-02 · 角色设计</p></div></a><a class="recent-work-item" href="/2026/09/28/work-landscape-cottage/"><img class="recent-work-thumb" src="/images/works/landscape-thumb.jpg" alt="风景插画·山间小屋" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">山间小屋</h4><p class="recent-work-date">2026-09-28 · 插画</p></div></a><a class="recent-work-item more" href="/works/"><span class="more-works">查看全部<br><strong>3</strong> 件作品 →</span></a></div>
-</div>
-</div>
-</div>
-
-<!-- ========== 带 3：最新文章 ========== -->
-<div class="bento-item bento-articles">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#0066cc" stroke-width="0.5"/><path d="M4 5h8M4 8h8M4 11h5" stroke="#666" stroke-width="1" stroke-linecap="round"/></svg>
-最新文章
-</span>
-</div>
-<div class="xp-window-body compact-body">
-<ul class="article-mini-list"><li><a class="article-link" href="/2026/10/09/hello-world/"><span class="article-title">Hello World</span><span class="article-meta">2026-10-09 · 随笔</span></a></li></ul>
-</div>
-</div>
-</div>
-
-<!-- ========== 带 3：标签云 ========== -->
-<div class="bento-item bento-tags">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8l6-6 6 6-6 6-6-6z" fill="#ffe0e0" stroke="#cc6666" stroke-width="0.5"/><circle cx="8" cy="8" r="2" fill="#cc6666"/></svg>
-标签云
-</span>
-</div>
-<div class="xp-window-body compact-body">
-<div class="tag-cloud"><a class="tag-pill tag-pixel" href="/tags/%E8%A7%92%E8%89%B2/">角色<span class="tag-count">1</span></a><a class="tag-pill tag-char" href="/tags/%E7%BB%83%E4%B9%A0/">练习<span class="tag-count">1</span></a><a class="tag-pill tag-landscape" href="/tags/%E7%B4%A0%E6%8F%8F/">素描<span class="tag-count">1</span></a><a class="tag-pill tag-sketch" href="/tags/%E9%9D%99%E7%89%A9/">静物<span class="tag-count">1</span></a><a class="tag-pill tag-illust" href="/tags/%E9%A3%8E%E6%99%AF/">风景<span class="tag-count">1</span></a><a class="tag-pill tag-guide" href="/tags/%E6%95%B0%E7%A0%81%E7%BB%98%E7%94%BB/">数码绘画<span class="tag-count">1</span></a><a class="tag-pill tag-essay" href="/tags/%E7%94%9F%E6%B4%BB/">生活<span class="tag-count">1</span></a></div>
-</div>
-</div>
-</div>
-
-<!-- ========== 带 3：小站数据 ========== -->
-<div class="bento-item bento-stats">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/><path d="M3 12l3-4 3 2 4-6" fill="none" stroke="#60b060" stroke-width="1.5"/></svg>
-小站数据
-</span>
-</div>
-<div class="xp-window-body compact-body">
-<div class="stat-row"><span class="stat-dot done"></span><span class="stat-label"><a href="/blog/">文章</a></span><strong>4</strong></div><div class="stat-row"><span class="stat-dot doing"></span><span class="stat-label"><a href="/works/">作品</a></span><strong>3</strong></div><div class="stat-row"><span class="stat-dot todo"></span><span class="stat-label">待办</span><strong>4</strong></div>
-</div>
-</div>
-</div>
-
-<!-- ========== 带 3：快速导航 ========== -->
-<div class="bento-item bento-nav">
-<div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#e0e8ff" stroke="#003399" stroke-width="0.5"/><path d="M8 3v5l3 3" fill="none" stroke="#003399" stroke-width="1.5" stroke-linecap="round"/></svg>
-快速导航
-</span>
-</div>
-<div class="xp-window-body compact-body">
-<div class="quick-nav-grid">
-<a class="nav-tile" href="/works/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"/><circle cx="5" cy="6" r="1.2" fill="#ff6666"/><circle cx="11" cy="6" r="1.2" fill="#66cc66"/><circle cx="5" cy="10" r="1.2" fill="#6666ff"/><circle cx="10" cy="11" r="1.2" fill="#ffff66"/></svg></span><span>作品集</span></a>
-<a class="nav-tile" href="/games/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="4" width="12" height="8" rx="3" fill="#4a4a4a" stroke="#222" stroke-width="0.5"/><circle cx="5" cy="8" r="1.5" fill="#d0d0d0"/><circle cx="11" cy="7" r="1" fill="#ff6b6b"/><circle cx="12" cy="9" r="1" fill="#6b8cff"/><rect x="4" y="7" width="2" height="0.8" fill="#d0d0d0"/><rect x="4.6" y="6.2" width="0.8" height="2.5" fill="#d0d0d0"/></svg></span><span>游戏</span></a>
-<a class="nav-tile" href="/guides/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h5v12H2z" fill="#c44" stroke="#900" stroke-width="0.5"/><path d="M14 2H9v12h5V2z" fill="#47c" stroke="#039" stroke-width="0.5"/><line x1="7" y1="2" x2="9" y2="2" stroke="#666" stroke-width="0.5"/><line x1="7" y1="14" x2="9" y2="14" stroke="#666" stroke-width="0.5"/></svg></span><span>攻略</span></a>
-<a class="nav-tile" href="/blog/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#666" stroke-width="0.5"/><line x1="4" y1="5" x2="12" y2="5" stroke="#666" stroke-width="0.8"/><line x1="4" y1="8" x2="12" y2="8" stroke="#666" stroke-width="0.8"/><line x1="4" y1="11" x2="9" y2="11" stroke="#666" stroke-width="0.8"/></svg></span><span>杂谈</span></a>
-</div>
-</div>
-</div>
-</div>
-
-<!-- ========== 带 4：搜索 · 关于 · 致谢（通栏；/#about 锚点指这里） ========== -->
-<div class="bento-item bento-links">
-<div class="xp-window" id="about">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#333" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
-搜索 · 关于本站 · 致谢
-</span>
-</div>
-<div class="xp-window-body compact-body links-body">
-<div class="links-col">
-<form class="xp-search-wrap" id="site-search-form" role="search">
-<div class="xp-search-box">
-<label class="xp-sr-only" for="site-search-input">搜索文章</label>
-<input type="search" class="xp-search-input" id="site-search-input" placeholder="搜索文章…" autocomplete="off">
-<button class="xp-search-btn" id="site-search-btn" type="submit">Go</button>
-</div>
-<div class="xp-search-results" id="site-search-results"></div>
-</form>
-</div>
-<!-- 关于本站：原先单独的「关于本站」窗口已并入这里（文案在 profile.yml 的 about: 下） -->
-<div class="about-col">
-<div class="about-home-body">
-<p>站点整体采用 Windows XP 桌面风格，希望给你带来一点复古又温馨的感觉。</p>
-<div class="about-home-meta">
-<span class="meta-chip"><strong>像素风</strong></span><span class="meta-chip"><strong>绘画</strong></span><span class="meta-chip"><strong>游戏</strong></span>
-</div>
-</div>
-</div>
-<!-- 致谢：原先在「关于」页，现已搬到这里（删条目就删下面这几行） -->
-<div class="credits-col">
-<div class="credits-title">
-<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.4-5.5-7A3.2 3.2 0 0 1 8 4.6a3.2 3.2 0 0 1 5.5 2.4C13.5 10.6 8 14 8 14z" fill="#ff8080" stroke="#cc4444" stroke-width="0.5"/></svg>
-致谢 &amp; 参考
-</div>
-<ul class="credits-list">
-<li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> · 静态站点生成器</li>
-<li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a> · XP 风格灵感</li>
-<li><a href="https://npmjs.com/package/hexo-theme-minimalism" target="_blank" rel="noopener">minimalism</a> · 主题基础框架</li>
-<li><a href="https://aplayer.js.org/" target="_blank" rel="noopener">APlayer</a> · 音乐播放器（可选）</li>
-<li><a href="https://fonts.google.com/specimen/Caveat" target="_blank" rel="noopener">Caveat</a> · 手写英文字体</li>
-<li>AI 助手 · 协助搭建与设计</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-
-</div>
-</div>
-
-<!-- ========== 便签：句子在 source/_data/quotes.yml 里维护 ========== -->
-<span class="bubble-quote" id="sticky-quote" data-left="「" data-right="」"><span id="sticky-text"></span></span><script>window.XP_QUOTES = {"rotate":12,"list":[{"text":"我们必须承认西西弗斯闹麻了","from":"王姐0732"},{"text":"你说的对，但是《原神》是由米哈游自主研发的一款全新开放世界冒险游戏。游戏发生在一个被称作「提瓦特」的幻想世界，在这里，被神选中的人将被授予「神之","from":null},{"text":"喵","from":"喵喵喵"},{"text":"赶快判我死刑。。让我一了百了","from":"猴子"},{"text":"你们，你们为什么说话为什么都带着带有攻击性的呀？我觉得人与人之间交流应该…啧…有点善意吧。对不对？","from":"电棍otto"},{"text":"要断章取义","from":"不要断章取义"}]};</script>
-<script>
-(function () {
-  var data = window.XP_QUOTES || { rotate: 0, list: [] };
-  var list = data.list || [];
-  var quoteEl = document.getElementById('sticky-quote');
-  var textEl = document.getElementById('sticky-text');
-  var fromEl = document.getElementById('sticky-from');
-  if (!list.length || !textEl || !quoteEl) return;
-
-  /* 符号由 CSS 从 data-left / data-right 渲染（见 xp-custom.css 的 .bubble-quote），
-     这里只负责把句子文字写进内层 span，不去碰兄弟节点。 */
-  var idx = Math.floor(Math.random() * list.length);
-
-  function render(i) {
-    var q = list[((i % list.length) + list.length) % list.length];
-    quoteEl.style.opacity = '0';
-    setTimeout(function () {
-      textEl.textContent = q.text || '';
-      if (fromEl) fromEl.textContent = q.from ? ('—— ' + q.from) : '—— 小站碎碎念';
-      quoteEl.style.opacity = '1';
-    }, 220);
-  }
-
-  function start() {
-    render(idx);
-    var seconds = Number(data.rotate) || 0;
-    if (seconds > 0 && list.length > 1) {
-      setInterval(function () { idx += 1; render(idx); }, seconds * 1000);
-    }
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
-})();
-</script>
-
-<!-- ========== 网名轮换：名字列表在 source/_data/profile.yml 的 names 里 ========== -->
-<script>
-(function () {
-  var data = window.XP_NAMES || { list: [], rotate: 0 };
-  var list = data.list || [];
-  var el = document.getElementById('xpName');
-  if (!el || list.length < 2) return;
-
-  var idx = Math.floor(Math.random() * list.length);
-  el.textContent = list[idx];
-
-  var seconds = Number(data.rotate) || 0;
-  if (seconds > 0) {
-    setInterval(function () {
-      idx = (idx + 1) % list.length;
-      el.style.opacity = '0';
-      setTimeout(function () { el.textContent = list[idx]; el.style.opacity = '1'; }, 200);
-    }, seconds * 1000);
-  }
-})();
-</script>
-
-<!-- ========== 复古 MP4 播放器（曲目来自 source/_data/music.yml） ========== -->
 <script>
 (function () {
   /* 网易云歌单模式：iframe 已经铺满整个格子，把自带的假播放器界面藏起来，
@@ -536,6 +341,216 @@
   else initPlayer();
 })();
 </script>
+</div>
+
+<!-- ========== 带 2：最近作品 ========== -->
+<div class="bento-item bento-recent">
+<div class="xp-window">
+<div class="xp-window-title">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+<path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"></path>
+<circle cx="5" cy="6" r="1.2" fill="#ff6666"></circle>
+<circle cx="11" cy="6" r="1.2" fill="#66cc66"></circle>
+<circle cx="5" cy="10" r="1.2" fill="#6666ff"></circle>
+<circle cx="10" cy="11" r="1.2" fill="#ffff66"></circle>
+</svg>
+最近作品
+</span>
+<span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
+</div>
+<div class="xp-window-body">
+<div class="recent-works-strip"><a class="recent-work-item" href="/2026/10/05/work-still-life-sketch/"><img class="recent-work-thumb" src="/images/works/sketch-thumb.jpg" alt="静物素描·陶罐与水果" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">陶罐与水果</h4><p class="recent-work-date">2026-10-05 · 素描</p></div></a><a class="recent-work-item" href="/2026/10/02/work-character-practice/"><img class="recent-work-thumb" src="/images/works/character-thumb.jpg" alt="角色练习·魔法少女" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">魔法少女</h4><p class="recent-work-date">2026-10-02 · 角色设计</p></div></a><a class="recent-work-item" href="/2026/09/28/work-landscape-cottage/"><img class="recent-work-thumb" src="/images/works/landscape-thumb.jpg" alt="风景插画·山间小屋" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">山间小屋</h4><p class="recent-work-date">2026-09-28 · 插画</p></div></a><a class="recent-work-item more" href="/works/"><span class="more-works">查看全部<br><strong>3</strong> 件作品 →</span></a></div>
+</div>
+</div>
+</div>
+
+<!-- ========== 带 3：最新文章 ========== -->
+<div class="bento-item bento-articles">
+<div class="xp-window">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#0066cc" stroke-width="0.5"/><path d="M4 5h8M4 8h8M4 11h5" stroke="#666" stroke-width="1" stroke-linecap="round"/></svg>
+最新文章
+</span>
+</div>
+<div class="xp-window-body compact-body">
+<ul class="article-mini-list"><li><a class="article-link" href="/2026/10/09/hello-world/"><span class="article-title">Hello World</span><span class="article-meta">2026-10-09 · 随笔</span></a></li></ul>
+</div>
+</div>
+</div>
+
+<!-- ========== 带 3：标签云 ========== -->
+<div class="bento-item bento-tags">
+<div class="xp-window">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8l6-6 6 6-6 6-6-6z" fill="#ffe0e0" stroke="#cc6666" stroke-width="0.5"/><circle cx="8" cy="8" r="2" fill="#cc6666"/></svg>
+标签云
+</span>
+</div>
+<div class="xp-window-body compact-body">
+<div class="tag-cloud"><a class="tag-pill tag-pixel" href="/tags/%E9%A3%8E%E6%99%AF/">风景<span class="tag-count">1</span></a><a class="tag-pill tag-char" href="/tags/%E8%A7%92%E8%89%B2/">角色<span class="tag-count">1</span></a><a class="tag-pill tag-landscape" href="/tags/%E9%9D%99%E7%89%A9/">静物<span class="tag-count">1</span></a><a class="tag-pill tag-sketch" href="/tags/%E7%BB%83%E4%B9%A0/">练习<span class="tag-count">1</span></a><a class="tag-pill tag-illust" href="/tags/%E7%94%9F%E6%B4%BB/">生活<span class="tag-count">1</span></a><a class="tag-pill tag-guide" href="/tags/%E6%95%B0%E7%A0%81%E7%BB%98%E7%94%BB/">数码绘画<span class="tag-count">1</span></a><a class="tag-pill tag-essay" href="/tags/%E7%B4%A0%E6%8F%8F/">素描<span class="tag-count">1</span></a></div>
+</div>
+</div>
+</div>
+
+<!-- ========== 带 3：小站数据 ========== -->
+<div class="bento-item bento-stats">
+<div class="xp-window">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/><path d="M3 12l3-4 3 2 4-6" fill="none" stroke="#60b060" stroke-width="1.5"/></svg>
+小站数据
+</span>
+</div>
+<div class="xp-window-body compact-body">
+<div class="stat-row"><span class="stat-dot done"></span><span class="stat-label"><a href="/blog/">文章</a></span><strong>4</strong></div><div class="stat-row"><span class="stat-dot doing"></span><span class="stat-label"><a href="/works/">作品</a></span><strong>3</strong></div><div class="stat-row"><span class="stat-dot todo"></span><span class="stat-label">待办</span><strong>4</strong></div>
+</div>
+</div>
+</div>
+
+<!-- ========== 带 3：快速导航 ========== -->
+<div class="bento-item bento-nav">
+<div class="xp-window">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#e0e8ff" stroke="#003399" stroke-width="0.5"/><path d="M8 3v5l3 3" fill="none" stroke="#003399" stroke-width="1.5" stroke-linecap="round"/></svg>
+快速导航
+</span>
+</div>
+<div class="xp-window-body compact-body">
+<div class="quick-nav-grid">
+<a class="nav-tile" href="/works/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"/><circle cx="5" cy="6" r="1.2" fill="#ff6666"/><circle cx="11" cy="6" r="1.2" fill="#66cc66"/><circle cx="5" cy="10" r="1.2" fill="#6666ff"/><circle cx="10" cy="11" r="1.2" fill="#ffff66"/></svg></span><span>作品集</span></a>
+<a class="nav-tile" href="/games/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="4" width="12" height="8" rx="3" fill="#4a4a4a" stroke="#222" stroke-width="0.5"/><circle cx="5" cy="8" r="1.5" fill="#d0d0d0"/><circle cx="11" cy="7" r="1" fill="#ff6b6b"/><circle cx="12" cy="9" r="1" fill="#6b8cff"/><rect x="4" y="7" width="2" height="0.8" fill="#d0d0d0"/><rect x="4.6" y="6.2" width="0.8" height="2.5" fill="#d0d0d0"/></svg></span><span>游戏</span></a>
+<a class="nav-tile" href="/guides/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h5v12H2z" fill="#c44" stroke="#900" stroke-width="0.5"/><path d="M14 2H9v12h5V2z" fill="#47c" stroke="#039" stroke-width="0.5"/><line x1="7" y1="2" x2="9" y2="2" stroke="#666" stroke-width="0.5"/><line x1="7" y1="14" x2="9" y2="14" stroke="#666" stroke-width="0.5"/></svg></span><span>攻略</span></a>
+<a class="nav-tile" href="/blog/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#666" stroke-width="0.5"/><line x1="4" y1="5" x2="12" y2="5" stroke="#666" stroke-width="0.8"/><line x1="4" y1="8" x2="12" y2="8" stroke="#666" stroke-width="0.8"/><line x1="4" y1="11" x2="9" y2="11" stroke="#666" stroke-width="0.8"/></svg></span><span>杂谈</span></a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ========== 带 4：搜索 · 关于 · 致谢（通栏；/#about 锚点指这里） ========== -->
+<div class="bento-item bento-links">
+<div class="xp-window" id="about">
+<div class="xp-window-title compact">
+<span class="xp-window-title-text">
+<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#333" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
+搜索 · 关于本站 · 致谢
+</span>
+</div>
+<div class="xp-window-body compact-body links-body">
+<div class="links-col">
+<form class="xp-search-wrap" id="site-search-form" role="search">
+<div class="xp-search-box">
+<label class="xp-sr-only" for="site-search-input">搜索文章</label>
+<input type="search" class="xp-search-input" id="site-search-input" placeholder="搜索文章…" autocomplete="off">
+<button class="xp-search-btn" id="site-search-btn" type="submit">Go</button>
+</div>
+<div class="xp-search-results" id="site-search-results"></div>
+</form>
+</div>
+<!-- 关于本站：原先单独的「关于本站」窗口已并入这里（文案在 profile.yml 的 about: 下） -->
+<div class="about-col">
+<div class="about-home-body">
+<p>站点整体采用 Windows XP 桌面风格，希望给你带来一点复古又温馨的感觉。</p>
+<div class="about-home-meta">
+<span class="meta-chip"><strong>像素风</strong></span><span class="meta-chip"><strong>绘画</strong></span><span class="meta-chip"><strong>游戏</strong></span>
+</div>
+</div>
+</div>
+<!-- 致谢：原先在「关于」页，现已搬到这里（删条目就删下面这几行） -->
+<div class="credits-col">
+<div class="credits-title">
+<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.4-5.5-7A3.2 3.2 0 0 1 8 4.6a3.2 3.2 0 0 1 5.5 2.4C13.5 10.6 8 14 8 14z" fill="#ff8080" stroke="#cc4444" stroke-width="0.5"/></svg>
+致谢 &amp; 参考
+</div>
+<ul class="credits-list">
+<li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> · 静态站点生成器</li>
+<li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a> · XP 风格灵感</li>
+<li><a href="https://npmjs.com/package/hexo-theme-minimalism" target="_blank" rel="noopener">minimalism</a> · 主题基础框架</li>
+<li><a href="https://aplayer.js.org/" target="_blank" rel="noopener">APlayer</a> · 音乐播放器（可选）</li>
+<li><a href="https://github.com/TakWolf/fusion-pixel-font" target="_blank" rel="noopener">Fusion Pixel</a> · 像素中文字体（OFL）</li>
+<li>AI 助手 · 协助搭建与设计</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ========== 便签：句子在 source/_data/quotes.yml 里维护 ========== -->
+<script>window.XP_QUOTES = {"rotate":12,"list":[{"text":"我们必须承认西西弗斯闹麻了","from":"王姐0732"},{"text":"你说的对，但是《原神》是由米哈游自主研发的一款全新开放世界冒险游戏。游戏发生在一个被称作「提瓦特」的幻想世界，在这里，被神选中的人将被授予「神之","from":null},{"text":"喵","from":"喵喵喵"},{"text":"赶快判我死刑。。让我一了百了","from":"猴子"},{"text":"你们，你们为什么说话为什么都带着带有攻击性的呀？我觉得人与人之间交流应该…啧…有点善意吧。对不对？","from":"电棍otto"},{"text":"要断章取义","from":"不要断章取义"}],"left":"","right":""};</script>
+<script>
+(function () {
+  var data = window.XP_QUOTES || { rotate: 0, list: [] };
+  var list = data.list || [];
+  var quoteEl = document.getElementById('sticky-quote');
+  var textEl = document.getElementById('sticky-text');
+  var fromEl = document.getElementById('sticky-from');
+  if (!list.length || !textEl || !quoteEl) return;
+
+  /* 符号与句子都来自 quotes.yml（符号经 window.XP_QUOTES 传进来）。
+     写成 data-* 是为了让 CSS 的 ::before/::after 用 attr() 渲染，
+     这样改文字不会碰到符号节点；data-* 里的值同时是"脚本没跑时"的兜底。 */
+  if (data.left != null) quoteEl.setAttribute('data-left', data.left);
+  if (data.right != null) quoteEl.setAttribute('data-right', data.right);
+
+  var idx = Math.floor(Math.random() * list.length);
+
+  function render(i) {
+    var q = list[((i % list.length) + list.length) % list.length];
+    quoteEl.style.opacity = '0';
+    setTimeout(function () {
+      textEl.textContent = q.text || '';
+      /* 出处：quotes.yml 里那句没写 from、或写成 from: ''，这里就把整行藏起来。
+         （以前没写出处会被兜底成「—— 小站碎碎念」，等于替句子硬加了一个来源。） */
+      var fromText = (q.from === null || q.from === undefined) ? '' : String(q.from).trim();
+      if (fromEl) {
+        fromEl.textContent = fromText ? ('—— ' + fromText) : '';
+        fromEl.style.display = fromText ? '' : 'none';
+      }
+      quoteEl.style.opacity = '1';
+    }, 220);
+  }
+
+  function start() {
+    render(idx);
+    var seconds = Number(data.rotate) || 0;
+    if (seconds > 0 && list.length > 1) {
+      setInterval(function () { idx += 1; render(idx); }, seconds * 1000);
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
+
+<!-- ========== 网名轮换：名字列表在 source/_data/profile.yml 的 names 里 ========== -->
+<script>
+(function () {
+  var data = window.XP_NAMES || { list: [], rotate: 0 };
+  var list = data.list || [];
+  var el = document.getElementById('xpName');
+  if (!el || list.length < 2) return;
+
+  var idx = Math.floor(Math.random() * list.length);
+  el.textContent = list[idx];
+
+  var seconds = Number(data.rotate) || 0;
+  if (seconds > 0) {
+    setInterval(function () {
+      idx = (idx + 1) % list.length;
+      el.style.opacity = '0';
+      setTimeout(function () { el.textContent = list[idx]; el.style.opacity = '1'; }, 200);
+    }, seconds * 1000);
+  }
+})();
+</script>
+
 
 <!-- ========== 站内搜索（数据来自构建期生成的 /search.json） ========== -->
 <script>
@@ -604,7 +619,14 @@
      想要"手工拼贴感"可以在格子上加回 .tilt-left / .tilt-right / .tilt-soft 等类，
      但边线就不会齐平了。 -->
 <style>
-.xp-bento { grid-auto-rows: 96px; }
+/* 行高 = 「最小 96px，内容多了就自己长高」。
+   以前这里写死 96px：卡片里的内容一旦变高（简介多一行、文章列表多一条、
+   缩略图按宽度算出来更高），就会撞上 .xp-window 的 overflow:hidden 被静默裁掉
+   —— 2026-10 的「最近作品」日期行、「最新文章」第 4 条就是这么被截的。
+   改成 auto 之后：同一横带里的窗口占的是同一批网格行，所以它们仍然等高、上下边缘
+   仍然对齐；只是整条横带会按里面最高的那个窗口变高。横带之间本来就是上下排列，
+   各自高一点矮一点不影响观感。 */
+.xp-bento { grid-auto-rows: minmax(96px, auto); }
 /* 快速导航现在只有 4 个瓦片（作品集/游戏/攻略/杂谈），排成 2×2 更整齐 */
 .bento-nav .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
 

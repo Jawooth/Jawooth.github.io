@@ -54,7 +54,7 @@ kbd,
 samp,
 pre {
   font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* 1 */
-  font-size: 1em; /* 2 */
+  font-size: 16px; /* 2 */
 }
 small {
   font-size: 80%;
@@ -277,7 +277,7 @@ summary {
   left: 50%;
   color: #fff;
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: 16px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   box-shadow: 4px 4px 8px #000;
 }
@@ -348,7 +348,7 @@ summary {
 }
 .site-footer {
   text-align: center;
-  font-size: 12px;
+  font-size: 16px;
   padding: 20px 16px;
 }
 .site-footer .slogan {
@@ -429,7 +429,7 @@ hr {
 .menu-container .menu {
   display: inline-block;
   padding: 2px 8px;
-  font-size: 22px;
+  font-size: 24px;
   margin: 16px 0;
   font-weight: bold;
 }
@@ -482,12 +482,12 @@ a.purple-link {
   flex: 1;
 }
 .post-item .content .post-title {
-  font-size: 22px;
+  font-size: 24px;
   color: #0c1e29;
   display: inline-block;
 }
 .post-item .content .post-abstract {
-  font-size: 14px;
+  font-size: 16px;
   margin: 12px 0 8px;
   flex: 1;
   color: #4e616c;
@@ -509,7 +509,7 @@ a.purple-link {
   padding: 0 3px;
   margin: 0 2px;
   background: rgba(195,195,195,0.41);
-  font-size: 0.9em;
+  font-size: 16px;
   border-radius: 2px;
 }
 .post-item .feature-container {
@@ -524,7 +524,7 @@ a.purple-link {
 }
 .post-info {
   color: var(--c-base-purple);
-  font-size: 12px;
+  font-size: 16px;
   margin-top: 10px;
 }
 .post-info span {
@@ -550,7 +550,7 @@ a.purple-link {
   }
   .post-item .content .post-title {
     margin-top: 16px;
-    font-size: 18px;
+    font-size: 24px;
   }
   .post-item .feature-container {
     margin-left: 0;
@@ -595,7 +595,7 @@ nav {
   padding: 0;
 }
 .post-detail .post-title {
-  font-size: 32px;
+  font-size: 24px;
   margin: 24px 0;
   color: var(--c-base-black);
 }
@@ -614,7 +614,7 @@ nav {
 }
 .next-post .post-title {
   display: inline-block;
-  font-size: 22px;
+  font-size: 24px;
 }
 .post-content {
   flex-shrink: 0;
@@ -657,7 +657,7 @@ nav {
   margin: 2px 2px;
   background-color: #f9fafa;
   border: 1px solid #e4e4e4;
-  font-size: 0.9em;
+  font-size: 16px;
   display: inline-block;
   border-radius: 4px;
   max-width: 740px;
@@ -666,7 +666,7 @@ nav {
   color: #476582;
   padding: 0.16rem 0.5rem;
   margin: 0.25rem 0;
-  font-size: 0.85em;
+  font-size: 16px;
   background-color: rgba(27,31,35,0.05);
   border-radius: 3px;
   display: inline-block;
@@ -684,7 +684,7 @@ nav {
   margin-bottom: 16px;
 }
 .post-content pre code {
-  font-size: 14px;
+  font-size: 16px;
   font-family: 'Source Code Pro', Consolas, Menlo, Monaco, 'Courier New', monospace;
   padding: 2em 1em 1em;
   border-radius: 5px;
@@ -699,7 +699,7 @@ nav {
   position: absolute;
   left: 8px;
   top: 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: #ccc;
 }
@@ -712,7 +712,7 @@ nav {
   position: absolute;
   right: 8px;
   top: 4px;
-  font-size: 22px;
+  font-size: 24px;
   color: #9a9a9a;
 }
 .post-content pre .copy-code .copy-success {
@@ -809,7 +809,7 @@ nav {
     color: #868e96;
     padding: 4px;
     transition: all 0.3s;
-    font-size: 0.9em;
+    font-size: 16px;
   }
   .top-box li a.current {
     color: #006cff;
@@ -866,7 +866,7 @@ nav {
   padding: 0;
 }
 .archives-container .year {
-  font-size: 26px;
+  font-size: 24px;
   margin: 24px 0;
   color: var(--c-base-purple);
 }
@@ -874,7 +874,7 @@ nav {
   margin-bottom: 22px;
 }
 .archives-container .post .post-title {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: normal;
   position: relative;
   transition: all 0.382s;
@@ -913,7 +913,7 @@ nav {
 }
 .highlight {
   margin-bottom: 16px;
-  font-size: 0.87em;
+  font-size: 16px;
   font-family: 'Source Code Pro', Consolas, Menlo, Monaco, 'Courier New', monospace;
   padding: 2em 1em 1em;
   border-radius: 5px;
@@ -944,7 +944,7 @@ nav {
   position: absolute;
   left: 8px;
   top: 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: #ccc;
 }
@@ -957,7 +957,7 @@ nav {
   position: absolute;
   right: 8px;
   top: 4px;
-  font-size: 22px;
+  font-size: 24px;
   color: #9a9a9a;
 }
 .highlight .copy-code .copy-success {
