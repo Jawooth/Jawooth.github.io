@@ -9,7 +9,7 @@
 
 <meta charset="utf-8" >
 
-<!-- 站点名拼进标题：主题原本算了 pageTitle 却没用，导致每个标签页标题都只是「首页」 -->
+
 <title>首页 | 我的小站</title>
 <meta name="keywords" content="首页, 我的小站">
 <meta name="description" content="像素风个人角落，存放画作、攻略、小游戏和碎碎念">
@@ -18,14 +18,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta property="og:title" content="首页 | 我的小站">
 <meta property="og:description" content="像素风个人角落，存放画作、攻略、小游戏和碎碎念">
+<meta property="og:site_name" content="我的小站">
 
+
+<meta name="twitter:card" content="summary">
 <link rel="shortcut icon" href="/favicon.ico">
 <link rel="stylesheet" href="/style/main.css">
 
-  <!-- hexo injector head_end start -->
-  <!-- 本站 XP 风格设计系统（字体 @font-face 自托管，见该文件第 0 节） -->
-  <link rel="stylesheet" href="/css/xp-custom.css?v=55ef0b4f">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="canonical" href="https://Jawooth.github.io/">
+  
+  
+  <link rel="stylesheet" href="/css/xp-custom.css?v=f1c8c561">
+<meta name="generator" content="Hexo 7.3.0"><link rel="canonical" href="https://Jawooth.github.io/">
 <meta property="og:url" content="https://Jawooth.github.io/">
 <meta property="og:type" content="website">
 </head>
@@ -90,22 +93,19 @@
     <div class="home-page">
 <div class="xp-bento">
 
-<!-- ========== 带 1：气泡（尾巴指向右边的「用户账户」） ========== -->
+
 <div class="bento-item bento-bubble tilt-note">
 <div class="xp-bubble">
 <div class="bubble-content">
-<!-- 句子在 source/_data/quotes.yml 里维护，按 rotate_seconds 自动轮换；
-     两侧的「」也在那里改（quote_left / quote_right），留空即不显示符号。
-     下面 data-* 里的「」只是"脚本没跑时"的兜底，会被 quotes.yml 的值覆盖。
-注意：这个便签元素全页只有这一处；xp_quotes 标签只输出数据与符号，不再输出元素。 -->
+
 <p class="bubble-quote" id="sticky-quote" data-left="「" data-right="」"><span id="sticky-text">加载中…</span></p>
-<!-- 出处那一行：quotes.yml 里那句没写 from（或写成 from: ''）时，脚本会自动把这一行整行藏起来 -->
+
 <p class="bubble-from" id="sticky-from"></p>
 </div>
 </div>
 </div>
 
-<!-- ========== 带 1：我是谁 ========== -->
+
 <div class="bento-item bento-profile">
 <div class="xp-window">
 <div class="xp-window-title">
@@ -120,14 +120,14 @@
 </div>
 <div class="xp-window-body">
 <div class="profile-content">
-<!-- 名字 / 介绍 / 图标 都在 source/_data/profile.yml 里改 -->
+
 <img class="profile-avatar" src="/images/site-avatar.png" alt="奇世俗人 的头像" width="256" height="256" loading="lazy" decoding="async">
 <div class="profile-text">
 <h2><span class="username" id="xpName">奇世俗人</span> 来了！<script>window.XP_NAMES = {"list":["奇世俗人","誩梧肆","用户EE45E4"],"rotate":0};</script></h2>
-<p>这里是我的像素风个人角落，存放着画作、攻略、小游戏和碎碎念。</p><p>欢迎随便逛逛，像操作 XP 桌面一样点击各个小窗口~</p>
+<p>可能算是臭搞同人的，没什么雷点。只是老爷爷在说点梦话。</p><p>做点什么！于是走进棺材。</p>
 <div class="profile-icons">
-<!-- GitHub / 邮箱 / B站 / 小红书 等：在 profile.yml 的 contacts 里填地址，留空即隐藏 -->
-<a class="profile-icon" href="https://github.com/Jawooth" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.5 2 2 6.6 2 12.2c0 4.5 2.9 8.3 6.8 9.6.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5.1 0-1.1.4-2.1 1-2.8-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.7 1 2.8 0 4-2.4 4.8-4.6 5.1.4.4.7 1 .7 2v2.9c0 .3.2.6.7.5A10.2 10.2 0 0 0 22 12.2C22 6.6 17.5 2 12 2z" fill="currentColor"/></svg></a><a class="profile-icon" href="mailto:2917129582@qq.com" id="xpEmailBtn" aria-haspopup="dialog" aria-expanded="false" title="邮箱（共 3 个，点击查看）" aria-label="邮箱"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 7.5l8.5 5.5 8.5-5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></a><a class="profile-icon" href="https://b23.tv/FWf3XB1" target="_blank" rel="noopener" title="哔哩哔哩" aria-label="哔哩哔哩"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="7" width="19" height="12.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 3.5l2.8 2.8M16.5 3.5l-2.8 2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.6" cy="13" r="1.4" fill="currentColor"/><circle cx="15.4" cy="13" r="1.4" fill="currentColor"/></svg></a><a class="profile-icon" href="https://xhslink.cn/o/5iSJjTT5dHC" target="_blank" rel="noopener" title="小红书" aria-label="小红书"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="#0054e3"/><text x="12" y="16.8" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="12.5" font-weight="bold" fill="#ffffff">书</text></svg></a><a class="profile-icon" href="https://x.com/Jawooth" target="_blank" rel="noopener" title="X" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3h4.2l4.3 5.7L17.2 3h3.3l-6.6 8 6.9 10h-4.2l-4.7-6.2L6.4 21H3.1l7-8.5L3.5 3z" fill="currentColor"/></svg></a><div class="profile-email-pop" id="xpEmailPop" role="dialog" aria-label="邮箱地址" hidden><div class="pop-title"><span>邮箱</span><button type="button" class="pop-close" aria-label="关闭">×</button></div><div class="pop-body"><p class="pop-hint">想聊两句、约稿或者交换链接，可以发邮件：</p><a class="pop-email" href="mailto:2917129582@qq.com"><span class="email-label">主要</span><span class="email-address">2917129582@qq.com</span></a><a class="pop-email" href="mailto:Jawooth@gmail.com"><span class="email-label">次要</span><span class="email-address">Jawooth@gmail.com</span></a><a class="pop-email" href="mailto:Jawooth2917@163.com"><span class="email-label">如果有人需要</span><span class="email-address">Jawooth2917@163.com</span></a></div></div><script>(function(){var b=document.getElementById("xpEmailBtn"),p=document.getElementById("xpEmailPop");if(!b||!p)return;function place(){var r=b.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight;var l=Math.max(8,Math.min(r.left,window.innerWidth-w-8)),t=r.bottom+8;if(t+h>window.innerHeight-8)t=Math.max(8,r.top-h-8);p.style.left=l+"px";p.style.top=t+"px";}function close(){p.hidden=true;b.setAttribute("aria-expanded","false");}function open(){p.hidden=false;b.setAttribute("aria-expanded","true");place();}b.addEventListener("click",function(e){if(p.hidden){e.preventDefault();open();}else{close();}});document.addEventListener("click",function(e){if(p.hidden)return;if(b.contains(e.target)||p.contains(e.target))return;close();});document.addEventListener("keydown",function(e){if(e.key==="Escape")close();});var c=p.querySelector(".pop-close");if(c)c.addEventListener("click",close);window.addEventListener("scroll",function(){if(!p.hidden)place();},{passive:true});window.addEventListener("resize",function(){if(!p.hidden)place();});})();</script>
+
+<a class="profile-icon" href="https://github.com/Jawooth" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.5 2 2 6.6 2 12.2c0 4.5 2.9 8.3 6.8 9.6.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5.1 0-1.1.4-2.1 1-2.8-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.7 1 2.8 0 4-2.4 4.8-4.6 5.1.4.4.7 1 .7 2v2.9c0 .3.2.6.7.5A10.2 10.2 0 0 0 22 12.2C22 6.6 17.5 2 12 2z" fill="currentColor"/></svg></a><a class="profile-icon" href="mailto:2917129582@qq.com" id="xpEmailBtn" aria-haspopup="dialog" aria-expanded="false" title="邮箱（共 3 个，点击查看）" aria-label="邮箱"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 7.5l8.5 5.5 8.5-5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></a><a class="profile-icon" href="https://b23.tv/FWf3XB1" target="_blank" rel="noopener" title="哔哩哔哩" aria-label="哔哩哔哩"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="7" width="19" height="12.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 3.5l2.8 2.8M16.5 3.5l-2.8 2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.6" cy="13" r="1.4" fill="currentColor"/><circle cx="15.4" cy="13" r="1.4" fill="currentColor"/></svg></a><a class="profile-icon" href="https://xhslink.cn/o/5iSJjTT5dHC" target="_blank" rel="noopener" title="小红书" aria-label="小红书"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="#0054e3"/><text x="12" y="16.8" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="12.5" font-weight="bold" fill="#ffffff">书</text></svg></a><a class="profile-icon" href="https://x.com/Jawooth" target="_blank" rel="noopener" title="X" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3h4.2l4.3 5.7L17.2 3h3.3l-6.6 8 6.9 10h-4.2l-4.7-6.2L6.4 21H3.1l7-8.5L3.5 3z" fill="currentColor"/></svg></a><div class="profile-email-pop" id="xpEmailPop" role="dialog" aria-label="邮箱地址" hidden><div class="pop-title"><span>邮箱</span><button type="button" class="pop-close" aria-label="关闭">×</button></div><div class="pop-body"><p class="pop-hint">想聊两句、约稿或者交换链接，可以发邮件：</p><a class="pop-email" href="mailto:2917129582@qq.com"><span class="email-label">主要</span><span class="email-address">2917129582@qq.com</span></a><a class="pop-email" href="mailto:Jawooth@gmail.com"><span class="email-label">次要</span><span class="email-address">Jawooth@gmail.com</span></a><a class="pop-email" href="mailto:Jawooth2917@163.com"><span class="email-label">备用</span><span class="email-address">Jawooth2917@163.com</span></a></div></div><script>(function(){var b=document.getElementById("xpEmailBtn"),p=document.getElementById("xpEmailPop");if(!b||!p)return;function place(){var r=b.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight;var l=Math.max(8,Math.min(r.left,window.innerWidth-w-8)),t=r.bottom+8;if(t+h>window.innerHeight-8)t=Math.max(8,r.top-h-8);p.style.left=l+"px";p.style.top=t+"px";}function close(){p.hidden=true;b.setAttribute("aria-expanded","false");}function open(){p.hidden=false;b.setAttribute("aria-expanded","true");place();}b.addEventListener("click",function(e){if(p.hidden){e.preventDefault();open();}else{close();}});document.addEventListener("click",function(e){if(p.hidden)return;if(b.contains(e.target)||p.contains(e.target))return;close();});document.addEventListener("keydown",function(e){if(e.key==="Escape")close();});var c=p.querySelector(".pop-close");if(c)c.addEventListener("click",close);window.addEventListener("scroll",function(){if(!p.hidden)place();},{passive:true});window.addEventListener("resize",function(){if(!p.hidden)place();});})();</script>
 </div>
 </div>
 </div>
@@ -135,11 +135,10 @@
 </div>
 </div>
 
-<!-- ========== 带 1：复古 MP4 播放器 ========== -->
+
 <div class="bento-item bento-music">
-<!-- 曲目 / 歌单 / 播放器标题都在 source/_data/music.yml 里配置；
-     播放器的外观与行为由下面那一个 xp_music 标签输出（要改长相或行为才需要看 scripts/xp-player.js） -->
-<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css"><script src="/vendor/aplayer/APlayer.min.js"></script><script>window.XP_MUSIC = [{"title":"悲しき宇宙船","author":"きくお","album":"KIKUOWORLD2","url":"https://music.163.com/song/media/outer/url?id=26218689.mp3","pic":"https://p1.music.126.net/ob0-pkiHB5j-xRYupW220A==/109951165759682176.jpg"},{"title":"LOST (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980721087.mp3","pic":"https://p1.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"パンドラ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 4","url":"https://music.163.com/song/media/outer/url?id=1416752957.mp3","pic":"https://p1.music.126.net/YJVLK_gP2neTVEn6_S3mRw==/109951164626937069.jpg"},{"title":"冬に一人","author":"きくお","album":"略してきくおミク0","url":"https://music.163.com/song/media/outer/url?id=35778153.mp3","pic":"https://p1.music.126.net/-mMwZQ9rV5XTJ93FpfV8LA==/3283141721769793.jpg"},{"title":"预言的勇者","author":"卦者灵风 / 秀三岁","album":"预言的勇者","url":"https://music.163.com/song/media/outer/url?id=1957601442.mp3","pic":"https://p1.music.126.net/GYnx4JURFl05MN8m21nbow==/109951167572642593.jpg"},{"title":"縛","author":"でんの子P / 可不","url":"https://music.163.com/song/media/outer/url?id=1989151258.mp3","pic":"https://p1.music.126.net/P9PoEegjyI90SeUgiOC8BA==/109951167962413021.jpg"},{"title":"もうどくちゅうい","author":"でんの子P / 蒼姫ラピス","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805381913.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"私とっても不器用で","author":"でんの子P","album":"VOCALOID STEW","url":"https://music.163.com/song/media/outer/url?id=2125754632.mp3","pic":"https://p1.music.126.net/qLwg3KAkomvEXhvjjbLWrw==/109951169329441943.jpg"},{"title":"愛くらい浅い言葉など無い","author":"でんの子P","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805380131.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"我想 （正式版）feat.泠风","author":"法老 / 泠风","album":"东海岸","url":"https://music.163.com/song/media/outer/url?id=444323757.mp3","pic":"https://p1.music.126.net/z253qn2_rIiK0NvaD5_btA==/109951162817129061.jpg"},{"title":"自缚灵","author":"立入禁止","album":"地縛霊たち","url":"https://music.163.com/song/media/outer/url?id=2736157649.mp3","pic":"https://p1.music.126.net/Gs9Ax_eb5RbwyeoP_wbwpg==/109951171864751046.jpg"},{"title":"昼寝","author":"立入禁止","album":"昼寝","url":"https://music.163.com/song/media/outer/url?id=2731082184.mp3","pic":"https://p1.music.126.net/WhHBg-1emYBwhDMv_zyYtw==/109951171513089424.jpg"},{"title":"惊蛰正中央","author":"诗岸 / 歌爱ユキ / 立入禁止","album":"惊蛰正中央","url":"https://music.163.com/song/media/outer/url?id=2728468840.mp3","pic":"https://p1.music.126.net/e_ycZ6eO2R7NWN8qYxpGTw==/109951171500993975.jpg"},{"title":"幽体離脱 (feat. 初音ミク)","author":"きくお / 初音ミク","album":"幽体離脱","url":"https://music.163.com/song/media/outer/url?id=1953839808.mp3","pic":"https://p1.music.126.net/C_wMk6RgWrYmuADkjSYNGA==/109951167519882590.jpg"},{"title":"ゾンビメイカー [Long Version] (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU DET EP","url":"https://music.163.com/song/media/outer/url?id=32364854.mp3","pic":"https://p1.music.126.net/SEJOVbMqnGOv_oRfMofS_Q==/109951164626924977.jpg"},{"title":"ロスト・デリュージョン","author":"フロクロ / 重音テト","album":"ロスト・デリュージョン","url":"https://music.163.com/song/media/outer/url?id=1930178096.mp3","pic":"https://p1.music.126.net/c8w1vDt_HAymxOD6ltvRCg==/109951167177238581.jpg"},{"title":"カルマ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980716362.mp3","pic":"https://p1.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"沈める街","author":"倉橋ヨエコ","album":"人间辞めても","url":"https://music.163.com/song/media/outer/url?id=597852.mp3","pic":"https://p1.music.126.net/MJqUluC5yoisi85RMjF3iQ==/827932255715398.jpg"},{"title":"Forest Mixtape","author":"Christina Kuong","album":"Tsuki's Odyssey (Original Game Soundtrack) Vol. 2","url":"https://music.163.com/song/media/outer/url?id=1908182683.mp3","pic":"https://p1.music.126.net/lbaNBDgE_fgFjlPIcvHGxA==/109951169410329444.jpg"},{"title":"矢張政志 ～事件の陰にやっぱりオレ～","author":"岩垂徳行","album":"逆転裁判サウンドBOX (逆転裁判 苏る逆転~逆転裁判3)","url":"https://music.163.com/song/media/outer/url?id=4919660.mp3","pic":"https://p1.music.126.net/5dMOmAQO8YtlMib9IoSXDA==/5851600883154880.jpg"},{"title":"L'amore dice ciao (From \"La matriarca\")","author":"Armando Trovajoli","album":"Ciao Bella ! - Italian Music Collection Vol. 1","url":"https://music.163.com/song/media/outer/url?id=492959864.mp3","pic":"https://p1.music.126.net/qmMJj2xL3Ii3Sv9cm_zW9Q==/109951163097724482.jpg"},{"title":"きらいきらいきらいって","author":"きくお","album":"きくおミク7","url":"https://music.163.com/song/media/outer/url?id=2031954438.mp3","pic":"https://p1.music.126.net/0ErUNx0pD-gSlsQKN5Sqpw==/109951168484216482.jpg"},{"title":"Candle In The Night (Released Track)","author":"Almora","album":"Gates Of Time","url":"https://music.163.com/song/media/outer/url?id=16437599.mp3","pic":"https://p1.music.126.net/fmuUwDgWBob0SBPuQYTkow==/568447511601730.jpg"},{"title":"叁BAOZIS!!! 贰EGGS!!!（忘买粥了）","author":"Sxxking Ball","album":"Special Ops","url":"https://music.163.com/song/media/outer/url?id=2149175151.mp3","pic":"https://p1.music.126.net/IbX-Yc7xMv6xzmFreMjUJg==/109951169389881625.jpg"}];</script>
+
+<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css"><script src="/vendor/aplayer/APlayer.min.js"></script><script>window.XP_MUSIC = [{"title":"Washing Machine Heart","author":"Mitski","album":"Be the Cowboy","url":"https://music.163.com/song/media/outer/url?id=865716302.mp3","pic":"https://p2.music.126.net/E75inPrQBALNrHPVHhsj4Q==/109951163402175950.jpg"},{"title":"地球の裏 (feat. 裏命)","author":"いよわ / 裏命","album":"地球の裏 (feat. 裏命)","url":"https://music.163.com/song/media/outer/url?id=2013615435.mp3","pic":"https://p2.music.126.net/w_xix7UlRYvv2n9BgiYYOQ==/109951168226094695.jpg"},{"title":"うらぽしゃ","author":"いよわ / 初音ミク","album":"わたしのヘリテージ","url":"https://music.163.com/song/media/outer/url?id=1903311035.mp3","pic":"https://p2.music.126.net/fPfx0C3T7D6myZKpFA3QOw==/109951166726127129.jpg"},{"title":"異星にいこうね (feat. 星界)","author":"いよわ / 星界","album":"異星にいこうね (feat. 星界)","url":"https://music.163.com/song/media/outer/url?id=2012668595.mp3","pic":"https://p2.music.126.net/aFos_LVqrP2a082qIbl7rw==/109951168216207001.jpg"},{"title":"あだぽしゃ","author":"いよわ / 初音ミク","album":"あだぽしゃ","url":"https://music.163.com/song/media/outer/url?id=1855988913.mp3","pic":"https://p2.music.126.net/Bp6h_wlGs6ULRwhSaT3wnw==/109951166116780431.jpg"},{"title":"我的灵魂已经逐渐喜欢上了这里","author":"老王乐队","album":"暮夜徐行","url":"https://music.163.com/song/media/outer/url?id=2757243277.mp3","pic":"https://p2.music.126.net/hIQFb0-le2PLnqDpnCsXWw==/109951172202707141.jpg"},{"title":"悲しき宇宙船","author":"きくお","album":"KIKUOWORLD2","url":"https://music.163.com/song/media/outer/url?id=26218689.mp3","pic":"https://p2.music.126.net/ob0-pkiHB5j-xRYupW220A==/109951165759682176.jpg"},{"title":"LOST (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980721087.mp3","pic":"https://p2.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"パンドラ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 4","url":"https://music.163.com/song/media/outer/url?id=1416752957.mp3","pic":"https://p2.music.126.net/YJVLK_gP2neTVEn6_S3mRw==/109951164626937069.jpg"},{"title":"冬に一人","author":"きくお","album":"略してきくおミク0","url":"https://music.163.com/song/media/outer/url?id=35778153.mp3","pic":"https://p2.music.126.net/-mMwZQ9rV5XTJ93FpfV8LA==/3283141721769793.jpg"},{"title":"预言的勇者","author":"卦者灵风 / 秀三岁","album":"预言的勇者","url":"https://music.163.com/song/media/outer/url?id=1957601442.mp3","pic":"https://p1.music.126.net/GYnx4JURFl05MN8m21nbow==/109951167572642593.jpg"},{"title":"縛","author":"でんの子P / 可不","url":"https://music.163.com/song/media/outer/url?id=1989151258.mp3","pic":"https://p1.music.126.net/P9PoEegjyI90SeUgiOC8BA==/109951167962413021.jpg"},{"title":"もうどくちゅうい","author":"でんの子P / 蒼姫ラピス","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805381913.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"私とっても不器用で","author":"でんの子P","album":"VOCALOID STEW","url":"https://music.163.com/song/media/outer/url?id=2125754632.mp3","pic":"https://p1.music.126.net/qLwg3KAkomvEXhvjjbLWrw==/109951169329441943.jpg"},{"title":"愛くらい浅い言葉など無い","author":"でんの子P","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805380131.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"我想 （正式版）feat.泠风","author":"法老 / 泠风","album":"东海岸","url":"https://music.163.com/song/media/outer/url?id=444323757.mp3","pic":"https://p1.music.126.net/z253qn2_rIiK0NvaD5_btA==/109951162817129061.jpg"},{"title":"自缚灵","author":"立入禁止","album":"地縛霊たち","url":"https://music.163.com/song/media/outer/url?id=2736157649.mp3","pic":"https://p1.music.126.net/Gs9Ax_eb5RbwyeoP_wbwpg==/109951171864751046.jpg"},{"title":"昼寝","author":"立入禁止","album":"昼寝","url":"https://music.163.com/song/media/outer/url?id=2731082184.mp3","pic":"https://p1.music.126.net/WhHBg-1emYBwhDMv_zyYtw==/109951171513089424.jpg"},{"title":"惊蛰正中央","author":"诗岸 / 歌爱ユキ / 立入禁止","album":"惊蛰正中央","url":"https://music.163.com/song/media/outer/url?id=2728468840.mp3","pic":"https://p1.music.126.net/e_ycZ6eO2R7NWN8qYxpGTw==/109951171500993975.jpg"},{"title":"幽体離脱 (feat. 初音ミク)","author":"きくお / 初音ミク","album":"幽体離脱","url":"https://music.163.com/song/media/outer/url?id=1953839808.mp3","pic":"https://p1.music.126.net/C_wMk6RgWrYmuADkjSYNGA==/109951167519882590.jpg"},{"title":"ゾンビメイカー [Long Version] (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU DET EP","url":"https://music.163.com/song/media/outer/url?id=32364854.mp3","pic":"https://p1.music.126.net/SEJOVbMqnGOv_oRfMofS_Q==/109951164626924977.jpg"},{"title":"ロスト・デリュージョン","author":"フロクロ / 重音テト","album":"ロスト・デリュージョン","url":"https://music.163.com/song/media/outer/url?id=1930178096.mp3","pic":"https://p1.music.126.net/c8w1vDt_HAymxOD6ltvRCg==/109951167177238581.jpg"},{"title":"カルマ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980716362.mp3","pic":"https://p1.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"Forest Mixtape","author":"Christina Kuong","album":"Tsuki's Odyssey (Original Game Soundtrack) Vol. 2","url":"https://music.163.com/song/media/outer/url?id=1908182683.mp3","pic":"https://p1.music.126.net/lbaNBDgE_fgFjlPIcvHGxA==/109951169410329444.jpg"},{"title":"矢張政志 ～事件の陰にやっぱりオレ～","author":"岩垂徳行","album":"逆転裁判サウンドBOX (逆転裁判 苏る逆転~逆転裁判3)","url":"https://music.163.com/song/media/outer/url?id=4919660.mp3","pic":"https://p1.music.126.net/5dMOmAQO8YtlMib9IoSXDA==/5851600883154880.jpg"},{"title":"きらいきらいきらいって","author":"きくお","album":"きくおミク7","url":"https://music.163.com/song/media/outer/url?id=2031954438.mp3","pic":"https://p1.music.126.net/0ErUNx0pD-gSlsQKN5Sqpw==/109951168484216482.jpg"},{"title":"叁BAOZIS!!! 贰EGGS!!!（忘买粥了）","author":"Sxxking Ball","album":"Special Ops","url":"https://music.163.com/song/media/outer/url?id=2149175151.mp3","pic":"https://p1.music.126.net/IbX-Yc7xMv6xzmFreMjUJg==/109951169389881625.jpg"}];</script>
 
 <div class="retro-mp4-player">
 <div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg> 梦到哪首放哪首了 <svg width="10" height="10" viewBox="0 0 16 16" style="vertical-align:middle;margin-left:3px" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg></div>
@@ -155,7 +154,8 @@
 </div>
 <div class="mp4-song-info">
 <div class="mp4-song-title"><span class="mp4-play-indicator" id="mp4-play-indicator" style="display:none"></span><span id="mp4-title">未配置曲目</span></div>
-<div class="mp4-song-author" id="mp4-author">在 source/_data/music.yml 中添加</div>
+
+<div class="mp4-song-author" id="mp4-author"></div>
 <div class="mp4-song-album" id="mp4-album"></div>
 </div>
 </div>
@@ -343,7 +343,7 @@
 </script>
 </div>
 
-<!-- ========== 带 2：最近作品 ========== -->
+
 <div class="bento-item bento-recent">
 <div class="xp-window">
 <div class="xp-window-title">
@@ -360,12 +360,12 @@
 <span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
 </div>
 <div class="xp-window-body">
-<div class="recent-works-strip"><a class="recent-work-item" href="/2026/10/05/work-still-life-sketch/"><img class="recent-work-thumb" src="/images/works/sketch-thumb.jpg" alt="静物素描·陶罐与水果" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">陶罐与水果</h4><p class="recent-work-date">2026-10-05 · 素描</p></div></a><a class="recent-work-item" href="/2026/10/02/work-character-practice/"><img class="recent-work-thumb" src="/images/works/character-thumb.jpg" alt="角色练习·魔法少女" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">魔法少女</h4><p class="recent-work-date">2026-10-02 · 角色设计</p></div></a><a class="recent-work-item" href="/2026/09/28/work-landscape-cottage/"><img class="recent-work-thumb" src="/images/works/landscape-thumb.jpg" alt="风景插画·山间小屋" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">山间小屋</h4><p class="recent-work-date">2026-09-28 · 插画</p></div></a><a class="recent-work-item more" href="/works/"><span class="more-works">查看全部<br><strong>3</strong> 件作品 →</span></a></div>
+<div class="recent-works-strip"><a class="recent-work-item" href="/work-still-life-sketch/"><img class="recent-work-thumb" src="/images/works/sketch-thumb.jpg" alt="静物素描·陶罐与水果" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">陶罐与水果</h4><p class="recent-work-date">2026-10-05 · 素描</p></div></a><a class="recent-work-item" href="/work-character-practice/"><img class="recent-work-thumb" src="/images/works/character-thumb.jpg" alt="角色练习·魔法少女" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">魔法少女</h4><p class="recent-work-date">2026-10-02 · 角色设计</p></div></a><a class="recent-work-item" href="/work-landscape-cottage/"><img class="recent-work-thumb" src="/images/works/landscape-thumb.jpg" alt="风景插画·山间小屋" loading="lazy" decoding="async" width="480" height="360"><div class="recent-work-info"><h4 class="recent-work-title">山间小屋</h4><p class="recent-work-date">2026-09-28 · 插画</p></div></a><a class="recent-work-item more" href="/works/"><span class="more-works">查看全部<br><strong>3</strong> 件作品 →</span></a></div>
 </div>
 </div>
 </div>
 
-<!-- ========== 带 3：最新文章 ========== -->
+
 <div class="bento-item bento-articles">
 <div class="xp-window">
 <div class="xp-window-title compact">
@@ -375,12 +375,12 @@
 </span>
 </div>
 <div class="xp-window-body compact-body">
-<ul class="article-mini-list"><li><a class="article-link" href="/2026/10/09/hello-world/"><span class="article-title">Hello World</span><span class="article-meta">2026-10-09 · 随笔</span></a></li></ul>
+<ul class="article-mini-list"><li><a class="article-link" href="/about-me2/"><span class="article-title">天雷滚滚好怕怕</span><span class="article-meta">2026-10-11 · 自介</span></a></li><li><a class="article-link" href="/about-me/"><span class="article-title">呃可能是属性啥的吧</span><span class="article-meta">2026-10-11 · 自介</span></a></li><li><a class="article-link" href="/about-death/"><span class="article-title">死是凉爽的夏夜</span><span class="article-meta">2026-10-11 · 随笔</span></a></li><li><a class="article-link" href="/platform-thought/"><span class="article-title">关于平台的迷思</span><span class="article-meta">2026-10-11 · 随笔</span></a></li></ul>
 </div>
 </div>
 </div>
 
-<!-- ========== 带 3：标签云 ========== -->
+
 <div class="bento-item bento-tags">
 <div class="xp-window">
 <div class="xp-window-title compact">
@@ -390,12 +390,12 @@
 </span>
 </div>
 <div class="xp-window-body compact-body">
-<div class="tag-cloud"><a class="tag-pill tag-pixel" href="/tags/%E9%A3%8E%E6%99%AF/">风景<span class="tag-count">1</span></a><a class="tag-pill tag-char" href="/tags/%E8%A7%92%E8%89%B2/">角色<span class="tag-count">1</span></a><a class="tag-pill tag-landscape" href="/tags/%E9%9D%99%E7%89%A9/">静物<span class="tag-count">1</span></a><a class="tag-pill tag-sketch" href="/tags/%E7%BB%83%E4%B9%A0/">练习<span class="tag-count">1</span></a><a class="tag-pill tag-illust" href="/tags/%E7%94%9F%E6%B4%BB/">生活<span class="tag-count">1</span></a><a class="tag-pill tag-guide" href="/tags/%E6%95%B0%E7%A0%81%E7%BB%98%E7%94%BB/">数码绘画<span class="tag-count">1</span></a><a class="tag-pill tag-essay" href="/tags/%E7%B4%A0%E6%8F%8F/">素描<span class="tag-count">1</span></a></div>
+<div class="tag-cloud"><a class="tag-pill tag-pixel" href="/tags/%E7%A2%8E%E7%A2%8E%E5%BF%B5/">碎碎念<span class="tag-count">2</span></a><a class="tag-pill tag-char" href="/tags/%E8%87%AA%E4%BB%8B/">自介<span class="tag-count">2</span></a><a class="tag-pill tag-landscape" href="/tags/%E9%A3%8E%E6%99%AF/">风景<span class="tag-count">1</span></a><a class="tag-pill tag-sketch" href="/tags/%E8%A7%92%E8%89%B2/">角色<span class="tag-count">1</span></a><a class="tag-pill tag-illust" href="/tags/%E9%9D%99%E7%89%A9/">静物<span class="tag-count">1</span></a><a class="tag-pill tag-guide" href="/tags/%E7%BB%83%E4%B9%A0/">练习<span class="tag-count">1</span></a><a class="tag-pill tag-essay" href="/tags/%E7%94%9F%E6%B4%BB/">生活<span class="tag-count">1</span></a><a class="tag-pill tag-game" href="/tags/%E6%95%B0%E7%A0%81%E7%BB%98%E7%94%BB/">数码绘画<span class="tag-count">1</span></a><a class="tag-pill tag-clannad" href="/tags/%E7%B4%A0%E6%8F%8F/">素描<span class="tag-count">1</span></a></div>
 </div>
 </div>
 </div>
 
-<!-- ========== 带 3：小站数据 ========== -->
+
 <div class="bento-item bento-stats">
 <div class="xp-window">
 <div class="xp-window-title compact">
@@ -405,12 +405,12 @@
 </span>
 </div>
 <div class="xp-window-body compact-body">
-<div class="stat-row"><span class="stat-dot done"></span><span class="stat-label"><a href="/blog/">文章</a></span><strong>4</strong></div><div class="stat-row"><span class="stat-dot doing"></span><span class="stat-label"><a href="/works/">作品</a></span><strong>3</strong></div><div class="stat-row"><span class="stat-dot todo"></span><span class="stat-label">待办</span><strong>4</strong></div>
+<div class="stat-row"><span class="stat-dot done"></span><span class="stat-label"><a href="/blog/">文章</a></span><strong>5</strong></div><div class="stat-row"><span class="stat-dot doing"></span><span class="stat-label"><a href="/works/">作品</a></span><strong>3</strong></div><div class="stat-row"><span class="stat-dot todo"></span><span class="stat-label">待办</span><strong>4</strong></div>
 </div>
 </div>
 </div>
 
-<!-- ========== 带 3：快速导航 ========== -->
+
 <div class="bento-item bento-nav">
 <div class="xp-window">
 <div class="xp-window-title compact">
@@ -430,7 +430,7 @@
 </div>
 </div>
 
-<!-- ========== 带 4：搜索 · 关于 · 致谢（通栏；/#about 锚点指这里） ========== -->
+
 <div class="bento-item bento-links">
 <div class="xp-window" id="about">
 <div class="xp-window-title compact">
@@ -450,7 +450,7 @@
 <div class="xp-search-results" id="site-search-results"></div>
 </form>
 </div>
-<!-- 关于本站：原先单独的「关于本站」窗口已并入这里（文案在 profile.yml 的 about: 下） -->
+
 <div class="about-col">
 <div class="about-home-body">
 <p>站点整体采用 Windows XP 桌面风格，希望给你带来一点复古又温馨的感觉。</p>
@@ -459,7 +459,7 @@
 </div>
 </div>
 </div>
-<!-- 致谢：原先在「关于」页，现已搬到这里（删条目就删下面这几行） -->
+
 <div class="credits-col">
 <div class="credits-title">
 <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.4-5.5-7A3.2 3.2 0 0 1 8 4.6a3.2 3.2 0 0 1 5.5 2.4C13.5 10.6 8 14 8 14z" fill="#ff8080" stroke="#cc4444" stroke-width="0.5"/></svg>
@@ -481,7 +481,7 @@
 </div>
 </div>
 
-<!-- ========== 便签：句子在 source/_data/quotes.yml 里维护 ========== -->
+
 <script>window.XP_QUOTES = {"rotate":12,"list":[{"text":"我们必须承认西西弗斯闹麻了","from":"王姐0732"},{"text":"你说的对，但是《原神》是由米哈游自主研发的一款全新开放世界冒险游戏。游戏发生在一个被称作「提瓦特」的幻想世界，在这里，被神选中的人将被授予「神之","from":null},{"text":"喵","from":"喵喵喵"},{"text":"赶快判我死刑。。让我一了百了","from":"猴子"},{"text":"你们，你们为什么说话为什么都带着带有攻击性的呀？我觉得人与人之间交流应该…啧…有点善意吧。对不对？","from":"电棍otto"},{"text":"要断章取义","from":"不要断章取义"}],"left":"","right":""};</script>
 <script>
 (function () {
@@ -529,7 +529,7 @@
 })();
 </script>
 
-<!-- ========== 网名轮换：名字列表在 source/_data/profile.yml 的 names 里 ========== -->
+
 <script>
 (function () {
   var data = window.XP_NAMES || { list: [], rotate: 0 };
@@ -552,7 +552,7 @@
 </script>
 
 
-<!-- ========== 站内搜索（数据来自构建期生成的 /search.json） ========== -->
+
 <script>
 (function () {
   var input = document.getElementById('site-search-input');
@@ -613,11 +613,7 @@
 })();
 </script>
 
-<!-- ========== 页面级排布 ==========
-     规则：12 栏 × 固定 96px 行高（gap 18px），每个横带 = 2 行 = 210px，
-     同一横带里的窗口上下边缘自然对齐。DOM 顺序与视觉顺序保持一致。
-     想要"手工拼贴感"可以在格子上加回 .tilt-left / .tilt-right / .tilt-soft 等类，
-     但边线就不会齐平了。 -->
+
 <style>
 /* 行高 = 「最小 96px，内容多了就自己长高」。
    以前这里写死 96px：卡片里的内容一旦变高（简介多一行、文章列表多一条、
@@ -707,8 +703,8 @@
 
 
 
-  <!-- hexo injector body_end start -->
-<!-- XP 底部任务栏 -->
+  
+
 <div class="xp-taskbar">
   <div class="xp-taskbar-left">
     <button class="xp-start-btn" id="xpStartBtn" type="button" title="开始菜单" aria-haspopup="true" aria-expanded="false" aria-controls="xpStartMenu">
@@ -771,7 +767,7 @@
   </div>
 </div>
 
-<!-- 开始菜单（默认隐藏） -->
+
 <div class="xp-start-menu" id="xpStartMenu" role="menu" aria-label="开始菜单">
   <div class="xp-start-menu-header">
     <span class="xp-start-menu-user">
@@ -939,6 +935,6 @@
   }
 })();
 </script>
-<!-- hexo injector body_end end --></body>
+</body>
 </html>
 

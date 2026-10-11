@@ -609,13 +609,6 @@ nav {
   border-radius: 2px;
   box-shadow: 0 0 30px #eee;
 }
-.next-post {
-  text-align: center;
-}
-.next-post .post-title {
-  display: inline-block;
-  font-size: 24px;
-}
 .post-content {
   flex-shrink: 0;
   width: 100%;
@@ -1060,12 +1053,6 @@ html.dark .top-box li a:hover,
 html.dark .top-box li a.current {
   color: #5ca2ff !important;
   background: #ddd;
-}
-html.dark .next-post .post-title {
-  color: #c9d1d9;
-}
-html.dark .next-post .purple-link {
-  background: linear-gradient(180deg, transparent 70%, #657de1 0);
 }
 html.dark .pagination-container a,
 html.dark .site-footer a {

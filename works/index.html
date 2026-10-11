@@ -9,7 +9,7 @@
 
 <meta charset="utf-8" >
 
-<!-- 站点名拼进标题：主题原本算了 pageTitle 却没用，导致每个标签页标题都只是「首页」 -->
+
 <title>作品 | 我的小站</title>
 <meta name="keywords" content="作品, 我的小站">
 <meta name="description" content="像素风个人角落，存放画作、攻略、小游戏和碎碎念">
@@ -18,14 +18,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta property="og:title" content="作品 | 我的小站">
 <meta property="og:description" content="像素风个人角落，存放画作、攻略、小游戏和碎碎念">
+<meta property="og:site_name" content="我的小站">
 
+
+<meta name="twitter:card" content="summary">
 <link rel="shortcut icon" href="/favicon.ico">
 <link rel="stylesheet" href="/style/main.css">
 
-  <!-- hexo injector head_end start -->
-  <!-- 本站 XP 风格设计系统（字体 @font-face 自托管，见该文件第 0 节） -->
-  <link rel="stylesheet" href="/css/xp-custom.css?v=55ef0b4f">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="canonical" href="https://Jawooth.github.io/works/">
+  
+  
+  <link rel="stylesheet" href="/css/xp-custom.css?v=f1c8c561">
+<meta name="generator" content="Hexo 7.3.0"><link rel="canonical" href="https://Jawooth.github.io/works/">
 <meta property="og:url" content="https://Jawooth.github.io/works/">
 <meta property="og:type" content="website">
 </head>
@@ -87,18 +90,11 @@
 
 
   <div class="content-container">
-    <!-- 注意：本页正文是整块原始 HTML，所有 xp_ 标签必须顶格书写。
-     一旦某行缩进 4 个空格以上、且前面留了空行，markdown 会把它当成代码块，
-     整段 HTML 会被转义成文本、xp_ 标签也不会生效。
-     另外正文里不要出现字面的模板定界符——包括注释里也不行：
-     标签在注释里照样会被执行一遍，白白复制一份 HTML（踩过）。 -->
+    
 
-<!-- 作品卡片由下方那个「作品集」标签自动生成（详见 MAINTENANCE.md）：
-       · 栏目（原创 / 同人）来自文章的 origin: 原创 或 origin: 同人（没写就是原创）
-       · 时间轴分期按文章日期自动归入，也可以用 era: 2025 年 手动指定
-       · 标签筛选、屏蔽模式、展开全文都是页面内的交互，不需要额外配置 -->
 
-<!-- SVG 图标集合 -->
+
+
 <svg width="0" height="0" style="position:absolute;visibility:hidden" aria-hidden="true">
 <defs>
 <symbol id="icon-palette" viewBox="0 0 16 16">
@@ -112,15 +108,6 @@
 <path d="M10 1l5 5-9 9H1v-5l9-9z" fill="#ffcc66" stroke="#cc9933" stroke-width="0.5"/>
 <path d="M10 1l5 5-2 2-5-5 2-2z" fill="#ff9966" stroke="#cc6633" stroke-width="0.5"/>
 <path d="M2 13l3 1-1 3" fill="#996633" stroke="#663300" stroke-width="0.5"/>
-</symbol>
-<symbol id="icon-bulb" viewBox="0 0 16 16">
-<circle cx="8" cy="6" r="4" fill="#ffff66" stroke="#cc9900" stroke-width="0.5"/>
-<rect x="6" y="10" width="4" height="2" fill="#999" stroke="#666" stroke-width="0.5"/>
-<rect x="5.5" y="12" width="5" height="1" fill="#666" stroke="#333" stroke-width="0.5"/>
-<rect x="6" y="13" width="4" height="1" fill="#666" stroke="#333" stroke-width="0.5"/>
-<line x1="8" y1="2" x2="8" y2="3" stroke="#ff9900" stroke-width="0.8"/>
-<line x1="4" y1="4" x2="5" y2="5" stroke="#ff9900" stroke-width="0.8"/>
-<line x1="11" y1="5" x2="12" y2="4" stroke="#ff9900" stroke-width="0.8"/>
 </symbol>
 <symbol id="icon-tag" viewBox="0 0 16 16">
 <path d="M2 7l7-5 5 5-7 7-5-7z" fill="#ffff99" stroke="#cc9933" stroke-width="0.5"/>
@@ -139,7 +126,7 @@
 <div class="works-page xp-page-fullwidth">
 <div class="xp-bento">
 
-<!-- 标题窗口 -->
+
 <div class="works-item works-header">
 <div class="xp-window">
 <div class="xp-window-title">
@@ -154,13 +141,13 @@
 <div class="header-stats">
 <span class="header-chip"><strong>3</strong> 件作品</span>
 <span class="header-chip"><strong>3</strong> 个分类</span>
-<span class="header-chip"><strong>7</strong> 个标签</span>
+<span class="header-chip"><strong>9</strong> 个标签</span>
 </div>
 </div>
 </div>
 </div>
 
-<!-- 作品集：分栏目 + 时间轴分期 + 标签筛选 + 就地展开全文 -->
+
 <div class="works-item works-gallery">
 <div class="xp-window">
 <div class="xp-window-title">
@@ -171,12 +158,12 @@
 <span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
 </div>
 <div class="xp-window-body">
-<div class="work-gallery"><div class="work-toolbar"><div class="work-tabs" role="tablist" aria-label="作品栏目"><button type="button" class="work-tab is-active" data-origin="原创" role="tab" aria-selected="true">原创 <span class="tab-count">2</span></button><button type="button" class="work-tab" data-origin="同人" role="tab" aria-selected="false">同人 <span class="tab-count">1</span></button></div><div class="work-filter-bar"><span class="filter-label">标签筛选</span><button type="button" class="filter-pill" data-tag="素描" aria-pressed="false">素描 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="静物" aria-pressed="false">静物 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="角色" aria-pressed="false">角色 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="练习" aria-pressed="false">练习 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="风景" aria-pressed="false">风景 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="数码绘画" aria-pressed="false">数码绘画 <span class="pill-count">1</span></button><label class="filter-block"><input type="checkbox" id="work-block-mode"> 屏蔽模式</label><button type="button" class="filter-clear" id="work-filter-clear">清除筛选</button></div><p class="filter-status" id="work-filter-status" role="status" aria-live="polite">共 3 件作品</p></div><div class="work-pane is-active" data-origin="原创" role="tabpanel"><details class="work-era" open><summary class="work-era-bar"><span class="era-name">2026 年 6-10 月</span><span class="era-count">2 件</span></summary><div class="work-grid"><article class="work-card" data-tags="素描 静物" data-era="2026 年 6-10 月" data-origin="原创"><a class="work-thumb" href="/2026/10/05/work-still-life-sketch/"><img src="/images/works/sketch-thumb.jpg" alt="陶罐与水果" loading="lazy" decoding="async" width="480" height="360"><span class="work-status done">已完成</span></a><div class="work-card-body"><h3 class="work-card-title"><a href="/2026/10/05/work-still-life-sketch/">陶罐与水果</a></h3><div class="work-card-meta"><span class="work-card-date">2026-10-05</span><span class="work-cat">素描</span></div><div class="work-card-tags"><button type="button" class="work-tag" data-tag="素描" title="只看「素描」">素描</button><button type="button" class="work-tag" data-tag="静物" title="只看「静物」">静物</button></div><div class="work-card-full" hidden data-work="2026/10/05/work-still-life-sketch/"></div></div><div class="work-card-foot"><button type="button" class="work-expand" aria-expanded="false">展开全文</button></div></article><article class="work-card" data-tags="风景 数码绘画" data-era="2026 年 6-10 月" data-origin="原创"><a class="work-thumb" href="/2026/09/28/work-landscape-cottage/"><img src="/images/works/landscape-thumb.jpg" alt="山间小屋" loading="lazy" decoding="async" width="480" height="360"><span class="work-status done">已完成</span></a><div class="work-card-body"><h3 class="work-card-title"><a href="/2026/09/28/work-landscape-cottage/">山间小屋</a></h3><div class="work-card-meta"><span class="work-card-date">2026-09-28</span><span class="work-cat">插画</span></div><div class="work-card-tags"><button type="button" class="work-tag" data-tag="风景" title="只看「风景」">风景</button><button type="button" class="work-tag" data-tag="数码绘画" title="只看「数码绘画」">数码绘画</button></div><div class="work-card-full" hidden data-work="2026/09/28/work-landscape-cottage/"></div></div><div class="work-card-foot"><button type="button" class="work-expand" aria-expanded="false">展开全文</button></div></article></div></details></div><div class="work-pane" data-origin="同人" role="tabpanel" hidden><details class="work-era" open><summary class="work-era-bar"><span class="era-name">2026 年 6-10 月</span><span class="era-count">1 件</span></summary><div class="work-grid"><article class="work-card" data-tags="角色 练习" data-era="2026 年 6-10 月" data-origin="同人"><a class="work-thumb" href="/2026/10/02/work-character-practice/"><img src="/images/works/character-thumb.jpg" alt="魔法少女" loading="lazy" decoding="async" width="480" height="360"><span class="work-status done">已完成</span></a><div class="work-card-body"><h3 class="work-card-title"><a href="/2026/10/02/work-character-practice/">魔法少女</a></h3><div class="work-card-meta"><span class="work-card-date">2026-10-02</span><span class="work-cat">角色设计</span></div><div class="work-card-tags"><button type="button" class="work-tag" data-tag="角色" title="只看「角色」">角色</button><button type="button" class="work-tag" data-tag="练习" title="只看「练习」">练习</button></div><div class="work-card-full" hidden data-work="2026/10/02/work-character-practice/"></div></div><div class="work-card-foot"><button type="button" class="work-expand" aria-expanded="false">展开全文</button></div></article></div></details></div></div><script>(function(){var root=document.querySelector('.work-gallery');if(!root)return;var tabs=root.querySelectorAll('.work-tab');var panes=root.querySelectorAll('.work-pane');var pills=root.querySelectorAll('.filter-pill');var mode=root.querySelector('#work-block-mode');var clearBtn=root.querySelector('#work-filter-clear');var status=root.querySelector('#work-filter-status');var activeTags=[];function pane(){for(var i=0;i<panes.length;i++){if(!panes[i].hidden)return panes[i];}return null;}function apply(){var p=pane();if(!p)return;var cards=p.querySelectorAll('.work-card');var shown=0;var blocked=(mode&&mode.checked);for(var i=0;i<cards.length;i++){var c=cards[i];var list=(c.getAttribute('data-tags')||'').split(' ').filter(Boolean);var hit=activeTags.length===0?false:activeTags.some(function(t){return list.indexOf(t)>=0;});var hide=activeTags.length===0?false:(blocked?hit:!hit);c.hidden=hide;if(!hide)shown++;}var eras=p.querySelectorAll('.work-era');for(var e=0;e<eras.length;e++){var any=false;var cs=eras[e].querySelectorAll('.work-card');for(var k=0;k<cs.length;k++){if(!cs[k].hidden){any=true;break;}}eras[e].hidden=!any;if(any&&activeTags.length)eras[e].open=true;}if(status){status.textContent=activeTags.length===0?('共 '+cards.length+' 件作品'):((blocked?'已屏蔽':'只看')+'「'+activeTags.join('、')+'」：'+shown+' 件');}}for(var i=0;i<tabs.length;i++){(function(btn){btn.addEventListener('click',function(){for(var j=0;j<tabs.length;j++){tabs[j].classList.toggle('is-active',tabs[j]===btn);tabs[j].setAttribute('aria-selected',tabs[j]===btn?'true':'false');}for(var k=0;k<panes.length;k++){panes[k].hidden=panes[k].getAttribute('data-origin')!==btn.getAttribute('data-origin');}activeTags=[];for(var m=0;m<pills.length;m++){pills[m].classList.remove('is-active');pills[m].setAttribute('aria-pressed','false');}apply();});})(tabs[i]);}for(var i=0;i<pills.length;i++){(function(btn){btn.addEventListener('click',function(){var t=btn.getAttribute('data-tag');var idx=activeTags.indexOf(t);if(idx>=0){activeTags.splice(idx,1);btn.classList.remove('is-active');btn.setAttribute('aria-pressed','false');}else{activeTags.push(t);btn.classList.add('is-active');btn.setAttribute('aria-pressed','true');}apply();});})(pills[i]);}if(mode){mode.addEventListener('change',apply);}if(clearBtn){clearBtn.addEventListener('click',function(){activeTags=[];for(var i=0;i<pills.length;i++){pills[i].classList.remove('is-active');pills[i].setAttribute('aria-pressed','false');}if(mode){mode.checked=false;}apply();});}root.addEventListener('click',function(ev){var tagBtn=ev.target.closest?ev.target.closest('.work-tag'):null;if(tagBtn){var t=tagBtn.getAttribute('data-tag');for(var i=0;i<pills.length;i++){if(pills[i].getAttribute('data-tag')===t){pills[i].click();break;}}return;}var ex=ev.target.closest?ev.target.closest('.work-expand'):null;if(!ex)return;var card=ex.closest('.work-card');var full=card?card.querySelector('.work-card-full'):null;if(!full)return;if(!full.hidden){full.hidden=true;ex.textContent='展开全文';ex.setAttribute('aria-expanded','false');return;}var key=full.getAttribute('data-work');function open(d){if(d&&!full.innerHTML.trim()){full.innerHTML=d[key]||'<p class="xp-empty">这篇没有正文</p>';}full.hidden=false;ex.textContent='收起';ex.setAttribute('aria-expanded','true');}if(full.innerHTML.trim()){open(null);return;}ex.textContent='加载中…';if(xpBodies){open(xpBodies);return;}fetch('/works-bodies.json').then(function(r){return r.json();}).then(function(d){xpBodies=d;open(d);}).catch(function(){xpBodies={};open(xpBodies);});});var xpBodies=null;apply();})();</script>
+<div class="work-gallery"><div class="work-toolbar"><div class="work-tabs" role="tablist" aria-label="作品栏目"><button type="button" class="work-tab is-active" data-origin="原创" role="tab" aria-selected="true">原创 <span class="tab-count">2</span></button><button type="button" class="work-tab" data-origin="同人" role="tab" aria-selected="false">同人 <span class="tab-count">1</span></button></div><div class="work-filter-bar"><span class="filter-label">标签筛选</span><button type="button" class="filter-pill" data-tag="素描" aria-pressed="false">素描 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="静物" aria-pressed="false">静物 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="角色" aria-pressed="false">角色 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="练习" aria-pressed="false">练习 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="风景" aria-pressed="false">风景 <span class="pill-count">1</span></button><button type="button" class="filter-pill" data-tag="数码绘画" aria-pressed="false">数码绘画 <span class="pill-count">1</span></button><label class="filter-block"><input type="checkbox" id="work-block-mode"> 屏蔽模式</label><button type="button" class="filter-clear" id="work-filter-clear">清除筛选</button></div><p class="filter-status" id="work-filter-status" role="status" aria-live="polite">共 3 件作品</p></div><div class="work-pane is-active" data-origin="原创" role="tabpanel"><details class="work-era" open><summary class="work-era-bar"><span class="era-name">2026 年 6-10 月</span><span class="era-count">2 件</span></summary><div class="work-grid"><article class="work-card" data-tags="素描 静物" data-era="2026 年 6-10 月" data-origin="原创"><a class="work-thumb" href="/work-still-life-sketch/"><img src="/images/works/sketch-thumb.jpg" alt="陶罐与水果" loading="lazy" decoding="async" width="480" height="360"><span class="work-status done">已完成</span></a><div class="work-card-body"><h3 class="work-card-title"><a href="/work-still-life-sketch/">陶罐与水果</a></h3><div class="work-card-meta"><span class="work-card-date">2026-10-05</span><span class="work-cat">素描</span></div><div class="work-card-tags"><button type="button" class="work-tag" data-tag="素描" title="只看「素描」">素描</button><button type="button" class="work-tag" data-tag="静物" title="只看「静物」">静物</button></div><div class="work-card-full" hidden data-work="work-still-life-sketch/"></div></div><div class="work-card-foot"><button type="button" class="work-expand" aria-expanded="false">展开全文</button></div></article><article class="work-card" data-tags="风景 数码绘画" data-era="2026 年 6-10 月" data-origin="原创"><a class="work-thumb" href="/work-landscape-cottage/"><img src="/images/works/landscape-thumb.jpg" alt="山间小屋" loading="lazy" decoding="async" width="480" height="360"><span class="work-status done">已完成</span></a><div class="work-card-body"><h3 class="work-card-title"><a href="/work-landscape-cottage/">山间小屋</a></h3><div class="work-card-meta"><span class="work-card-date">2026-09-28</span><span class="work-cat">插画</span></div><div class="work-card-tags"><button type="button" class="work-tag" data-tag="风景" title="只看「风景」">风景</button><button type="button" class="work-tag" data-tag="数码绘画" title="只看「数码绘画」">数码绘画</button></div><div class="work-card-full" hidden data-work="work-landscape-cottage/"></div></div><div class="work-card-foot"><button type="button" class="work-expand" aria-expanded="false">展开全文</button></div></article></div></details></div><div class="work-pane" data-origin="同人" role="tabpanel" hidden><details class="work-era" open><summary class="work-era-bar"><span class="era-name">2026 年 6-10 月</span><span class="era-count">1 件</span></summary><div class="work-grid"><article class="work-card" data-tags="角色 练习" data-era="2026 年 6-10 月" data-origin="同人"><a class="work-thumb" href="/work-character-practice/"><img src="/images/works/character-thumb.jpg" alt="魔法少女" loading="lazy" decoding="async" width="480" height="360"><span class="work-status done">已完成</span></a><div class="work-card-body"><h3 class="work-card-title"><a href="/work-character-practice/">魔法少女</a></h3><div class="work-card-meta"><span class="work-card-date">2026-10-02</span><span class="work-cat">角色设计</span></div><div class="work-card-tags"><button type="button" class="work-tag" data-tag="角色" title="只看「角色」">角色</button><button type="button" class="work-tag" data-tag="练习" title="只看「练习」">练习</button></div><div class="work-card-full" hidden data-work="work-character-practice/"></div></div><div class="work-card-foot"><button type="button" class="work-expand" aria-expanded="false">展开全文</button></div></article></div></details></div></div><script>(function(){var root=document.querySelector('.work-gallery');if(!root)return;var tabs=root.querySelectorAll('.work-tab');var panes=root.querySelectorAll('.work-pane');var pills=root.querySelectorAll('.filter-pill');var mode=root.querySelector('#work-block-mode');var clearBtn=root.querySelector('#work-filter-clear');var status=root.querySelector('#work-filter-status');var activeTags=[];function pane(){for(var i=0;i<panes.length;i++){if(!panes[i].hidden)return panes[i];}return null;}function apply(){var p=pane();if(!p)return;var cards=p.querySelectorAll('.work-card');var shown=0;var blocked=(mode&&mode.checked);for(var i=0;i<cards.length;i++){var c=cards[i];var list=(c.getAttribute('data-tags')||'').split(' ').filter(Boolean);var hit=activeTags.length===0?false:activeTags.some(function(t){return list.indexOf(t)>=0;});var hide=activeTags.length===0?false:(blocked?hit:!hit);c.hidden=hide;if(!hide)shown++;}var eras=p.querySelectorAll('.work-era');for(var e=0;e<eras.length;e++){var any=false;var cs=eras[e].querySelectorAll('.work-card');for(var k=0;k<cs.length;k++){if(!cs[k].hidden){any=true;break;}}eras[e].hidden=!any;if(any&&activeTags.length)eras[e].open=true;}if(status){status.textContent=activeTags.length===0?('共 '+cards.length+' 件作品'):((blocked?'已屏蔽':'只看')+'「'+activeTags.join('、')+'」：'+shown+' 件');}}for(var i=0;i<tabs.length;i++){(function(btn){btn.addEventListener('click',function(){for(var j=0;j<tabs.length;j++){tabs[j].classList.toggle('is-active',tabs[j]===btn);tabs[j].setAttribute('aria-selected',tabs[j]===btn?'true':'false');}for(var k=0;k<panes.length;k++){panes[k].hidden=panes[k].getAttribute('data-origin')!==btn.getAttribute('data-origin');}activeTags=[];for(var m=0;m<pills.length;m++){pills[m].classList.remove('is-active');pills[m].setAttribute('aria-pressed','false');}apply();});})(tabs[i]);}for(var i=0;i<pills.length;i++){(function(btn){btn.addEventListener('click',function(){var t=btn.getAttribute('data-tag');var idx=activeTags.indexOf(t);if(idx>=0){activeTags.splice(idx,1);btn.classList.remove('is-active');btn.setAttribute('aria-pressed','false');}else{activeTags.push(t);btn.classList.add('is-active');btn.setAttribute('aria-pressed','true');}apply();});})(pills[i]);}if(mode){mode.addEventListener('change',apply);}if(clearBtn){clearBtn.addEventListener('click',function(){activeTags=[];for(var i=0;i<pills.length;i++){pills[i].classList.remove('is-active');pills[i].setAttribute('aria-pressed','false');}if(mode){mode.checked=false;}apply();});}root.addEventListener('click',function(ev){var tagBtn=ev.target.closest?ev.target.closest('.work-tag'):null;if(tagBtn){var t=tagBtn.getAttribute('data-tag');for(var i=0;i<pills.length;i++){if(pills[i].getAttribute('data-tag')===t){pills[i].click();break;}}return;}var ex=ev.target.closest?ev.target.closest('.work-expand'):null;if(!ex)return;var card=ex.closest('.work-card');var full=card?card.querySelector('.work-card-full'):null;if(!full)return;if(!full.hidden){full.hidden=true;ex.textContent='展开全文';ex.setAttribute('aria-expanded','false');return;}var key=full.getAttribute('data-work');function open(d){if(d&&!full.innerHTML.trim()){full.innerHTML=d[key]||'<p class="xp-empty">这篇没有正文</p>';}full.hidden=false;ex.textContent='收起';ex.setAttribute('aria-expanded','true');}if(full.innerHTML.trim()){open(null);return;}ex.textContent='加载中…';if(xpBodies){open(xpBodies);return;}fetch('/works-bodies.json').then(function(r){return r.json();}).then(function(d){xpBodies=d;open(d);}).catch(function(){xpBodies={};open(xpBodies);});});var xpBodies=null;apply();})();</script>
 </div>
 </div>
 </div>
 
-<!-- 标签云 -->
+
 <div class="works-item works-tags">
 <div class="xp-window">
 <div class="xp-window-title compact">
@@ -186,12 +173,12 @@
 </span>
 </div>
 <div class="xp-window-body compact-body">
-<div class="tag-cloud"><a class="cloud-tag" href="/tags/%E9%A3%8E%E6%99%AF/" title="1 篇">风景</a><a class="cloud-tag" href="/tags/%E8%A7%92%E8%89%B2/" title="1 篇">角色</a><a class="cloud-tag" href="/tags/%E9%9D%99%E7%89%A9/" title="1 篇">静物</a><a class="cloud-tag" href="/tags/%E7%BB%83%E4%B9%A0/" title="1 篇">练习</a><a class="cloud-tag" href="/tags/%E7%94%9F%E6%B4%BB/" title="1 篇">生活</a><a class="cloud-tag" href="/tags/%E6%95%B0%E7%A0%81%E7%BB%98%E7%94%BB/" title="1 篇">数码绘画</a><a class="cloud-tag" href="/tags/%E7%B4%A0%E6%8F%8F/" title="1 篇">素描</a></div>
+<div class="tag-cloud"><a class="cloud-tag big" href="/tags/%E7%A2%8E%E7%A2%8E%E5%BF%B5/" title="2 篇">碎碎念</a><a class="cloud-tag big" href="/tags/%E8%87%AA%E4%BB%8B/" title="2 篇">自介</a><a class="cloud-tag" href="/tags/%E9%A3%8E%E6%99%AF/" title="1 篇">风景</a><a class="cloud-tag" href="/tags/%E8%A7%92%E8%89%B2/" title="1 篇">角色</a><a class="cloud-tag" href="/tags/%E9%9D%99%E7%89%A9/" title="1 篇">静物</a><a class="cloud-tag" href="/tags/%E7%BB%83%E4%B9%A0/" title="1 篇">练习</a><a class="cloud-tag" href="/tags/%E7%94%9F%E6%B4%BB/" title="1 篇">生活</a><a class="cloud-tag" href="/tags/%E6%95%B0%E7%A0%81%E7%BB%98%E7%94%BB/" title="1 篇">数码绘画</a><a class="cloud-tag" href="/tags/%E7%B4%A0%E6%8F%8F/" title="1 篇">素描</a></div>
 </div>
 </div>
 </div>
 
-<!-- 创作统计 -->
+
 <div class="works-item works-mini-stats">
 <div class="xp-window">
 <div class="xp-window-title compact">
@@ -204,14 +191,14 @@
 <div class="mini-stats-grid">
 <div class="mini-stat"><strong>3</strong><span>作品</span></div>
 <div class="mini-stat"><strong>2</strong><span>月</span></div>
-<div class="mini-stat"><strong>7</strong><span>标签</span></div>
+<div class="mini-stat"><strong>9</strong><span>标签</span></div>
 <div class="mini-stat"><strong>∞</strong><span>灵感</span></div>
 </div>
 </div>
 </div>
 </div>
 
-<!-- 创作中 -->
+
 <div class="works-item works-upcoming">
 <div class="xp-window work-window-card upcoming">
 <div class="xp-window-title">
@@ -231,22 +218,13 @@
 </div>
 </div>
 
-<!-- 提示框 -->
-<div class="works-item works-tip">
-<div class="xp-tip-box">
-<strong><svg class="inline-icon" width="14" height="14" aria-hidden="true"><use href="#icon-bulb"/></svg> 小提示：</strong>
-新增作品只要写一篇文章、填好 categories / origin / thumbnail / short_title / desc，本页卡片与首页「最近作品」会自动更新；想手动指定分期就加一行 era: 2025 年。
 </div>
 </div>
 
-</div>
-</div>
 
-<!-- ========== 页面级排布（组件样式统一在 /css/xp-custom.css） ========== -->
 <style>
 .works-header,
-.works-gallery,
-.works-tip { grid-column: 1 / -1; grid-row: span 1; }
+.works-gallery { grid-column: 1 / -1; grid-row: span 1; }
 .works-tags       { grid-column: 1 / 5;  grid-row: span 1; }
 .works-mini-stats { grid-column: 5 / 9;  grid-row: span 1; }
 .works-upcoming   { grid-column: 9 / 13; grid-row: span 1; }
@@ -303,8 +281,8 @@
 
 
 
-  <!-- hexo injector body_end start -->
-<!-- XP 底部任务栏 -->
+  
+
 <div class="xp-taskbar">
   <div class="xp-taskbar-left">
     <button class="xp-start-btn" id="xpStartBtn" type="button" title="开始菜单" aria-haspopup="true" aria-expanded="false" aria-controls="xpStartMenu">
@@ -367,7 +345,7 @@
   </div>
 </div>
 
-<!-- 开始菜单（默认隐藏） -->
+
 <div class="xp-start-menu" id="xpStartMenu" role="menu" aria-label="开始菜单">
   <div class="xp-start-menu-header">
     <span class="xp-start-menu-user">
@@ -535,6 +513,6 @@
   }
 })();
 </script>
-<!-- hexo injector body_end end --></body>
+</body>
 </html>
 

@@ -24,7 +24,7 @@
         理论上只有 12 的整数倍缩放才完全锐利。但 12px 中文偏小，
         本站**选择可读性优先**：正文用 16px（= 12 放大 1.33 倍），代价是笔画
         有极轻微的粗细不匀。想恢复完全锐利就把正文改回 12px；不要用 13~15px
-        （既没变大多少，不匀还更明显）。详见 手册.md §8.3。
+        （既没变大多少，不匀还更明显）。详见 README.md 第 9 节。
       为什么从「方舟像素」换成「缝合像素」（2026-10）：同为 TakWolf 出品、同为
       黑体 12px，但缝合版是「方舟 + 其它同尺寸字体」的合集，常用汉字覆盖率更高。
       实测本站用到的 884 个非 ASCII 字符：方舟缺 25 个，缝合只缺 7 个 ——
@@ -412,17 +412,8 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* 黄色提示框 */
-.xp-tip-box {
-  background: #ffffe0;
-  border: 1px solid #c0a030;
-  border-left: 4px solid #f0c040;
-  color: #4a3c10;
-  padding: 12px 16px;
-  font-size: 16px;
-  border-radius: 2px;
-}
-html.dark .xp-tip-box { background: #43401f; border-color: #8b7030; color: #f0e8c0; }
+/* （原来这里有个 .xp-tip-box 黄色提示框，是给站主看的「小提示」用的。
+     2026-10 站主要求：给人看的注意事项不要放到网站上 —— 三处提示框连同这套样式一起删了。） */
 
 /* 页头窗口内容 */
 .header-body { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -457,7 +448,6 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .xp-bento > * > .xp-window,
 .xp-bento > * > .xp-bubble,
 .xp-bento > * > .retro-mp4-player,
-.xp-bento > * > .xp-tip-box,
 .xp-bento > * > .xp-section-bar,
 .xp-bento > * > .app-card,
 .xp-bento > * > .guide-list { width: 100%; }
@@ -1219,6 +1209,24 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 .work-compare-item img { margin: 0 0 8px; width: 100%; }
 .work-compare-item p { margin: 0; font-size: 16px; color: var(--text-muted); line-height: 1.6; }
 
+/* ---------- 视频（{% xp_bilibili %} / {% xp_video %}，见 scripts/xp-content.js） ---------- */
+/* 哔哩哔哩：iframe 本身没有"固有尺寸"，必须给它一个固定宽高比的盒子，
+   否则要么塌成浏览器默认的 150px 高、要么把外面的 XP 窗口撑破。 */
+.xp-embed {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  margin: 16px 0;
+  background: #000; border: 1px solid var(--border); border-radius: 3px; overflow: hidden;
+}
+.xp-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+
+/* 本地视频：**不写死宽高比** —— 浏览器读到文件头就知道真实尺寸；
+   写死比例反而会把竖屏（手机拍的）视频压扁或加上很宽的黑边。 */
+.xp-video { margin: 16px 0; }
+.xp-video video {
+  display: block; width: 100%; max-width: 100%; height: auto;
+  background: #000; border: 1px solid var(--border); border-radius: 3px;
+}
+
 /* 图片放大（xp-enhance.js 注入的轻量 lightbox） */
 .xp-lightbox {
   position: fixed; inset: 0; z-index: 10050;
@@ -1265,8 +1273,11 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 .xp-post-card-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
 .xp-post-card:hover .xp-post-card-cover img { transform: scale(1.04); }
 .xp-post-card-body { flex: 1 1 auto; min-width: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
-.xp-post-card-title { margin: 0; font-size: 16px; color: var(--text-heading); }
+.xp-post-card-title { margin: 0; font-size: 16px; color: var(--text-heading); display: flex; align-items: center; gap: 8px; }
 .xp-post-card:hover .xp-post-card-title { text-decoration: underline; }
+/* 置顶标记：sticky 有值时卡片标题右侧的「到顶」箭头（琥珀色，深色模式自动换亮） */
+.xp-post-card-title .xp-pin { margin-left: auto; flex: 0 0 auto; color: var(--xp-status-doing); }
+.xp-pin svg { display: block; }
 .xp-post-card-excerpt {
   margin: 0; font-size: 16px; line-height: 1.7; color: var(--text-muted);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -1360,21 +1371,33 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
 .xp-widget .article-title { font-size: 16px; }
 .xp-widget .article-meta { font-size: 16px; }
 
-/* 相关文章 / 上下篇 */
-.xp-related { margin-top: 20px; }
-.xp-related-list { list-style: none; padding: 0; margin: 0; }
-.xp-related-list li { padding: 7px 0; border-bottom: 1px dashed var(--border); }
-.xp-related-list li:last-child { border-bottom: none; }
-.xp-related-list a {
+/* 上一篇 / 下一篇（按时间的相邻两篇，见 post.ejs 里的说明）。
+   两块并排：左＝更新的那篇，右＝更早的那篇；只有一边有时另一边留空占位，
+   这样单个链接不会横跨整行、看起来像"这块没做完"。
+   （原来的「相关文章」窗口已删掉，相关样式也一并删除。） */
+.post-nav { display: flex; gap: 12px; align-items: stretch; margin: 20px 0 0; }
+.post-nav-item {
+  flex: 1 1 0; min-width: 0;
   display: flex; flex-direction: column; gap: 3px;
-  text-decoration: none; color: var(--text-heading); font-size: 16px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 3px;
+  text-decoration: none; color: inherit;
+  transition: background 0.15s, border-color 0.15s;
 }
-.xp-related-list a:hover { color: var(--xp-blue-border); text-decoration: underline; }
-.xp-related-list .meta { font-size: 16px; color: var(--text-muted); }
-.next-post { margin: 16px 0 0; }
-.next-post .post-title { margin: 0; font-size: 16px; }
-.next-post .purple-link { color: var(--link); text-decoration: none; }
-.next-post .purple-link:hover { text-decoration: underline; }
+.post-nav-item:hover { background: var(--face-hover); border-color: var(--xp-hover); }
+.post-nav-item.next { text-align: right; }
+.post-nav-label { font-size: 16px; color: var(--text-muted); }
+.post-nav-title {
+  font-size: 16px; color: var(--text-heading);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.post-nav-spacer { flex: 1 1 0; min-width: 0; }
+@media (max-width: 640px) {
+  .post-nav { flex-direction: column; }
+  .post-nav-item.next { text-align: left; }
+  .post-nav-spacer { display: none; }
+}
 
 /* 索引页（/tags/ 与 /categories/）*/
 .xp-index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
@@ -1573,7 +1596,6 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
   /* 窄屏：便利贴会移到「用户账户」上方。便签没有拖尾，所以这里不再需要任何
      针对拖尾的处理（原来给「朝下拖尾」预留的 margin-bottom 也一并去掉）。 */
-  .work-featured-layout { grid-template-columns: 1fr; }
   .header-body { flex-direction: column; align-items: flex-start; }
   .retro-mp4-player { max-width: 200px; }
   .guide-list li { flex-wrap: wrap; }
