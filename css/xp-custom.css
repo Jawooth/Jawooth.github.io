@@ -722,7 +722,7 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   border-radius: 6px 6px 0 0;
 }
 /* 拖动时品牌条光标变手型（JS 也会给它设） */
-.mp4-brand { cursor: move; }
+.mp4-brand { cursor: move; touch-action: none; user-select: none; -webkit-user-select: none; }   /* touch-action: 告诉浏览器「这个区域的手势归拖动管，别当滚动」；user-select: 防长按选中歌名 */
 
 /* 纵向布局：封面在上居中、歌名信息在下，替代之前的左右并排 */
 .mp4-screen-content.mp4-screen-v {

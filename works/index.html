@@ -29,7 +29,7 @@
 
   
   
-  <link rel="stylesheet" href="/css/xp-custom.css?v=9c35d27f">
+  <link rel="stylesheet" href="/css/xp-custom.css?v=c4c9b03a">
 <meta name="generator" content="Hexo 8.1.2"><link rel="canonical" href="https://Jawooth.github.io/works/">
 <meta property="og:url" content="https://Jawooth.github.io/works/">
 <meta property="og:type" content="website">
@@ -306,23 +306,23 @@
 <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2v12l-6-6 6-6z" fill="currentColor"></path><rect x="2" y="2" width="2" height="12" fill="currentColor"></rect></svg>
 </button>
 <button class="mp4-btn mp4-btn-play" id="mp4-play" type="button" title="播放/暂停" aria-label="播放">
-<svg id="icon-play" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2l10 6-10 6V2z" fill="currentColor"></path></svg>
-<svg id="icon-pause" width="16" height="16" viewBox="0 0 16 16" style="display:none" aria-hidden="true"><rect x="4" y="2" width="3" height="12" fill="currentColor"></rect><rect x="9" y="2" width="3" height="12" fill="currentColor"></rect></svg>
+<svg id="icon-play" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2l10 6-10 6V2z" fill="currentColor"></path></svg>
+<svg id="icon-pause" width="14" height="14" viewBox="0 0 16 16" style="display:none" aria-hidden="true"><rect x="4" y="2" width="3" height="12" fill="currentColor"></rect><rect x="9" y="2" width="3" height="12" fill="currentColor"></rect></svg>
 </button>
 <button class="mp4-btn" id="mp4-next" type="button" title="下一首" aria-label="下一首">
 <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2v12l6-6-6-6z" fill="currentColor"></path><rect x="12" y="2" width="2" height="12" fill="currentColor"></rect></svg>
 </button>
 <a class="mp4-btn mp4-btn-link" id="mp4-link" target="_blank" rel="noopener" title="跳转到网易云原页面" aria-label="跳转到网易云原页面">
-<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h5v2H4v8h8V9h2v5H2V2z" fill="currentColor"/><path d="M9 2h5v5h-2V5.5l-4 4-1.4-1.4 4-4H9z" fill="currentColor"/></svg>
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h5v2H4v8h8V9h2v5H2V2z" fill="currentColor"/><path d="M9 2h5v5h-2V5.5l-4 4-1.4-1.4 4-4H9z" fill="currentColor"/></svg>
 </a>
 <button class="mp4-btn mp4-btn-size" id="mp4-size" type="button" title="调节大小（小 / 标准 / 大）" aria-label="调节播放器大小">
-<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 1H15v5.5h-2V4.6l-3.4 3.4-1.6-1.6L11.4 3H9.5V1z" fill="currentColor"/><path d="M6.5 15H1V9.5h2v1.9l3.4-3.4 1.6 1.6L4.6 13h1.9v2z" fill="currentColor"/></svg>
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 1H15v5.5h-2V4.6l-3.4 3.4-1.6-1.6L11.4 3H9.5V1z" fill="currentColor"/><path d="M6.5 15H1V9.5h2v1.9l3.4-3.4 1.6 1.6L4.6 13h1.9v2z" fill="currentColor"/></svg>
 </button>
 <button class="mp4-btn mp4-btn-close" id="mp4-close" type="button" title="折叠" aria-label="折叠">
-<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5h10v2H3zM3 9h10v2H3z" fill="currentColor"/></svg>
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5h10v2H3zM3 9h10v2H3z" fill="currentColor"/></svg>
 </button>
 <button class="mp4-btn mp4-btn-hide" id="mp4-hide" type="button" title="隐藏（点右下角小球恢复）" aria-label="隐藏播放器">
-<svg width="11" height="11" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3L8 7l4-4 1 1-4 4 4 4-1 1-4-4-4 4-1-1 4-4-4-4z" fill="currentColor"/></svg>
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3L8 7l4-4 1 1-4 4 4 4-1 1-4-4-4 4-1-1 4-4-4-4z" fill="currentColor"/></svg>
 </button>
 </div>
 </div>
@@ -403,6 +403,7 @@
     }, { passive: true });
     document.addEventListener('touchmove', function (e) {
       if (!dragging) return;
+      e.preventDefault();   /* 拖播放器期间阻止页面跟着滚（必须配 passive:false 才能调用，2026-10-13） */
       var t = e.touches[0];
       var w = box.offsetWidth, h = box.offsetHeight;
       var maxX = window.innerWidth - w - 4, maxY = window.innerHeight - h - 4;
@@ -411,7 +412,7 @@
       box.style.left = x + 'px'; box.style.top = y + 'px';
       box.style.right = 'auto'; box.style.bottom = 'auto';
       try { localStorage.setItem(SP, JSON.stringify({ l: x, t: y })); } catch (e) {}
-    }, { passive: true });
+    }, { passive: false });
     document.addEventListener('touchend', function () { dragging = false; });
   }
 
