@@ -351,16 +351,18 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 .xp-window-title.compact { height: 26px; padding: 0 8px; font-size: 16px; }
 .xp-window-title-text { display: flex; align-items: center; gap: 6px; min-width: 0; }
 
+/* XP.css 风格窗口按钮（参考 botoxparty.github.io/XP.css） */
 .xp-window-btns { display: flex; gap: 2px; flex-shrink: 0; }
 .xp-window-title.compact .xp-window-btns { display: none; }
 
-/* 装饰性窗口按钮：不承担功能，因此不作为交互元素（无 tabindex/无 role=button） */
+/* 按钮本体：XP.css 风格 —— 纯蓝/红背景、无边框、21×21 方形 */
 .xp-window-btn {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 3px;
-  background: linear-gradient(to bottom, #5ca3f7 0%, #1a6fd6 100%);
+  width: 21px;
+  height: 21px;
+  border: none;
+  border-radius: 0;
+  background-color: #0050ee;
+  box-shadow: none;
   color: #fff;
   font-size: 16px;
   line-height: 16px;
@@ -370,8 +372,43 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   align-items: center;
   justify-content: center;
   user-select: none;
+  cursor: pointer;
+  transition: background-color 0.1s;
+  padding: 0;
+  outline: none;
 }
-.xp-window-btn.close { background: linear-gradient(to bottom, #e04343 0%, #b03030 100%); }
+/* 关闭按钮：红色底（XP.css Close 按钮的背景色是渐变的，但纯色就够了） */
+.xp-window-btn.close {
+  background-color: #d84a3c;
+}
+/* hover：按钮变亮一点 */
+.xp-window-btn:hover {
+  background-color: #0a63f0;
+}
+.xp-window-btn.close:hover {
+  background-color: #e85a4c;
+}
+/* active：按钮变暗（模拟按下） */
+.xp-window-btn:active {
+  background-color: #0040c0;
+}
+.xp-window-btn.close:active {
+  background-color: #b83a2c;
+}
+/* 键盘焦点环 */
+.xp-window-btn:focus {
+  outline: 1px dotted #fff;
+  outline-offset: -4px;
+}
+/* 最小化后的窗口 body 收起 */
+.xp-window.is-minimized .xp-window-body { display: none; height: 0; padding: 0; overflow: hidden; }
+.xp-window.is-minimized { height: auto !important; }
+/* 最大化：从 bento 格子弹出来铺满视口 */
+.xp-window.is-maximized {
+  position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+  z-index: 10002; max-width: none; border-radius: 0;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
 
 .xp-window-body { padding: 14px 16px; background: var(--surface); flex: 1; color: var(--text); }
 .xp-window-body.compact-body { padding: 10px 12px; }
@@ -646,6 +683,83 @@ html.dark .profile-icon { color: var(--link); }
 html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }html.dark .mp4-brand { color: #9cc2ff; }
 html.dark .mp4-progress-times { color: #c8c8d6; }
 html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
+
+/* ---------- 全局固定浮动条（可拖动 + 可隐藏 + 纵向布局） ----------
+   固定右下角，z-index 10001 盖住任务栏；位置可拖、拖后存 LocalStorage。 */
+.xp-music-floating {
+  position: fixed; right: 18px; bottom: calc(var(--taskbar-height) + 14px); z-index: 10001;
+  width: 200px; max-width: calc(100vw - 36px);
+  user-select: none;  /* 拖动时不选中文本 */
+}
+.mp4-floating {
+  padding: 8px 10px; gap: 6px;
+  border-radius: 6px 6px 0 0;
+}
+/* 拖动时品牌条光标变手型（JS 也会给它设） */
+.mp4-brand { cursor: move; }
+
+/* 纵向布局：封面在上居中、歌名信息在下，替代之前的左右并排 */
+.mp4-screen-content.mp4-screen-v {
+  flex-direction: column; gap: 6px;
+  align-items: center; text-align: center;
+}
+.mp4-screen-content.mp4-screen-v .mp4-cover-placeholder {
+  width: 100px; height: 100px; border-radius: 50%;
+}
+.mp4-screen-content.mp4-screen-v .mp4-song-info { width: 100%; min-width: 0; }
+.mp4-screen-content.mp4-screen-v .mp4-song-author { font-size: 12px; }
+
+.mp4-floating .mp4-controls { gap: 4px; flex-wrap: wrap; }
+.mp4-floating .mp4-btn { width: 28px; height: 22px; }
+.mp4-floating .mp4-btn-play { width: 36px; }
+.mp4-floating .mp4-btn-link,
+.mp4-floating .mp4-btn-close,
+.mp4-floating .mp4-btn-hide { width: 24px; height: 22px; }
+
+/* 跑马灯 */
+.mp4-title-inner { display: inline-block; white-space: nowrap; }
+.mp4-title-inner.mp4-marquee {
+  animation: mp4-marquee 12s linear infinite;
+  padding-left: 100%;
+}
+@keyframes mp4-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* 折叠：只留品牌条 + 封面缩略 + 控制条 */
+.mp4-collapsed .mp4-screen-content,
+.mp4-collapsed .mp4-progress-wrap { display: none; }
+.mp4-collapsed .mp4-floating { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 6px 10px; }
+.mp4-collapsed .mp4-controls { margin-left: auto; }
+
+/* 隐藏：整块播放器消失，右下角出现恢复小球 */
+.mp4-hidden { display: none !important; }
+.xp-music-resume {
+  position: fixed; right: 18px; bottom: calc(var(--taskbar-height) + 14px);
+  width: 36px; height: 36px; border-radius: 50%;
+  z-index: 10001; cursor: pointer;
+  background: linear-gradient(180deg, #e8e8e0 0%, #d8d8d0 100%);
+  border: 2px solid var(--xp-blue-border);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  color: var(--xp-blue-border);
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+}
+.xp-music-resume:hover { transform: translateY(-1px); box-shadow: 3px 4px 8px rgba(0,0,0,0.2); }
+html.dark .xp-music-resume {
+  background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); color: #9cc2ff;
+}
+
+/* 跳转按钮：a 标签，去掉默认下划线 */
+.mp4-btn-link { text-decoration: none; color: inherit; display: inline-flex; align-items: center; justify-content: center; }
+
+/* 自介文章链接列表（首页「详细属性」窗口） */
+.xp-intro-list { list-style: none; padding: 0; margin: 0; }
+.xp-intro-list li { padding: 6px 0; border-bottom: 1px dashed var(--border); }
+.xp-intro-list li:last-child { border-bottom: none; }
+.xp-intro-list a { color: var(--text-heading); text-decoration: none; font-size: 16px; }
+.xp-intro-list a:hover { color: var(--xp-hover); text-decoration: underline; }
 
 /* 网易云歌单模式：官方外链播放器填满整个格子（不套 XP 皮肤，见 _data/music.yml 说明） */
 .xp-music-embed {
