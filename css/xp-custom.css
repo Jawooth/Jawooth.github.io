@@ -17,7 +17,10 @@
 
 /* ============ 0) 字体（自托管，不再请求 Google Fonts） ============
    ① 正文像素字体：缝合像素 12px（Fusion Pixel Font，作者 TakWolf）
-      文件：source/fonts/fusion-pixel-12px-proportional-zh_hans.woff2（约 650 KB，未做修改）
+      文件：source/fonts/fusion-pixel-12px-proportional-zh_hans.woff2
+      （2026-10-12 起为**子集**：GB2312 常用字 + 仓库实际用字，约 177 KB；
+        全量原件 650 KB 已备份到 backup/fusion-pixel-12px-proportional-zh_hans-full.woff2，
+        想恢复就复制回去。子集化之前它是全量文件、未做修改）
       授权：SIL Open Font License 1.1 —— 允许网页嵌入与再分发，许可证原件
             随字体一起放在 source/fonts/fusion-pixel-OFL.txt（OFL 要求随附）。
       ⚠ 它是**点阵字体**：设计尺寸是 12px（upem 1200 = 100 单位/像素），
@@ -29,6 +32,10 @@
       黑体 12px，但缝合版是「方舟 + 其它同尺寸字体」的合集，常用汉字覆盖率更高。
       实测本站用到的 884 个非 ASCII 字符：方舟缺 25 个，缝合只缺 7 个 ——
       而且那 7 个全是 ∞ ≥ ⚠ ✨ 🎨 这类符号/emoji。汉字已经不再掉出像素字体。
+      为什么把正文也裁子集（2026-10-12）：650 KB 是全站最大的自持资源，而 GB2312 +
+      仓库实际用字只要 177 KB。代价是新文章出现未收录字符会掉系统字体，
+      **配套** tools/verify-site.py 第 7 节的「用字 ∩ 字体覆盖」检查每次构建都会盯着，
+      缺字就提醒重跑 tools/make-pixel-fonts.py。
    ② 强调文字（只有 24px 的用户名标题与侧栏作者名）：**真·粗体**，
       用缝合粗像素 12px，不再靠 text-shadow 假加粗。
       它只渲染几个网名字，没必要驮完整的 660 KB，因此安装时裁成子集
@@ -97,19 +104,21 @@
   --btn-border: #003c74;
   --btn-shadow-light: #ffffff;
   --btn-shadow-dark: #aca899;
-  --title-grad: linear-gradient(to bottom, #0058ee 0%, #3590f3 10%, #0058ee 50%, #003399 100%);
+  --title-grad: linear-gradient(180deg, #0997ff 0%, #0053ee 8%, #0050ee 40%, #0066ff 88%, #0066ff 93%, #005bff 95%, #003dd7 96%, #003dd7 100%);
   --taskbar-grad: linear-gradient(to bottom, #245edb 0%, #3a7bd5 10%, #245edb 50%, #1a4ab8 100%);
   --tray-grad: linear-gradient(to bottom, #1a4ab8 0%, #245edb 50%, #3a7bd5 100%);
   --win-shadow: 3px 3px 0 rgba(0, 0, 0, 0.18), 6px 6px 16px rgba(0, 0, 0, 0.15);
   --win-shadow-hover: 4px 4px 0 rgba(0, 0, 0, 0.22), 8px 10px 22px rgba(0, 0, 0, 0.18);
+  /* XP.css 原版窗口框（botoxparty.github.io/XP.css 的 .window）：
+     米色窗脸 + 6 层 inset 蓝边。暗色模式在 html.dark 里换深色版。 */
+  --win-face: #ece9d8;
+  --win-drop: 2px 2px 0 rgba(0, 0, 0, 0.15);
+  --win-frame: inset -1px -1px #00138c, inset 1px 1px #0831d9, inset -2px -2px #001ea0, inset 2px 2px #166aee, inset -3px -3px #003bda, inset 3px 3px #0855dd;
 
   /* 桌面背景 */
   --desktop-bg: url('/images/xp-desktop-bg.jpg') center/cover no-repeat fixed;
-  /* 两侧装饰图：把图放进 source/images/decor/ 并保持这两个文件名即可，
-     png / gif / webp / jpg 都行；不想要就留空（改成一个不存在的路径也不会报错）。
-     只在 ≥1500px 宽的窗口显示，见下面第 2 节的规则 */
-  --decor-left: url('/images/decor/left.png');
-  --decor-right: url('/images/decor/right.png');
+  /* 两侧装饰图 2026-10-13 起改为数据驱动：图和位置都在 source/_data/decor.yml 里配，
+     这里不再写死图片路径（规则见下面第 2 节的 .xp-decor） */
   --taskbar-height: 36px;
 
   /* ---- 首页句子便利贴（复古便利贴：暖黄纸面 + 直角 + 右下角卷边）---------
@@ -167,6 +176,10 @@ html.dark {
   --btn-shadow-dark: #1e1e2a;
   --win-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45), 6px 6px 16px rgba(0, 0, 0, 0.4);
   --win-shadow-hover: 4px 4px 0 rgba(0, 0, 0, 0.5), 8px 10px 22px rgba(0, 0, 0, 0.45);
+  /* XP.css 窗口框的暗色版：窗脸换深灰，蓝边整体压暗一档 */
+  --win-face: #3a3a4a;
+  --win-drop: 2px 2px 0 rgba(0, 0, 0, 0.45);
+  --win-frame: inset -1px -1px #001042, inset 1px 1px #1a49c8, inset -2px -2px #00166e, inset 2px 2px #2a6ae0, inset -3px -3px #0028a0, inset 3px 3px #2f7df0;
   /* 深色模式桌面背景：换图就替换 source/images/xp-desktop-bg-dark.jpg
      （末尾的 #1a1a2e 是纯色兜底：图片缺失时也不会变成白底） */
   --desktop-bg: url('/images/xp-desktop-bg-dark.jpg') center/cover no-repeat fixed #1a1a2e;
@@ -200,25 +213,19 @@ body {
 
 .main { max-width: 1000px; margin: 0 auto; }
 
-/* PC 宽屏时左右各留出装饰区（顶部 120px 起，宽 160px），
-   装饰图放到 source/images/decor/ 下即可；窄屏自动隐藏。 */
+/* 两侧装饰图（2026-10-13 起数据驱动）：source/_data/decor.yml 里每项一张图，
+   张数不限、每张可配贴哪侧 / 距顶多远 / 多宽；图片由脚本注入成 <img class="xp-decor">。
+   只在 ≥1500px 宽屏显示（两侧留了 180px 装饰带），窄屏自动隐藏，不挡任何点击。 */
+.xp-decor {
+  display: none;
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
 @media (min-width: 1500px) {
   body { padding-left: 180px; padding-right: 180px; }
-  body::before,
-  body::after {
-    content: '';
-    position: fixed;
-    top: 120px;
-    width: 160px;
-    height: 460px;
-    z-index: 0;
-    pointer-events: none;
-    background-repeat: no-repeat;
-    background-position: center top;
-    background-size: contain;
-  }
-  body::before { left: 10px; background-image: var(--decor-left); }
-  body::after { right: 10px; background-image: var(--decor-right); }
+  .xp-decor { display: block; }
 }
 
 /* 全宽页面：首页与所有 xp-page-fullwidth 页面铺满浏览器 */
@@ -320,40 +327,46 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   white-space: nowrap;
 }
 
-/* ============ 4) XP 窗口 ============ */
+/* ============ 4) XP 窗口（XP.css 原版 .window） ============ */
 .xp-window {
-  border: 2px solid var(--xp-blue-border);
+  background: var(--win-face);
+  padding: 0 0 3px;              /* 标题栏贴顶，底部留 3px 蓝边（XP.css 原版做法） */
   border-radius: 8px 8px 0 0;
-  box-shadow: var(--win-shadow);
+  box-shadow: var(--win-drop), var(--win-frame);
   overflow: hidden;
-  background: var(--surface);
   display: flex;
   flex-direction: column;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.xp-window:hover { box-shadow: var(--win-shadow-hover); }
+.xp-window:hover { box-shadow: var(--win-shadow-hover), var(--win-frame); }
 
 .xp-window-title {
+  /* XP.css 原版 .title-bar：光泽蓝渐变 + 顶部 1px 高光边 + 深蓝文字投影 */
   background: var(--title-grad);
+  height: 28px;
+  padding: 3px 5px 3px 3px;
+  border-top: 1px solid #0831d9;
+  border-left: 1px solid #0831d9;
+  border-right: 1px solid #001ea0;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
   color: #fff;
-  /* 固定高度：普通与紧凑标题栏一样高，同一横带里的窗体内容起始位置才会齐平 */
-  height: 26px;
-  padding: 0 10px;
   font-weight: bold;
   font-size: 16px;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px #0f1089;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   flex-shrink: 0;
 }
-.xp-window-title.compact { height: 26px; padding: 0 8px; font-size: 16px; }
+.xp-window-title.compact { padding: 3px 6px; }
 .xp-window-title-text { display: flex; align-items: center; gap: 6px; min-width: 0; }
 
-/* XP.css 风格窗口按钮（参考 botoxparty.github.io/XP.css） */
+/* XP.css 风格窗口按钮（参考 botoxparty.github.io/XP.css）
+   2026-10-13 起 compact 窄标题栏也显示按钮 —— 全站所有窗口统一带三按钮，
+   窄栏高度 28px、按钮 21px，放得下；打印时仍隐藏（见第 13 节 @media print）。 */
 .xp-window-btns { display: flex; gap: 2px; flex-shrink: 0; }
-.xp-window-title.compact .xp-window-btns { display: none; }
 
 /* 按钮本体：XP.css 风格 —— 纯蓝/红背景、无边框、21×21 方形 */
 .xp-window-btn {
@@ -407,11 +420,11 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 .xp-window.is-maximized {
   position: fixed; left: 0; top: 0; right: 0; bottom: 0;
   z-index: 10002; max-width: none; border-radius: 0;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5), var(--win-frame);
 }
 
-.xp-window-body { padding: 14px 16px; background: var(--surface); flex: 1; color: var(--text); }
-.xp-window-body.compact-body { padding: 10px 12px; }
+.xp-window-body { margin: 8px; padding: 0; background: transparent; flex: 1; color: var(--text); }
+.xp-window-body.compact-body { margin: 6px; }
 
 /* 内联小图标 */
 .inline-icon { display: inline-block; vertical-align: middle; margin-right: 4px; margin-top: -2px; }
@@ -498,12 +511,25 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .profile-content { display: flex; align-items: flex-start; gap: 16px; height: 100%; }
 .profile-avatar {
   width: 132px; height: 132px;
-  border: 2px solid var(--xp-blue-border);
-  border-radius: 6px;
-  background: var(--surface-3);
   flex-shrink: 0;
   object-fit: cover;
-  image-rendering: pixelated;
+  /* 站主头像换成了透明底 PNG：不加边框、不加背景，透明处直接透出桌面壁纸；
+     也不要 image-rendering: pixelated —— 450px 源图缩到 132px 时逐像素取样
+     会产生锯齿花斑（看起来像"被压缩"），让浏览器平滑缩放反而干净。 */
+}
+
+/* 头像点击彩蛋：手型光标 + 挤压弹跳（音效与便签换句在 index.md 的脚本里） */
+#xp-avatar { cursor: pointer; }
+#xp-avatar.bouncing { animation: avatar-boing 0.5s ease; }
+@keyframes avatar-boing {
+  0%   { transform: scale(1, 1); }
+  25%  { transform: scale(1.12, 0.82); }                   /* 挤扁 */
+  50%  { transform: scale(0.88, 1.16) translateY(-6px); }  /* 拉长弹起 */
+  72%  { transform: scale(1.05, 0.95); }
+  100% { transform: scale(1, 1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #xp-avatar.bouncing { animation: none; }
 }
 .profile-text { flex: 1; min-width: 0; }
 .profile-text h2 { margin: 0 0 4px; font-size: 24px; color: var(--text-heading); }
@@ -727,11 +753,20 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   100% { transform: translateX(-100%); }
 }
 
-/* 折叠：只留品牌条 + 封面缩略 + 控制条 */
-.mp4-collapsed .mp4-screen-content,
+/* 折叠：只剩品牌条 + 控制条一行 */
+.mp4-collapsed .mp4-screen,
 .mp4-collapsed .mp4-progress-wrap { display: none; }
-.mp4-collapsed .mp4-floating { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 6px 10px; }
-.mp4-collapsed .mp4-controls { margin-left: auto; }
+.mp4-collapsed .mp4-floating { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; overflow: hidden; }
+/* 折叠态空间有限：只留 播放/暂停、展开、隐藏 三个高频键（2026-10-13 修复 ——
+   加入「大小」按钮后 7 个键挤爆一行，品牌条被压成 0 宽，图标溢出边框且没地方拖动） */
+.mp4-collapsed .mp4-btn-link,
+.mp4-collapsed .mp4-btn-size,
+.mp4-collapsed #mp4-prev,
+.mp4-collapsed #mp4-next { display: none; }
+.mp4-collapsed .mp4-brand { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; min-width: 56px; }   /* 至少留 56px 当拖动区 */
+.mp4-collapsed .mp4-controls { margin-left: auto; gap: 3px; flex-wrap: nowrap; }
+.mp4-collapsed .mp4-btn { width: 24px; height: 20px; }
+.mp4-collapsed .mp4-btn-play { width: 30px; }
 
 /* 隐藏：整块播放器消失，右下角出现恢复小球 */
 .mp4-hidden { display: none !important; }
@@ -760,6 +795,14 @@ html.dark .xp-music-resume {
 .xp-intro-list li:last-child { border-bottom: none; }
 .xp-intro-list a { color: var(--text-heading); text-decoration: none; font-size: 16px; }
 .xp-intro-list a:hover { color: var(--xp-hover); text-decoration: underline; }
+
+/* 首页计数器窗口（2026-10-13 从 index.md 内联样式搬来：组件样式统一放本文件）
+   布局：左边「已被做局 N 次。」一行、右边清除按钮；窄屏（见 index.md 媒体查询）回落纵向 */
+.xp-duck-body { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 14px; text-align: center; }
+.xp-duck-main { display: flex; align-items: center; gap: 6px; min-width: 0; }   /* 两侧文字相对大数字垂直居中 */
+.xp-duck-line { margin: 0; font-size: 16px; color: var(--text); white-space: nowrap; flex-shrink: 0; }   /* 「已被做局」不换行、不被压缩 */
+.xp-duck-count { margin: 0; font-size: 40px; line-height: 1.15; font-weight: bold; color: var(--xp-blue-border); font-family: var(--font-display); }
+.xp-duck-clear { flex-shrink: 0; }   /* 清除计数按钮：外观走全局 .xp-btn，横排时不被挤压 */
 
 /* 网易云歌单模式：官方外链播放器填满整个格子（不套 XP 皮肤，见 _data/music.yml 说明） */
 .xp-music-embed {
@@ -1742,4 +1785,60 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-shell .post-content { padding: 12px 12px 16px; }
   .xp-shell .post-content p,
   .xp-shell .post-content li { font-size: 16px; }
+}
+
+/* ============ 13) 打印样式（2026-10-12 审查新增） ============
+   文章页直接打印会驮上桌面壁纸（background-attachment: fixed）、两侧装饰图、
+   底部任务栏和悬浮播放器 —— 糊成一片还费墨。打印时回归白纸黑字：
+   隐藏 chrome、窗口去阴影、深色模式也强制浅色（否则深色主题打出来是黑底白字）。 */
+@media print {
+  html.dark {
+    --surface: #ffffff; --surface-2: #ffffff; --surface-3: #f2f2f2;
+    --text: #111111; --text-muted: #555555; --text-heading: #003399;
+    --text-sub: #333333; --border: #999999; --border-strong: #666666;
+    --link: #0000cc;
+    --face: #f2f2f2; --face-hover: #f2f2f2; --face-active: #e6e6e6;
+    --title-grad: #ffffff; --win-shadow: none; --win-shadow-hover: none;
+    --win-face: #ffffff; --win-drop: none; --win-frame: none;
+  }
+  body { background: #ffffff !important; background-attachment: scroll !important; }
+  .xp-taskbar, .xp-music-floating, .xp-music-resume, #xp-restore-bar, .xp-decor { display: none !important; }
+  .xp-window { box-shadow: none !important; border: 1px solid var(--border-strong); break-inside: avoid; }
+  .xp-window-body { margin: 8px; }
+  .xp-window-title {
+    background: #ffffff !important; color: #003399 !important;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  /* 标题栏右侧那排窗口按钮（最小化/最大化/关闭）打印出来没有意义 */
+  .xp-window-btns { display: none !important; }
+  a { color: var(--link); }
+}
+
+/* ============ 14) 关闭窗口的恢复条（2026-10-12 审查新增） ============
+   XP 语义里 ✕ 是「关闭直到刷新」，误点一次窗口就回不来。
+   现在关闭后在左下角（任务栏上方）留一枚可点的「恢复」chip，点一下窗口就回来；
+   多关几个就叠几枚，全部恢复后条自动消失。交互见 scripts/xp-content.js
+   的 xp_window_actions。样式沿用主题的设计令牌，深色模式自动适配。 */
+.xp-window[data-xp-closed] { display: none; }
+#xp-restore-bar {
+  position: fixed; left: 18px; bottom: calc(var(--taskbar-height) + 14px);
+  z-index: 10001; display: flex; flex-direction: column-reverse;
+  gap: 6px; align-items: flex-start; pointer-events: none;
+}
+#xp-restore-bar:empty { display: none; }
+.xp-restore-chip {
+  pointer-events: auto; cursor: pointer;
+  font: 12px/1.5 var(--font-ui); color: var(--text);
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: 3px; padding: 3px 10px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.18);
+  max-width: min(220px, calc(100vw - 36px));
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.xp-restore-chip::before { content: '▣ '; color: var(--xp-blue-border); }
+.xp-restore-chip:hover { background: var(--surface-2); border-color: var(--xp-hover); }
+.xp-restore-chip:focus-visible { outline: 2px dashed var(--xp-blue-border); outline-offset: 1px; }
+@media (max-width: 640px) {
+  #xp-restore-bar { left: 10px; }
+  .xp-restore-chip { max-width: calc(100vw - 20px); }
 }
