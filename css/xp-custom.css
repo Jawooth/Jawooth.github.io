@@ -7,12 +7,17 @@
 
    分层：
      1) 设计令牌        2) 基础与桌面      3) 无障碍
+     2-b) 折行文字行高
      4) XP 窗口         5) XP 控件         6) 便当格
      7) 首页组件        8) 作品页组件      9) 其他页面组件
     10) 文章/列表页外壳 11) 任务栏         12) 动画            13) 响应式
+    14) 关闭窗口恢复条  15) XP.css 兼容层
 
-   注意：本站不使用 XP.css 库的任何类名（title-bar/field-row/…），
-   视觉全部由本文件实现，因此 inject-xp-css.js 已不再引入 xp.css。
+   与 XP.css 的关系（2026-10-13 变更）：
+   本站现在**引入**了 XP.css 官方库（自托管于 source/vendor/xp-css/，版本钉死），
+   整份库被包在 CSS 级联层 @layer xp-css 里 —— 分层样式一律输给未分层的样式，
+   所以下面这些规则永远赢，库只在「本站没写过的地方」生效。
+   做法与理由见第 15 节与 scripts/inject-xp-css.js 的注释。
    ============================================================ */
 
 /* ============ 0) 字体（自托管，不再请求 Google Fonts） ============
@@ -207,9 +212,61 @@ body {
   padding: 20px 10px;
   padding-bottom: calc(var(--taskbar-height) + 20px);
   font-family: var(--font-ui);
+  /* 字号：显式写死，不靠继承 —— 主题的 modern-normalize 只给 html 设了字号，
+     而 XP.css 里有一条 body{font-size:12px}。写在这一层，读这个文件的人不用猜谁赢。 */
+  font-size: 16px;
+  /* 行距：**故意不设全站兜底**。这是量过之后才敢下的结论，别凭直觉加回来：
+     · modern-normalize 给 html 设了 line-height:1.15，会一路继承到全站每一处
+       自己没写行高的文字（2026-10-13 实测每页约 508 个元素）。
+     · 但 line-height 只决定「行盒高度」，**不改字形本身**。这 508 个元素里绝大多数是
+       单行的界面文字（标签、按钮、任务栏、窗口标题），单行文字 1.15 只影响盒高，
+       看不出哪一行被挤；而一旦把它们统一抬到 1.6，XP 桌面的紧凑控件会整体长高约 27%
+       —— 实测 .xp-window-body 262.9px→334.9px、.tag-pill 26.4px→33.6px、
+       .xp-chip 22.4px→29.6px。那是视觉回归，不是优化。
+     · 真正会被 1.15 挤坏的只有**折行成多行**的文字，而这类文字本站早就单独写过行高：
+       文章段落 1.725（主题 post.styl）、卡片摘要 1.7、列表项 1.45、引用 1.75。
+       实测扫下来只剩极少数几处漏网，单独补在下面的「2-b)」。
+     所以：不设全站值，只补实测会折行且过紧的那几处。
+     ⚠ 维护者注意：不要在这里重新加一条全站 line-height。真要加，加在 2-b，
+       并且只针对「会折行」的元素 —— 单行控件加行高 = 白白长胖。 */
   color: var(--text);
   overflow-x: hidden;
 }
+
+/* ---------- 2-b) 折行文字的行高（只补实测缺的这几处） ----------
+   为什么不设全站值、以及那些「1.15 但没问题」的 500 多个元素是怎么回事：
+   见上面 body 里的注释。结论是只补**实测会折行成多行**的位置。
+
+   下面是 2026-10-13 用探针扫过全部页型之后的完整清单 —— 探针把每个元素的文本
+   拆成 Range、用 getClientRects() 按 top 去重，数的是**真实行盒数**（不是
+   用高度除行高估算，那种算法会被 padding 带偏）。1440 / 390 两个视口都扫了，
+   全站只有这 3 处，没有别的：
+
+     选择器                在哪                                窄屏（390px）表现
+     p.recent-work-date    首页「最近作品」横栏的日期          折 2 行
+     p（裸段落）           /works/ /games/ /guides/ 的页面说明句 折 2 行
+     .guide-title          攻略页条目标题                       折 2~3 行
+
+   ① p —— 主题只给**文章正文**写了行高（post.styl 里 .post-content p = 1.725），
+      其余地方的 p 一直继承 html 的 1.15。给裸 p 补 1.6 是安全的：
+        · p 天生是成段的散文，松一点只会更好读；
+        · 站内没有一个 p 处在「固定高度 + overflow 裁剪」的盒子里 —— 唯一像的
+          .xp-duck-line 写了 white-space:nowrap，永远单行，行高只改盒高、不触发裁剪；
+        · 已经有自己行高的 p 选择器都比这条更具体，不会被盖掉：
+          .post-content p 1.725、.bubble-content p 1.6、.profile-text p 1.4。
+      ⚠ 该条**确实**会改到单行 p 的盒高，实测到的只有 .xp-duck-line（18.39→25.59px）。
+        鸭子窗口里有两个它（「已被做局」和「次。」），各 +7.2px，所以那个窗口一共高 14.4px
+        （首页音乐便当格因此高 24.4px —— 另外 10px 来自「清除计数」按钮的移动端点击目标）。
+        这个是量过、认可的结果：那两行紧挨着 46px 高的计数数字，18px 的行盒在旁边
+        显得局促，25.6px 反而更平衡。其余单行 p 要么自带行高、要么在 nowrap 容器里，
+        都没有可见变化 —— 全站扫过，没有第三个。
+   ② .guide-title —— 它是**列表里的标题**，不是散文，行高按本站卡片标题的习惯给
+      （兄弟组件 .work-card-title 是 1.35）。这里取 1.4，比卡片标题略松一点，
+      因为它最长会折到 3 行。
+
+   以后新增会折行的文字就加在这一节，并把「在哪、为什么」一起写上。 */
+p { line-height: 1.6; }
+.guide-title { line-height: 1.4; }
 
 .main { max-width: 1000px; margin: 0 auto; }
 
@@ -548,8 +605,19 @@ html.dark .header-chip strong { color: #9cc2ff; }
 html.dark .meta-chip { background: rgba(53, 144, 243, 0.14); color: #cfe0ff; }
 html.dark .meta-chip strong { color: #9cc2ff; }
 
-/* 图标行（首页用户账户卡片用）：GitHub / 邮箱 / B站 / 小红书 等 */
-.profile-icons { margin-top: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+/* 图标行（首页用户账户卡片用）：GitHub / 邮箱 / B站 / 小红书 等。
+   居中的基准是**整张卡片**，不是右边这一列文字（2026-10-13 站主要求）：
+   这一行住在 .profile-text 里，而文字栏左边还站着 132px 头像 + 16px 间距，
+   所以盒子先往左拉回这 148px、再把宽度补回来 —— 盒子的中线就落在卡片中线上，
+   5 个图标随手也就跟着居中（原来只相对文字栏居中，整卡看会偏右 74px）。
+   ≤640px 时 .profile-content 变竖排、头像居中、文字栏占满整卡，
+   那里要把这两个值复位，见第 13 节 640px 分支。 */
+.profile-icons {
+  margin-top: 6px;
+  margin-left: calc((132px + 16px) * -1);
+  width: calc(100% + 132px + 16px);
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px;
+}
 .profile-icon {
   width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
@@ -722,7 +790,8 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   border-radius: 6px 6px 0 0;
 }
 /* 拖动时品牌条光标变手型（JS 也会给它设） */
-.mp4-brand { cursor: move; touch-action: none; user-select: none; -webkit-user-select: none; }   /* touch-action: 告诉浏览器「这个区域的手势归拖动管，别当滚动」；user-select: 防长按选中歌名 */
+.xp-music-floating { touch-action: none; }   /* 2026-10-13 拖动把手扩到整块播放器：手势全归拖动管，别当页面滚动 */
+.mp4-brand { cursor: move; user-select: none; -webkit-user-select: none; }   /* user-select: 防长按选中歌名 */
 
 /* 纵向布局：封面在上居中、歌名信息在下，替代之前的左右并排 */
 .mp4-screen-content.mp4-screen-v {
@@ -1770,6 +1839,8 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bento > * > .retro-mp4-player { max-width: 320px; aspect-ratio: auto; }
   .profile-content { flex-direction: column; align-items: center; text-align: center; }
   .profile-avatar { width: 96px; height: 96px; }
+  /* 竖排后头像在正上方、文字栏已经占满整卡，图标行不用再往左拉（见第 7 节） */
+  .profile-icons { margin-left: 0; width: auto; }
   .xp-bubble { transform: none; }   /* 不要写 margin:0 —— 那会把 ≤900px 里给向下拖尾留出的空间清零 */
   .recent-work-item { width: 150px; }
   /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，
@@ -1785,6 +1856,38 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-shell .post-content { padding: 12px 12px 16px; }
   .xp-shell .post-content p,
   .xp-shell .post-content li { font-size: 16px; }
+}
+
+/* ---------- 触摸屏上的点击目标（2026-10-13 新增） ----------
+   在 390px 视口量过全站可点元素的**视觉高度**，偏小的有这些：
+     .xp-tray-btn   18px  任务栏托盘按钮     .xp-chip       22px  标签芯片
+     .work-tag      24px  作品卡片分类标签   .xp-btn-small  24px  小号 XP 按钮
+     .cloud-tag     24px  标签云             .mp4-btn       26px  播放器窗口按钮
+     .filter-pill   26px  筛选药丸           .tag-pill      26px  标签药丸
+     .xp-search-btn 26px  站内搜索按钮
+   按 40px 的建议下限都偏小，但**只有一半适合放大**：
+     · XP 原版的紧凑 chrome —— .xp-tray-btn / .mp4-btn / .xp-start-btn —— **不改**。
+       窗口控制按钮是一组按标题栏高度统一设计的；任务栏本身只有 32px 高，
+       把托盘按钮撑到 40px 会把任务栏顶破。放大它们换来的只有「不像 XP」。
+     · 内容区的标签 / 药丸 / 小按钮 —— **放大**。它们是给人点的，周围有留白，
+       变高只会更好按；观感上就是「手机上的药丸比电脑上胖一圈」，很正常。
+   做法是**改真实内边距**，而不是叠一层隐形热区：隐形热区会越出元素边界去盖住
+   相邻的目标，**点错比点不到更糟**；改内边距则连视觉带热区一起长，永不重叠。
+   高度定在 34px 而不是 40px：这些元素都是一排排紧挨着排的，34px 配上现有的
+   5~6px gap 已经足够让相邻目标分开；40px 会让标签云在窄屏上白占一大截竖向空间。
+   只在 ≤640px 生效 —— 平板和 PC 是鼠标操作，密度本身就是观感的一部分。 */
+@media (max-width: 640px) {
+  .tag-pill,
+  .cloud-tag,
+  .cloud-tag.big,   /* 单独写出来：.cloud-tag.big 比 .cloud-tag 更具体，不列就被它按回 3px */
+  .filter-pill,
+  .work-tag,
+  .xp-btn-small,
+  .xp-search-btn,
+  .xp-chip {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
 }
 
 /* ============ 13) 打印样式（2026-10-12 审查新增） ============
@@ -1841,4 +1944,123 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 @media (max-width: 640px) {
   #xp-restore-bar { left: 10px; }
   .xp-restore-chip { max-width: calc(100vw - 20px); }
+}
+
+/* ============ 15) XP.css 兼容层（2026-10-13 引入 XP.css 时新增） ============
+   XP.css 以 @layer xp-css 引入（包裹层与理由写在 source/vendor/xp-css/XP.css 头部）：
+   分层样式天然输给未分层的本站样式，所以**绝大多数地方一个字都不用写**。
+
+   这一节只处理一类例外：站点本来就没写、而 XP.css 写了元素级规则的位置。
+   那里没有「未分层对手」可以压制 XP.css，只能显式改回来。
+   每条都写了「不改会怎样」—— 动这里之前先读那一行，别凭手感删。
+   ============================================================ */
+
+/* ① 正文的字号与行距：写在第 2 节的 body 里，不在这里重复 ——
+   这里原本压的是 XP.css 的 body{font-size:12px}。分层之后主题的 16px 本来就赢，
+   但「本站正文 16px / 行高 1.6」这个决定属于设计系统本身（第 2 节），
+   写在那边才不会出现同一件事两处定义、改一处忘一处。 */
+
+/* ② 窗体控件的字体与字号
+   XP.css：input,label,textarea{font-family:"Pixelated MS Sans Serif";font-size:11px}
+           button{…同上…;min-width:75px;min-height:23px;padding:0 12px}。
+   · 它自带的像素字体只有西文，中文会掉回系统字体 —— 同一个按钮里两种字形。
+   · 11px 在手机上根本按不准、也读不清。
+   · min-width:75px / min-height:23px 会按住按钮的实际尺寸：
+     实测播放器控制键被撑到 75×23、控制条折成两行把窗口顶高 56px，
+     任务栏托盘按钮从 22×18 被拉成 75×23。
+   本站按钮/控件的字体字号一律由各自的类名决定，这里只兜底「没写」的那部分。
+   两个 min-* 一起改回初始值 auto（= 引入 XP.css 之前的表现，不是随手给个 0）。 */
+button, input, select, textarea, label, optgroup, option {
+  font-family: var(--font-ui);
+  font-size: 16px;
+}
+button {
+  min-width: auto;
+  min-height: auto;
+}
+
+/* ②-b 第三方播放器（APlayer，自持在 source/vendor/aplayer/）的控件按它自己的样式来。
+   XP.css 的 button 皮肤（白→米色渐变底 + 3px 圆角）会给它的图标按钮画出一个方块，
+   本站的控件字体也不该渗进别人的组件里（图标按钮里没有文字，纯属收口）。 */
+.aplayer button {
+  background: none;
+  border-radius: 0;
+  font-family: inherit;
+}
+
+/* ③ 复选框 / 单选框
+   XP.css 的勾选框皮肤要求 <input> 与 <label> 是**兄弟节点**（可见的方框画在 label::before 上）。
+   本站是 <label><input> 包着的写法（更好的点击区域），兄弟选择器匹配不到 ——
+   方框不会出现，而 input 自己已被 XP.css 设成 opacity:0 + position:fixed，
+   结果就是复选框整个消失（作品页的「屏蔽模式」）。这种包法没有替代皮肤，恢复浏览器原生外观。 */
+input[type=checkbox], input[type=radio] {
+  appearance: auto;
+  -webkit-appearance: auto;
+  position: static;
+  opacity: 1;
+}
+
+/* ④ 链接颜色：这里**故意不写**
+   XP.css 有 a{color:#00f}，看着像必须压掉，其实不用 ——
+   主题 link.styl 里 a{color:var(--c-base-black)} 是未分层的，本来就赢（深色模式下它也会跟着换）。
+   反过来，如果在这里写 a{color:var(--link)}，"压掉 XP.css" 会变成把全站无类名链接
+   从近黑改成蓝色 —— 用覆盖规则制造出一个新回归。
+   留着这条注释，是为了避免以后有人"顺手补上"。 */
+
+/* ⑤ 标题字号
+   XP.css 用 h1{5rem} h2{2.5rem} h3{2rem} h4{1.5rem} —— 正文里的 ## 会变 40px、# 变 80px；
+   而主题那边只给标题设了 padding / color，没设字号，于是 XP.css 会成为唯一来源，必须在这里定死。
+   下面两条：先给全站一个「和引入 XP.css 之前完全一致」的兜底（浏览器默认），
+   再给文章正文一套本站自己的四级字阶。 */
+h1, h2, h3, h4, h5, h6 {
+  font-size: revert;          /* 回到浏览器默认（= 引入 XP.css 之前的样子） */
+}
+
+/* 文章正文字阶。为什么是这四个值：
+   · 正文 16px（见第 0 节：像素字体设计尺寸 12px，可读性优先放大到 16px）。
+   · h2 24px = 正文的 1.5 倍，也是像素字体设计尺寸 12px 的**整数倍**（2×）——中文标题笔画最锐利。
+   · h3 20px、h4 18px 只做层级区分，不再追求锐利，只求看不出粗细不匀。
+   · 行高 1.3~1.45：标题行距必须明显小于正文的 1.725，否则多行标题读起来和正文糊在一起。
+   · 主题原本只设了 padding:16px 0，所以上下留白靠它，这里不管 margin。 */
+.post-content h1 { font-size: 32px; line-height: 1.3; }
+.post-content h2 { font-size: 24px; line-height: 1.35; }
+.post-content h3 { font-size: 20px; line-height: 1.4; }
+.post-content h4,
+.post-content h5,
+.post-content h6 { font-size: 18px; line-height: 1.45; }
+
+/* ⑥ 代码块
+   XP.css：pre{background-color:#000;color:silver;font-size:1rem} 以及
+           pre,pre * / code,code *{font-family:…}（把整段 DOS 字体塞给 pre 的所有后代）。
+   本站代码块的白底来自主题（pre 本身是透明的）——
+   XP.css 给 pre 铺的黑底会在浅色代码区外面留出一圈黑框。
+   另外 highlight.js 会把每个 token 包成 <span>，XP.css 的 pre * 会把这些 span
+   换成 DOS 字体（每个 token 换一次字体，字符宽度和行高都跟着跳），
+   实测代码块宽了 3px、高 2px。这里只把**后代**还原成继承，
+   pre / code 自身的字体（行内 monospace、块内主题的等宽字体栈）保持不动。 */
+pre {
+  background: transparent;
+  color: inherit;
+}
+pre *, code * {
+  font-family: inherit;
+}
+
+/* ⑦ role=tabpanel（作品页的分页面板）
+   XP.css 有两条：
+     [role=tabpanel]{padding:14px;border:1px solid #919b9c;background:linear-gradient(…);margin-bottom:9px;position:relative;z-index:2}
+     [role=tabpanel]{box-shadow:inset 1px 1px #fcfcfe,inset -1px -1px #fcfcfe,1px 2px 2px 0 rgba(208,206,191,.75)}
+   本站 .work-pane 上的 role="tabpanel" 是**无障碍语义**（配 role=tab / aria-selected），
+   不是为了套 XP.css 的面板皮肤。它在 XP 窗口里已经有容器，再嵌一层带 1px 边框 + 14px 内边距的面板，
+   会让作品网格整体左移、每张卡片窄 6px，两列对不齐（实测 work-grid 1362 → 1332）。
+   注：这套标签页其实很适合交给 XP.css 的原生皮肤，但那要求容器改成 <menu role=tablist>
+   并放弃本站现有的 .work-tab 外观 —— 属于一次独立改动，不混在这次里。 */
+[role=tabpanel] {
+  padding: 0;
+  border: none;
+  background: none;
+  margin-bottom: 0;
+  box-shadow: none;
+  position: static;
+  z-index: auto;
 }

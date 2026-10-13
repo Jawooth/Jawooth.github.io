@@ -29,7 +29,9 @@
 
   
   
-  <link rel="stylesheet" href="/css/xp-custom.css?v=c4c9b03a">
+  <link rel="stylesheet" href="/vendor/xp-css/XP.css?v=c9f96187">
+  
+  <link rel="stylesheet" href="/css/xp-custom.css?v=874cc424">
 <meta name="generator" content="Hexo 8.1.2"><link rel="canonical" href="https://Jawooth.github.io/archives/2026/10/">
 <meta property="og:url" content="https://Jawooth.github.io/archives/2026/10/">
 <meta property="og:type" content="website">
@@ -98,7 +100,7 @@
     </div>
 
     <div class="post-info">
-      <span><i class="icon icon-calendar-outline"></i> 共 5 篇</span>
+      <span><i class="icon icon-calendar-outline"></i> 共 7 篇</span>
     </div>
 
     <div class="xp-shell-body">
@@ -109,7 +111,7 @@
 
   <div class="xp-timeline-year">
     <span>2026 年</span>
-    <span class="count">5 篇</span>
+    <span class="count">7 篇</span>
   </div>
   <ul class="xp-timeline-list">
     
@@ -155,6 +157,24 @@
           <span class="xp-timeline-date">10-09</span>
           <span class="xp-timeline-title">Hello World</span>
           <span class="xp-timeline-cat">随笔</span>
+        </a>
+      </li>
+    
+      <li class="xp-timeline-item">
+        <span class="xp-timeline-dot"></span>
+        <a href="/work-still-life-sketch/">
+          <span class="xp-timeline-date">10-05</span>
+          <span class="xp-timeline-title">静物素描·陶罐与水果</span>
+          <span class="xp-timeline-cat">素描</span>
+        </a>
+      </li>
+    
+      <li class="xp-timeline-item">
+        <span class="xp-timeline-dot"></span>
+        <a href="/work-character-practice/">
+          <span class="xp-timeline-date">10-02</span>
+          <span class="xp-timeline-title">角色练习·魔法少女</span>
+          <span class="xp-timeline-cat">角色设计</span>
         </a>
       </li>
     
@@ -304,16 +324,32 @@
     } catch (e) {}
   }
 
-  /* ---- 拖动 ---- */
+  /* ---- 拖动 ----
+     2026-10-13 两个手机端修复：
+     · 把手从顶部窄条扩大到整个播放器（按钮/进度条除外）—— 手机屏幕最上缘是系统
+       手势区（下拉通知/地址栏），只靠顶部窄条永远没法把播放器送到最上方；
+     · 位置统一过 clampPos 钳制 —— 转屏 / 弹出输入法会让画面变小，之前恢复坐标时
+       不检查边界，播放器就会停在画面外，只能清缓存救回来。 */
   var dragging = false, dragOffX = 0, dragOffY = 0;
+  var GRIP_EXCLUDE = 'button, a, .xp-window-btn, .mp4-btn, .mp4-progress-wrap, .mp4-progress-bar';
+  function clampPos(box) {
+    var w = box.offsetWidth, h = box.offsetHeight;
+    var maxX = Math.max(4, window.innerWidth - w - 4);
+    var maxY = Math.max(4, window.innerHeight - h - 4);
+    var x = parseInt(box.style.left, 10), y = parseInt(box.style.top, 10);
+    if (isNaN(x) && isNaN(y)) return;   /* 还没拖过（仍是右下角定位）不用管 */
+    x = Math.min(Math.max(isNaN(x) ? 4 : x, 4), maxX);
+    y = Math.min(Math.max(isNaN(y) ? 4 : y, 4), maxY);
+    box.style.left = x + 'px'; box.style.top = y + 'px';
+    box.style.right = 'auto'; box.style.bottom = 'auto';
+    try { localStorage.setItem(SP, JSON.stringify({ l: x, t: y })); } catch (e) {}
+  }
   function enableDrag() {
-    var brand = document.querySelector('.mp4-brand');
     var box = document.getElementById('xp-music-floating');
-    if (!brand || !box) return;
-    brand.style.cursor = 'move';
-    brand.addEventListener('mousedown', function (e) {
-      /* 点按钮/链接/窗口控件不触发拖动（用 closest 捕获 SVG 图标内的点击） */
-      if (e.target && e.target.closest && e.target.closest('button, a, .xp-window-btn, .mp4-btn')) return;
+    if (!box) return;
+    box.addEventListener('mousedown', function (e) {
+      /* 按钮链接和进度条照常工作，其余区域都能拖动（用 closest 捕获 SVG 图标内的按下） */
+      if (e.target && e.target.closest && e.target.closest(GRIP_EXCLUDE)) return;
       dragging = true;
       var rect = box.getBoundingClientRect();
       dragOffX = e.clientX - rect.left;
@@ -322,18 +358,15 @@
     });
     document.addEventListener('mousemove', function (e) {
       if (!dragging) return;
-      var w = box.offsetWidth, h = box.offsetHeight;
-      var maxX = window.innerWidth - w - 4, maxY = window.innerHeight - h - 4;
-      var x = Math.max(4, Math.min(maxX, e.clientX - dragOffX));
-      var y = Math.max(4, Math.min(maxY, e.clientY - dragOffY));
-      box.style.left = x + 'px'; box.style.top = y + 'px';
+      box.style.left = (e.clientX - dragOffX) + 'px';
+      box.style.top = (e.clientY - dragOffY) + 'px';
       box.style.right = 'auto'; box.style.bottom = 'auto';
-      try { localStorage.setItem(SP, JSON.stringify({ l: x, t: y })); } catch (e) {}
+      clampPos(box);
     });
     document.addEventListener('mouseup', function () { dragging = false; });
     /* 触屏也支持拖动 */
-    brand.addEventListener('touchstart', function (e) {
-      if (e.target && e.target.closest && e.target.closest('button, a, .xp-window-btn, .mp4-btn')) return;
+    box.addEventListener('touchstart', function (e) {
+      if (e.target && e.target.closest && e.target.closest(GRIP_EXCLUDE)) return;
       var t = e.touches[0];
       var rect = box.getBoundingClientRect();
       dragOffX = t.clientX - rect.left; dragOffY = t.clientY - rect.top;
@@ -341,17 +374,17 @@
     }, { passive: true });
     document.addEventListener('touchmove', function (e) {
       if (!dragging) return;
-      e.preventDefault();   /* 拖播放器期间阻止页面跟着滚（必须配 passive:false 才能调用，2026-10-13） */
+      e.preventDefault();   /* 拖播放器期间阻止页面跟着滚（必须配 passive:false 才能调用） */
       var t = e.touches[0];
-      var w = box.offsetWidth, h = box.offsetHeight;
-      var maxX = window.innerWidth - w - 4, maxY = window.innerHeight - h - 4;
-      var x = Math.max(4, Math.min(maxX, t.clientX - dragOffX));
-      var y = Math.max(4, Math.min(maxY, t.clientY - dragOffY));
-      box.style.left = x + 'px'; box.style.top = y + 'px';
+      box.style.left = (t.clientX - dragOffX) + 'px';
+      box.style.top = (t.clientY - dragOffY) + 'px';
       box.style.right = 'auto'; box.style.bottom = 'auto';
-      try { localStorage.setItem(SP, JSON.stringify({ l: x, t: y })); } catch (e) {}
+      clampPos(box);
     }, { passive: false });
     document.addEventListener('touchend', function () { dragging = false; });
+    /* 转屏 / 窗口大小变化后，把位置拉回画面内（横转竖最容易把坐标挤出屏幕） */
+    window.addEventListener('resize', function () { clampPos(box); });
+    window.addEventListener('orientationchange', function () { setTimeout(function () { clampPos(box); }, 250); });
   }
 
   function restorePosition() {
@@ -362,6 +395,7 @@
       if (p && typeof p.l === 'number' && typeof p.t === 'number') {
         box.style.left = p.l + 'px'; box.style.top = p.t + 'px';
         box.style.right = 'auto'; box.style.bottom = 'auto';
+        clampPos(box);   /* 存的坐标可能已经出界（转屏过/窗口变小过），钳回来 */
       }
     } catch (e) {}
   }
