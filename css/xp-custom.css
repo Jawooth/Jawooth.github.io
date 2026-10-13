@@ -504,11 +504,20 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 .xp-btn:active { background: var(--face-active); }
 .xp-btn-small { font-size: 16px; padding: 2px 8px; }
 
-/* 分区标题条（蓝色渐变长条） */
+/* 分区标题条（蓝色渐变长条）：游戏页「小游戏 (3)」、攻略页「游戏攻略 (3)」这类分区抬头。
+   ⚠ 高度必须固定，且要挡住来自网格的拉伸：
+   这两条在 .xp-bento 里各自占满一整行（grid-column: 1/-1），而便当格设了
+   grid-auto-rows: minmax(110px, auto) + align-items: stretch，网格项会被强行拉满整行 ——
+   结果只有一行文字的蓝条被撑成 110px 高，上下各多出约 36px 纯蓝空白，
+   和旁边 28px 高的窗口标题栏放一起明显不协调（2026-10 站主指出的问题）。
+   改法：高度锁死（和 .xp-window-title 一个量级），
+   并让包裹层 .xp-section-title-* 不参与拉伸（见 games/index.md、guides/index.md 内联样式）。 */
 .xp-section-bar {
   background: var(--title-grad);
   color: #fff;
-  padding: 8px 14px;
+  height: 34px;
+  box-sizing: border-box;
+  padding: 0 14px;
   font-weight: bold;
   font-size: 16px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);

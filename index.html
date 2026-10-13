@@ -31,7 +31,7 @@
   
   <link rel="stylesheet" href="/vendor/xp-css/XP.css?v=c9f96187">
   
-  <link rel="stylesheet" href="/css/xp-custom.css?v=9c821d1a">
+  <link rel="stylesheet" href="/css/xp-custom.css?v=74d6f04f">
 <meta name="generator" content="Hexo 8.1.2"><link rel="canonical" href="https://Jawooth.github.io/">
 <meta property="og:url" content="https://Jawooth.github.io/">
 <meta property="og:type" content="website">
@@ -314,7 +314,7 @@
 </div>
 
 
-<script>window.XP_QUOTES = {"rotate":0,"list":[{"text":"我们必须承认西西弗斯闹麻了","from":"王姐0732"},{"text":"你说的对，但是《原神》是由米哈游自主研发的一款全新开放世界冒险游戏。游戏发生在一个被称作「提瓦特」的幻想世界，在这里，被神选中的人将被授予「神之","from":null},{"text":"喵","from":"喵喵喵"},{"text":"赶快判我死刑。。让我一了百了","from":"猴子"},{"text":"你们，你们为什么说话为什么都带着带有攻击性的呀？我觉得人与人之间交流应该…啧…有点善意吧。对不对？","from":"电棍otto"},{"text":"要断章取义","from":"不要断章取义"},{"text":"这个网易云音乐好几首都要vip我没招","from":null},{"text":"恶毒和善良都不够纯粹……所以痛苦。","from":null},{"text":"无数渺小的思考填满了人的一生","from":null},{"text":"（该歌词不支持自动滚动）","from":null},{"text":"钱……","from":null}],"left":"","right":""};</script>
+<script>window.XP_QUOTES = {"rotate":0,"list":[{"text":"我们必须承认西西弗斯闹麻了","from":"王姐0732"},{"text":"你说的对，但是《原神》是由米哈游自主研发的一款全新开放世界冒险游戏。游戏发生在一个被称作「提瓦特」的幻想世界，在这里，被神选中的人将被","from":null},{"text":"喵","from":"喵喵喵"},{"text":"赶快判我死刑。。让我一了百了","from":"猴子"},{"text":"你们，你们为什么说话为什么都带着带有攻击性的呀？我觉得人与人之间交流应该…啧…有点善意吧。对不对？","from":"电棍otto"},{"text":"要断章取义","from":"不要断章取义"},{"text":"这个网易云音乐好几首都要vip我没招","from":null},{"text":"恶毒和善良都不够纯粹……所以痛苦。","from":null},{"text":"无数渺小的思考填满了人的一生","from":null},{"text":"（该歌词不支持自动滚动）","from":null},{"text":"钱……","from":null},{"text":"加载中……","from":null},{"text":"（扁扁走开）","from":null},{"text":"我给你等着！","from":null},{"text":"(╥_╥)","from":null},{"text":"555555。。。","from":null},{"text":"哇咔哇咔，棍棍爹遭遇了大意外大危险o(*zдs)o!!灰机坏坏，坏坏坏坏，坏坏我棍棍爹的安排(iДi)，灰机延误真的灰","from":"岩儿无信丶信口胡岩"},{"text":"神了 辽宁我有时间真得去一趟","from":null},{"text":"想要一个可以自由发送外链和群号的世界","from":null},{"text":"小明认为使劲踩旁人的脚，他人就有极大的可能张开嘴，而嘴长多大取决于踩的力度。进一步得出，人类可能是垃圾桶进化而来的。","from":null},{"text":"骗你的，其实我根本不会画画，每一笔落下去的位置都是我猜的，画出来什么效果是我赌的，人体是我蒙的，结构是我编的，二分是我糊的，我其实是赌王。","from":null},{"text":"只规定厕所不能抽烟，没说不让吃饭","from":"疯狂孝子老师的校友"}],"left":"","right":""};</script>
 <script>
 (function () {
   var data = window.XP_QUOTES || { rotate: 0, list: [] };
@@ -348,16 +348,27 @@
     }, 220);
   }
 
+  /* 抽下一句：**随机**，但避开当前这句，避免连抽两次同一句、看着像「没反应」。
+     只有一句时直接返回它；两句时就在两者之间来回换（等价于随机非己）。 */
+  function nextIndex() {
+    if (list.length < 2) return 0;
+    var pick;
+    do {
+      pick = Math.floor(Math.random() * list.length);
+    } while (pick === idx);
+    return pick;
+  }
+
   function start() {
     render(idx);
     var seconds = Number(data.rotate) || 0;
     if (seconds > 0 && list.length > 1) {
-      setInterval(function () { idx += 1; render(idx); }, seconds * 1000);
+      setInterval(function () { idx = nextIndex(); render(idx); }, seconds * 1000);
     }
   }
 
-  /* 供头像点击彩蛋调用：换下一句（头像的脚本在下面「头像彩蛋」那块） */
-  window.XPQuoteRefresh = function () { idx += 1; render(idx); };
+  /* 供头像点击彩蛋调用：随机换一句（头像的脚本在下面「头像彩蛋」那块） */
+  window.XPQuoteRefresh = function () { idx = nextIndex(); render(idx); };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
@@ -842,33 +853,29 @@
     };
   }
 
-  /* transform: scale() 的缩放倍数（1 = 没缩放）。
-     缩放原点已固定在左上角，所以 left/top 就等于屏幕上看到的左上角；
-     但**占位尺寸**仍要乘倍数：offsetWidth 不含 transform，
-     按未缩放尺寸钳位会让 1.25× 的播放器溢出屏幕。 */
-  function scaleOf(box) {
-    var t = window.getComputedStyle(box).transform;
-    if (!t || t === 'none') return 1;
-    var m = t.match(/matrix(([^)]+))/);
-    if (!m) return 1;
-    var parts = m[1].split(',');
-    var sx = parseFloat(parts[0]);
-    return (isFinite(sx) && sx > 0) ? sx : 1;
+  /* 元素在屏幕上的**真实占位**，一律以 getBoundingClientRect 为准。
+     ⚠ 绝对不要用 offsetWidth/offsetHeight 再乘一个自己解析出来的 scale ——
+     踩过的坑：offsetWidth 是不含 transform 的整数取整值，而
+     getComputedStyle().transform 在切档过渡期间读到的是**动画中间值**，
+     两者相乘得到的尺寸根本没意义（实测反推出 217px 这种既非 200 也非 250 的数），
+     于是钳位边界算错、播放器被允许停到屏幕外，表现为「最大档溢出」「最小档贴不到边」。
+     getBoundingClientRect 已经把 transform 算进去了，一个数就是答案。 */
+  function visualRect(box) {
+    var r = box.getBoundingClientRect();
+    return { w: r.width, h: r.height, left: r.left, top: r.top };
   }
 
   function clampPos(box) {
     var vp = viewportSize();
-    var s = scaleOf(box);
-    /* 屏幕上占的尺寸 = 未缩放尺寸 × 缩放倍数（offsetWidth 不含 transform） */
-    var rw = box.offsetWidth * s, rh = box.offsetHeight * s;
+    var vr = visualRect(box);
     var x = parseInt(box.style.left, 10), y = parseInt(box.style.top, 10);
     if (isNaN(x) && isNaN(y)) return;   /* 还没拖过（仍是右下角定位）不用管 */
 
     /* 缩放原点是左上角 ⇒ left/top 就是屏幕上的左上角，直接钳即可。
        下限允许到 0：这样缩到最小时播放器能真正贴住屏幕边缘
-       （以前下限写死 4，加上原点的偏移，永远差一截贴不到边）。 */
-    var maxX = Math.max(0, vp.w - rw);
-    var maxY = Math.max(0, vp.h - rh);
+       （以前下限写死 4，永远差一截贴不到边，就是「空气墙」的手感）。 */
+    var maxX = Math.max(0, vp.w - vr.w);
+    var maxY = Math.max(0, vp.h - vr.h);
     x = Math.round(Math.min(Math.max(isNaN(x) ? 0 : x, 0), maxX));
     y = Math.round(Math.min(Math.max(isNaN(y) ? 0 : y, 0), maxY));
 
