@@ -588,6 +588,57 @@ html.dark .header-chip strong { color: #9cc2ff; }
 @media (prefers-reduced-motion: reduce) {
   #xp-avatar.bouncing { animation: none; }
 }
+
+/* 头像点满 100 次的庆祝烟花（DOM 节点由 index.md 的 fireworks() 创建）
+   纯 CSS 实现：一个固定定位的遮罩层 + 中心爆点 + 若干粒子向外飞散淡出。
+   遮罩 pointer-events: none —— 只是为了看，绝不能挡住下面的点击。 */
+.xp-firework {
+  position: fixed; inset: 0; z-index: 10060;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  animation: xp-firework-out 0.45s ease 2.05s forwards;   /* 末尾整体淡出后由 JS 移除 */
+}
+.xp-firework-burst { position: relative; width: 0; height: 0; }
+
+.xp-firework-dot {
+  position: absolute; left: 0; top: 0;
+  width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+  animation: xp-firework-dot 1.25s cubic-bezier(0.15, 0.75, 0.35, 1) forwards;
+}
+@keyframes xp-firework-dot {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.35); opacity: 0; }
+}
+
+/* 中央那句「第 N 次！」：先弹出来，再跟着整体淡出 */
+.xp-firework-text {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: bold;
+  color: var(--xp-blue-border);
+  background: var(--surface);
+  border: 2px solid var(--xp-blue-border);
+  border-radius: 6px;
+  padding: 8px 16px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
+  animation: xp-firework-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+@keyframes xp-firework-pop {
+  0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+@keyframes xp-firework-out { to { opacity: 0; } }
+
+/* 减弱动态效果：粒子不生成（JS 侧 N=0），文字也不要弹，静默显示即可 */
+@media (prefers-reduced-motion: reduce) {
+  .xp-firework-text { animation: none; }
+  .xp-firework-dot { animation: none; opacity: 0; }
+}
 .profile-text { flex: 1; min-width: 0; }
 .profile-text h2 { margin: 0 0 4px; font-size: 24px; color: var(--text-heading); }
 .profile-text h2 .username { color: var(--xp-blue-border); font-family: var(--font-display); font-weight: 700; font-size: 24px; transition: opacity 0.25s; }
@@ -606,17 +657,14 @@ html.dark .meta-chip { background: rgba(53, 144, 243, 0.14); color: #cfe0ff; }
 html.dark .meta-chip strong { color: #9cc2ff; }
 
 /* 图标行（首页用户账户卡片用）：GitHub / 邮箱 / B站 / 小红书 等。
-   居中的基准是**整张卡片**，不是右边这一列文字（2026-10-13 站主要求）：
-   这一行住在 .profile-text 里，而文字栏左边还站着 132px 头像 + 16px 间距，
-   所以盒子先往左拉回这 148px、再把宽度补回来 —— 盒子的中线就落在卡片中线上，
-   5 个图标随手也就跟着居中（原来只相对文字栏居中，整卡看会偏右 74px）。
-   ≤640px 时 .profile-content 变竖排、头像居中、文字栏占满整卡，
-   那里要把这两个值复位，见第 13 节 640px 分支。 */
+   2026-10 站主要求：**PC 端靠左**（与右边文字栏的左边缘对齐，也就是紧挨头像右侧起排），
+   **移动端水平居中**（≤640px 分支里复位，见第 13 节）。
+   这一行住在 .profile-text 里，靠左直接用默认的 flex-start 即可 ——
+   原来为了让它在整卡居中，用过「负 margin 拉回 148px + 宽度补回来」那套，
+   现在改靠左，那两行补偿必须去掉，否则会被拉到头像底下形成负缩进。 */
 .profile-icons {
   margin-top: 6px;
-  margin-left: calc((132px + 16px) * -1);
-  width: calc(100% + 132px + 16px);
-  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px;
+  display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 6px;
 }
 .profile-icon {
   width: 34px; height: 34px;
@@ -1839,8 +1887,9 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   .xp-bento > * > .retro-mp4-player { max-width: 320px; aspect-ratio: auto; }
   .profile-content { flex-direction: column; align-items: center; text-align: center; }
   .profile-avatar { width: 96px; height: 96px; }
-  /* 竖排后头像在正上方、文字栏已经占满整卡，图标行不用再往左拉（见第 7 节） */
-  .profile-icons { margin-left: 0; width: auto; }
+  /* 竖排后头像在正上方、文字栏已经占满整卡：图标行改为**水平居中**
+     （PC 端是靠左，见第 7 节；这里必须显式写 center，因为 PC 默认已是 flex-start） */
+  .profile-icons { justify-content: center; }
   .xp-bubble { transform: none; }   /* 不要写 margin:0 —— 那会把 ≤900px 里给向下拖尾留出的空间清零 */
   .recent-work-item { width: 150px; }
   /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，

@@ -29,15 +29,19 @@ function addCopyIcons() {
   copyIcon.className = 'fa-solid icon icon-copy copy-code';
   copyIcon.title = '复制代码';
 
-  document.querySelectorAll('.post-detail figure').forEach(figure => {
+  /* 选择器是 .post-content —— 模板（post.ejs:39 / page.ejs:19）输出的就是它。
+     原先这里写的是 .post-detail，那是主题老版的类名，改名后没跟着改：
+     页面里根本没有 .post-detail，于是「复制代码」按钮一直是 0 个、功能静默失效。
+     （2026-10 修，配合 post.styl 里 .copy-code 的作用域一起改。） */
+  document.querySelectorAll('.post-content figure').forEach(figure => {
     figure.appendChild(copyIcon.cloneNode(true));
   });
 
-  document.querySelectorAll('.post-detail pre[class*=language-].line-numbers').forEach(codeBlock => {
+  document.querySelectorAll('.post-content pre[class*=language-].line-numbers').forEach(codeBlock => {
     codeBlock.appendChild(copyIcon.cloneNode(true));
   });
 
-  document.querySelectorAll('.post-detail .copy-code').forEach(copyCodeBtn => {
+  document.querySelectorAll('.post-content .copy-code').forEach(copyCodeBtn => {
     copyCodeBtn.addEventListener('click', function() {
       const selection = window.getSelection();
       const range = document.createRange();
@@ -80,105 +84,25 @@ function setLanguageAttributes() {
 }
 
 // 文章详情侧边目录
-function handleScroll() {
-  const mainNavLinks = document.querySelectorAll('.top-box a');
-  const fromTop = window.scrollY + 100;
-
-  mainNavLinks.forEach((link, index) => {
-    const section = document.getElementById(decodeURI(link.hash).substring(1));
-    let nextSection = null;
-    if (mainNavLinks[index + 1]) {
-      nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-    }
-
-    if (section.offsetTop <= fromTop && (!nextSection || nextSection.offsetTop > fromTop)) {
-      link.classList.add('current');
-    } else {
-      link.classList.remove('current');
-    }
-  });
-}
-
-function bindScrollEvent() {
-  window.addEventListener('scroll', () => {
-    handleScroll();
-  });
-}
-
-// 点击锚点滚动条偏移
-function bindClickEvent() {
-  const topBoxLinks = document.querySelectorAll('.top-box-link');
-  topBoxLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      setTimeout(() => {
-        window.scrollTo(window.pageXOffset, window.pageYOffset - 54);
-        console.log(window.pageYOffset - 54, '滚动条位置');
-      }, 0);
-    });
-  });
-}
-
-function lazyload(imgs, data) {
-  data.now = Date.now();
-  data.needLoad = Array.from(imgs).some(i => i.hasAttribute('lazyload'));
-
-  const h = window.innerHeight;
-  const s = document.documentElement.scrollTop || document.body.scrollTop;
-
-  imgs.forEach(img => {
-    if (img.hasAttribute('lazyload') && !img.hasAttribute('loading')) {
-
-      if ((h + s) > img.offsetTop) {
-        img.setAttribute('loading', true);
-        const loadImageTimeout = setTimeout(() => {
-          // eslint-disable-next-line no-undef
-          const temp = new Image();
-          const src = img.getAttribute('data-src');
-          temp.src = src;
-          temp.onload = () => {
-            img.src = src;
-            img.removeAttribute('lazyload');
-            img.removeAttribute('loading');
-            clearTimeout(loadImageTimeout);
-          };
-        }, 300);
-      }
-    }
-  });
-}
+// 2026-10 删除：这一整段（原 handleScroll / bindScrollEvent / bindClickEvent）
+// 查的是 .top-box a 与 .top-box-link，而站内**没有任何模板输出这两个类**
+// （post.ejs 用的是 .post-content，目录由 xp-content.js 渲染成 .xp-toc、
+//   由 xp-enhance.js 绑定滚动高亮）。
+// 也就是说主题这套目录早已被站内自己的实现取代，留着只是每次滚动白跑一遍查询，
+// 并且会让人误以为改这里能影响页面目录。要恢复目录请改 xp-enhance.js。
 
 // 图片懒加载
-function lazyloadLoad() {
-  if (window.theme_config.image && window.theme_config.image.lazyload_enable) {
-    const imgs = document.querySelectorAll('img');
-
-    const data = {
-      now: Date.now(),
-      needLoad: true
-    };
-
-
-    lazyload(imgs, data);
-
-    window.onscroll = () => {
-      if (Date.now() - data.now > 50 && data.needLoad) {
-        lazyload(imgs, data);
-      }
-    };
-  }
-}
+// 2026-10 删除：主题这套 lazyload（原 lazyload / lazyloadLoad）整段是空转的 ——
+// 它开头就判断 window.theme_config.image.lazyload_enable，而 _config.minimalism.yml
+// 里那一项固定为 false（站内改用构建期注入原生 loading="lazy"，见 xp-enhance.js）。
+// 留着只会给人「这里能开懒加载」的错觉。
 
 // 初始化页面
 function themeBoot() {
   if (window.is_post) {
     addCopyIcons();
     setLanguageAttributes();
-    bindScrollEvent();
-    bindClickEvent();
   }
-
-  lazyloadLoad();
-
 }
 
 window.addEventListener('DOMContentLoaded', () => {
