@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+
+<title>小工具 | 我的小站</title>
+<meta name="keywords" content="小工具, 我的小站">
+<meta name="description" content="像素风个人角落，存放画作、攻略、小游戏和碎碎念">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="小工具 | 我的小站">
+<meta property="og:description" content="像素风个人角落，存放画作、攻略、小游戏和碎碎念">
+<meta property="og:site_name" content="我的小站">
+
+
+<meta name="twitter:card" content="summary">
+<link rel="shortcut icon" href="/favicon.ico">
+
+<link rel="preload" href="/fonts/fusion-pixel-12px-proportional-zh_hans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style/main.css">
+
+  
+  
+  <link rel="stylesheet" href="/vendor/xp-css/XP.css?v=c9f96187">
+  
+  <link rel="stylesheet" href="/css/xp-custom.css?v=3a047efd">
+<meta name="generator" content="Hexo 8.1.2"><link rel="canonical" href="https://Jawooth.github.io/tools/">
+<meta property="og:url" content="https://Jawooth.github.io/tools/">
+<meta property="og:type" content="website">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://Jawooth.github.io">
+        <img class="avatar" src="/images/site-avatar.png" alt="logo" width="32px" height="32px">
+      </a>
+      <a href="https://Jawooth.github.io">
+        <h1 class="site-title">我的小站</h1>
+      </a>
+    </div>
+    <div class="right">
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/works/" class="menu purple-link">
+        绘画
+      </a>
+    
+  
+    
+      <a href="/guides/" class="menu purple-link">
+        文章
+      </a>
+    
+  
+    
+      <a href="/games/" class="menu purple-link">
+        游戏
+      </a>
+    
+  
+    
+      <a href="/tools/" class="menu purple-link">
+        工具
+      </a>
+    
+  
+    
+      <a href="/blog/" class="menu purple-link">
+        杂谈
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    
+<svg width="0" height="0" style="position:absolute;visibility:hidden" aria-hidden="true">
+<defs>
+<symbol id="icon-gamepad" viewBox="0 0 16 16">
+<rect x="2" y="4" width="12" height="8" rx="3" fill="#4a4a4a" stroke="#222" stroke-width="0.5"/>
+<circle cx="5" cy="8" r="1.5" fill="#d0d0d0"/>
+<circle cx="11" cy="7" r="1" fill="#ff6b6b"/>
+<circle cx="12" cy="9" r="1" fill="#6b8cff"/>
+<rect x="4" y="7" width="2" height="0.8" fill="#d0d0d0"/>
+<rect x="4.6" y="6.2" width="0.8" height="2.5" fill="#d0d0d0"/>
+</symbol>
+<symbol id="icon-brick" viewBox="0 0 16 16">
+<rect x="1" y="1" width="3" height="1.5" fill="#ff8a8a"/>
+<rect x="4.5" y="1" width="3" height="1.5" fill="#ffe28a"/>
+<rect x="8" y="1" width="3" height="1.5" fill="#8aff8a"/>
+<rect x="11.5" y="1" width="3.5" height="1.5" fill="#8ab4ff"/>
+<rect x="1" y="3" width="3" height="1.5" fill="#ffb4b4"/>
+<rect x="4.5" y="3" width="3" height="1.5" fill="#fff0b4"/>
+<rect x="8" y="3" width="3" height="1.5" fill="#b4ffb4"/>
+<rect x="11.5" y="3" width="3.5" height="1.5" fill="#b4d4ff"/>
+<circle cx="8" cy="10" r="1" fill="#fff" stroke="#999" stroke-width="0.5"/>
+<rect x="5" y="13" width="6" height="1" fill="#666" rx="0.5"/>
+</symbol>
+<symbol id="icon-snake" viewBox="0 0 16 16">
+<rect x="0" y="0" width="16" height="16" fill="#1a1a2e"/>
+<rect x="2" y="2" width="2" height="2" fill="#4ade80"/>
+<rect x="4" y="2" width="2" height="2" fill="#4ade80"/>
+<rect x="6" y="2" width="2" height="2" fill="#4ade80"/>
+<rect x="6" y="4" width="2" height="2" fill="#4ade80"/>
+<rect x="4" y="4" width="2" height="2" fill="#4ade80"/>
+<rect x="2" y="4" width="2" height="2" fill="#f87171"/>
+<rect x="2.5" y="4.5" width="0.5" height="0.5" fill="#fff"/>
+</symbol>
+<symbol id="icon-puzzle" viewBox="0 0 16 16">
+<path d="M1 1h5v3h2V1h5v5h3v5h-3v2h3v3H8v-3H6v3H1v-5h3V8H1V1z" fill="#ffd68a" stroke="#cc9933" stroke-width="0.5"/>
+</symbol>
+<symbol id="icon-wrench" viewBox="0 0 16 16">
+<path d="M10 2l4 4-2 2-4-4 2-2z" fill="#a0a0a0" stroke="#666" stroke-width="0.5"/>
+<rect x="1" y="8" width="2" height="6" fill="#808080" stroke="#333" stroke-width="0.5" transform="rotate(-30 2 11)"/>
+<rect x="3" y="10" width="8" height="2" fill="#a0a0a0" stroke="#666" stroke-width="0.5" transform="rotate(-30 7 11)"/>
+</symbol>
+<symbol id="icon-calc" viewBox="0 0 16 16">
+<rect x="2" y="1" width="12" height="14" rx="1" fill="#d0d0d0" stroke="#666" stroke-width="0.5"/>
+<rect x="3" y="2.5" width="10" height="3" fill="#c0f0d0" stroke="#696" stroke-width="0.5"/>
+<rect x="3.5" y="6.5" width="2" height="1.5" fill="#999"/>
+<rect x="6" y="6.5" width="2" height="1.5" fill="#999"/>
+<rect x="8.5" y="6.5" width="2" height="1.5" fill="#999"/>
+<rect x="11" y="6.5" width="1.5" height="1.5" fill="#e66"/>
+<rect x="3.5" y="8.5" width="2" height="1.5" fill="#f0f0f0"/>
+<rect x="6" y="8.5" width="2" height="1.5" fill="#f0f0f0"/>
+<rect x="8.5" y="8.5" width="2" height="1.5" fill="#f0f0f0"/>
+<rect x="11" y="8.5" width="1.5" height="1.5" fill="#f90"/>
+<rect x="3.5" y="10.5" width="2" height="1.5" fill="#f0f0f0"/>
+<rect x="6" y="10.5" width="2" height="1.5" fill="#f0f0f0"/>
+<rect x="8.5" y="10.5" width="2" height="1.5" fill="#f0f0f0"/>
+<rect x="11" y="10.5" width="1.5" height="1.5" fill="#f90"/>
+<rect x="3.5" y="12.5" width="4.5" height="1.5" fill="#f0f0f0"/>
+<rect x="8.5" y="12.5" width="2" height="1.5" fill="#f0f0f0"/>
+<rect x="11" y="12.5" width="1.5" height="1.5" fill="#f90"/>
+</symbol>
+<symbol id="icon-palette" viewBox="0 0 16 16">
+<path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"/>
+<circle cx="5" cy="6" r="1.2" fill="#fff"/>
+<circle cx="11" cy="6" r="1.2" fill="#fff"/>
+<circle cx="5" cy="10" r="1.2" fill="#fff"/>
+<circle cx="10" cy="11" r="1.2" fill="#fff"/>
+</symbol>
+<symbol id="icon-notepad" viewBox="0 0 16 16">
+<rect x="2" y="1" width="12" height="14" fill="#fffde7" stroke="#c0a030" stroke-width="0.5"/>
+<line x1="4" y1="4" x2="12" y2="4" stroke="#ccc" stroke-width="0.3"/>
+<line x1="4" y1="6" x2="12" y2="6" stroke="#ccc" stroke-width="0.3"/>
+<line x1="4" y1="8" x2="12" y2="8" stroke="#ccc" stroke-width="0.3"/>
+<line x1="4" y1="10" x2="12" y2="10" stroke="#ccc" stroke-width="0.3"/>
+<line x1="4" y1="12" x2="10" y2="12" stroke="#ccc" stroke-width="0.3"/>
+</symbol>
+</defs>
+</svg>
+
+<div class="tools-page xp-page-fullwidth">
+<div class="xp-bento">
+
+
+<div class="tools-item tools-header">
+<div class="xp-window">
+<div class="xp-window-title">
+<span class="xp-window-title-text"><svg class="inline-icon" width="16" height="16" aria-hidden="true"><use href="#icon-wrench"/></svg> 网页小工具</span>
+<span class="xp-window-btns" role="group" aria-label="窗口操作"><i class="xp-window-btn" data-action="min" role="button" tabindex="0" aria-label="最小化"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="7" width="8" height="2" fill="currentColor"/></svg></i><i class="xp-window-btn" data-action="max" role="button" tabindex="0" aria-label="最大化"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="1" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></i><i class="xp-window-btn close" data-action="close" role="button" tabindex="0" aria-label="关闭"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></i></span>
+</div>
+<div class="xp-window-body header-body">
+<p>小工具区。目前都还在开发中，卡片上的「开发中」标记表示还不能点。</p>
+<div class="header-stats">
+<span class="header-chip"><strong>3</strong> 个小工具</span>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="games-item games-card"><div class="app-card is-planned"><div class="app-icon"><svg width="42" height="42" aria-hidden="true"><use href="#icon-calc"/></svg></div><div class="app-info"><h4 class="app-title">计算器</h4><p class="app-desc">XP 风格计算器</p></div><span class="xp-badge">开发中</span></div></div><div class="games-item games-card"><div class="app-card is-planned"><div class="app-icon"><svg width="42" height="42" aria-hidden="true"><use href="#icon-palette"/></svg></div><div class="app-info"><h4 class="app-title">调色板</h4><p class="app-desc">颜色拾取工具</p></div><span class="xp-badge">开发中</span></div></div><div class="games-item games-card"><div class="app-card is-planned"><div class="app-icon"><svg width="42" height="42" aria-hidden="true"><use href="#icon-notepad"/></svg></div><div class="app-info"><h4 class="app-title">记事本</h4><p class="app-desc">在线便签本</p></div><span class="xp-badge">开发中</span></div></div>
+
+</div>
+</div>
+
+
+<style>
+/* 容器行高：.xp-bento 默认 grid-auto-rows: minmax(110px, auto)，那是为卡片定的最小行高。
+   但「小游戏 (3)」这种分区抬头只占 34px，却被这一行强行撑到 110px ——
+   于是蓝条下方空出约 76px，再加 18px 的 gap = 94px 的空洞（2026-10 站主指出）。
+   这里把最小行高降到 34px（就等于蓝条自身高度），行高仍会按内容自动增长，
+   所以卡片那些行不受影响（它们本来就有 238px 内容撑着）。
+   作用域限定在 .tools-page，不会波及其他页面。 */
+.tools-page .xp-bento { grid-auto-rows: minmax(34px, auto); }
+
+.tools-header { grid-column: 1 / -1; grid-row: span 1; }
+/* align-self: start —— 别让网格把分区抬头拉伸到整行高（见 xp-custom.css 的 .xp-section-bar）；
+   并顶掉 .xp-bento 的 align-items: stretch，让它按自身 34px 显示，才能紧贴下方卡片。 */
+.tools-section-title { grid-column: 1 / -1; grid-row: span 1; align-self: start; }
+.tools-card { grid-column: span 4; grid-row: span 2; }
+
+@media (max-width: 900px) {
+  .tools-card { grid-column: span 3; }
+}
+</style>
+
+  </div>
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+  
+  
+  
+  
+  
+</div>
+</footer>
+
+<img class="xp-decor" src="/images/decor/left.png" alt="" aria-hidden="true" loading="lazy" decoding="async" style="left: 10px; top: 120px; width: 160px;"><img class="xp-decor" src="/images/decor/right.png" alt="" aria-hidden="true" loading="lazy" decoding="async" style="right: 10px; top: 120px; width: 160px;">
+<link rel="stylesheet" href="/vendor/aplayer/APlayer.min.css"><script src="/vendor/aplayer/APlayer.min.js"></script><script>window.XP_MUSIC = [{"title":"CYCLING DIARY 小骑行记","author":"Sxxking Ball","album":"SxxkingBall live.ver","url":"https://music.163.com/song/media/outer/url?id=2694860928.mp3","pic":"https://p1.music.126.net/XvEpNIwzFXPb5ANNOo8fRw==/109951170723328471.jpg"},{"title":"To Your Oblivion","author":"Mili","album":"To Your Oblivion","url":"https://music.163.com/song/media/outer/url?id=2750034058.mp3","pic":"https://p1.music.126.net/tfLSi66beZ_MTBJF2NeA6g==/109951172067882237.jpg"},{"title":"本能 (Live)","author":"東京事変","album":"Just can't help it.","url":"https://music.163.com/song/media/outer/url?id=1381357576.mp3","pic":"https://p1.music.126.net/25IL2l9hU0NygifTnXGq1w==/18853325881481715.jpg"},{"title":"薄ら氷心中(Live)","author":"椎名林檎","album":"椎名林檎と彼奴等の居る真空地帯","url":"https://music.163.com/song/media/outer/url?id=2606590660.mp3","pic":"https://p1.music.126.net/d3LMdb9nUea3sVK8VbyaKA==/109951170075067903.jpg"},{"title":"Toes","author":"Glass Animals","album":"Taken 3 (Bande originale du film)","url":"https://music.163.com/song/media/outer/url?id=1466248470.mp3","pic":"https://p1.music.126.net/aGIsotM3I37mczt1CZc74g==/109951168909534074.jpg"},{"title":"ハイドレンジア","author":"LonePi / 歌愛ユキ","album":"ハイドレンジア","url":"https://music.163.com/song/media/outer/url?id=1865928065.mp3","pic":"https://p1.music.126.net/3WHP7DR-rmHBvpUfCu2ifQ==/109951166239969861.jpg"},{"title":"無","author":"立入禁止 / 歌爱ユキ / 诗岸","album":"無","url":"https://music.163.com/song/media/outer/url?id=2728511298.mp3","pic":"https://p1.music.126.net/lUveGYK2sSDf3S2IDGch0Q==/109951171501491405.jpg"},{"title":"画脂鏤氷","author":"かんてゐく / 初音ミク","album":"画脂鏤氷","url":"https://music.163.com/song/media/outer/url?id=3356257929.mp3","pic":"https://p1.music.126.net/7bDVQeiiHUdUNCDSausY9g==/109951172845223443.jpg"},{"title":"幸福な死を","author":"きくお / 初音ミク","album":"きくおミク2","url":"https://music.163.com/song/media/outer/url?id=460887.mp3","pic":"https://p1.music.126.net/TNeEpSwp4tXZI_4xPa-ZIw==/109951165761724330.jpg"},{"title":"New You","author":"Xploshi","album":"Rafflesia Channel","url":"https://music.163.com/song/media/outer/url?id=2603307465.mp3","pic":"https://p1.music.126.net/fXaUl2HfurToATxCVQslhA==/109951169738069016.jpg"},{"title":"frutiger aero","author":"amirthetrash","album":"frutiger aero","url":"https://music.163.com/song/media/outer/url?id=2613433158.mp3","pic":"https://p1.music.126.net/le6ySAYDI3ghTVoEI-pWMA==/109951170536725268.jpg"},{"title":"Washing Machine Heart","author":"Mitski","album":"Be the Cowboy","url":"https://music.163.com/song/media/outer/url?id=865716302.mp3","pic":"https://p1.music.126.net/E75inPrQBALNrHPVHhsj4Q==/109951163402175950.jpg"},{"title":"地球の裏 (feat. 裏命)","author":"いよわ / 裏命","album":"地球の裏 (feat. 裏命)","url":"https://music.163.com/song/media/outer/url?id=2013615435.mp3","pic":"https://p1.music.126.net/w_xix7UlRYvv2n9BgiYYOQ==/109951168226094695.jpg"},{"title":"うらぽしゃ","author":"いよわ / 初音ミク","album":"わたしのヘリテージ","url":"https://music.163.com/song/media/outer/url?id=1903311035.mp3","pic":"https://p1.music.126.net/fPfx0C3T7D6myZKpFA3QOw==/109951166726127129.jpg"},{"title":"異星にいこうね (feat. 星界)","author":"いよわ / 星界","album":"異星にいこうね (feat. 星界)","url":"https://music.163.com/song/media/outer/url?id=2012668595.mp3","pic":"https://p1.music.126.net/aFos_LVqrP2a082qIbl7rw==/109951168216207001.jpg"},{"title":"あだぽしゃ","author":"いよわ / 初音ミク","album":"あだぽしゃ","url":"https://music.163.com/song/media/outer/url?id=1855988913.mp3","pic":"https://p1.music.126.net/Bp6h_wlGs6ULRwhSaT3wnw==/109951166116780431.jpg"},{"title":"我的灵魂已经逐渐喜欢上了这里","author":"老王乐队","album":"暮夜徐行","url":"https://music.163.com/song/media/outer/url?id=2757243277.mp3","pic":"https://p1.music.126.net/hIQFb0-le2PLnqDpnCsXWw==/109951172202707141.jpg"},{"title":"悲しき宇宙船","author":"きくお","album":"KIKUOWORLD2","url":"https://music.163.com/song/media/outer/url?id=26218689.mp3","pic":"https://p1.music.126.net/ob0-pkiHB5j-xRYupW220A==/109951165759682176.jpg"},{"title":"LOST (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980721087.mp3","pic":"https://p1.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"パンドラ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 4","url":"https://music.163.com/song/media/outer/url?id=1416752957.mp3","pic":"https://p1.music.126.net/YJVLK_gP2neTVEn6_S3mRw==/109951164626937069.jpg"},{"title":"冬に一人","author":"きくお","album":"略してきくおミク0","url":"https://music.163.com/song/media/outer/url?id=35778153.mp3","pic":"https://p1.music.126.net/-mMwZQ9rV5XTJ93FpfV8LA==/3283141721769793.jpg"},{"title":"预言的勇者","author":"卦者灵风 / 秀三岁","album":"预言的勇者","url":"https://music.163.com/song/media/outer/url?id=1957601442.mp3","pic":"https://p1.music.126.net/GYnx4JURFl05MN8m21nbow==/109951167572642593.jpg"},{"title":"縛","author":"でんの子P / 可不","url":"https://music.163.com/song/media/outer/url?id=1989151258.mp3","pic":"https://p1.music.126.net/P9PoEegjyI90SeUgiOC8BA==/109951167962413021.jpg"},{"title":"もうどくちゅうい","author":"でんの子P / 蒼姫ラピス","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805381913.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"私とっても不器用で","author":"でんの子P","album":"VOCALOID STEW","url":"https://music.163.com/song/media/outer/url?id=2125754632.mp3","pic":"https://p1.music.126.net/qLwg3KAkomvEXhvjjbLWrw==/109951169329441943.jpg"},{"title":"愛くらい浅い言葉など無い","author":"でんの子P","album":"VOCALOID CRESCENDO","url":"https://music.163.com/song/media/outer/url?id=1805380131.mp3","pic":"https://p1.music.126.net/FM6fZvJCUL3mf828teqF3A==/109951172525705120.jpg"},{"title":"我想 （正式版）feat.泠风","author":"法老 / 泠风","album":"东海岸","url":"https://music.163.com/song/media/outer/url?id=444323757.mp3","pic":"https://p1.music.126.net/z253qn2_rIiK0NvaD5_btA==/109951162817129061.jpg"},{"title":"自缚灵","author":"立入禁止","album":"地縛霊たち","url":"https://music.163.com/song/media/outer/url?id=2736157649.mp3","pic":"https://p1.music.126.net/Gs9Ax_eb5RbwyeoP_wbwpg==/109951171864751046.jpg"},{"title":"昼寝","author":"立入禁止","album":"昼寝","url":"https://music.163.com/song/media/outer/url?id=2731082184.mp3","pic":"https://p1.music.126.net/WhHBg-1emYBwhDMv_zyYtw==/109951171513089424.jpg"},{"title":"惊蛰正中央","author":"诗岸 / 歌爱ユキ / 立入禁止","album":"惊蛰正中央","url":"https://music.163.com/song/media/outer/url?id=2728468840.mp3","pic":"https://p1.music.126.net/e_ycZ6eO2R7NWN8qYxpGTw==/109951171500993975.jpg"},{"title":"幽体離脱 (feat. 初音ミク)","author":"きくお / 初音ミク","album":"幽体離脱","url":"https://music.163.com/song/media/outer/url?id=1953839808.mp3","pic":"https://p2.music.126.net/C_wMk6RgWrYmuADkjSYNGA==/109951167519882590.jpg"},{"title":"ゾンビメイカー [Long Version] (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU DET EP","url":"https://music.163.com/song/media/outer/url?id=32364854.mp3","pic":"https://p2.music.126.net/SEJOVbMqnGOv_oRfMofS_Q==/109951164626924977.jpg"},{"title":"ロスト・デリュージョン","author":"フロクロ / 重音テト","album":"ロスト・デリュージョン","url":"https://music.163.com/song/media/outer/url?id=1930178096.mp3","pic":"https://p2.music.126.net/c8w1vDt_HAymxOD6ltvRCg==/109951167177238581.jpg"},{"title":"カルマ (feat. 初音ミク)","author":"ATOLS / 初音ミク","album":"ATOLS/MIKU 5","url":"https://music.163.com/song/media/outer/url?id=1980716362.mp3","pic":"https://p2.music.126.net/-00LvDi1vvapgMHHcu5yHA==/109951167870379556.jpg"},{"title":"Forest Mixtape","author":"Christina Kuong","album":"Tsuki's Odyssey (Original Game Soundtrack) Vol. 2","url":"https://music.163.com/song/media/outer/url?id=1908182683.mp3","pic":"https://p2.music.126.net/lbaNBDgE_fgFjlPIcvHGxA==/109951169410329444.jpg"},{"title":"矢張政志 ～事件の陰にやっぱりオレ～","author":"岩垂徳行","album":"逆転裁判サウンドBOX (逆転裁判 苏る逆転~逆転裁判3)","url":"https://music.163.com/song/media/outer/url?id=4919660.mp3","pic":"https://p2.music.126.net/5dMOmAQO8YtlMib9IoSXDA==/5851600883154880.jpg"},{"title":"きらいきらいきらいって","author":"きくお","album":"きくおミク7","url":"https://music.163.com/song/media/outer/url?id=2031954438.mp3","pic":"https://p2.music.126.net/0ErUNx0pD-gSlsQKN5Sqpw==/109951168484216482.jpg"},{"title":"叁BAOZIS!!! 贰EGGS!!!（忘买粥了）","author":"Sxxking Ball","album":"Special Ops","url":"https://music.163.com/song/media/outer/url?id=2149175151.mp3","pic":"https://p2.music.126.net/IbX-Yc7xMv6xzmFreMjUJg==/109951169389881625.jpg"}];</script>
+
+<div class="xp-music-floating" id="xp-music-floating">
+<div class="retro-mp4-player mp4-floating">
+<div class="mp4-brand"><svg width="10" height="10" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg> 梦到哪首放哪首了 <svg width="10" height="10" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg></div>
+<div class="mp4-screen">
+<div class="mp4-screen-content mp4-screen-v">
+<div class="mp4-cover"><div class="mp4-cover-placeholder" id="mp4-cover">
+<svg width="28" height="28" viewBox="0 0 16 16" aria-hidden="true">
+<circle cx="8" cy="8" r="6" fill="none" stroke="#7cfc00" stroke-width="1.5"></circle>
+<circle cx="8" cy="8" r="2" fill="#7cfc00"></circle>
+</svg>
+</div></div>
+<div class="mp4-song-info">
+<div class="mp4-song-title-wrap">
+<span class="mp4-song-title" id="mp4-title"><span class="mp4-play-indicator" id="mp4-play-indicator" style="display:none"></span><span class="mp4-title-inner">未配置曲目</span></span>
+</div>
+<div class="mp4-song-author" id="mp4-author"></div>
+</div>
+</div>
+</div>
+<div class="mp4-progress-wrap">
+
+<div class="mp4-progress-times status-bar">
+<span class="status-bar-field" id="mp4-current">00:00</span>
+<span class="status-bar-field" id="mp4-total">00:00</span>
+</div>
+<div class="mp4-progress-bar" id="mp4-progress-bar" role="progressbar" aria-label="播放进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+<div class="mp4-progress-fill" id="mp4-progress-fill"></div>
+</div>
+</div>
+<div class="mp4-controls">
+<button class="mp4-btn" id="mp4-prev" type="button" title="上一首" aria-label="上一首">
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2v12l-6-6 6-6z" fill="currentColor"></path><rect x="2" y="2" width="2" height="12" fill="currentColor"></rect></svg>
+</button>
+<button class="mp4-btn mp4-btn-play" id="mp4-play" type="button" title="播放/暂停" aria-label="播放">
+<svg id="icon-play" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2l10 6-10 6V2z" fill="currentColor"></path></svg>
+<svg id="icon-pause" width="14" height="14" viewBox="0 0 16 16" style="display:none" aria-hidden="true"><rect x="4" y="2" width="3" height="12" fill="currentColor"></rect><rect x="9" y="2" width="3" height="12" fill="currentColor"></rect></svg>
+</button>
+<button class="mp4-btn" id="mp4-next" type="button" title="下一首" aria-label="下一首">
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2v12l6-6-6-6z" fill="currentColor"></path><rect x="12" y="2" width="2" height="12" fill="currentColor"></rect></svg>
+</button>
+<a class="mp4-btn mp4-btn-link" id="mp4-link" target="_blank" rel="noopener" title="跳转到网易云原页面" aria-label="跳转到网易云原页面">
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h5v2H4v8h8V9h2v5H2V2z" fill="currentColor"/><path d="M9 2h5v5h-2V5.5l-4 4-1.4-1.4 4-4H9z" fill="currentColor"/></svg>
+</a>
+<button class="mp4-btn mp4-btn-size" id="mp4-size" type="button" title="调节大小（小 / 标准 / 大）" aria-label="调节播放器大小">
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 1H15v5.5h-2V4.6l-3.4 3.4-1.6-1.6L11.4 3H9.5V1z" fill="currentColor"/><path d="M6.5 15H1V9.5h2v1.9l3.4-3.4 1.6 1.6L4.6 13h1.9v2z" fill="currentColor"/></svg>
+</button>
+<button class="mp4-btn mp4-btn-close" id="mp4-close" type="button" title="折叠" aria-label="折叠">
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5h10v2H3zM3 9h10v2H3z" fill="currentColor"/></svg>
+</button>
+<button class="mp4-btn mp4-btn-hide" id="mp4-hide" type="button" title="隐藏（点右下角小球恢复）" aria-label="隐藏播放器">
+<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3L8 7l4-4 1 1-4 4 4 4-1 1-4-4-4 4-1-1 4-4-4-4z" fill="currentColor"/></svg>
+</button>
+</div>
+</div>
+</div>
+
+<button class="xp-music-resume" id="xp-music-resume" type="button" title="恢复音乐播放器" aria-label="恢复音乐播放器" style="display:none">
+<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 13V4l8-2v8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="13" r="2.2" fill="currentColor"/><circle cx="12" cy="11" r="2.2" fill="currentColor"/></svg>
+</button>
+<div id="aplayer-hidden" style="display:none"></div>
+
+<script>
+(function () {
+  if (window.__XP_MUSIC_INITED__) return;
+  window.__XP_MUSIC_INITED__ = true;
+
+  if (window.XP_MUSIC_EMBED) return;
+
+  var songs = window.XP_MUSIC || [];
+  var S = 'xp_music_state_v1';        /* 主状态：index/progress/playing/order */
+  var SP = S + '_p';                  /* 位置 */
+  var SC = S + '_c';                  /* 折叠 */
+  var SH = S + '_h';                  /* 隐藏 */
+  var SS = S + '_s';                  /* 大小档位：0=小 1=标准 2=大 */
+  var $ = function (id) { return document.getElementById(id); };
+  var index = 0, ap = null, isPlaying = false;
+
+  function fmt(sec) {
+    sec = Math.max(0, sec || 0);
+    var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function load() { try { return JSON.parse(localStorage.getItem(S) || 'null'); } catch (e) { return null; } }
+  function save() {
+    if (!ap) return;
+    try {
+      localStorage.setItem(S, JSON.stringify({
+        i: index, p: ap.audio ? ap.audio.currentTime : 0, playing: isPlaying,
+        order: songs.map(function (s) { return String(s.title || '') + '||' + String(s.author || ''); })
+      }));
+    } catch (e) {}
+  }
+
+  /* ---- 拖动 ----
+     2026-10-13 两个手机端修复：
+     · 把手从顶部窄条扩大到整个播放器（按钮/进度条除外）—— 手机屏幕最上缘是系统
+       手势区（下拉通知/地址栏），只靠顶部窄条永远没法把播放器送到最上方；
+     · 位置统一过 clampPos 钳制 —— 转屏 / 弹出输入法会让画面变小，之前恢复坐标时
+       不检查边界，播放器就会停在画面外，只能清缓存救回来。 */
+  var dragging = false, dragOffX = 0, dragOffY = 0;
+  /* 排除区只留「真正要响应点击/滑动的控件」：按钮、链接、进度条。
+     这里以前把 .mp4-progress-wrap（整行）也排除了，加上 7 个按钮占满控制条，
+     结果全播放器**只剩歌名那一行能拖** —— 手机端表现就是「只有上部可以拖」。
+     现在进度条只排除可点的那条 bar 本身，包裹层（含时间数字）可以拖。 */
+  var GRIP_EXCLUDE = 'button, a, .xp-window-btn, .mp4-btn, .mp4-progress-bar';
+
+  /* 视口尺寸：优先用 visualViewport —— 手机地址栏收起/弹出、软键盘顶起都只改它，
+     不会触发 window 的 resize。以前只监听 resize，于是「地址栏收起后画面变矮」
+     这类变化没人管，玩家又被留在画面外（这正是「偶发跑到画面外、只能刷新」的成因之一）。 */
+  function viewportSize() {
+    var vv = window.visualViewport;
+    return {
+      w: Math.round(vv && vv.width ? vv.width : window.innerWidth),
+      h: Math.round(vv && vv.height ? vv.height : window.innerHeight)
+    };
+  }
+
+  /* 元素在屏幕上的**真实占位**，一律以 getBoundingClientRect 为准。
+     ⚠ 绝对不要用 offsetWidth/offsetHeight 再乘一个自己解析出来的 scale ——
+     踩过的坑：offsetWidth 是不含 transform 的整数取整值，而
+     getComputedStyle().transform 在切档过渡期间读到的是**动画中间值**，
+     两者相乘得到的尺寸根本没意义（实测反推出 217px 这种既非 200 也非 250 的数），
+     于是钳位边界算错、播放器被允许停到屏幕外，表现为「最大档溢出」「最小档贴不到边」。
+     getBoundingClientRect 已经把 transform 算进去了，一个数就是答案。 */
+  function visualRect(box) {
+    var r = box.getBoundingClientRect();
+    return { w: r.width, h: r.height, left: r.left, top: r.top };
+  }
+
+  function clampPos(box) {
+    var vp = viewportSize();
+    var vr = visualRect(box);
+    var x = parseInt(box.style.left, 10), y = parseInt(box.style.top, 10);
+    if (isNaN(x) && isNaN(y)) return;   /* 还没拖过（仍是右下角定位）不用管 */
+
+    /* 缩放原点是左上角 ⇒ left/top 就是屏幕上的左上角，直接钳即可。
+       下限允许到 0：这样缩到最小时播放器能真正贴住屏幕边缘
+       （以前下限写死 4，永远差一截贴不到边，就是「空气墙」的手感）。 */
+    var maxX = Math.max(0, vp.w - vr.w);
+    var maxY = Math.max(0, vp.h - vr.h);
+    x = Math.round(Math.min(Math.max(isNaN(x) ? 0 : x, 0), maxX));
+    y = Math.round(Math.min(Math.max(isNaN(y) ? 0 : y, 0), maxY));
+
+    box.style.left = x + 'px'; box.style.top = y + 'px';
+    box.style.right = 'auto'; box.style.bottom = 'auto';
+    try { localStorage.setItem(SP, JSON.stringify({ l: x, t: y })); } catch (e) {}
+  }
+  function enableDrag() {
+    var box = document.getElementById('xp-music-floating');
+    if (!box) return;
+    box.addEventListener('mousedown', function (e) {
+      /* 按钮链接和进度条照常工作，其余区域都能拖动（用 closest 捕获 SVG 图标内的按下） */
+      if (e.target && e.target.closest && e.target.closest(GRIP_EXCLUDE)) return;
+      dragging = true;
+      var rect = box.getBoundingClientRect();
+      dragOffX = e.clientX - rect.left;
+      dragOffY = e.clientY - rect.top;
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      box.style.left = (e.clientX - dragOffX) + 'px';
+      box.style.top = (e.clientY - dragOffY) + 'px';
+      box.style.right = 'auto'; box.style.bottom = 'auto';
+      clampPos(box);
+    });
+    document.addEventListener('mouseup', function () { dragging = false; });
+    /* 触屏也支持拖动 */
+    box.addEventListener('touchstart', function (e) {
+      if (e.target && e.target.closest && e.target.closest(GRIP_EXCLUDE)) return;
+      var t = e.touches[0];
+      var rect = box.getBoundingClientRect();
+      dragOffX = t.clientX - rect.left; dragOffY = t.clientY - rect.top;
+      dragging = true;
+    }, { passive: true });    document.addEventListener('touchmove', function (e) {
+      if (!dragging) return;
+      e.preventDefault();   /* 拖播放器期间阻止页面跟着滚（必须配 passive:false 才能调用） */
+      var t = e.touches[0];
+      box.style.left = (t.clientX - dragOffX) + 'px';
+      box.style.top = (t.clientY - dragOffY) + 'px';
+      box.style.right = 'auto'; box.style.bottom = 'auto';
+      clampPos(box);
+    }, { passive: false });
+    document.addEventListener('touchend', function () { dragging = false; });
+    /* 转屏 / 窗口大小变化后，把位置拉回画面内（横转竖最容易把坐标挤出屏幕） */
+    window.addEventListener('resize', function () { clampPos(box); });
+    /* 地址栏收起/弹出、软键盘顶起只会改 visualViewport，不触发 resize —— 必须单独听 */
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', function () { clampPos(box); });
+      window.visualViewport.addEventListener('scroll', function () { clampPos(box); });
+    }
+    /* orientationchange 触发时视口往往还没稳定，量到的还是旧尺寸：
+       多钳几次，覆盖「250ms 后仍在变」的情况（这就是偶发跑到画面外的元凶）。 */
+    function reclamp() { clampPos(box); }
+    window.addEventListener('orientationchange', function () {
+      setTimeout(reclamp, 120);
+      setTimeout(reclamp, 350);
+      setTimeout(reclamp, 800);
+    });
+  }
+
+  function restorePosition() {
+    var box = document.getElementById('xp-music-floating');
+    if (!box) return;
+    try {
+      var p = JSON.parse(localStorage.getItem(SP) || 'null');
+      if (p && typeof p.l === 'number' && typeof p.t === 'number') {
+        box.style.left = p.l + 'px'; box.style.top = p.t + 'px';
+        box.style.right = 'auto'; box.style.bottom = 'auto';
+        clampPos(box);   /* 存的坐标可能已经出界（转屏过/窗口变小过），钳回来 */
+        /* 初始化这一刻封面图、字体、大小档位都还没落定，getBoundingClientRect 量到
+           的高度偏小 → 钳位算出的边界偏松，玩家仍可能露在画面外。等布局稳定再钳几次。 */
+        if (window.requestAnimationFrame) {
+          requestAnimationFrame(function () { clampPos(box); });
+        }
+        setTimeout(function () { clampPos(box); }, 300);
+        setTimeout(function () { clampPos(box); }, 1000);
+      }
+    } catch (e) {}
+  }
+
+  /* ---- 隐藏 / 恢复 ---- */
+  function hidePlayer() {
+    var box = document.getElementById('xp-music-floating');
+    var dot = document.getElementById('xp-music-resume');
+    if (box) box.classList.add('mp4-hidden');
+    if (dot) dot.style.display = '';
+    try { localStorage.setItem(SH, '1'); } catch (e) {}
+  }
+  function showPlayer() {
+    var box = document.getElementById('xp-music-floating');
+    var dot = document.getElementById('xp-music-resume');
+    if (box) { box.classList.remove('mp4-hidden'); box.classList.remove('mp4-collapsed'); }
+    if (dot) dot.style.display = 'none';
+    try { localStorage.removeItem(SH); } catch (e) {}
+  }
+  function restoreHidden() {
+    try { if (localStorage.getItem(SH) === '1') hidePlayer(); } catch (e) {}
+  }
+
+  /* ---- 大小调节（2026-10-13）：小 / 标准 / 大 三档循环，档位存 LocalStorage ----
+     用整体 transform 缩放：不动内部布局，拖动、折叠、隐藏都照常工作。
+
+     ⚠ 缩放原点必须是 **左上角**（top left），不能是右下角。
+     原点若在右下角，left/top 就不再等于「屏幕上看到的左上角」：
+       视觉左上角 = left + (1-s)×宽高  →  s=1.25 时比 left 小 50px，
+       于是播放器在左上/右上/左下角调「大」会直接顶出屏幕；
+       s=0.8 时又比 left 大 40px，钳位下限 4 使它**永远贴不到屏幕边缘**。
+     固定在左上角后 left/top 与视觉位置一一对应，上面两个毛病一起消失，
+     clampPos 也不用再做任何换算。 */
+  var SCALE_STEPS = [0.8, 1, 1.25];
+  function applyScale(step) {
+    var el = document.getElementById('xp-music-floating');
+    if (!el) return;
+    var v = SCALE_STEPS[((step % SCALE_STEPS.length) + SCALE_STEPS.length) % SCALE_STEPS.length];
+    el.style.transform = v === 1 ? '' : 'scale(' + v + ')';
+    el.style.transformOrigin = 'top left';
+    /* 换档会改变实际占用尺寸，且 transform 有过渡：过渡一结束就重新钳位，
+       否则「贴在右下角时调大」会把播放器推出画面。 */
+    if (typeof clampPos === 'function') {
+      setTimeout(function () { clampPos(el); }, 260);
+    }
+  }
+  function restoreSize() {
+    var s = -1;
+    try { s = parseInt(localStorage.getItem(SS), 10); } catch (e) {}
+    if (s >= 0 && s < SCALE_STEPS.length) applyScale(s);
+  }
+
+  /* ---- 歌名跑马灯 ---- */
+  function marquee() {
+    var inner = document.querySelector('.mp4-title-inner');
+    if (!inner) return;
+    inner.classList.remove('mp4-marquee');
+    void inner.offsetWidth;
+    if (inner.scrollWidth > inner.clientWidth + 2) inner.classList.add('mp4-marquee');
+  }
+
+  function renderEmpty() {
+    var inner = document.querySelector('.mp4-title-inner');
+    if (inner) inner.textContent = (window.XP_MUSIC_UI || {}).empty || '未配置曲目';
+    ['mp4-play','mp4-prev','mp4-next'].forEach(function (id) {
+      var b = $(id); if (b) { b.disabled = true; b.setAttribute('aria-disabled','true'); }
+    });
+    var link = $('mp4-link'); if (link) link.style.display = 'none';
+    var bar = $('mp4-progress-bar');
+    if (bar) { bar.style.cursor = 'default'; bar.removeAttribute('role'); }
+    var screen = document.querySelector('.mp4-screen');
+    if (screen) screen.classList.add('is-empty');
+  }
+
+  function neUrl(s) {
+    if (!s || !s.url) return '';
+    /* ⚠ DRIVER 是模板字符串：正则里的反斜杠必须写双份（\d），
+       写单份会被模板字面量吃掉变成 d —— 2026-10-12 修复：该链接因此从未显示过 */
+    var m = String(s.url).match(/[?&]id=(\d+)/);
+    return m ? 'https://music.163.com/#/song?id=' + m[1] : '';
+  }
+
+  /* 封面图白名单（2026-10-12 审查加固）：
+     song.pic 来自「网络抓取 → music-tracks.yml → 内联脚本」三级，直接拼进
+     url("...") 等于给 CSS 注入留了口子（典型利用：加载外部资源做追踪 / 钓鱼背景）。
+     只放行两类：
+       1. 网易云封面 CDN：https://p1..p4.music.126.net/<base64 id>/<数字 id>.jpg
+          （注意是两段路径，第一段含 = 号——实测漏掉中间那段会把真封面也挡掉）
+       2. 站内相对路径（手填 music.yml 时可以用 /images/... 本地封面）
+     其它一律当没有封面处理（回退到占位 SVG），neUrl() 的同款思路。 */
+  var PIC_CDN_RE = /^https:\/\/p[1-4]\.music\.126\.net\/[A-Za-z0-9_\-=]+\/\d+\.[A-Za-z]{3,4}$/;
+  function safePic(p) {
+    if (!p) return '';
+    p = String(p).trim();
+    if (PIC_CDN_RE.test(p)) return p;
+    if (p.charAt(0) === '/' && !/:|\/\/|\.\./.test(p)) return p;
+    return '';
+  }
+
+  function updateSongInfo(i) {
+    var song = songs[i]; if (!song) return;
+    var inner = document.querySelector('.mp4-title-inner');
+    if (inner) inner.textContent = song.title || '';
+    if ($('mp4-author')) $('mp4-author').textContent = song.author || '';
+    var link = $('mp4-link');
+    if (link) {
+      var t = neUrl(song);
+      if (t) { link.href = t; link.style.display = ''; }
+      else { link.style.display = 'none'; }
+    }
+    var cover = $('mp4-cover');
+    if (cover) {
+      var ph = cover.querySelector('svg');
+      var pic = safePic(song.pic);
+      if (pic) {
+        cover.style.backgroundImage = 'url("' + pic + '")';
+        cover.style.backgroundSize = 'cover';
+        cover.style.backgroundPosition = 'center';
+        cover.classList.add('has-cover');
+        if (ph) ph.style.display = 'none';
+      } else {
+        cover.style.backgroundImage = '';
+        cover.classList.remove('has-cover');
+        if (ph) ph.style.display = '';
+      }
+    }
+    setTimeout(marquee, 0);
+  }
+
+  function setPlaying(playing) {
+    isPlaying = playing;
+    var p = $('icon-play'), pu = $('icon-pause'), dot = $('mp4-play-indicator');
+    if (p) p.style.display = playing ? 'none' : '';
+    if (pu) pu.style.display = playing ? '' : 'none';
+    if (dot) dot.style.display = playing ? 'inline-block' : 'none';
+    var btn = $('mp4-play'); if (btn) btn.setAttribute('aria-label', playing ? '暂停' : '播放');
+  }
+
+  function initPlayer() {
+    if (!songs.length || typeof APlayer === 'undefined') { renderEmpty(); return; }
+
+    songs = songs.slice();
+    var st = load();
+    var savedIndex = 0, savedProg = 0, shouldPlay = false;
+
+    /* 恢复洗牌顺序 */
+    function ko(a) { return a.map(function (s) { return String(s.title || '') + '||' + String(s.author || ''); }); }
+    var cur = ko(songs), restored = false;
+    if (st && Array.isArray(st.order) && st.order.length === songs.length) {
+      var set = {}; cur.forEach(function (k) { set[k] = true; });
+      if (st.order.every(function (k) { return !!set[k]; })) {
+        var map = {}; songs.forEach(function (s) { map[ko([s])[0]] = s; });
+        songs = st.order.map(function (k) { return map[k]; }).filter(Boolean);
+        restored = true;
+      }
+    }
+    if (!restored) {
+      for (var i = songs.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = songs[i]; songs[i] = songs[j]; songs[j] = t;
+      }
+    }
+
+    if (st && typeof st.i === 'number' && st.i >= 0 && st.i < songs.length) {
+      savedIndex = st.i; savedProg = st.p || 0; shouldPlay = !!st.playing;
+    }
+
+    ap = new APlayer({
+      container: $('aplayer-hidden'),
+      audio: songs.map(function (s) {
+        return { name: s.title, artist: s.author, url: s.url, cover: s.pic || '' };
+      }),
+      volume: 0.7
+    });
+    index = savedIndex;
+    if (index > 0) ap.switchAudio(index);
+    updateSongInfo(index);
+
+    ap.on('loadeddata', function () {
+      if (savedProg > 0 && ap.audio && ap.audio.duration) {
+        ap.seek(Math.min(savedProg, ap.audio.duration - 0.5));
+      }
+      if (shouldPlay) { ap.play(); }
+      savedProg = 0; shouldPlay = false;
+    });
+    ap.on('listswitch', function (info) {
+      if (info && typeof info.index === 'number') index = info.index;
+      updateSongInfo(index); save();
+    });
+    /* errC 统计「连续」加载失败次数，用来防止整张歌单都失效时无限跳歌。
+       必须在成功播放时清零：否则一次会话里累计失败到 songs.length 次之后，
+       自动跳歌就永久失效了（哪怕后面大多能正常播）。 */
+    var errC = 0;
+    ap.on('error', function () { errC += 1; if (errC < songs.length) next(); });
+
+    var last = 0;
+    ap.on('timeupdate', function () {
+      var c = ap.audio.currentTime || 0, t = ap.audio.duration || 0;
+      if ($('mp4-current')) $('mp4-current').textContent = fmt(c);
+      if ($('mp4-total')) $('mp4-total').textContent = fmt(t);
+      if (t > 0) {
+        var pct = (c / t) * 100;
+        var f = $('mp4-progress-fill'); if (f) f.style.width = pct + '%';
+        var b = $('mp4-progress-bar'); if (b) b.setAttribute('aria-valuenow', String(Math.round(pct)));
+      }
+      var now = Date.now();
+      if (now - last > 2000) { save(); last = now; }
+    });
+    ap.on('ended', function () { next(); });
+    ap.on('play', function () { isPlaying = true; setPlaying(true); errC = 0; save(); });
+    ap.on('pause', function () { isPlaying = false; setPlaying(false); save(); });
+
+    /* 按钮绑定 */
+    if ($('mp4-play')) $('mp4-play').addEventListener('click', toggle);
+    if ($('mp4-prev')) $('mp4-prev').addEventListener('click', prev);
+    if ($('mp4-next')) $('mp4-next').addEventListener('click', next);
+    var close = $('mp4-close');
+    if (close) close.addEventListener('click', function () {
+      var box = document.getElementById('xp-music-floating');
+      if (box) {
+        box.classList.toggle('mp4-collapsed');
+        try { localStorage.setItem(SC, box.classList.contains('mp4-collapsed') ? '1' : '0'); } catch (e) {}
+      }
+    });
+    var hide = $('mp4-hide');
+    if (hide) hide.addEventListener('click', hidePlayer);
+    var resume = $('xp-music-resume');
+    if (resume) resume.addEventListener('click', showPlayer);
+    var sizeBtn = $('mp4-size');
+    if (sizeBtn) sizeBtn.addEventListener('click', function () {
+      var cur = 0;
+      try { cur = parseInt(localStorage.getItem(SS), 10) || 0; } catch (e) {}
+      cur = (cur + 1) % SCALE_STEPS.length;
+      try { localStorage.setItem(SS, String(cur)); } catch (e) {}
+      applyScale(cur);
+    });
+
+    var bar = $('mp4-progress-bar');
+    if (bar) bar.addEventListener('click', function (e) {
+      if (!ap || !ap.audio.duration) return;
+      var r = bar.getBoundingClientRect();
+      ap.seek(((e.clientX - r.left) / r.width) * ap.audio.duration);
+    });
+
+    /* 恢复持久化状态 */
+    try {
+      var box = document.getElementById('xp-music-floating');
+      var saved = localStorage.getItem(SC);
+      if (saved === '1') {
+        if (box) box.classList.add('mp4-collapsed');
+      } else if (saved === null && box &&
+                 window.matchMedia && window.matchMedia('(max-width: 640px)').matches) {
+        /* 移动端首次访问默认收起（2026-10-12 审查建议）：播放器 max-width 320px
+           在 500px 屏上接近半屏，收起态只留品牌条 + 封面缩略 + 控制条。
+           注意只在「从未手动设置过」时生效——老访客的展开/收起偏好优先。 */
+        box.classList.add('mp4-collapsed');
+      }
+    } catch (e) {}
+
+    restorePosition();
+    restoreHidden();
+    restoreSize();
+    enableDrag();
+  }
+
+  function toggle() { if (!ap) return; isPlaying ? ap.pause() : ap.play(); }
+  function prev() {
+    if (!ap) return;
+    index = (index - 1 + songs.length) % songs.length;
+    ap.switchAudio(index); updateSongInfo(index);
+    if (isPlaying) ap.play();
+  }
+  function next() {
+    if (!ap) return;
+    index = (index + 1) % songs.length;
+    ap.switchAudio(index); updateSongInfo(index);
+    if (isPlaying) ap.play();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPlayer);
+  else initPlayer();
+})();
+</script>
+
+<script>(function(){
+  if (window.__XP_WIN_ACTIONS__) return;
+  window.__XP_WIN_ACTIONS__ = true;
+
+  /* 全站窗口统一补齐右上角三按钮（2026-10-13）：
+     模板里没写按钮组的窗口（侧栏卡片、各页面窗口等）在这里一次性补上，
+     已经有按钮组的窗口跳过。交互不用逐个绑定 —— 走下面的 document 事件委托，
+     新插入的按钮天然可用，键盘 Enter/Space 也一样。 */
+  (function fillWindowButtons() {
+    var MIN = '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="7" width="8" height="2" fill="currentColor"/></svg>';
+    var MAX = '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="1" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
+    var CLOSE = '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>';
+    document.querySelectorAll('.xp-window').forEach(function (win) {
+      var title = win.querySelector('.xp-window-title');
+      if (!title || title.querySelector('.xp-window-btns')) return;
+      var span = document.createElement('span');
+      span.className = 'xp-window-btns';
+      span.setAttribute('role', 'group');
+      span.setAttribute('aria-label', '窗口操作');
+      span.innerHTML =
+        '<i class="xp-window-btn" data-action="min" role="button" tabindex="0" aria-label="最小化">' + MIN + '</i>' +
+        '<i class="xp-window-btn" data-action="max" role="button" tabindex="0" aria-label="最大化">' + MAX + '</i>' +
+        '<i class="xp-window-btn close" data-action="close" role="button" tabindex="0" aria-label="关闭">' + CLOSE + '</i>';
+      title.appendChild(span);
+    });
+  })();
+
+  /* close 不再一关了之（2026-10-12 审查新增）：XP 原语义是「关闭直到刷新」，
+     误点一次窗口就回不来。现在关闭后在左下角（任务栏上方）留一枚「恢复」chip，
+     点一下窗口就回来；多关几个就叠几枚，全部恢复后条自动消失（CSS :empty 隐藏）。 */
+  function restoreBar() {
+    var bar = document.getElementById('xp-restore-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'xp-restore-bar';
+      document.body.appendChild(bar);
+    }
+    return bar;
+  }
+  function titleOf(win) {
+    var t = win.querySelector('.xp-window-title-text, .xp-window-title');
+    return (t && t.textContent || '').trim() || '窗口';
+  }
+  function closeWindow(win) {
+    if (win.hasAttribute('data-xp-closed')) return;
+    win.setAttribute('data-xp-closed', '1');
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'xp-restore-chip';
+    var name = titleOf(win);
+    chip.textContent = '恢复「' + name + '」';
+    chip.title = name + ' —— 点击恢复窗口';
+    chip.setAttribute('aria-label', '恢复窗口 ' + name);
+    chip.addEventListener('click', function () {
+      win.removeAttribute('data-xp-closed');
+      chip.remove();
+    });
+    restoreBar().appendChild(chip);
+  }
+
+  function act(btn) {
+    var win = btn.closest('.xp-window');
+    if (!win) return;
+    var a = btn.getAttribute('data-action');
+    if (a === 'min') win.classList.toggle('is-minimized');
+    else if (a === 'max') win.classList.toggle('is-maximized');
+    else if (a === 'close') closeWindow(win);
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.xp-window-btn') : null;
+    if (b) act(b);
+  });
+  /* 键盘操作：Enter / Space 触发 */
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var b = document.activeElement;
+    if (b && b.classList && b.classList.contains('xp-window-btn')) {
+      e.preventDefault(); act(b);
+    }
+  });
+})();</script>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":false,"lazyload_placeholder":null,"photo_zoom":false},"search":{"enable":false,"type":"algolia","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = false; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script>
+(function () {
+  if (window.__XP_LIKE_INITED__) return;
+  window.__XP_LIKE_INITED__ = true;
+
+  /* 存储层：以后换第三方托管，改这几个方法即可（这是刻意留的后路） */
+  var XPLikeBackend = {
+    local: function () {
+      var self = this;
+      this.get = function (key, cb) {
+        var n = 0;
+        try { n = parseInt(localStorage.getItem('xp_like:' + key), 10) || 0; } catch (e) {}
+        cb(Math.max(0, n));          /* 夹到 0 以上：历史数据里若混进负数，显示不要露馅 */
+      };
+      /* delta = +1 点赞 / -1 取消赞。取消时下限卡在 0 ——
+         本地点赞没法在服务端校验，这里只能保证「显示上不会变成负数」。
+         （真正的防刷要靠第三方后端，见文件上方注释与 README 第 12 节。） */
+      this.bump = function (key, delta, cb) {
+        var n = 0;
+        try {
+          n = (parseInt(localStorage.getItem('xp_like:' + key), 10) || 0) + delta;
+          if (n < 0) n = 0;
+          localStorage.setItem('xp_like:' + key, String(n));
+        } catch (e) {}
+        cb(n);
+      };
+      /* 是否已赞过：决定按钮是"爱心填实"还是"空心" */
+      this.mine = function (key, cb) {
+        var v = false;
+        try { v = localStorage.getItem('xp_like_mine:' + key) === '1'; } catch (e) {}
+        cb(v);
+      };
+      this.setMine = function (key, liked) {
+        try {
+          if (liked) localStorage.setItem('xp_like_mine:' + key, '1');
+          else localStorage.removeItem('xp_like_mine:' + key);
+        } catch (e) {}
+      };
+    },
+    get: function (key, cb) { cb(0); },
+    bump: function (key, delta, cb) { cb(0); },
+    mine: function (key, cb) { cb(false); },
+    setMine: function () {}
+  };
+  XPLikeBackend.local();
+  window.XPLikeBackend = XPLikeBackend;   /* 留个口子，方便以后替换 */
+
+  /* 把一个按钮刷成「已赞 / 未赞」两副样子，点赞和取消都走这里，样式不会走岔 */
+  function paint(btn, liked, count) {
+    var countEl = btn.querySelector('[data-like-count]');
+    if (countEl && typeof count === 'number') countEl.textContent = String(count);
+    btn.classList.toggle('is-liked', liked);
+    btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+    /* 提示文字跟着变：未赞时说"点赞"，已赞时说"取消赞" */
+    btn.title = liked ? '取消点赞' : '点赞（存在你自己的浏览器里）';
+    var label = btn.querySelector('.xp-like-label');
+    if (label) label.textContent = liked ? '取消赞' : '点赞';
+  }
+
+  function bind(btn) {
+    var key = btn.getAttribute('data-like-key');
+    if (!key) return;
+
+    XPLikeBackend.get(key, function (n) {
+      XPLikeBackend.mine(key, function (liked) {
+        paint(btn, liked, n);
+      });
+    });
+
+    btn.addEventListener('click', function (e) {
+      /* 卡片上的点赞按钮住在 <a> 里：不拦住就会跳到文章页 */
+      e.preventDefault();
+      e.stopPropagation();
+
+      var liked = btn.classList.contains('is-liked');
+      /* 再点一下 = 撤销：赞变取消、取消变赞（同一个按钮来回切） */
+      XPLikeBackend.bump(key, liked ? -1 : 1, function (n) {
+        paint(btn, !liked, n);
+        XPLikeBackend.setMine(key, !liked);
+        btn.classList.remove('bump');
+        void btn.offsetWidth;
+        btn.classList.add('bump');   /* 点一下弹一下，给点反馈 */
+      });
+    });
+  }
+
+  function scan(root) {
+    var list = (root || document).querySelectorAll('.xp-like:not([data-like-bound])');
+    for (var i = 0; i < list.length; i++) {
+      list[i].setAttribute('data-like-bound', '1');
+      bind(list[i]);
+    }
+  }
+  scan(document);
+  /* 文章页内容是构建期直出的，这里只是保险：万一以后有异步插入的卡片 */
+  document.addEventListener('DOMContentLoaded', function () { scan(document); });
+})();
+</script>
+<script>
+(function () {
+  /* ⚠ 插件是**解密时才动态插入**密码框的，所以不能只在 DOMContentLoaded 跑一次 ——
+     那一刻页面上还没有 .hbe-input-field，白跑。用 MutationObserver 等它出现。 */
+  function fix() {
+    var input = document.querySelector('.hbe-input-field');
+    var label = document.querySelector('.hbe-input-label');
+    if (!input || !label) return false;
+    if (document.querySelector('.hbe-hint')) return true;   /* 已经搬过，别重复插 */
+
+    var text = (label.textContent || '').trim();
+    if (text) {
+      var hint = document.createElement('p');
+      hint.className = 'hbe-hint';
+      hint.textContent = text;
+      /* 插在输入框所在的那个 .hbe-input 外面（即 form 里、输入框行之前），
+         这样它显示在**框的上方**而不是框里。 */
+      var wrap = input.closest('.hbe-input') || input;
+      wrap.parentNode.insertBefore(hint, wrap);
+      /* 无障碍：把提示跟输入框关联起来，读屏软件会念出来 */
+      hint.id = 'hbeHint';
+      input.setAttribute('aria-describedby', 'hbeHint');
+    }
+    return true;
+  }
+  if (fix()) return;
+  var ob = new MutationObserver(function () { if (fix()) ob.disconnect(); });
+  ob.observe(document.documentElement, { childList: true, subtree: true });
+  /* 兜底：万一 MutationObserver 没抓到（或浏览器不支持），再试几次就收手 */
+  var tries = 0;
+  var timer = setInterval(function () {
+    if (fix() || ++tries > 20) { clearInterval(timer); ob.disconnect(); }
+  }, 300);
+})();
+</script>
+
+<!-- XP 底部任务栏 -->
+<div class="xp-taskbar">
+  <div class="xp-taskbar-left">
+    <button class="xp-start-btn" id="xpStartBtn" type="button" title="开始菜单" aria-haspopup="true" aria-expanded="false" aria-controls="xpStartMenu">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+        <rect x="1" y="1" width="6" height="6" fill="#ff0000"/>
+        <rect x="9" y="1" width="6" height="6" fill="#00ff00"/>
+        <rect x="1" y="9" width="6" height="6" fill="#0000ff"/>
+        <rect x="9" y="9" width="6" height="6" fill="#ffff00"/>
+      </svg>
+      <span class="xp-start-text">开始</span>
+    </button>
+  </div>
+
+  <div class="xp-taskbar-center">
+    <div class="xp-taskbar-item active" id="xpTaskbarItem">
+      <svg class="xp-taskbar-icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path d="M3 1h7l3 3v11H3V1z" fill="#ffffff" stroke="#003399" stroke-width="1"/>
+        <path d="M10 1v3h3" fill="none" stroke="#003399" stroke-width="1"/>
+        <line x1="5" y1="7" x2="11" y2="7" stroke="#003399" stroke-width="1"/>
+        <line x1="5" y1="9" x2="11" y2="9" stroke="#003399" stroke-width="1"/>
+        <line x1="5" y1="11" x2="9" y2="11" stroke="#003399" stroke-width="1"/>
+      </svg>
+      <span class="xp-taskbar-title" id="xpTaskbarTitle">页面</span>
+    </div>
+  </div>
+
+  <div class="xp-taskbar-right">
+    <button class="xp-tray-btn" id="xpVolumeBtn" type="button" title="静音 / 取消静音" aria-pressed="false" aria-label="静音切换">
+      <svg id="xpVolOn" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path d="M2 6h3l4-4v12l-4-4H2V6z" fill="#ffffff" stroke="#ffffff" stroke-width="0.5"/>
+        <path d="M11 5c1 1 1 5 0 6" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+        <path d="M13 3c2 2 2 8 0 10" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+      </svg>
+      <svg id="xpVolOff" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" style="display:none">
+        <path d="M2 6h3l4-4v12l-4-4H2V6z" fill="#ffffff" stroke="#ffffff" stroke-width="0.5"/>
+        <line x1="11" y1="5" x2="14" y2="11" stroke="#ff8080" stroke-width="1.6"/>
+        <line x1="14" y1="5" x2="11" y2="11" stroke="#ff8080" stroke-width="1.6"/>
+      </svg>
+    </button>
+    <button class="xp-tray-btn" id="xpThemeBtn" type="button" title="切换深色模式" aria-pressed="false" aria-label="切换深色模式">
+      <svg id="xpThemeSun" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <circle cx="8" cy="8" r="5" fill="#ffff00" stroke="#ffffff" stroke-width="0.5"/>
+        <circle cx="8" cy="2" r="1" fill="#ffffff"/>
+        <circle cx="8" cy="14" r="1" fill="#ffffff"/>
+        <circle cx="2" cy="8" r="1" fill="#ffffff"/>
+        <circle cx="14" cy="8" r="1" fill="#ffffff"/>
+        <circle cx="3.5" cy="3.5" r="0.8" fill="#ffffff"/>
+        <circle cx="12.5" cy="12.5" r="0.8" fill="#ffffff"/>
+        <circle cx="3.5" cy="12.5" r="0.8" fill="#ffffff"/>
+        <circle cx="12.5" cy="3.5" r="0.8" fill="#ffffff"/>
+      </svg>
+      <svg id="xpThemeMoon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" style="display:none">
+        <path d="M11 2a6 6 0 1 0 3 11A7 7 0 0 1 11 2z" fill="#e8e8ff" stroke="#ffffff" stroke-width="0.5"/>
+      </svg>
+    </button>
+    <div class="xp-taskbar-clock" id="xpClock">
+      <span id="xpClockTime">--:--</span>
+      <span class="xp-clock-date" id="xpClockDate"></span>
+    </div>
+  </div>
+</div>
+
+<!-- 开始菜单（默认隐藏） -->
+<div class="xp-start-menu" id="xpStartMenu" role="menu" aria-label="开始菜单">
+  <div class="xp-start-menu-header">
+    <span class="xp-start-menu-user">
+      <svg class="xp-user-avatar" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true">
+        <circle cx="8" cy="5" r="3" fill="#ffcc99" stroke="#996633" stroke-width="0.5"/>
+        <path d="M2 14c0-3 3-5 6-5s6 2 6 5" fill="#6699cc" stroke="#336699" stroke-width="0.5"/>
+      </svg>
+      我的小站
+    </span>
+  </div>
+  <div class="xp-start-menu-body">
+    <a class="xp-start-item" href="/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M8 1L1 7v8h5v-5h4v5h5V7L8 1z" fill="#cc6633" stroke="#993300" stroke-width="0.5"/><rect x="6" y="10" width="4" height="5" fill="#663300" stroke="#330000" stroke-width="0.5"/></svg>
+      <span class="xp-start-text">首页</span>
+    </a>
+    <a class="xp-start-item" href="/works/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"/><circle cx="5" cy="6" r="1.2" fill="#ff6666"/><circle cx="11" cy="6" r="1.2" fill="#66cc66"/><circle cx="5" cy="10" r="1.2" fill="#6666ff"/><circle cx="10" cy="11" r="1.2" fill="#ffff66"/></svg>
+      <span class="xp-start-text">绘画</span>
+    </a>
+    <a class="xp-start-item" href="/guides/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M2 2h5v12H2z" fill="#cc3333" stroke="#990000" stroke-width="0.5"/><path d="M14 2H9v12h5V2z" fill="#3366cc" stroke="#003399" stroke-width="0.5"/></svg>
+      <span class="xp-start-text">文章</span>
+    </a>
+    <a class="xp-start-item" href="/games/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><rect x="2" y="4" width="12" height="8" rx="3" fill="#333333" stroke="#000000" stroke-width="0.5"/><circle cx="5" cy="8" r="1.5" fill="#666666"/><circle cx="11" cy="7" r="1" fill="#ff3333"/><circle cx="12" cy="9" r="1" fill="#3333ff"/></svg>
+      <span class="xp-start-text">游戏</span>
+    </a>
+    <a class="xp-start-item" href="/tools/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M10 2l4 4-2 2-4-4 2-2z" fill="#a0a0a0" stroke="#666" stroke-width="0.5"/><rect x="1" y="8" width="2" height="6" fill="#808080" stroke="#333" stroke-width="0.5"/><rect x="3" y="10" width="8" height="2" fill="#a0a0a0" stroke="#666" stroke-width="0.5"/></svg>
+      <span class="xp-start-text">工具</span>
+    </a>
+    <a class="xp-start-item" href="/blog/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M2 3h12v8H5l-3 3V3z" fill="#ccddee" stroke="#336699" stroke-width="0.5"/><circle cx="5.5" cy="7" r="1" fill="#336699"/><circle cx="8" cy="7" r="1" fill="#336699"/><circle cx="10.5" cy="7" r="1" fill="#336699"/></svg>
+      <span class="xp-start-text">杂谈</span>
+    </a>
+    <a class="xp-start-item" href="/archives/" role="menuitem">
+      <svg class="xp-start-icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><rect x="2" y="3" width="12" height="11" fill="#ccddee" stroke="#336699" stroke-width="0.5"/><rect x="2" y="3" width="12" height="3" fill="#336699"/><rect x="2" y="8" width="12" height="2" fill="#99bbdd"/></svg>
+      <span class="xp-start-text">归档</span>
+    </a>
+  </div>
+  <div class="xp-start-menu-footer">
+    <button type="button" class="xp-shutdown" id="xpShutdown">
+      <svg class="xp-shutdown-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M8 1.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span>关机</span>
+    </button>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ========== 时钟（时间 + 日期） ==========
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function updateClock() {
+    var now = new Date();
+    var timeEl = document.getElementById('xpClockTime');
+    var dateEl = document.getElementById('xpClockDate');
+    if (timeEl) timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    if (dateEl) dateEl.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日';
+  }
+  updateClock();
+  setInterval(updateClock, 15000);
+
+  // ========== 当前页面标题与图标 ==========
+  var ICON_DOC = '<svg viewBox="0 0 16 16" width="14" height="14" class="xp-taskbar-icon" aria-hidden="true"><path d="M3 1h7l3 3v11H3V1z" fill="#ffffff" stroke="#003399" stroke-width="1"/><path d="M10 1v3h3" fill="none" stroke="#003399" stroke-width="1"/><line x1="5" y1="7" x2="11" y2="7" stroke="#003399" stroke-width="1"/><line x1="5" y1="9" x2="11" y2="9" stroke="#003399" stroke-width="1"/><line x1="5" y1="11" x2="9" y2="11" stroke="#003399" stroke-width="1"/></svg>';
+  function setCurrentPage() {
+    var path = window.location.pathname.replace(/index\.html$/, '');
+    /* 任务栏左下角那个「当前页面名」也读导航配置（由构建期注入 PAGE_TITLES），
+       免得导航改名后这里还显示旧名字（2026-10-14 同一个坑踩了两次）。 */
+    var pages = {"/":"首页","/works/":"绘画","/guides/":"文章","/games/":"游戏","/tools/":"工具","/blog/":"杂谈","/archives/":"归档","/tags/":"标签","/categories/":"分类"};
+    var title = pages[path] || document.title || '页面';
+    var titleEl = document.getElementById('xpTaskbarTitle');
+    if (titleEl) titleEl.textContent = title;
+    var item = document.getElementById('xpTaskbarItem');
+    if (item) item.setAttribute('title', title);
+  }
+  setCurrentPage();
+
+  // ========== 开始菜单 ==========
+  var startBtn = document.getElementById('xpStartBtn');
+  var startMenu = document.getElementById('xpStartMenu');
+
+  function setMenu(open) {
+    if (!startMenu) return;
+    startMenu.classList.toggle('show', open);
+    if (startBtn) startBtn.setAttribute('aria-expanded', String(open));
+  }
+  function toggleStartMenu() {
+    if (!startMenu) return;
+    setMenu(!startMenu.classList.contains('show'));
+  }
+  function onDocumentClick(e) {
+    if (!startMenu || !startMenu.classList.contains('show')) return;
+    if (!startMenu.contains(e.target) && !(startBtn && startBtn.contains(e.target))) setMenu(false);
+  }
+
+  if (startBtn) {
+    startBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleStartMenu(); });
+  }
+  document.addEventListener('click', onDocumentClick);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') setMenu(false);
+  });
+
+  // ========== 深色模式 ==========
+  function applyThemeUI(isDark) {
+    var sun = document.getElementById('xpThemeSun');
+    var moon = document.getElementById('xpThemeMoon');
+    var btn = document.getElementById('xpThemeBtn');
+    if (sun) sun.style.display = isDark ? 'none' : '';
+    if (moon) moon.style.display = isDark ? '' : 'none';
+    if (btn) btn.setAttribute('aria-pressed', String(isDark));
+  }
+  function toggleDarkMode() {
+    var html = document.documentElement;
+    var isDark = html.classList.toggle('dark');
+    try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (err) {}
+    applyThemeUI(isDark);
+  }
+  var themeBtn = document.getElementById('xpThemeBtn');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleDarkMode(); });
+  }
+  applyThemeUI(document.documentElement.classList.contains('dark'));
+
+  // ========== 托盘音量：静音 / 取消静音（对所有音频生效） ==========
+  var muted = false;
+  function applyMute() {
+    var media = document.querySelectorAll('audio, video');
+    for (var i = 0; i < media.length; i++) media[i].muted = muted;
+    var on = document.getElementById('xpVolOn');
+    var off = document.getElementById('xpVolOff');
+    var btn = document.getElementById('xpVolumeBtn');
+    if (on) on.style.display = muted ? 'none' : '';
+    if (off) off.style.display = muted ? '' : 'none';
+    if (btn) btn.setAttribute('aria-pressed', String(muted));
+  }
+  var volBtn = document.getElementById('xpVolumeBtn');
+  if (volBtn) {
+    volBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      muted = !muted;
+      applyMute();
+    });
+  }
+
+  // ========== 关机彩蛋（2026-10-14 站主要求） ==========
+  /* 点开始菜单底部的「关机」→ 先弹一个模拟的系统错误窗口 → 关掉它之后进蓝屏
+     → 点蓝屏任意处（或按任意键）恢复原样。
+     纯前端演出，不会真的影响浏览器或系统；每一层都能退出来。 */
+  var shuttingDown = false;
+  // ========== 关机彩蛋的音效（2026-10-14 站主要求） ==========
+  /* 用 Web Audio 现场合成两声，不引入任何音频文件（与首页烟花/鸭叫同一套做法）：
+       · 错误音：一声低沉的「咚」（方波下滑 + 低通），配错误弹窗
+       · 关机音：声调持续下行的一段，配蓝屏（像 Windows 关机那段旋律的极简版）
+     尊重托盘的静音按钮：静音时一声不出。
+     另外浏览器要求音频必须由用户手势触发 —— 这两声都在点击之后才播放，符合。 */
+  var audioCtx = null;
+  var SOUND_ON = true;   /* _config.yml 的 shutdown.sound（构建期注入） */
+  function beep(kind) {
+    if (muted || !SOUND_ON) return;       /* 托盘静音或配置关了，都不出声 */
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      audioCtx = audioCtx || new AC();
+      var ctx = audioCtx;
+      if (ctx.state === 'suspended') ctx.resume();
+      var t = ctx.currentTime;
+
+      if (kind === 'error') {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        var filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 900;
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(180, t);
+        osc.frequency.exponentialRampToValueAtTime(70, t + 0.34);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
+        osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+        osc.start(t); osc.stop(t + 0.36);
+      } else if (kind === 'shutdown') {
+        /* 下行的一串音，营造"关掉"的感觉 */
+        [520, 392, 311, 233].forEach(function (f, i) {
+          var o = ctx.createOscillator();
+          var g = ctx.createGain();
+          o.type = 'triangle';
+          var s = t + i * 0.11;
+          o.frequency.setValueAtTime(f, s);
+          g.gain.setValueAtTime(0.0001, s);
+          g.gain.exponentialRampToValueAtTime(0.13, s + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001, s + 0.22);
+          o.connect(g); g.connect(ctx.destination);
+          o.start(s); o.stop(s + 0.24);
+        });
+      }
+    } catch (e) { /* 音频不可用就算了，别把彩蛋搞挂 */ }
+  }
+
+  function shutdownSequence() {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    setMenu(false);
+    beep('error');                        /* 第 1 幕配一声错误音 */
+
+    // ---- 第 1 幕：模拟系统错误窗口 ----
+    var layer = document.createElement('div');
+    layer.className = 'xp-error-layer';
+    layer.setAttribute('role', 'dialog');
+    layer.setAttribute('aria-modal', 'true');
+    layer.setAttribute('aria-label', '系统错误');
+
+    var T = {"sound":true,"button":"关机","errorTitle":"Warning","errorLines":["关闭计算机时发生严重错误。","系统即将停止响应，未保存的内容将会丢失。"],"errorOk":"确定","bsHead":"我的小站 遇到问题需要关闭","bsLines":["一个问题已经发生，Windows 需要重新启动。我们只收集某些错误信息，然后为你重新启动。"],"bsProgressSuffix":"完成","bsCode":"停止代码：KFC_CRAZY_DAY_VME50","bsFoot":"点击任意位置重启"};
+    var box = document.createElement('div');
+    box.className = 'xp-window xp-error-dialog';
+    box.innerHTML =
+      '<div class="xp-window-title">' +
+        '<span class="xp-window-title-text">' +
+          '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">' +
+            '<circle cx="8" cy="8" r="7" fill="#e8b800" stroke="#8a6d00" stroke-width="1"/>' +
+            '<rect x="7.2" y="4" width="1.6" height="5" fill="#3a2c00"/>' +
+            '<rect x="7.2" y="10.4" width="1.6" height="1.6" fill="#3a2c00"/>' +
+          '</svg> ' + T.errorTitle +
+        '</span>' +
+        '<span class="xp-window-btns" role="group" aria-label="窗口操作">' +
+          /* ⚠ 这里刻意**不用** data-action="close"：页面里有个通用的窗口处理器
+             （scripts/xp-content.js 的 document 级点击监听）会捕获所有 .xp-window-btn，
+             走它那套「关闭后生成『恢复』chip」的逻辑。错误弹窗是临时浮层，
+             关掉就该彻底消失，不该在左下角留一个恢复按钮（2026-10-14 站主发现）。
+             所以这里用独立类名 + 自己的点击处理，绕开通用逻辑。 */
+          '<i class="xp-window-btn xp-error-close" role="button" tabindex="0" aria-label="关闭">' +
+            '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>' +
+          '</i>' +
+        '</span>' +
+      '</div>' +
+      '<div class="xp-window-body">' +
+        '<div class="xp-error-row">' +
+          '<div class="xp-error-icon" aria-hidden="true">' +
+            '<svg width="34" height="34" viewBox="0 0 16 16">' +
+              '<circle cx="8" cy="8" r="7" fill="#e04343" stroke="#8a1f1f" stroke-width="1"/>' +
+              '<path d="M4.6 4.6l6.8 6.8M11.4 4.6l-6.8 6.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>' +
+            '</svg>' +
+          '</div>' +
+          '<p class="xp-error-text">' + T.errorLines.join('<br>') + '</p>' +
+        '</div>' +
+        '<div class="xp-error-actions">' +
+          '<button type="button" class="xp-btn xp-error-ok">' + T.errorOk + '</button>' +
+        '</div>' +
+      '</div>';
+
+    layer.appendChild(box);
+    document.body.appendChild(layer);
+    var okBtn = box.querySelector('.xp-error-ok');
+    if (okBtn) okBtn.focus();
+
+    function next() {
+      document.removeEventListener('keydown', onKey);
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+      showBlueScreen();
+    }
+    function onKey(e) { if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') { e.preventDefault(); next(); } }
+
+    if (okBtn) okBtn.addEventListener('click', next);
+    var closeIco = box.querySelector('.xp-error-close');
+    if (closeIco) closeIco.addEventListener('click', next);
+    document.addEventListener('keydown', onKey);
+  }
+
+  // ---- 第 2 幕：蓝屏 ----
+  function showBlueScreen() {
+    beep('shutdown');                     /* 进蓝屏时来一段下行音 */
+    var bs = document.createElement('div');
+    bs.className = 'xp-bluescreen';
+    bs.setAttribute('role', 'alertdialog');
+    bs.setAttribute('aria-label', '系统已停止');
+    var T = {"sound":true,"button":"关机","errorTitle":"Warning","errorLines":["关闭计算机时发生严重错误。","系统即将停止响应，未保存的内容将会丢失。"],"errorOk":"确定","bsHead":"我的小站 遇到问题需要关闭","bsLines":["一个问题已经发生，Windows 需要重新启动。我们只收集某些错误信息，然后为你重新启动。"],"bsProgressSuffix":"完成","bsCode":"停止代码：KFC_CRAZY_DAY_VME50","bsFoot":"点击任意位置重启"};
+    bs.innerHTML =
+      '<div class="xp-bs-inner">' +
+        '<p class="xp-bs-head">' + T.bsHead + '</p>' +
+        T.bsLines.map(function (l) { return '<p>' + l + '</p>'; }).join('') +
+        '<p class="xp-bs-pct">0% ' + T.bsProgressSuffix + '</p>' +
+        '<p class="xp-bs-code">' + T.bsCode + '</p>' +
+        '<p class="xp-bs-foot">' + T.bsFoot + '</p>' +
+      '</div>';
+    document.body.appendChild(bs);
+
+    // 百分比做个假进度，几秒内从 0 走到 100，更有 Windows 的味道
+    var pctEl = bs.querySelector('.xp-bs-pct');
+    var pct = 0;
+    var timer = setInterval(function () {
+      pct += Math.floor(Math.random() * 9) + 3;
+      if (pct > 100) pct = 100;
+      if (pctEl) pctEl.textContent = pct + '% ' + T.bsProgressSuffix;
+      if (pct >= 100) clearInterval(timer);
+    }, 420);
+
+    function restore() {
+      clearInterval(timer);
+      document.removeEventListener('keydown', restore);
+      if (bs.parentNode) bs.parentNode.removeChild(bs);
+      shuttingDown = false;
+    }
+    bs.addEventListener('click', restore);
+    document.addEventListener('keydown', restore);
+    /* 兜底：万一有人既不点也不按键，30 秒后自己退出来，别把页面永久锁住 */
+    setTimeout(restore, 30000);
+  }
+
+  var sd = document.getElementById('xpShutdown');
+  if (sd) sd.addEventListener('click', function (e) { e.stopPropagation(); shutdownSequence(); });
+})();
+</script>
+</body>
+</html>
+
