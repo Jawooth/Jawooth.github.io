@@ -895,6 +895,9 @@ html.dark .mp4-progress-times .status-bar-field { color: #2a2a2a; }   /* 状态�
   box-shadow: inset 1px 1px 0 var(--btn-shadow-light), inset -1px -1px 0 var(--btn-shadow-dark);
 }
 .mp4-btn:hover { background: var(--face-hover); }
+/* 基准宽度；浮动/折叠态在下面按同一条规则覆盖。
+   ⚠ .mp4-btn-play 只在**不浮动**时有 42px 的加宽（浮动时由
+   .mp4-floating .mp4-btn-play 接管，见第 10 节末）。 */
 .mp4-btn-play { width: 42px; }
 html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }html.dark .mp4-brand { color: #9cc2ff; }
 html.dark .mp4-progress-times { color: #c8c8d6; }
@@ -926,12 +929,24 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 .mp4-screen-content.mp4-screen-v .mp4-song-info { width: 100%; min-width: 0; }
 .mp4-screen-content.mp4-screen-v .mp4-song-author { font-size: 12px; }
 
-.mp4-floating .mp4-controls { gap: 4px; flex-wrap: wrap; }
-.mp4-floating .mp4-btn { width: 28px; height: 22px; }
-.mp4-floating .mp4-btn-play { width: 36px; }
-.mp4-floating .mp4-btn-link,
-.mp4-floating .mp4-btn-close,
-.mp4-floating .mp4-btn-hide { width: 24px; height: 22px; }
+/* 浮动播放器的按钮：**7 个排成一行**（2026-10-13 统一 + 单行）
+   ⚠ 这里**只允许有一个例外**：播放/暂停键宽一点（它是主操作）。
+   以前是逐个类名写宽度（link/close/hide 一组 24px、size 漏了落回 28px），
+   结果 7 个键排成 28·36·28·24·28·24·24 —— 漏写一个就多一种宽度。
+   现在基准宽度写一次，加任何新按钮都自动对齐。
+
+   尺寸是**算出来的**，不是随手写的：
+     播放器内宽 = 200(外层) − 2×2(边框) − 2×10(内边距) = 176px
+     7 键 + 6 间距要一行放完：7w + 6g ≤ 176
+       w=24,g=4 → 192 ✗   w=23,g=3 → 179 ✗   w=22,g=3 → 172 ✓（余 4px）
+   所以取 22×22 + 3px 间距。**别把宽度往上调**：24px 就会在 176 的临界点上
+   抖成两行，且换行位置随字体浮点漂移（实测过 5+1 与 4+3 两种结果）。
+   宁可挤一点也要单行 —— 两行会顶高整个播放器，右下角更占地方。 */
+.mp4-floating .mp4-controls { gap: 3px; flex-wrap: nowrap; max-width: 100%; overflow: hidden; }
+.mp4-floating .mp4-btn { width: 22px; height: 22px; }
+.mp4-floating .mp4-btn-play { width: 22px; }
+/* 图标跟着缩：22px 的键塞 13px 图标，左右各留 4px；14px 会顶到边框 */
+.mp4-floating .mp4-btn svg { width: 13px; height: 13px; }
 
 /* 跑马灯 */
 .mp4-title-inner { display: inline-block; white-space: nowrap; }
@@ -956,8 +971,9 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 .mp4-collapsed #mp4-next { display: none; }
 .mp4-collapsed .mp4-brand { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; min-width: 56px; }   /* 至少留 56px 当拖动区 */
 .mp4-collapsed .mp4-controls { margin-left: auto; gap: 3px; flex-wrap: nowrap; }
-.mp4-collapsed .mp4-btn { width: 24px; height: 20px; }
-.mp4-collapsed .mp4-btn-play { width: 30px; }
+.mp4-collapsed .mp4-btn { width: 22px; height: 20px; }
+.mp4-collapsed .mp4-btn-play { width: 22px; }
+.mp4-collapsed .mp4-btn svg { width: 12px; height: 12px; }
 
 /* 隐藏：整块播放器消失，右下角出现恢复小球 */
 .mp4-hidden { display: none !important; }
@@ -1827,14 +1843,25 @@ html.dark .xp-like.is-liked:hover { background: rgba(224, 69, 90, 0.26); }
 .site-footer .social-container { display: flex; justify-content: center; gap: 12px; margin-bottom: 6px; }
 .site-footer .social-container a { font-size: 16px; }
 
-/* 侧栏在中等屏幕移到内容下方 */
-@media (max-width: 1000px) {
+/* 侧栏在中等屏幕移到内容下方
+   断点 900px 与全站其它断点（640/900/1200）对齐 —— 原来是 1000px 的野值，
+   是 2026-10-14 修手机密码界面时单独加的，2026-10 统一到 900。
+   安全性：.xp-shell 最大宽 1060px、侧栏固定 292px、主体左右内距 36px、间距 18px，
+   并到 900 后 900px 窗口的主列 = 900−4−36−18−292 ≈ 550px（中文约 30 字/行），
+   仍在舒适区；比原来多出的 900~1000px 这段会从「有侧栏」变「无侧栏」，
+   是站主看 960px 与 880px 对比后拍板的取舍。 */
+@media (max-width: 900px) {
   /* 改纵向之后，父容器的 align-items: flex-start（为横向两栏准备的）会让子项
      **按内容宽度收缩**而不是占满整行 —— 实测主内容只剩 231px，右边空出 139px，
      整个密码界面看起来又窄又偏左（2026-10-14 站主在手机上发现）。
      这里显式恢复拉伸，主内容与侧栏都占满整行、左右对齐。 */
   .xp-shell-body { flex-direction: column; align-items: stretch; }
-  .xp-shell-main { width: 100%; }
+  /* 侧栏掉到下方后，主列不再受「总宽 − 侧栏」的天然约束，会一路撑到 1060px 全宽。
+     实测每行字数：930px 窗口 → 52 字、1000px → 58 字，都超出第 1466 行写的
+     舒适区 30–45 字/行。所以这里补一个上限把它按回 45 字以内（45 × 16px ≈ 720px），
+     并居中，免得宽屏下正文贴着左边、右边空一大块。
+     注意：只在没有侧栏的这段生效，有侧栏时主列本来就 ≤710px，不受影响。 */
+  .xp-shell-main { width: 100%; max-width: 720px; margin: 0 auto; }
   .xp-aside {
     position: static; width: 100%; flex: none;
     flex-direction: row; flex-wrap: wrap; align-items: flex-start;
@@ -2151,6 +2178,30 @@ html.xp-glitching::after {
   .xp-bento { grid-template-columns: minmax(0, 1fr); }
   .xp-bento > * { grid-column: 1 / -1 !important; grid-row: span 1 !important; }
   .xp-bento > * > .retro-mp4-player { max-width: 320px; aspect-ratio: auto; }
+
+  /* 移动端缩小悬浮播放器（2026-10-13）
+     ⚠ 这里改的是**真实尺寸**，不是 transform: scale()。
+     #xp-music-floating 的 transform 由 scripts/xp-player.js 的 applyScale() 以
+     行内样式写（三档 0.8/1/1.25），行内样式优先级高于样式表 —— 用 CSS transform
+     缩小会在用户第一次点「大小」键时被整个覆盖掉，表现为「手机上点了大小就没反应」。
+     改 width/height/字号则与那套缩放叠加：手机上更小，再点大小还能更小/更大。
+
+     ⚠⚠ 7 个按键必须**一行放得下**，宽度是倒推出来的，别随手改：
+       内宽 = 宽度 − 2×2(边框) − 2×8(内边距)
+        152px → 内宽 132 → 7w + 6×3 ≤ 132 → w ≤ 16px（太小，点不准）
+        168px → 内宽 148 → 7w + 6×3 ≤ 132 → w ≤ 18px ✓
+     所以宽度取 168px、按键 18px。**曾踩过的坑**：把宽度定成 152px 而按键留 24px，
+     一排 186px 塞进 132px 的框里，按键直接穿出播放器右边界（移动端截图可见）。 */
+  .xp-music-floating { width: 168px; right: 10px; bottom: calc(var(--taskbar-height) + 10px); }
+  .retro-mp4-player { padding: 8px 8px; gap: 6px; }
+  .mp4-brand { font-size: 14px; letter-spacing: 0.5px; }
+  .mp4-screen-content.mp4-screen-v .mp4-cover-placeholder { width: 72px; height: 72px; }
+  .mp4-song-title { font-size: 14px; }
+  .mp4-song-author { font-size: 11px; }
+  .mp4-progress-times { font-size: 13px; }
+  .mp4-floating .mp4-btn { width: 18px; height: 18px; }
+  .mp4-floating .mp4-btn-play { width: 18px; }
+  .mp4-floating .mp4-btn svg { width: 11px; height: 11px; }
   .profile-content { flex-direction: column; align-items: center; text-align: center; }
   .profile-avatar { width: 96px; height: 96px; }
   /* 竖排后头像在正上方、文字栏已经占满整卡：图标行改为**水平居中**
