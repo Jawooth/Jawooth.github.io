@@ -1,31 +1,34 @@
 /* ============================================================
    XP 设计系统（唯一真源）
    ------------------------------------------------------------
-   全站所有 XP 组件都在这里定义，页面里只写「网格排布」等页面级覆盖。
-   历史背景：v3.0 时代组件样式被复制到 6 个页面各自演化，导致同一组件
-   三套值、深色模式半失效。v4.0 起统一到本文件 + 语义化 token。
+   ⚠ 2026-10-18 重建说明（先读这段，别再重犯）：
+   本文件在若干次「非托管后台追加」中被整体写重了一遍 —— 当时共 5856 行，
+   第 1 份（1–2928 行）是旧版、第 2 份（2929–5856 行）是新版，而最后一条胜出
+   的永远是旧版，于是网页里看到的一直是旧样式，改「新版」毫无效果。
+   现在已重建为**单份**：以新版（第 2 份）为准，只把「旧版有、新版没有」的
+   个别规则补回来（文件里带「★ 恢复」标记）。
+   以后改样式只改这一个文件的一处；写完 `npm run build` 后确认生成文件行数
+   没有成倍增长（tools/check/verify-site.py 会检查这一条）。
 
    分层：
-     1) 设计令牌        2) 基础与桌面      3) 无障碍
-     2-b) 折行文字行高
-     4) XP 窗口         5) XP 控件         6) 便当格
-     7) 首页组件        8) 作品页组件      9) 其他页面组件
-    10) 文章/列表页外壳 11) 任务栏         12) 动画            13) 响应式
-    14) 关闭窗口恢复条  15) XP.css 兼容层
+     0) 字体 + 图标集合  1) 设计令牌   2) 基础与桌面   3) 无障碍
+     4) XP 窗口          5) XP 控件     6) 便当格       7) 首页组件
+     8) 作品页组件       9) 其他页面组件
+    10) 文章/列表页外壳 11) 任务栏     12) 动画        13) 响应式
+    14) 打印样式        15) 关闭窗口恢复条  16) XP.css 兼容层
 
    与 XP.css 的关系（2026-10-13 变更）：
-   本站现在**引入**了 XP.css 官方库（自托管于 source/vendor/xp-css/，版本钉死），
+   本站**引入**了 XP.css 官方库（自托管于 source/vendor/xp-css/，版本钉死），
    整份库被包在 CSS 级联层 @layer xp-css 里 —— 分层样式一律输给未分层的样式，
-   所以下面这些规则永远赢，库只在「本站没写过的地方」生效。
-   做法与理由见第 15 节与 scripts/inject-xp-css.js 的注释。
+   所以本文件的规则永远赢，库只在「本站没写过的地方」生效。
+   做法与理由见第 16 节与 scripts/inject-xp-css.js 的注释。
    ============================================================ */
 
 /* ============ 0) 字体（自托管，不再请求 Google Fonts） ============
    ① 正文像素字体：缝合像素 12px（Fusion Pixel Font，作者 TakWolf）
       文件：source/fonts/fusion-pixel-12px-proportional-zh_hans.woff2
       （2026-10-12 起为**子集**：GB2312 常用字 + 仓库实际用字，约 177 KB；
-        全量原件 650 KB 已备份到 backup/fusion-pixel-12px-proportional-zh_hans-full.woff2，
-        想恢复就复制回去。子集化之前它是全量文件、未做修改）
+        全量原件 650 KB 已备份到 backup/，想恢复就复制回去）
       授权：SIL Open Font License 1.1 —— 允许网页嵌入与再分发，许可证原件
             随字体一起放在 source/fonts/fusion-pixel-OFL.txt（OFL 要求随附）。
       ⚠ 它是**点阵字体**：设计尺寸是 12px（upem 1200 = 100 单位/像素），
@@ -33,24 +36,18 @@
         本站**选择可读性优先**：正文用 16px（= 12 放大 1.33 倍），代价是笔画
         有极轻微的粗细不匀。想恢复完全锐利就把正文改回 12px；不要用 13~15px
         （既没变大多少，不匀还更明显）。详见 README.md 第 9 节。
-      为什么从「方舟像素」换成「缝合像素」（2026-10）：同为 TakWolf 出品、同为
-      黑体 12px，但缝合版是「方舟 + 其它同尺寸字体」的合集，常用汉字覆盖率更高。
-      实测本站用到的 884 个非 ASCII 字符：方舟缺 25 个，缝合只缺 7 个 ——
-      而且那 7 个全是 ∞ ≥ ⚠ ✨ 🎨 这类符号/emoji。汉字已经不再掉出像素字体。
-      为什么把正文也裁子集（2026-10-12）：650 KB 是全站最大的自持资源，而 GB2312 +
-      仓库实际用字只要 177 KB。代价是新文章出现未收录字符会掉系统字体，
-      **配套** tools/verify-site.py 第 7 节的「用字 ∩ 字体覆盖」检查每次构建都会盯着，
-      缺字就提醒重跑 tools/make-pixel-fonts.py。
+      为什么从「方舟像素」换成「缝合像素」：同为 TakWolf 出品、同为黑体 12px，
+      但缝合版覆盖率更高：本站用到的 884 个非 ASCII 字符，方舟缺 25 个，缝合只缺 7 个
+      （全是 ∞ ≥ ⚠ ✨ 🎨 这类符号）。汉字已不再掉出像素字体。
+      为什么把正文也裁子集：650 KB 是全站最大的自持资源，GB2312 + 仓库实际用字只要
+      177 KB。代价是新文章出现未收录字符会掉系统字体，**配套** tools/check/verify-site.py
+      第 7 节的「用字 ∩ 字体覆盖」检查会盯着，缺字就提醒重跑 tools/fonts/make-pixel-fonts.py。
    ② 强调文字（只有 24px 的用户名标题与侧栏作者名）：**真·粗体**，
-      用缝合粗像素 12px，不再靠 text-shadow 假加粗。
-      它只渲染几个网名字，没必要驮完整的 660 KB，因此安装时裁成子集
-      （GB2312 常用字 + 仓库里实际出现过的字），约 180 KB。
-      裁剪/安装脚本：tools/make-pixel-fonts.py（改了网名后重跑一次即可）。
-      授权同样是 SIL OFL 1.1，原件在 source/fonts/fusion-bold-pixel-OFL.txt。
-   ③ 16px 的卡片标题用普通正文，不加粗（像素字体在非整数倍缩放后加粗会糊）。
-      原先的手写体 Caveat（拉丁）＋楷体（中文）已全部移除：那一套在中文行里是
-      系统字体兜底，同一行会混出两种字形（例如「Hexo 建站全流程记录」）。
-   换字体：替换 woff2 文件并同步改这里的 family 名与 :root 里的 --font-ui。 */
+      fusion-pixel-12px-monospaced-zh_hans.woff2 —— 像素字体只有一个字重，
+      浏览器合成粗体会把笔画抹成一团，所以另配一份。
+   ============================================================ */
+/* ⚠ 2026-10-18：这两块 @font-face 曾在一次编辑中整个丢失，导致全站像素字体失效
+   （页面回退到 Microsoft YaHei）。从 backup/2026-10-13_1852 快照恢复。 */
 @font-face {
   font-family: 'Fusion Pixel 12px';
   font-style: normal;
@@ -65,6 +62,66 @@
   font-display: swap;
   src: url('/fonts/fusion-bold-pixel-12px-proportional-zh_hans-subset.woff2') format('woff2');
 }
+
+/* ============ 0-b) 图标集合（全站唯一真源） ============
+   2026-10-18 之前，首页 9 个标题图标、works/ 5 个、games/ tools/ 各 1 个，都是各页面
+   HTML 里内联的一整段 <circle>/<path>（光首页就 1.4 KB），改一个配色要翻 6 个文件。
+   现在统一收进这个隐藏 <svg>，页面只写
+     <svg class="inline-icon" width="14" height="14" aria-hidden="true"><use href="#icon-user"/></svg>
+   由 scripts/xp-enhance.js 在 body_end 注入，**每页一份** —— <use href="#id"> 只能引用
+   同一文档里的 <symbol>，不能跨文件，所以不能只放首页。
+   ⚠ 造型一律「无内联描边色」，颜色全部由下面的 CSS 规则给：
+     · fill-path 走 currentColor → 深色模式下自动变浅色，不用写第二套配色
+     · 其余彩色部件用实色（像素小图，深色模式下照样看得清）
+   加新图标：下面加一条 <symbol id="icon-xxx" viewBox="0 0 16 16">…</symbol>，
+   再在 0-c 里给它的 class 上色即可。
+   ============================================================ */
+#xp-icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* 细节（文字行、时钟指针等）使用 currentColor，跟随窗口标题白字 / 深色模式 */
+.xp-ic-current { fill: none; stroke: currentColor; stroke-linecap: round; }
+/* 注：.xp-ic-current-stroke 曾在这里定义，无任何使用方，已删（2026-11 清理）。 */
+
+/* ① 账号 / 人像 → 2026-10-18 起换成站主的像素兔子站标（#B7230E 实色，
+   颜色直接写在 symbol 的 <g fill> 上，不再走 class 上色；见 xp-enhance.js ICON_SPRITE） */
+#icon-user { color: #FFFFFF; }
+/* ② 公文包 */
+#icon-clipboard .xp-ic-paper { fill: #fff; stroke: #666; stroke-width: 0.5; }
+/* ③ 猫耳头像 */
+#icon-cat .xp-ic-fur { fill: #f7f2e8; stroke: #8c7b64; stroke-width: 0.6; }
+#icon-cat .xp-ic-ear { fill: #ffb6c1; }
+#icon-cat .xp-ic-eye { fill: #3a3a3a; }
+#icon-cat .xp-ic-nose { fill: #ff9aae; }
+#icon-cat .xp-ic-cheek { fill: #ffd9de; }
+#icon-cat .xp-ic-mouth { fill: none; stroke: #b06a6a; stroke-width: 0.5; }
+/* ④ 调色板 */
+#icon-palette .xp-ic-board { fill: #ff9999; stroke: #cc6666; stroke-width: 0.5; }
+#icon-palette .xp-ic-dot1 { fill: #ff6666; }
+#icon-palette .xp-ic-dot2 { fill: #66cc66; }
+#icon-palette .xp-ic-dot3 { fill: #6666ff; }
+#icon-palette .xp-ic-dot4 { fill: #ffff66; }
+/* ⑤ 文档 / 文章 */
+#icon-post .xp-ic-paper { fill: #fff; stroke: #0066cc; stroke-width: 0.5; }
+/* ⑥ 标签 */
+#icon-tag .xp-ic-board { fill: #ffe0e0; stroke: #cc6666; stroke-width: 0.5; }
+#icon-tag .xp-ic-hole { fill: #cc6666; }
+/* ⑦ 折线图 / 统计 */
+#icon-chart .xp-ic-paper { fill: #f0f0e8; stroke: #666; stroke-width: 0.5; }
+#icon-chart .xp-ic-line { fill: none; stroke: #60b060; stroke-width: 1.5; }
+/* ⑧ 指南针 / 导航 */
+#icon-compass .xp-ic-face { fill: #e0e8ff; stroke: #003399; stroke-width: 0.5; }
+#icon-compass .xp-ic-needle { fill: none; stroke: #003399; stroke-width: 1.5; stroke-linecap: round; }
+/* ⑨ 放大镜 / 搜索 */
+#icon-search .xp-ic-glass { fill: none; stroke: #333; stroke-width: 1.5; stroke-linecap: round; }
+/* ⑩ 铅笔（创作中） */
+#icon-pencil .xp-ic-body { fill: #ffcc66; stroke: #cc9933; stroke-width: 0.5; }
+#icon-pencil .xp-ic-tip { fill: #ff9966; stroke: #cc6633; stroke-width: 0.5; }
+#icon-pencil .xp-ic-lead { fill: #996633; stroke: #663300; stroke-width: 0.5; }
+/* ⑪ 时钟 */
+#icon-clock .xp-ic-ring { fill: none; stroke: #f0a040; stroke-width: 1.5; }
+#icon-clock .xp-ic-hand { fill: none; stroke: #f0a040; stroke-width: 1.5; stroke-linecap: round; }
+/* ⑫ 游戏手柄、⑬ 扳手 / 工具：快速导航格子里的彩色小图，只出现在 index.md 一处，
+   也就地留在页面上；要收进来照上面的办法加 symbol 即可。 */
 
 /* ============ 1) 设计令牌 ============ */
 :root {
@@ -155,7 +212,18 @@
   --bubble-shadow: 0 7px 16px rgba(70, 52, 0, 0.22), 0 1px 3px rgba(70, 52, 0, 0.16);
   --bubble-min-h: 104px;
   --bubble-max-h: 190px;
+  /* 首页便签格的最大高度：与「用户账户」卡同源（96px 行高 × 2 + 18px 行距 = 210px）。
+     两格在 source/index.md 里都是 grid-row: span 2，占同一批网格行，所以这个数
+     就是账户卡最矮时的高度 —— 站主要求「便签高度不要超过账户卡」。
+     改 .xp-bento 的行高/行距时这里要跟着改（首页 <style> 里有同名注释）。 */
+  --bubble-bento-max: 210px;
   --bubble-w: 95%;
+
+  /* 站标（像素兔子，上红下黄渐变）—— 与浏览器标签页那个 favicon 是同一个图形。
+     由 tools/images/make-favicon.py 生成 source/images/site-mark.svg，
+     这里只在「空状态」里当装饰用（见 .xp-empty）。 */
+  --site-mark: url("/images/site-mark.svg");
+  --mark-size: 28px;
 
   /* 断点参考：1200 / 900 / 640（全站统一） */
 }
@@ -374,14 +442,24 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* 空状态（内容未上线时的诚实表达，替代假装可点的 href="#"） */
+/* 空状态（内容未上线时的诚实表达，替代假装可点的 href="#"）
+   + 站标：像素兔子（与 favicon 同一个图形，透明 SVG，见 tools/images/make-favicon.py）。
+   站标只在「这里真的什么都没有」时出现 —— 有内容时它不抢戏。
+   ⚠ .xp-empty 自己没有 background，这里给它加的 background-image 不会被覆盖；
+      若以后给 .xp-empty 补背景色，要写成 background-color 才不冲突。
+   用 CSS 变量 --mark-size 调大小（见第 0 节）。 */
 .xp-empty {
   padding: 18px 16px;
+  padding-bottom: calc(18px + var(--mark-size, 28px) + 10px);
   text-align: center;
   color: var(--text-muted);
   border: 1px dashed var(--border);
   border-radius: 4px;
   background: var(--surface-2);
+  background-image: var(--site-mark);
+  background-repeat: no-repeat;
+  background-position: center calc(100% - 12px);
+  background-size: var(--mark-size, 28px) var(--mark-size, 28px);
   font-size: 16px;
 }
 .xp-empty strong { display: block; color: var(--text-heading); font-size: 16px; margin-bottom: 6px; }
@@ -432,6 +510,8 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 }
 .xp-window-title.compact { padding: 3px 6px; }
 .xp-window-title-text { display: flex; align-items: center; gap: 6px; min-width: 0; }
+/* 标题栏小图标整体右移一点（2026-10-18 站主反馈离左边缘太近） */
+.xp-window-title-text .inline-icon { margin-left: 3px; }
 
 /* XP.css 风格窗口按钮（参考 botoxparty.github.io/XP.css）
    2026-10-13 起 compact 窄标题栏也显示按钮 —— 全站所有窗口统一带三按钮，
@@ -621,6 +701,7 @@ html.dark .header-chip strong { color: #9cc2ff; }
 }
 /* 便当格内的组件撑满各自格子 */
 .xp-bento > * { display: flex; min-width: 0; }
+.xp-bento > * > * { min-width: 0; max-width: 100%; }
 .xp-bento > * > .xp-window,
 .xp-bento > * > .xp-bubble,
 .xp-bento > * > .retro-mp4-player,
@@ -754,7 +835,10 @@ html.dark .profile-icon { color: var(--link); }
    复古便利贴的要点：暖黄纸面、几乎直角、靠一层软投影把纸「抬」起来、
    右下角有个卷起来的纸角，再加上 .tilt-note 给的 -0.8deg 轻微倾斜 ——
    看着就是随手贴在桌面上的。大小与位置跟原来的说话气泡完全一致。 */
-/* 不要把格子撑满：让便利贴自己按文字长短决定高度（min/max 见 :root 里的变量） */
+/* 不要把格子撑满：让便利贴自己按文字长短决定高度（min/max 见 :root 里的变量）
+   ★ 2026-10-17：桌面端 align-self:center，在窄屏整行堆叠时改回 stretch ——
+   居中会让便利贴上下各留一段空白，把「最近作品」和「用户账户」之间的节奏打断。
+   窄屏的覆盖写在首页 index.md 的 <style> 里（.bento-bubble { align-self: stretch; }）。 */
 .bento-bubble { align-self: center; }
 .xp-bubble {
   position: relative;
@@ -774,9 +858,68 @@ html.dark .profile-icon { color: var(--link); }
   /* 便签上的字用正文字体即可（纸面已经足够区分它，不需要再换一套字体） */
   font-family: var(--font-ui);
 }
-/* 桌面端把便利贴收窄一点（与原来说话气泡的宽度一致） */
-@media (min-width: 901px) {
-  .xp-bento > * > .xp-bubble { width: var(--bubble-w); }
+/* 桌面端把便利贴收窄一点（与原来说话气泡的宽度一致）
+   ★ 2026-10-17：width 只在首页 .bento-bubble 这一格里生效。原来选的是
+   .xp-bento > * > .xp-bubble（任何放进便当格的便利贴都被截成 95%），实测窄屏整行
+   堆叠时便利贴比上下卡片各窄了 40px，左边缘对不齐 —— 而窄屏本来就不该收窄。 */
+/* ★ 2026-10-18：原来这里有一个 @media (min-width: 901px) 块，里面写
+   .bento-bubble > .xp-bubble { width: var(--bubble-w) }（95%）—— 已被下面的
+   width: 100% 覆盖，是死代码，而且整块只有这一条规则，删掉时漏了闭合花括号，
+   导致后面所有 CSS 都落进这个媒体查询里（桌面没事，390px 整页塌成一列细条）。
+   这里保留说明，不再开块。 */
+/* 首页便利贴格子：让便利贴撑满整格（与右边「用户账户」等高、与下方卡片同宽）。
+   ★ 2026-10-17 第二轮（站主要求「便利贴占比大一些、文字要显示全」）：
+   上面 :root 里的 --bubble-min-h: 104px / --bubble-max-h: 190px 是给「对话气泡」
+   场景定的，放进 4 行高的便当格后会缩在格子正中、上下各留一大片空白。
+   这里只对首页这一格解除高度上限（100% = 格子高度），并让正文纵向居中；
+   宽度去掉 95% 的收窄，和右边的账户卡左右对齐。 */
+/* 首页便利贴格子：**宽度由网格决定，高度随文字长**（站主 2026-10-18 第三轮要求：
+   「令便签宽度不变，高度随文字变化，最多不要超过个人账户高度」）。
+   以前这里写的是 height: 100% + max-height: none —— 那是「撑满整格」的做法，
+   纸永远和账户卡一样高，句子只有一行时下半张纸空一片；
+   句子长过格子时又会跟着格子一起长高，把「最近作品」整带往下推。
+   现在：高度 auto（纸自己按内容长），上限 = 同一网格行里另一格（账户卡）的高度。
+   为什么上限能这么写：.bento-bubble 和 .bento-profile 在 source/index.md 里
+   都声明了 grid-row: span 2，占的是**同一批网格行** → 两格行高相同。
+   100cqh 需要容器，而 .bento-item 刻意不能声明 container-type（见它的注释，
+   声明了 grid-column/grid-row 与 100% 高度都会失效），所以用
+   align-self: start + 绝对定位的 max-box 不现实 —— 直接给一个与账户卡同源的上限：
+   --bubble-bento-max（96px 行高 × 2 + 18px 行距 = 210px，最矮时账户卡的高度）。
+   纸比这更高的情况只会发生在窄屏整行堆叠（≤900px）时，那里下面的规则会把高度放开。 */
+.bento-bubble > .xp-bubble {
+  width: 100%;
+  height: auto;
+  max-height: var(--bubble-bento-max);
+  min-height: 0;
+  /* ★ 2026-10-18 第四轮：外面那层 .xp-window 已经去掉（站主要纯纸张），
+     现在这张纸自己就是整个格子，所以宽高都吃满、四角与上下卡片对齐。 */
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+.bento-bubble .bubble-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;  /* 正文在上、出处在下，撑开整张纸 */
+  gap: 12px;
+  height: 100%;
+  overflow: visible;      /* 不再裁字：格子够高，长句完整显示 */
+}
+/* ★ 便签字号的唯一真源：句子本体是 .bubble-quote，它有自己的 font-size，
+   不会继承外层 .xp-bubble 的 clamp —— 2026-10-18 站主两次反馈「便签文字过大」，
+   第一次只改了外层（第 877 行那条），被这一条按「同特异性、后声明者胜」盖掉，
+   所以看起来毫无变化。以后调便签字号，改这一行就够了（外层那条已注明不要再写字号）。
+   20px→17px、行高 1.75→1.6：四句长句在 4 行高格里仍能整段放下，且不再顶满纸张。
+   ★ 2026-10-18 第五轮：17px→16px。纸面高度现在**随文字自己长**，但上限锁死在账户卡
+   高度（210px），17px 下最长的句子（原神那段 69 字）在 1240/1000 两档需要 250px，
+   被纸面切掉最后一行。16px + 1.55 让它整段落在 210px 里（1240 实测 191px）。
+   想再调大之前先跑一遍长句：1400/1240/1000 三档都不能出现 scrollHeight > clientHeight。 */
+.bento-bubble .bubble-quote {
+  display: block;       /* p 默认是块级，但外层 flex 下会变 flex item；显式声明避免行盒问题 */
+  font-size: 16px;
+  line-height: 1.55;
+}
+@media (max-width: 900px) {
+  .bento-bubble .bubble-quote { font-size: 16px; line-height: 1.55; }
 }
 /* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则右下角卷边会被裁掉 */
 .bubble-content { overflow: hidden; }
@@ -789,8 +932,10 @@ html.dark .profile-icon { color: var(--link); }
   content: '';
   position: absolute;
   right: 0; bottom: 0;
-  width: 20px; height: 20px;
-  background: linear-gradient(315deg, var(--bubble-fold) 0 50%, transparent 50%);
+  /* ★ 2026-10-18：卷角原先用纯色 var(--bubble-fold) 填，本站便利贴纸面其实是
+     渐变（--bubble-paper），浅黄渐变的右下角比纯色亮得多，卷角就成了一块突兀的暗斑。
+     改成「纸面渐变本身 + 一层淡色压暗」，颜色随深色模式一起走。 */
+  background-image: linear-gradient(rgba(70, 52, 0, 0.14), rgba(70, 52, 0, 0.14)), var(--bubble-paper);
   border-bottom-right-radius: 2px;
 }
 /* 卷角投在纸面上的那道细阴影：沿同一条对角线、从折痕往里约 2px，
@@ -816,6 +961,25 @@ html.dark .profile-icon { color: var(--link); }
   text-align: right; font-size: 16px; color: var(--bubble-ink-soft);
   margin-top: 10px !important; font-style: normal !important;
 }
+/* 首页那一格（2026-10-18）：便利贴与账户卡同一条横带，纸的高度随句子长短自己长
+   （最长不超过 --bubble-bento-max，即账户卡最矮时的高度）。
+   正文与出处分居上下两端（space-between），句子短时纸也矮、不留大片空白。 */
+.bento-bubble > .xp-bubble {
+  /* ⚠ 这里**不要**写 font-size：句子本体 .bubble-quote 有自己的字号
+     （见上方 .bento-bubble .bubble-quote 那条），外层写了也不生效，只会误导人。
+     2026-10-18 就踩过这个坑：改了这一处以为调小了字号，实际被下层盖掉。 */
+  line-height: 1.6;
+  justify-content: flex-start;
+  /* 上 24 / 下 20：210px 高的纸里，上下内边距每少 10px 就能多放小半行字。
+     实测 1400/1240/1000 三档最长句（69 字）都不再被切。 */
+  padding: 24px 26px 20px;
+  letter-spacing: 0.01em;
+  /* 矮纸时也要有「贴在桌面上」的呼吸感；长句撑高时 padding 不再叠加 */
+  min-height: 120px;
+}
+.bento-bubble .bubble-content { justify-content: space-between; gap: 16px; }
+.bento-bubble .bubble-from { font-size: clamp(13px, 1vw, 15px); }
+.bento-bubble .bubble-from { margin-top: 0 !important; font-size: 15px; }
 /* 句子没有「出处」时这一行整行不显示（脚本会把它的内容清空、并 display:none；
    这里再加一道 :empty 兜底，避免出现一个空的空行） */
 .bubble-from:empty { display: none; }
@@ -916,6 +1080,25 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 }
 /* 拖动时品牌条光标变手型（JS 也会给它设） */
 .xp-music-floating { touch-action: none; }   /* 2026-10-13 拖动把手扩到整块播放器：手势全归拖动管，别当页面滚动 */
+
+/* ---------- 手机单列：播放器先按「收起」排好（2026-10-17） ----------
+   scripts/xp-player.js 开头会给 #xp-music-floating 写上 data-touch="1"。
+   以前 HTML 出来是展开态，要等脚本跑完才刷成收起 —— 网络慢 / 脚本被拦截时，
+   手机上就是那块 168px 的完整播放器压在正文上，甚至盖住最后一屏。
+   这里让 CSS 先把收起态画出来，脚本只做增强；桌面端（无 data-touch）完全不受影响。 */
+@media (max-width: 900px) {
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-screen,
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-progress-wrap { display: none; }
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-floating { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; overflow: hidden; }
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-btn-link,
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-btn-size,
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) #mp4-prev,
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) #mp4-next { display: none; }
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-brand { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; min-width: 40px; }
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-controls { margin-left: auto; gap: 4px; flex-wrap: nowrap; }
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-btn { width: 24px; height: 24px; }
+  #xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-btn-play { width: 24px; }
+}
 .mp4-brand { cursor: move; user-select: none; -webkit-user-select: none; }   /* user-select: 防长按选中歌名 */
 
 /* 纵向布局：封面在上居中、歌名信息在下，替代之前的左右并排 */
@@ -1010,6 +1193,11 @@ html.dark .xp-music-resume {
 .xp-duck-line { margin: 0; font-size: 16px; color: var(--text); white-space: nowrap; flex-shrink: 0; }   /* 「已被做局」不换行、不被压缩 */
 .xp-duck-count { margin: 0; font-size: 40px; line-height: 1.15; font-weight: bold; color: var(--xp-blue-border); font-family: var(--font-display); }
 .xp-duck-clear { flex-shrink: 0; }   /* 清除计数按钮：外观走全局 .xp-btn，横排时不被挤压 */
+/* 2026-10-17：首页最大的一处留白。这个窗口在便当格里被拉满一栏高度（≈210px），
+   但里面只有「已被做局 [46] 次。」+ 一个 24px 高的小按钮 —— 上下各空 ~70px，
+   手机上尤其像「没加载完」。让 flex 行在**竖直方向**居中：留白从上下两坨变成
+   一圈均匀的呼吸空间，标题栏自然贴住窗口顶部。数字的字号/行高都没动。 */
+.xp-duck-window .xp-window-body { display: flex; align-items: center; justify-content: center; }
 
 /* 网易云歌单模式：官方外链播放器填满整个格子（不套 XP 皮肤，见 _data/music.yml 说明） */
 .xp-music-embed {
@@ -1104,6 +1292,8 @@ html.dark .article-link:hover .article-title { color: #9cc2ff; }
   transition: transform 0.15s, background 0.15s, border-color 0.15s;
 }
 .nav-tile:hover { transform: translateY(-2px); background: var(--face-hover); border-color: var(--xp-hover); }
+/* 注：原 .quick-nav-item/-icon/-name/-desc 一组（带 32px 图标版快速导航）已删 ——
+   页面里只有 .nav-tile 一套实现，这组是旧版残留（2026-11 清理）。 */
 .nav-icon { font-size: 24px; line-height: 1; }
 
 /* 标签云 */
@@ -1119,15 +1309,24 @@ html.dark .article-link:hover .article-title { color: #9cc2ff; }
 .tag-pill:hover { transform: translateY(-2px); }
 .tag-pill .tag-count { opacity: 0.7; margin-left: 3px; font-size: 16px; }
 html.dark .tag-pill { background: rgba(255, 255, 255, 0.08); }
-.tag-pixel { --pill-bg: #e6f3ff; --pill-fg: #0054e3; }
-.tag-char { --pill-bg: #ffe6f0; --pill-fg: #c2185b; }
-.tag-landscape { --pill-bg: #e6ffe6; --pill-fg: #2e7d32; }
-.tag-sketch { --pill-bg: #f0f0f0; --pill-fg: #555; }
-.tag-illust { --pill-bg: #fff0e6; --pill-fg: #e65100; }
-.tag-guide { --pill-bg: #f3e6ff; --pill-fg: #6a1b9a; }
-.tag-essay { --pill-bg: #e6fffa; --pill-fg: #00695c; }
-.tag-game { --pill-bg: #fff9e6; --pill-fg: #f57f17; }
-.tag-clannad { --pill-bg: #ffe6e6; --pill-fg: #c62828; }
+/* 白天模式标签配色（2026-10-18 站主定稿：全浅色系）：
+   前景统一用 300~400 号浅色，背景配同系 50 号浅底，
+   远看整排都是马卡龙色，不再有某个胶囊鹤立鸡群。
+   ⚠ 上色机制是 PILL_CLASSES[i % length] 按下标循环（xp-content.js:323），
+   与标签名无关，标签数量一变颜色就会轮换 —— 这是既有设计，别当成 bug。 */
+/* 白天模式前景色调色（2026-10-18 三轮微调：700 太深 → 300 太浅读不清 → 定在 500）：
+   500 号中等饱和色在 50 号浅底上对比度足够（WCAG AA 大字号级别），又不压过其它胶囊。
+   ⚠ 上色机制是 PILL_CLASSES[i % length] 按下标循环（xp-content.js:323），
+   与标签名无关，标签数量一变颜色就会轮换 —— 这是既有设计，别当成 bug。 */
+.tag-pixel { --pill-bg: #e3f2fd; --pill-fg: #1976d2; }
+.tag-char { --pill-bg: #fce4ec; --pill-fg: #d81b60; }
+.tag-landscape { --pill-bg: #e8f5e9; --pill-fg: #388e3c; }
+.tag-sketch { --pill-bg: #f0f0f0; --pill-fg: #616161; }
+.tag-illust { --pill-bg: #fff3e0; --pill-fg: #f57c00; }
+.tag-guide { --pill-bg: #f3e5f5; --pill-fg: #7b1fa2; }
+.tag-essay { --pill-bg: #e0f2f1; --pill-fg: #00796b; }
+.tag-game { --pill-bg: #fff9e6; --pill-fg: #fbc02d; }
+.tag-clannad { --pill-bg: #ffebee; --pill-fg: #d32f2f; }
 .tag-life { --pill-bg: #e8f5e9; --pill-fg: #388e3c; }
 html.dark .tag-pixel { --pill-fg: #7fb4ff; }
 html.dark .tag-char { --pill-fg: #ff8fbd; }
@@ -1235,54 +1434,45 @@ html.dark .xp-search-input { background: var(--surface-2); color: var(--text); b
   box-shadow: inset 1px 1px 0 var(--btn-shadow-light), inset -1px -1px 0 var(--btn-shadow-dark);
 }
 .filter-clear:hover { background: var(--face-hover); }
-.work-pane[hidden], .work-era[hidden], .work-card[hidden] { display: none; }
+.work-pane[hidden], .work-card[hidden] { display: none; }
 
-.work-era { border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px; background: var(--surface-2); overflow: hidden; }
-.work-era-bar {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 7px 12px; cursor: pointer; list-style: none;
-  font-size: 16px; font-weight: bold; color: var(--text-heading);
-  background: linear-gradient(to bottom, var(--surface) 0%, var(--surface-3) 100%);
-  border-bottom: 1px solid var(--border);
-}
-.work-era-bar::-webkit-details-marker { display: none; }
-/* 折叠标记交给 XP.css 的 .tree-view（画那个带边框的 +/- 小方块，资源管理器的样子）。
-   本站原来那个「▸ 旋转三角」必须**显式取消**：XP.css 在 @layer 里、优先级更低，
-   留着旧规则会把 XP 的方块盖掉（2026-10-14 实测过）。
-   ⚠ 类名挂在 <ul> 上（见 xp-content.js 的说明），不是挂在 <details> 上。 */
-.work-era-bar::before { content: none; display: none; }
-/* 分期列表容器：去掉 ul 默认的项目符号与缩进，只保留 XP.css 的树形效果 */
-.work-era-list { list-style: none; margin: 0; padding: 0; background: none; border: none; }
-.work-era-list > li { list-style: none; }
-/* 每个分期是一张卡片，边框/底色覆盖掉 XP.css 给 .tree-view 的白底蓝框 */
-.work-era-list .work-era {
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-}
-.work-era-list .work-era > .work-era-bar { background: linear-gradient(to bottom, var(--surface) 0%, var(--surface-3) 100%); border-bottom: 1px solid var(--border); }
-.era-name { flex: 1 1 auto; }
-.era-count { font-weight: normal; font-size: 16px; color: var(--text-muted); }
-.work-era:not([open]) > .work-era-bar { border-bottom: none; }
+/* 分期折叠树（.work-era*）与「展开全文」（.work-expand/.work-card-full）已随
+   2026-10-18 瀑布流改版下线，规则已删。 */
 
+/* 瀑布流（2026-10-18 站主定稿，参考小红书）：CSS columns 自适应列数 ——
+   不写死列数，只给最小列宽，容器宽就多排几列、窄就自动减（左右优先铺满）。
+   · columns: <最大列数> <每列最小宽>：1400 宽容器 ≈ 4 列，1000 ≈ 3 列，
+     700 ≈ 2 列，手机 ≈ 1~2 列，全部由浏览器按宽度自动决定。
+   · column-fill: balance 让各列高度尽量均匀，卡片优先横向铺开而不是堆一列。
+   已知特性：列内自上而下排列（先填满一列再开下一列），不是严格
+   「从左到右按时间」；作品多了想换时间序再改 JS 均列。
+   封面不再 4:3 预裁剪（.work-thumb 的 aspect-ratio 已删），按图片实际比例显示，
+   高低错落正是瀑布流的样子；<img> 上有构建期写好的 width/height，
+   加载前占位比例正确，不会跳。 */
 .work-grid {
-  display: grid; grid-auto-rows: 1fr;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  justify-content: center;
-  gap: 14px; padding: 14px;
+  columns: 4 240px;
+  column-gap: 14px;
+  column-fill: balance;
+  padding: 14px;
 }
 .work-card {
-  display: flex; flex-direction: column;
+  break-inside: avoid;              /* 卡片不许被拦腰切到两列 */
+  -webkit-column-break-inside: avoid;
+  display: block;                   /* ⚠ 不能写 inline-flex/flex：flex 容器在
+     columns 里被当作一个不可分的整体没问题，但本站全局给 article 设了
+     display:block 之外的规则时会打架；实测 inline-flex 会退化成单列。 */
+  width: 100%;
+  margin: 0 0 14px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 3px; overflow: hidden;
   transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 .work-card:hover { transform: translateY(-3px); border-color: var(--xp-hover); box-shadow: var(--win-shadow); }
-.work-thumb { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--surface-3); }
-.work-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
-.work-card:hover .work-thumb img { transform: scale(1.05); }
-.work-thumb .work-status { position: absolute; top: 6px; right: 6px; background: rgba(255, 255, 255, 0.86); }
-.work-card-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1 1 auto; }
+.work-thumb { display: block; width: 100%; background: var(--surface-3); }
+.work-thumb img { width: 100%; height: auto; display: block; transition: transform 0.3s; }
+.work-card:hover .work-thumb img { transform: scale(1.03); }
+.work-card-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
 .work-card-title { margin: 0; font-size: 16px; line-height: 1.35; }
 /* 作品卡片标题右侧的加密锁（写了 password 的作品才有），
    和杂谈卡片的 .xp-pin 同一套做法：靠右、不参与换行 */
@@ -1291,8 +1481,12 @@ html.dark .xp-search-input { background: var(--surface-2); color: var(--text); b
 .work-card-title .xp-lock { margin-left: auto; flex: 0 0 auto; color: var(--text-muted); }
 .work-card-title a { color: var(--text-heading); text-decoration: none; }
 .work-card-title a:hover { text-decoration: underline; }
-.work-card-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 16px; color: var(--text-muted); }
-.work-cat { padding: 1px 7px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--border); }
+/* 简介：front-matter 的 desc:，两行后截断（瀑布流卡片以图为主，简介不能喧宾夺主） */
+.work-card-desc {
+  margin: 0; font-size: 16px; line-height: 1.55; color: var(--text-muted);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
 .work-card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 .work-tag {
   font-family: inherit; font-size: 16px; cursor: pointer;
@@ -1302,30 +1496,8 @@ html.dark .xp-search-input { background: var(--surface-2); color: var(--text); b
   border: 1px solid rgba(53, 144, 243, 0.3);
 }
 .work-tag:hover { background: rgba(53, 144, 243, 0.26); }
-.work-card-full { font-size: 16px; line-height: 1.7; color: var(--text); border-top: 1px dashed var(--border); padding-top: 8px; }
-.work-card-full img { max-width: 100%; height: auto; border-radius: 3px; }
-/* 展开区里的列表（设计说明 / 待改进的地方那几条）
-   ⚠ 必须显式设 padding-left：全局有规则把 ul 的 padding 重置成 0（XP.css / normalize），
-   而 list-style: disc 还留着 —— 结果是**圆点画在内容框外面**、文字紧贴卡片左边缘，
-   窄屏上长行折行后看着像"文字超出边框"（2026-10 站主在手机上发现的）。
-   这里给回正常的列表缩进，圆点回到框内。 */
-.work-card-full ul, .work-card-full ol { padding-left: 22px; margin: 6px 0; }
-.work-card-full li { margin: 2px 0; }
-/* 嵌套列表再收一点，避免窄屏两层缩进把文字挤没 */
-.work-card-full ul ul, .work-card-full ol ol, .work-card-full ul ol, .work-card-full ol ul { padding-left: 18px; }
-.work-card-foot { padding: 0 12px 10px; }
-.work-expand {
-  font-family: inherit; font-size: 16px; cursor: pointer;
-  width: 100%; padding: 5px 0; border-radius: 3px;
-  color: var(--text); background: var(--face);
-  border: 1px solid var(--btn-border);
-  box-shadow: inset 1px 1px 0 var(--btn-shadow-light), inset -1px -1px 0 var(--btn-shadow-dark);
-}
-.work-expand:hover { background: var(--face-hover); color: var(--xp-hover); }
 html.dark .filter-pill, html.dark .work-tag { background: rgba(138, 180, 255, 0.16); border-color: rgba(138, 180, 255, 0.4); color: var(--link); }
 html.dark .filter-pill.is-active { background: var(--xp-blue-border); color: #fff; }
-html.dark .work-thumb .work-status { background: rgba(42, 42, 58, 0.9); }
-html.dark .work-era-bar { background: linear-gradient(to bottom, var(--surface-2) 0%, var(--surface-3) 100%); }
 
 /* 旧版作品卡片（精选 / 普通 + 覆盖层）已由上面的画廊取代，相关规则已删除；
    只保留「创作中」窗口用到的 .work-window-card.upcoming */
@@ -1333,17 +1505,7 @@ html.dark .work-era-bar { background: linear-gradient(to bottom, var(--surface-2
 .work-window-card.upcoming { border-style: dashed; border-color: var(--xp-status-doing); opacity: 0.95; }
 .work-window-card.upcoming .xp-window-title { background: linear-gradient(to bottom, #d09030 0%, #a06020 50%, #804010 100%); }
 
-.work-status {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 16px; padding: 1px 6px; border-radius: 2px;
-  background: var(--surface-3); color: var(--text); border: 1px solid var(--border);
-}
-.work-status::before {
-  content: ""; width: 7px; height: 7px; border-radius: 50%;
-  background: currentColor; display: inline-block;
-}
-.work-status.done { border-color: var(--xp-status-done); color: var(--xp-status-done); }
-.work-status.doing { border-color: var(--xp-status-doing); color: var(--xp-status-doing); }
+/* 状态角标（.work-status）已随 2026-10-18 瀑布流改版下线：卡片只留封面/标题/简介/标签。 */
 
 /* 标签云（作品页用的静态胶囊） */
 .cloud-tag {
@@ -1359,6 +1521,38 @@ html.dark .work-era-bar { background: linear-gradient(to bottom, var(--surface-2
 .cloud-tag.big { font-size: 16px; padding: 3px 10px; }
 .cloud-tag:hover { border-color: var(--xp-hover); }
 html.dark .cloud-tag { background: rgba(53, 144, 243, 0.16); border-color: #3f6fa8; color: #cfe0ff; }
+
+/* ---------- 手机端两处「一排东西被横向裁掉」（2026-10-17） ----------
+   实测 390px：最近作品条一次只能露出 2.5 张卡（第三张被窗口右边切掉一半），
+   标签云一行 5 个胶囊、第 5 个直接出界。两者都在 overflow:hidden 的窗口体里，
+   所以既看不见也滚不动 —— 访客会以为是渲染坏了，而不是"可以滑动"。
+   ① 作品条 → 变成两列网格，3 张卡 + 「查看全部」正好两行；
+   ② 标签云 → 允许折行。 */
+@media (max-width: 640px) {
+  .recent-works-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .recent-works-strip > .recent-work-item { width: auto; min-width: 0; }
+  /* ≥481px 的三卡区只有 ~450px 宽：170px 的卡片一排放 2.5 张，第三张被右边界切掉。
+     这里把卡片改成按列宽计算 —— 扣掉 2 个 gap 后三等分（约 142px）。
+     手机上走的是下面的两列网格，不受这条影响。 */
+  /* 注意断点写 641 而不是 481：基础规则里 640 以下有自己的宽度/内边距，
+     用 481 会在 481~640 之间和手机规则打架（站主 2026-10-17 第二轮验收时发现）。
+     3 栏列宽也只在平板宽度成立；1241px 以上主列宽到 1060px，卡片恢复固定 170px 更好看。 */
+  @media (min-width: 641px) and (max-width: 1240px) {
+    .recent-works-strip > .recent-work-item { width: calc((100% - 24px) / 3); }
+  }
+  /* 网格版要显式盖掉基础规则的 overflow-x:auto —— 否则每张卡片会各自出现一条横向滚动条 */
+  .recent-works-strip { overflow-x: visible; }
+  .cloud-tag { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+/* ★ 2026-10-18：641~1240px 那档其实从没生效过 —— 上面那条规则被写在了
+   @media (max-width: 640px) 的内部（嵌套媒体查询），条件永远不成立。
+   结果 1024/768 下仍是「3 张 170px 卡 + 一条空白」，右侧留一大片空地。
+   这里在顶层补齐：平板宽度时卡片按列宽三等分，「查看全部」与缩略图网格
+   各占一列（.more 卡片没有缩略图，让它和旁边三张一样高）。 */
+@media (min-width: 641px) and (max-width: 1240px) {
+  .recent-works-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; overflow-x: visible; }
+  .recent-works-strip > .recent-work-item { width: auto; min-width: 0; }
+}
 
 /* 迷你统计 */
 .mini-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -1413,9 +1607,14 @@ html.dark .mini-stat strong { color: #9cc2ff; }
 a.guide-title:hover { text-decoration: underline; }
 .guide-title.is-planned { color: var(--text-sub); }
 .guide-tag { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 16px; color: #fff; flex-shrink: 0; }
-.tag-game { background: #c0504d; }
-.tag-art { background: #4a8f4a; }
-.tag-tech { background: #3f77b5; }
+/* ⚠ 下面三条 .tag-game/.tag-art/.tag-tech 是给 /guides/ 攻略列表的 .guide-tag 配色
+   （当时 guide-tag 与标签胶囊共用 tag-* 类名）。现在标签胶囊 .tag-pill 也用 .tag-game，
+   这条 background 会盖过 .tag-pill 的 var(--pill-bg)（后加载、同为单类选择器），
+   导致「数码绘画」胶囊变成深红底（2026-10-18 站主截图实锤）。
+   改成只作用于 .guide-tag，不再影响 .tag-pill。 */
+.tag-game.guide-tag { background: #c0504d; }
+.tag-art.guide-tag { background: #4a8f4a; }
+.tag-tech.guide-tag { background: #3f77b5; }
 
 /* .todo-list / .todo-item / .todo-tag / .tag-doing|todo|done 这些规则
    只被 /todo/ 的三栏全量视图用到，页面删除后一并移除（清单现在是杂谈页的 .todo-mini-list）。 */
@@ -2123,6 +2322,35 @@ html.xp-glitching::after {
 }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+/* ===== 便当格卡片宽度兜底（2026-10-18）=====
+   .xp-bento > * 是 display:flex（横向）。卡里只放一个窗口时，窗口宽度
+   = flex-basis:auto → width:auto → 由内容决定，容器再窄也一样。
+   实测 390px 下「用户账户」卡被压成 90px 宽，正文一个字一行、卡片撑到 1000+px 高。
+   容器查询跟着卡片自己的宽度走，不受 900/640 这类全局断点影响，最稳。
+   ★ 前提：卡片必须自己声明 container-type: inline-size，否则 @container 块不生效。 */
+.bento-item {
+  /* 注意：不能给整张卡声明 container-type —— 那会让它变成「尺寸容器」，
+     卡上的 grid-column/grid-row 与 100% 高度都会失效（实测整页塌成一列细条）。
+     只给「用户账户」这张卡声明，宽屏下它本来就不是容器也照样自动撑满。 */
+}
+.bento-profile { container-type: inline-size; }
+/* 便当格里的窗口/便签：宽屏时撑满整格；窄屏（≤900/640）要保持「由内容决定宽度」，
+   所以这些规则都写在桌面宽度的媒体查询里，不要在全局写死 100%（会溢出并被切断）。 */
+@media (min-width: 901px) {
+  .bento-item > .xp-window,
+  .bento-item > .xp-bubble,
+  .bento-item > .retro-mp4-player { width: 100%; }
+}
+@container (max-width: 520px) {
+  .profile-content { flex-direction: column; align-items: center; text-align: center; }
+  .profile-avatar { width: 96px; height: 96px; flex: 0 0 auto; }
+  .profile-text { flex: 0 0 auto; width: 100%; }
+  .profile-text h2,
+  .profile-text h2 .username { font-size: 20px; }
+  .profile-text p { font-size: 15px; line-height: 1.5; }
+  .profile-icons { justify-content: center; }
+}
+
 .xp-bento > * { animation: popIn 0.45s ease backwards; }
 .xp-bento > *:nth-child(1) { animation-delay: 0.04s; }
 .xp-bento > *:nth-child(2) { animation-delay: 0.09s; }
@@ -2161,6 +2389,9 @@ html.xp-glitching::after {
   .content-container { padding: 10px 12px; }
   .content-container.xp-shell { padding: 0; }
   .xp-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+  .xp-bento > * > .xp-window,
+  .xp-bento > * > .xp-bubble,
+  .xp-bento > * > .retro-mp4-player { width: 100%; }
   /* 窄屏：便利贴会移到「用户账户」上方。便签没有拖尾，所以这里不再需要任何
      针对拖尾的处理（原来给「朝下拖尾」预留的 margin-bottom 也一并去掉）。 */
   .header-body { flex-direction: column; align-items: flex-start; }
@@ -2177,6 +2408,14 @@ html.xp-glitching::after {
 @media (max-width: 640px) {
   .xp-bento { grid-template-columns: minmax(0, 1fr); }
   .xp-bento > * { grid-column: 1 / -1 !important; grid-row: span 1 !important; }
+  /* ★ 2026-10-18：轨道从 12 栏改成单栏后，卡里的窗口如果还带着
+     「配平后的 100% 宽度」，就会按旧的计算宽度溢出到屏幕右侧（390px 实测可见
+     卡片右边被切断）。这里把宽度交还给 flex 的 stretch。 */
+
+  /* 同上：卡片是 flex 容器，窗口不写 100% 就会被内容挤成 90px 宽 */
+  .xp-bento > * > .xp-window,
+  .xp-bento > * > .xp-bubble,
+  .xp-bento > * > .retro-mp4-player { width: 100%; }
   .xp-bento > * > .retro-mp4-player { max-width: 320px; aspect-ratio: auto; }
 
   /* 移动端缩小悬浮播放器（2026-10-13）
@@ -2186,13 +2425,26 @@ html.xp-glitching::after {
      缩小会在用户第一次点「大小」键时被整个覆盖掉，表现为「手机上点了大小就没反应」。
      改 width/height/字号则与那套缩放叠加：手机上更小，再点大小还能更小/更大。
 
+     ★ 2026-10-17：断点从 640 放到 900，宽度 168 → 168（整个播放器再由 JS 的
+     autoScale() 缩到 0.6 → 落在屏幕上约 100px 宽）。为什么要改：
+       · 900 以下首页/文章页都是单列，原来播放器压在正文最后一屏上；
+       · 390px 宽的手机上，168px 的收起态 + 右侧 10px = 挡住了 46% 的宽度。
+     既然手机"放不下"，就不能再靠"塞得下就行"来定尺寸，而是让它小到像一张小贴纸。
+     JS 与 CSS 必须成对改：autoScale() 在 ≤900px 返回 0.6。
+
      ⚠⚠ 7 个按键必须**一行放得下**，宽度是倒推出来的，别随手改：
-       内宽 = 宽度 − 2×2(边框) − 2×8(内边距)
-        152px → 内宽 132 → 7w + 6×3 ≤ 132 → w ≤ 16px（太小，点不准）
-        168px → 内宽 148 → 7w + 6×3 ≤ 132 → w ≤ 18px ✓
-     所以宽度取 168px、按键 18px。**曾踩过的坑**：把宽度定成 152px 而按键留 24px，
-     一排 186px 塞进 132px 的框里，按键直接穿出播放器右边界（移动端截图可见）。 */
-  .xp-music-floating { width: 168px; right: 10px; bottom: calc(var(--taskbar-height) + 10px); }
+       168px → 内宽 148 → 7w + 6×3 ≤ 148 → w ≤ 18px ✓（按键 18px）
+       **曾踩过的坑**：把宽度定成 152px 而按键留 24px，一排 186px 塞进 132px
+       的框里，按键直接穿出播放器右边界（移动端截图可见）。 */
+  @media (max-width: 900px) {
+    .xp-music-floating { width: 168px; right: 8px; bottom: calc(var(--taskbar-height) + 8px); }
+    /* 手机/平板：页面底部留出**整块收起态播放器**的高度，否则滚到最底时
+       播放器会压住最后一张卡（首页是底部通栏「搜索 · 关于本站 · 致谢」，
+       ≈100px 高，正好被 0.6 缩放后的贴纸盖住右半边）。
+       收起态 ≈ 32px CSS 高，autoScale 0.6 → 视觉 19px，再加 8px 离任务栏的间距
+       与 12px 呼吸 = 44px；这里直接用 56px（含余量）。 */
+    body { padding-bottom: calc(var(--taskbar-height) + 56px); }
+  }
   .retro-mp4-player { padding: 8px 8px; gap: 6px; }
   .mp4-brand { font-size: 14px; letter-spacing: 0.5px; }
   .mp4-screen-content.mp4-screen-v .mp4-cover-placeholder { width: 72px; height: 72px; }
@@ -2202,10 +2454,28 @@ html.xp-glitching::after {
   .mp4-floating .mp4-btn { width: 18px; height: 18px; }
   .mp4-floating .mp4-btn-play { width: 18px; }
   .mp4-floating .mp4-btn svg { width: 11px; height: 11px; }
+  /* 正文给悬浮播放器让出底部空间（2026-10-17）：
+     ≤900px 播放器默认收成一条小贴纸（约 100×34，见 scripts/xp-player.js 的
+     autoScale），贴在右下角。页面最后一段正文/页脚要能滚到它上方，
+     不要被这张贴纸盖住 —— 加一段与贴纸等高的底部留白。 */
+  body { padding-bottom: calc(var(--taskbar-height) + 56px); }
+  /* ★ 2026-10-18：这里原来写的是 flex-direction: column —— 卡片一竖排，
+     头像、正文、图标行、四宫格数据就全挤成一竖条，390px 实机上「用户账户」
+     被撑成 1000+px 高（截图 v26-390 可复现）。改成纵向排列的写法：
+     头像与正文先并排（头像在上、文字在右），数据四宫格掉到下面整行。 */
+  /* 注意 .xp-bento > * 本身是 display:flex（横向），卡里的窗口必须显式 width:100%
+     才会铺满整行 —— 只设 flex-wrap 是没用的，这就是 390px 下整卡被挤成 90px 宽、
+     文字一个字一行、撑到 1000+px 高的真正原因。 */
+  .xp-bento > * > .xp-window,
+  .xp-bento > * > .xp-bubble { width: 100%; }
+  /* 用户账户窄屏改上下式（2026-10-18 站主 p3）：头像居中在上，
+     名字/简介/图标居中在下 —— 不再是「头像左、文字右」。 */
   .profile-content { flex-direction: column; align-items: center; text-align: center; }
-  .profile-avatar { width: 96px; height: 96px; }
-  /* 竖排后头像在正上方、文字栏已经占满整卡：图标行改为**水平居中**
-     （PC 端是靠左，见第 7 节；这里必须显式写 center，因为 PC 默认已是 flex-start） */
+  .profile-avatar { width: 96px; height: 96px; flex: 0 0 auto; }
+  .profile-text { flex: 0 0 auto; width: 100%; }
+  .profile-text h2,
+  .profile-text h2 .username { font-size: 20px; }
+  .profile-text p { font-size: 15px; }
   .profile-icons { justify-content: center; }
   .xp-bubble { transform: none; }   /* 不要写 margin:0 —— 那会把 ≤900px 里给向下拖尾留出的空间清零 */
   .recent-work-item { width: 150px; }
@@ -2470,4 +2740,193 @@ pre *, code * {
   box-shadow: none;
   position: static;
   z-index: auto;
+}
+
+
+/* ============================================================
+   首页便当格排布（2026-10-18 从 source/index.md 的页面内联 <style> 搬来这里）
+   ============================================================ */
+
+/* ===== 首页排布（第 1 轮：账户 + 便利贴回第一眼） =====
+   放进 .home-page 里，让便利贴排布的样式作用域就在首页；排布细节见各段注释。 */
+/* 行高 = 「最小 96px，内容多了就自己长高」。
+   以前这里写死 96px：卡片里的内容一旦变高（简介多一行、文章列表多一条、
+   缩略图按宽度算出来更高），就会撞上 .xp-window 的 overflow:hidden 被静默裁掉
+   —— 2026-10 的「最近作品」日期行、「最新文章」第 4 条就是这么被截的。
+   改成 auto 之后：同一横带里的窗口占的是同一批网格行，所以它们仍然等高、上下边缘
+   仍然对齐；只是整条横带会按里面最高的那个窗口变高。横带之间本来就是上下排列，
+   各自高一点矮一点不影响观感。 */
+.xp-bento { grid-auto-rows: minmax(96px, auto); }
+/* 快速导航现在只有 4 个瓦片（作品集/游戏/攻略/杂谈），排成 2×2 更整齐 */
+.bento-nav .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
+
+/* ★ 2026-10-18 第三轮首屏排布（站主要求：第一眼看到「用户账户 + 便利贴」，便利贴要大）
+   上一轮把账户和最新文章写在了同一条横带上（都是 grid-row: 1 / 3），
+   网格里两个格子重叠时后出现的那个会盖住先出现的 —— DOM 里「最新文章」在
+   「用户账户」后面，于是账户整张卡被文章卡盖死，首屏只剩便利贴 + 文章。本轮改为
+   互不重叠的写法，并让便利贴与账户**同一顶边、同一底边**。
+
+   带 1  便利贴(1-4，跨 2 行) │ 用户账户(4-13，跨 2 行)      ← 首屏
+   带 2  详细属性+计数器(1-4)│ 最新文章(4-13)
+    带 3  小站数据(1-4)       │ 最近作品(4-13，跨 3 行)   ← 2026-10-18 第四轮
+    带 4  快速导航(1-4)       │（右栏继续由最近作品占着）
+    带 5  标签云(1-4)
+    带 6  通栏 搜索 · 关于本站 · 致谢（从第 12 行起）
+
+    ★ 2026-10-18 第四轮：站主要求「右下角的计数单独一个窗口」—— 于是把
+    .profile-meta 从账户卡里搬出来，放回左栏第 5-7 行（原「快速导航」的位置），
+    「快速导航」「标签云」依次下移一行带。左栏一列都是短窗口，右栏「最近作品」
+    跨 3 行正好把这一带配平。
+
+   等高怎么来的：账户卡被强制跨满 3 行（minheight 由 .bento-profile > .xp-window 给 100%），
+   便利贴同样跨 3 行，两格用的是同一批网格行 → 上下边缘天然对齐，不用写死 px。 */
+.bento-bubble  { grid-column: 1 / 5;   grid-row: 1 / 3; }
+.bento-profile { grid-column: 5 / 13;  grid-row: 1 / 3; }
+.bento-music   { grid-column: 1 / 4;   grid-row: 3 / 5; }
+.bento-articles{ grid-column: 4 / 13;  grid-row: 3 / 5; }
+.bento-meta    { grid-column: 1 / 4;   grid-row: 5 / 7; align-self: center; }
+.bento-meta > .xp-window { width: 100%; }
+.bento-recent  { grid-column: 4 / 13;  grid-row: 5 / 8; }
+.bento-nav     { grid-column: 1 / 4;   grid-row: 7 / 9; }
+.bento-tags    { grid-column: 1 / 4;   grid-row: 9 / 12; }
+.bento-links   { grid-column: 1 / 13;  grid-row: 12 / 14; }
+
+/* 便利贴：格子高度不再强制拉满（★ 2026-10-18 第六轮：站主再报「下半张纸空一片」）。
+   原来 align-self:stretch 把格子拉到与账户卡同高，格内 .xp-bento > * 是 flex，
+   纸被纵向 stretch 撑满 → 句子短时下半空。改回 center（L840 的本意）：
+   纸高度随文字自己长（.bento-bubble > .xp-bubble 的 height:auto + 210px 上限管着）。 */
+.bento-bubble   { align-self: center; }
+.bento-bubble > .xp-bubble { align-self: flex-start; }
+.bento-profile > .xp-window { width: 100%; }
+/* 右列两窗：详细属性自适应高度，捏鸭计数器填满剩余空间（2026-10-12） */
+.bento-music { display: flex; flex-direction: column; gap: 14px; }
+.bento-music .xp-window { min-height: 0; }
+.bento-music .xp-duck-window { flex: 1 1 auto; }
+/* 计数器窗口的组件样式（.xp-duck-*）统一放在 source/css/xp-custom.css；这里只留 bento 格子布局 */
+/* 小站数据窗（DOM 类名是 .bento-stats；grid 定位合并进上面第 2774 行那条）：
+   只占内容高度（三行统计撑不到「最近作品」那么高），所以不写 height:100%，
+   而在格子里垂直居中 —— 硬拉到 3 行网格高只会让正文大片留白。 */
+
+/* 手机端（≤900px）：放弃固定行高，全部整行堆叠，**顺序就是 DOM 顺序**：
+   便利贴 → 用户账户 → 详细属性/计数器 → 小站数据 → 最新文章 → 最近作品 → 标签云 → 导航 → 通栏。
+   ★ 2026-10-17 第二轮：便利贴重新放回最上面、就在账户正上方（站主要第一眼看到它们俩）。 */
+@media (max-width: 900px) {
+  .xp-bento { grid-auto-rows: auto; }
+  .bento-bubble,
+  .bento-profile, .bento-music, .bento-meta, .bento-articles, .bento-recent, .bento-nav, .bento-links { grid-column: 1 / 7; grid-row: auto; }
+  .bento-tags    { grid-column: 1 / 4;  grid-row: auto; }
+  /* 计数器窄屏保持横排（2026-10-18 站主要求与 PC 一致，p1→p2）：
+     默认就是 row（:1191），这里只收紧 gap、缩小大数字，
+     让「已被做局 20 次。 + 清除计数」在窄窗口里仍能一行放下。 */
+  .xp-duck-body  { gap: 6px; padding: 0 4px; }
+  /* 数字被挤掉的根因：.xp-duck-line/.xp-duck-clear 都是 flex-shrink:0、nowrap，
+     窗口只有 ~220px 时它俩就占满了行，flex 只能把 .xp-duck-count 压到 0。
+     窄屏放开两端的收缩限制；数字用固定 min-width + 允许整块收缩，
+     clamp 只缩字号不够——flex 压缩的是盒宽，盒宽比字形窄时就会重叠（2026-10-18 截图）。
+     这里直接给数字盒 min-width:2ch 兜底，且 .xp-duck-main 整体允许换行降级。 */
+  .xp-duck-line  { flex-shrink: 1; min-width: 0; }
+  .xp-duck-clear { flex-shrink: 1; }
+  .xp-duck-count { font-size: clamp(14px, 7vw, 28px); white-space: nowrap; min-width: 2ch; }
+  .xp-duck-main  { flex-wrap: wrap; }
+  /* 数字+「次。」绑成一个整体（.xp-duck-num，index.md 2026-10-18 改）：
+     无论怎么换行，两个永远同行，不会出现 p1 里「次。」掉到下一行的情况。 */
+  .xp-duck-num   { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+  /* 站主：按键稍小一点 */
+  .xp-duck-clear { padding: 3px 10px; font-size: 15px; }
+  /* 极窄窗口（~230px）补丁（2026-10-18 站主截图）：
+     ① 标题不换行——换行会把标题栏撑成两行，窗口看起来破相；
+     ② 标题左缘留 6px 呼吸（站主：不要顶格）。 */
+  .bento-music .xp-window-title-text { white-space: nowrap; padding-left: 6px; }
+  /* 「唉，汁本！」与「详细属性」两个窗口在窄屏并排（2026-10-18 站主要求）：
+     .bento-music 桌面端是 column（:2800），窄屏改 row —— 计数器窄一些、
+     属性列表占主要宽度；高度不一致时顶对齐。 */
+  .bento-music { flex-direction: row; align-items: flex-start; }
+  .bento-music .xp-duck-window { flex: 0 0 46%; }
+  .bento-music .xp-window:not(.xp-duck-window) { flex: 1 1 auto; }
+}
+
+/* ============ 游戏页 / 工具页（两页结构相同，共用 .app-page 这一组类） ============
+   ★ 2026-10-18 站主要求（p4）：PC 端「小游戏」和「小工具」两个窗口并排，移动端不变。
+
+   结构（自上而下）：
+     .app-page > .xp-bento
+       ├─ .app-header   顶部蓝条窗口（标题 + 一句说明 + 数量），整行
+       └─ .app-row      一行两栏的容器
+            ├─ 左栏：本页自己的窗口（窗口标题栏 + 卡片区）
+            └─ 右栏：兄弟窗口（工具页里放游戏、游戏页里放工具）
+
+   两栏并排靠 .app-row 自己的网格，不是 .xp-bento 的：便当格里的东西都是「整行窗口」，
+   两栏要并排就得自己再分一次，这样也不会影响别的页面。默认（≤1200px）两栏各占整行
+   = 从上到下堆叠，就是站主要保持不变的手机/窄屏效果。
+
+   ⚠ 这两页原来各有一份内联 <style>，内容一模一样（只是类名前缀 games/tools 不同）。
+      2026-10 合并到这里：一是自检要求页面内联 CSS 不超过 4KB，二是两份重复的
+      规则改一处忘一处（当时就漏改过一次）。 */
+
+/* 容器行高：.xp-bento 默认 grid-auto-rows: minmax(110px, auto)，那是为卡片定的最小行高。
+   但分区小标题只有二十来像素高，却被这一行强行撑到 110px，
+   于是标题下方空出一大块。这里把最小行高降到 34px，行高仍会按内容自动增长。 */
+.app-page .xp-bento { grid-auto-rows: minmax(34px, auto); }
+
+/* ★ 窄屏（≤640px）防溢出：游戏页/工具页现在多了一层 .app-row，
+   而 .main 是 display:flex 的容器，flex 子项默认 min-width:auto 会按内容的
+   min-content 撑开 —— 实测 390px 下 body 被撑到 479px、.main 467px，
+   窗口标题栏的三键被推出屏幕（2026-10-18 实拍确认）。
+   这里让 .main 的子项允许收缩，并禁止 app-page 内部任何一级横向溢出。 */
+@media (max-width: 640px) {
+  .main { min-width: 0; }
+  .main > * { min-width: 0; max-width: 100%; }
+  .app-page, .app-page > .xp-bento, .app-page .app-row { max-width: 100%; }
+}
+
+.app-header { grid-column: 1 / -1; grid-row: span 1; }
+
+/* 两栏容器：默认整行 + 单列堆叠（移动端不变） */
+.app-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  min-width: 0;
+}
+/* 容器里的每一项都必须能收缩到容器宽度以内，否则卡片内容的 min-content
+   会一路把 .xp-bento 撑宽（390px 下实测被撑到 443px，标题栏三键被推出屏幕）。 */
+.app-row > * { min-width: 0; display: flex; }
+.app-row > * > * { min-width: 0; max-width: 100%; }
+.app-row .xp-window { min-width: 0; width: 100%; }
+.app-row .xp-window-title-text { min-width: 0; }
+.app-row .xp-window-title-text > span {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* 窗口内是「一行三张卡片」的 flex 布局。
+   ⚠ 这里刻意不用 grid：.xp-bento 已经是 12 栏网格，窗口里再套 12 栏的话
+     "每张卡占 4 栏"在窄栏里会被算成几十像素，文字被压成竖排（2026-10 实测
+     1201px 与 390px 都踩过）。flex + flex-basis:0 只做朴素等分，最稳。
+   卡片放不下三张时自动折行（flex-wrap）。 */
+.pane-grid { display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch; }
+.pane-grid > .games-card { flex: 1 1 0; min-width: 0; }
+.pane-grid > .games-section-title { flex: 0 0 100%; min-width: 0; }
+
+/* 窗口里的分组小标题：不加底色、不加阴影，就是一行带图标的小字。
+   （原来是 .xp-section-bar 蓝条，和窗口标题栏重复了，见 scripts/xp-content.js） */
+.pane-subhead {
+  display: flex; align-items: center; gap: 6px; padding: 0 2px 2px;
+  font-size: 16px; color: var(--text-sub); font-weight: bold;
+}
+.pane-subhead svg { flex-shrink: 0; opacity: 0.85; }
+html.dark .pane-subhead { color: #a8c4e8; }
+
+/* 窄屏：一张卡片一行。
+   直接切成单列 grid，不依赖 flex 的 basis/shrink 分配
+   （实测 flex: 0 0 100% 在 390px 下仍会把两张卡挤进一行、宽窄还不同）。 */
+@media (max-width: 900px) {
+  .pane-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .pane-grid > .games-card { flex: initial; min-width: 0; }
+}
+
+/* PC 宽屏：两栏并排 */
+@media (min-width: 1201px) {
+  .app-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
