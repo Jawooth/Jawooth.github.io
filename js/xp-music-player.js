@@ -290,17 +290,22 @@
       if (inner.scrollWidth > inner.clientWidth + 2) inner.classList.add('mp4-marquee');
     }
   }
-  /* 把文本写进 inner（双份，供无缝循环）。量宽用单份宽度：两份后
-     scrollWidth ≈ 单份 ×2 + gap，仍必然大于父宽，判断条件不变。 */
+  /* 把文本写进 inner。2026-10-20 站主要求：不超宽时只显示一份文本
+     （跟着 text-align 居中/左对齐），超宽才补第二份做无缝滚动——
+     否则短歌名会像截图里那样「前后显示两个」。
+     量宽技巧：先只放一份量自然宽，判断是否需要滚动，需要再 clone。 */
   function setMarqueeText(inner, text) {
     if (!inner) return;
     inner.textContent = '';
     var t1 = document.createElement('span');
     t1.className = 'mp4-marquee-copy';
     t1.textContent = text;
-    var t2 = t1.cloneNode(true);
     inner.appendChild(t1);
-    inner.appendChild(t2);
+    /* 单份已超宽 → 补第二份 + 挂 mp4-marquee（marquee() 会量宽挂类）；
+       没超宽就保持单份，普通文本布局，居中显示 */
+    if (t1.offsetWidth > inner.clientWidth + 2) {
+      inner.appendChild(t1.cloneNode(true));
+    }
   }
 
   function renderEmpty() {

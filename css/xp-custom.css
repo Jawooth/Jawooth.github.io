@@ -1054,22 +1054,22 @@ html.dark .profile-icon { color: var(--link); }
    截宽（overflow:hidden），inner 在里面滚。以前点在轨道里且 flex-shrink:0，
    歌名一超宽点把字挤没，看起来「只有点在闪、字不滚」。 */
 .mp4-song-title-wrap {
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   min-width: 0;
 }
 .mp4-song-title {
-  flex: 1; min-width: 0;
+  flex: 0 1 auto; min-width: 0;
   font-size: 16px; font-weight: bold; color: #7cfc00;
   white-space: nowrap; overflow: hidden; text-overflow: clip;
-  text-align: left;
+  text-align: center;   /* 2026-10-20：不超宽时歌名居中；超宽时截宽滚动 */
 }
 /* 2026-10-19 修复「标题叠在封面上」（三版）：文字条带不再是悬浮半透明层，
    而是 flex 兄弟节点 —— 封面圆和文字条带上下排开，物理上不重叠。 */
 .mp4-screen-content.mp4-screen-v {
   flex-direction: column; gap: 8px;
   align-items: center; text-align: center;
-  /* 封面尽量吃满剩余空间，文字条带只占自己内容的高度 */
-  justify-content: flex-start;
+  /* 2026-10-20 站主要求：内容块在屏幕里水平垂直都居中，不要顶格 */
+  justify-content: center;
 }
 .mp4-screen-content.mp4-screen-v .mp4-song-info {
   width: 100%; min-width: 0;
@@ -1182,11 +1182,17 @@ html.dark .mp4-progress-bar { background: #b8b8c0; }
    两侧留白从 ~46px 压到 ~8px —— 2026-10-19 站主要求「不改变播放器大小的
    前提下封面占比大点」（覆盖上面 100px 基准，必须写在这条之后） */
 .mp4-screen-content.mp4-screen-v .mp4-cover-placeholder {
-  width: clamp(100px, 92%, 150px); height: clamp(100px, 92%, 150px);
+  width: clamp(110px, 92%, 160px); height: clamp(110px, 92%, 160px);
   aspect-ratio: 1 / 1;            /* 永远正方形 → border-radius:50% 恒为正圆 */
   flex-shrink: 0;                 /* 高度不够时缩文字条带、不压扁封面成椭圆 */
   overflow: hidden;               /* 封面图绝不溢出圆外 */
   background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+/* 手机/窄屏：封面不再缩到 72px，与桌面同款按比例放大（2026-10-20 站主要求） */
+@media (max-width: 900px) {
+  .mp4-screen-content.mp4-screen-v .mp4-cover-placeholder {
+    width: clamp(110px, 92%, 160px); height: clamp(110px, 92%, 160px);
+  }
 }
 /* 歌手行字号：浮动小卡上 16px 太大，统一 12px（2026-10-19 从下方重复规则收拢） */
 .mp4-screen-content.mp4-screen-v .mp4-song-author { font-size: 12px; }
@@ -1220,6 +1226,10 @@ html.dark .mp4-progress-bar { background: #b8b8c0; }
   display: inline-flex;          /* 两份 copy 排成一行 */
   animation: mp4-marquee 12s linear infinite;
 }
+/* 2026-10-20：滚动时父级必须回到 flex-start —— justify-content:center
+   会让溢出内容两侧截断，动画左半程看不见。不滚（单份）时保持居中。 */
+.mp4-song-title-wrap:has(.mp4-marquee),
+.mp4-song-author:has(.mp4-marquee) { justify-content: flex-start; }
 .mp4-marquee-copy { flex-shrink: 0; padding-right: 28px; }   /* 两份之间的间隙 */
 @keyframes mp4-marquee {
   0%   { transform: translateX(0); }
@@ -2658,7 +2668,7 @@ html.xp-glitching::after {
   }
   .retro-mp4-player { padding: 8px 8px; gap: 6px; }
   .mp4-brand { font-size: 14px; letter-spacing: 0.5px; }
-  .mp4-screen-content.mp4-screen-v .mp4-cover-placeholder { width: 72px; height: 72px; }
+  /* 2026-10-20：封面尺寸不再在窄屏单独缩小，沿用桌面 clamp(110px,92%,160px) */
   .mp4-song-title { font-size: 14px; }
   .mp4-song-author { font-size: 11px; }
   .mp4-progress-times { font-size: 13px; }
