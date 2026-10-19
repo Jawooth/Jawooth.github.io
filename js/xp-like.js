@@ -37,11 +37,11 @@
         } catch (e) {}
       };
     },
-    get: function (key, cb) { cb(0); },
-    bump: function (key, delta, cb) { cb(0); },
-    mine: function (key, cb) { cb(false); },
-    setMine: function () {}
   };
+  /* 曾在这里放 get/bump/mine/setMine 四个空 stub 当「换后端的兜底」，
+     但 local() 紧接着就把四个同名方法全覆盖了，stub 永远执行不到，
+     反而误导改后端的人去改错地方 —— 2026-10-19 清理时删除。
+     换第三方托管（Twikoo/Waline 等）时直接覆盖 local() 这一支即可。 */
   XPLikeBackend.local();
   window.XPLikeBackend = XPLikeBackend;   /* 留个口子，方便以后替换 */
 

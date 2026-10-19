@@ -1,16 +1,73 @@
 
 (function() {
   // ========== 时钟（时间 + 日期） ==========
+  /* 2026-10-19 站主要求的两组交互：
+     ① 点击时钟 → 12/24 小时制切换（记 localStorage，下次进来保持选择）；
+     ② 悬停（移动端没有 hover，用长按 500ms 代替）→ 显示完整日期
+        「2026年10月19日 星期一」。悬停用 title 属性兜底（触屏没 title，但长按已覆盖）。
+     12 小时制带 am/pm 后缀（2026-10-19 站主定稿，原「上午/下午」前缀）；两种制式都由 updateClock 统一渲染。 */
+  var CLOCK_TIP = function (now) {
+    var weeks = ['日', '一', '二', '三', '四', '五', '六'];
+    return now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + weeks[now.getDay()];
+  };
+  function use24() {
+    try { return localStorage.getItem('xp-clock-24') !== '0'; } catch (e) { return true; }
+  }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function updateClock() {
     var now = new Date();
     var timeEl = document.getElementById('xpClockTime');
     var dateEl = document.getElementById('xpClockDate');
-    if (timeEl) timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    var clockEl = document.getElementById('xpClock');
+    if (clockEl) clockEl.title = CLOCK_TIP(now);
+    if (timeEl) {
+      if (use24()) {
+        timeEl.textContent = pad(now.getHours()) + '：' + pad(now.getMinutes());
+      } else {
+        var h = now.getHours() % 12; if (h === 0) h = 12;
+        timeEl.textContent = h + '：' + pad(now.getMinutes()) + (now.getHours() < 12 ? 'am' : 'pm');
+      }
+    }
     if (dateEl) dateEl.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日';
   }
   updateClock();
   setInterval(updateClock, 15000);
+  (function () {
+    var clockEl = document.getElementById('xpClock');
+    if (!clockEl) return;
+    clockEl.classList.add('xp-clock-clickable');
+    /* 点一下切制式；长按 500ms 弹完整日期。用 pointer 事件统一鼠标/触屏。 */
+    var pressTimer = null;
+    function showFullDate() {
+      if (clockEl.getAttribute('data-xp-full-date')) return;   /* 已经开着就不重复弹 */
+      var tip = CLOCK_TIP(new Date());
+      clockEl.setAttribute('data-xp-full-date', tip);
+      var tipEl = document.createElement('div');
+      tipEl.className = 'xp-clock-fulltip';
+      tipEl.textContent = tip;
+      clockEl.appendChild(tipEl);
+      /* 3 秒后自动收起；期间再点一下也能收 */
+      clockEl.__xpTipTimer = setTimeout(hideFullDate, 3000);
+    }
+    function hideFullDate() {
+      clearTimeout(clockEl.__xpTipTimer);
+      clockEl.removeAttribute('data-xp-full-date');
+      var t = clockEl.querySelector('.xp-clock-fulltip');
+      if (t) t.parentNode.removeChild(t);
+    }
+    clockEl.addEventListener('pointerdown', function () {
+      pressTimer = setTimeout(showFullDate, 500);
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
+      clockEl.addEventListener(ev, function () { clearTimeout(pressTimer); });
+    });
+    clockEl.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (clockEl.getAttribute('data-xp-full-date')) { hideFullDate(); return; }  /* 提示开着时点=收起 */
+      try { localStorage.setItem('xp-clock-24', use24() ? '0' : '1'); } catch (err) {}
+      updateClock();
+    });
+  })();
 
   // ========== 当前页面的标题与图标 ==========
   /* 图标表与开始菜单同源（START_ICONS），构建期序列化进来 —— 两边永远一致，

@@ -186,7 +186,7 @@
      就是这段窗口期。颜色取壁纸的平均色（#bde5f7 浅青），
      图片加载完成后立即被 cover 的壁纸盖住，肉眼无切换感。
      深色那份（html.dark 里）一直有兜底（#1a1a2e），所以深色没这个问题。 */
-  --desktop-bg: url('/images/xp-desktop-bg.jpg') center/cover no-repeat fixed #bde5f7;
+  --desktop-bg: url('/images/xp-desktop-bg.webp') center/cover no-repeat fixed #bde5f7;
   /* 两侧装饰图 2026-10-13 起改为数据驱动：图和位置都在 source/_data/decor.yml 里配，
      这里不再写死图片路径（规则见下面第 2 节的 .xp-decor） */
   --taskbar-height: 36px;
@@ -264,9 +264,10 @@ html.dark {
   --win-face: #3a3a4a;
   --win-drop: 2px 2px 0 rgba(0, 0, 0, 0.45);
   --win-frame: inset -1px -1px #001042, inset 1px 1px #1a49c8, inset -2px -2px #00166e, inset 2px 2px #2a6ae0, inset -3px -3px #0028a0, inset 3px 3px #2f7df0;
-  /* 深色模式桌面背景：换图就替换 source/images/xp-desktop-bg-dark.jpg
-     （末尾的 #1a1a2e 是纯色兜底：图片缺失时也不会变成白底） */
-  --desktop-bg: url('/images/xp-desktop-bg-dark.jpg') center/cover no-repeat fixed #1a1a2e;
+  /* 深色模式桌面背景：换图就替换 source/images/xp-desktop-bg-dark.webp
+     （末尾的 #1a1a2e 是纯色兜底：图片缺失时也不会变成白底）
+     2026-10-19：壁纸从 jpg/png 全部改用 webp（同画质体积 1/6~1/9，见 README 3.1） */
+  --desktop-bg: url('/images/xp-desktop-bg-dark.webp') center/cover no-repeat fixed #1a1a2e;
 
   /* 句子便利贴（深色）：原来的暗黄褐（#4c4527→#3b3520）压得太闷，
      在深蓝桌面上像一块脏橄榄，与壁纸不搭（2026-10-15 站主指出）。
@@ -713,14 +714,24 @@ html.dark .header-chip strong { color: #9cc2ff; }
 /* 正文放大到 16px 之后，这张卡片的高度也得跟着调 —— 卡片高度受同一横带里的
    「复古 MP4 播放器」约束（都是 210px 左右，占 1~3 行），原来按 12px 正文配的
    间距会把图标那一排挤出窗口（.xp-window 是 overflow:hidden，挤出去就看不见了）。
-   做法：头像稍放大压住左栏，正文/标题/图标的纵向间距收紧。
-   ⚠ 以后改 tagline/intro 的文字长度后，若发现图标又被挤掉，先调这里的间距。 */
-.profile-content { display: flex; align-items: flex-start; gap: 16px; height: 100%; }
+   做法：正文/标题/图标的纵向间距收紧。
+   ⚠ 以后改 tagline/intro 的文字长度后，若发现图标又被挤掉，先调这里的间距。
+   2026-10-19 站主定稿：窗口高度 = 文字高度 + 图标行高度；头像高度撑满
+   内容区（与文字栏等高），窗口不再有多余的上下留白。 */
+.profile-content { display: flex; align-items: center; gap: 20px; height: 100%; }
 .profile-avatar {
-  width: 132px; height: 132px;
+  /* 2026-10-19 站主定稿：头像高度 = 文字+图标行的高度（即内容自然高），
+     与窗口上下边各留一点距离 —— 不再 stretch 顶满窗口。
+     2026-10-19 第三轮（站主指示）：头像**靠左居中**（align-self:center 而非
+     stretch），左缘贴卡片内容区左边；右边是文字栏 + 底部图标行。
+     max-width 收到 32%：头像独立居中后 40% 会把文字栏挤得过窄。 */
+  width: auto; height: auto;
+  align-self: center;
+  max-width: 32%;
+  margin: 8px 0;
   flex-shrink: 0;
-  object-fit: cover;
-  /* 站主头像换成了透明底 PNG：不加边框、不加背景，透明处直接透出桌面壁纸；
+  object-fit: contain;
+  /* 站主头像换成了透明底图：不加边框、不加背景，透明处直接透出桌面壁纸；
      也不要 image-rendering: pixelated —— 450px 源图缩到 132px 时逐像素取样
      会产生锯齿花斑（看起来像"被压缩"），让浏览器平滑缩放反而干净。 */
 }
@@ -789,10 +800,15 @@ html.dark .header-chip strong { color: #9cc2ff; }
   .xp-firework-text { animation: none; }
   .xp-firework-dot { animation: none; opacity: 0; }
 }
-.profile-text { flex: 1; min-width: 0; }
-.profile-text h2 { margin: 0 0 4px; font-size: 24px; color: var(--text-heading); }
-.profile-text h2 .username { color: var(--xp-blue-border); font-family: var(--font-display); font-weight: 700; font-size: 24px; transition: opacity 0.25s; }
-.profile-text p { margin: 4px 0; line-height: 1.4; font-size: 16px; }
+.profile-text { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.profile-text h2 { margin: 0 0 2px; font-size: 26px; letter-spacing: 0.5px; color: var(--text-heading); }
+.profile-text h2 .username { color: var(--xp-blue-border); font-family: var(--font-display); font-weight: 700; font-size: 26px; transition: opacity 0.25s; }
+.profile-text p { margin: 3px 0; line-height: 1.55; font-size: 16px; }
+/* 2026-10-19 站主：头像放大后文字栏上下各空一行很难看 —— 改成纵向也居中
+   （flex-column + justify-content:center），文字块贴着窗口中线排，上下不留空。
+   2026-10-19 排版优化（第二轮）：标题 24→26px + 字距拉开与正文拉开层次；
+   文字栏用 gap:2px 代替逐条 margin 微调，简介行高 1.4→1.55 提升可读性；
+   头像与文字栏间距 16→20px，留出呼吸感。 */
 .meta-chip {
   background: var(--surface);
   border: 1px solid var(--xp-blue-light);
@@ -813,8 +829,8 @@ html.dark .meta-chip strong { color: #9cc2ff; }
    原来为了让它在整卡居中，用过「负 margin 拉回 148px + 宽度补回来」那套，
    现在改靠左，那两行补偿必须去掉，否则会被拉到头像底下形成负缩进。 */
 .profile-icons {
-  margin-top: 6px;
-  display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 6px;
+  margin-top: 10px;
+  display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 8px;
 }
 .profile-icon {
   width: 34px; height: 34px;
@@ -1017,6 +1033,11 @@ html.dark .profile-icon { color: var(--link); }
 .mp4-screen {
   background: #1a1a1a; border: 2px solid #4a4a4a; border-radius: 4px;
   padding: 8px; width: 100%; box-sizing: border-box;
+  flex: 1;               /* 2:3 下播放器比内容高：屏幕吃掉多余高度，进度/控制条贴底（2026-10-19） */
+  display: flex;         /* 让内层 content 拉伸铺满屏幕 */
+  flex-direction: column;
+  justify-content: center;   /* 内容少时（短歌名）在屏幕内垂直居中，不堆在顶部 */
+  overflow: hidden;
 }
 .mp4-screen-content { display: flex; flex-direction: row; gap: 10px; align-items: center; }
 .mp4-cover { flex-shrink: 0; }
@@ -1028,16 +1049,49 @@ html.dark .profile-icon { color: var(--link); }
   box-shadow: inset 0 0 12px rgba(124, 252, 0, 0.08);
 }
 .mp4-song-info { width: 100%; min-width: 0; color: #7cfc00; }
+/* 标题行结构（2026-10-19 三版）：播放点移出滚动轨道 ——
+   .mp4-song-title-wrap 是「点 + 滚动区」的横向 flex；.mp4-song-title 只负责
+   截宽（overflow:hidden），inner 在里面滚。以前点在轨道里且 flex-shrink:0，
+   歌名一超宽点把字挤没，看起来「只有点在闪、字不滚」。 */
+.mp4-song-title-wrap {
+  display: flex; align-items: center; gap: 6px;
+  min-width: 0;
+}
 .mp4-song-title {
+  flex: 1; min-width: 0;
   font-size: 16px; font-weight: bold; color: #7cfc00;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; overflow: hidden; text-overflow: clip;
+  text-align: left;
+}
+/* 2026-10-19 修复「标题叠在封面上」（三版）：文字条带不再是悬浮半透明层，
+   而是 flex 兄弟节点 —— 封面圆和文字条带上下排开，物理上不重叠。 */
+.mp4-screen-content.mp4-screen-v {
+  flex-direction: column; gap: 8px;
+  align-items: center; text-align: center;
+  /* 封面尽量吃满剩余空间，文字条带只占自己内容的高度 */
+  justify-content: flex-start;
+}
+.mp4-screen-content.mp4-screen-v .mp4-song-info {
+  width: 100%; min-width: 0;
+  flex-shrink: 0;                 /* 高度不够时缩封面、不缩文字条带 */
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 4px;
+  padding: 4px 6px;
+  box-sizing: border-box;
 }
 .mp4-play-indicator {
   display: inline-block; width: 6px; height: 6px; background: #7cfc00;
   border-radius: 50%; animation: blink 1s infinite; flex-shrink: 0;
 }
 .mp4-song-author { font-size: 16px; color: #b8b8b8; margin-top: 2px; }
+/* 歌手行也走跑马灯：与标题同构（外层截宽 overflow:hidden，内层 inner 滚动）。
+   ⚠ .mp4-song-title 的截宽三件套在它自身上，这里给 author 补同款；
+   inner 宽度跟随父级，超宽时 JS 加 .mp4-marquee 滚动。 */
+.mp4-song-author {
+  white-space: nowrap; overflow: hidden;
+  display: flex; justify-content: center;
+}
+.mp4-song-author .mp4-title-inner { display: inline-block; max-width: 100%; overflow: hidden; }
 .mp4-progress-wrap { display: flex; flex-direction: column; gap: 3px; width: 100%; }
 /* 时间信息改成 XP.css 的 .status-bar（分段凹陷格）。
    ⚠ .mp4-progress-times 原来自己写了 flex/justify-content/color，
@@ -1045,7 +1099,8 @@ html.dark .profile-icon { color: var(--link); }
    所以这里只保留「字号」这类不与 XP.css 冲突的属性，其余交给 status-bar。 */
 .mp4-progress-times { font-size: 16px; }
 .mp4-progress-times .status-bar-field { text-align: center; color: #2a2a2a; }
-html.dark .mp4-progress-times .status-bar-field { color: #2a2a2a; }   /* 状态栏底色恒为浅色 */
+/* 深色模式下 XP.css 的 .status-bar 面色会变深，写死深色数字会没进底色里 */
+html.dark .mp4-progress-times .status-bar-field { color: #e8e8e0; }
 .mp4-progress-bar {
   height: 7px; background: #c0c0b8; border: 1px solid #999;
   border-radius: 2px; overflow: hidden; cursor: pointer;
@@ -1066,9 +1121,16 @@ html.dark .mp4-progress-times .status-bar-field { color: #2a2a2a; }   /* 状态�
 html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }html.dark .mp4-brand { color: #9cc2ff; }
 html.dark .mp4-progress-times { color: #c8c8d6; }
 html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
+/* 深色模式下进度条已填充段仍是亮绿，底槽若是深灰会看不清边界 ——
+   底槽提到 #b8b8c0（浅），与浅色模式 (#c0c0b8) 接近，让绿色 fill 始终有浅底衬着。 */
+html.dark .mp4-progress-bar { background: #b8b8c0; }
 
 /* ---------- 全局固定浮动条（可拖动 + 可隐藏 + 纵向布局） ----------
-   固定右下角，z-index 10001 盖住任务栏；位置可拖、拖后存 LocalStorage。 */
+   固定右下角，z-index 10001 盖住任务栏；位置可拖、拖后存 LocalStorage。
+   2026-10-19 站主定稿：播放器整体改竖向 2:3（宽:高），各端统一 ——
+   展开态用 aspect-ratio 钉住比例，高度由宽度推出；收起态（一行贴纸）
+   不吃这个比例（.mp4-collapsed 时 aspect-ratio:auto，见下）。宽 200px 时
+   高 300px，内屏有更多纵向空间放封面与歌名。 */
 .xp-music-floating {
   position: fixed; right: 18px; bottom: calc(var(--taskbar-height) + 14px); z-index: 10001;
   width: 200px; max-width: calc(100vw - 36px);
@@ -1077,7 +1139,13 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 .mp4-floating {
   padding: 8px 10px; gap: 6px;
   border-radius: 6px 6px 0 0;
+  aspect-ratio: 2 / 3;   /* 纵向 2:3：200px 宽 → 高 300px（2026-10-19 站主定稿）；收起态在下方复位 */
 }
+/* 收起态是一行贴纸，不能被 2:3 拉高 —— 复位成内容自然高 */
+.mp4-collapsed .mp4-floating,
+#xp-music-floating[data-touch="1"]:not([data-xp-user-open="1"]) .mp4-floating { aspect-ratio: auto; }
+/* 首页 bento 格里的播放器窗口同样钉 2:3（原来是随格子高度撑满的 100%） */
+.bento-music .retro-mp4-player { aspect-ratio: 2 / 3; height: auto; }
 /* 拖动时品牌条光标变手型（JS 也会给它设） */
 .xp-music-floating { touch-action: none; }   /* 2026-10-13 拖动把手扩到整块播放器：手势全归拖动管，别当页面滚动 */
 
@@ -1110,7 +1178,20 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
   width: 100px; height: 100px; border-radius: 50%;
 }
 .mp4-screen-content.mp4-screen-v .mp4-song-info { width: 100%; min-width: 0; }
+/* 2:3 屏幕比内容高：封面圆放大到吃满剩余宽度（上限提到 150px），
+   两侧留白从 ~46px 压到 ~8px —— 2026-10-19 站主要求「不改变播放器大小的
+   前提下封面占比大点」（覆盖上面 100px 基准，必须写在这条之后） */
+.mp4-screen-content.mp4-screen-v .mp4-cover-placeholder {
+  width: clamp(100px, 92%, 150px); height: clamp(100px, 92%, 150px);
+  aspect-ratio: 1 / 1;            /* 永远正方形 → border-radius:50% 恒为正圆 */
+  flex-shrink: 0;                 /* 高度不够时缩文字条带、不压扁封面成椭圆 */
+  overflow: hidden;               /* 封面图绝不溢出圆外 */
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+/* 歌手行字号：浮动小卡上 16px 太大，统一 12px（2026-10-19 从下方重复规则收拢） */
 .mp4-screen-content.mp4-screen-v .mp4-song-author { font-size: 12px; }
+/* 封面图（.has-cover 时 background-image 铺在 placeholder 上，见 JS setCover）*/
+.mp4-screen-content.mp4-screen-v .mp4-cover { width: 100%; display: flex; justify-content: center; }
 
 /* 浮动播放器的按钮：**7 个排成一行**（2026-10-13 统一 + 单行）
    ⚠ 这里**只允许有一个例外**：播放/暂停键宽一点（它是主操作）。
@@ -1131,15 +1212,18 @@ html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 /* 图标跟着缩：22px 的键塞 13px 图标，左右各留 4px；14px 会顶到边框 */
 .mp4-floating .mp4-btn svg { width: 13px; height: 13px; }
 
-/* 跑马灯 */
+/* 跑马灯（双份无缝循环，参考 Ryan Mulligan《The Infinite Marquee》）：
+   inner 里有两个 .mp4-marquee-copy，整条 track 位移 -50% 即回到起点，
+   首尾无空档、无跳变。速度按内容长度定：12s 基准太慢时用 min() 压。 */
 .mp4-title-inner { display: inline-block; white-space: nowrap; }
 .mp4-title-inner.mp4-marquee {
+  display: inline-flex;          /* 两份 copy 排成一行 */
   animation: mp4-marquee 12s linear infinite;
-  padding-left: 100%;
 }
+.mp4-marquee-copy { flex-shrink: 0; padding-right: 28px; }   /* 两份之间的间隙 */
 @keyframes mp4-marquee {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+  100% { transform: translateX(-50%); }   /* 恰好是一份的宽度 → 无缝 */
 }
 
 /* 折叠：只剩品牌条 + 控制条一行 */
@@ -2145,6 +2229,25 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   white-space: nowrap; text-align: center; line-height: 1.15;
 }
 .xp-clock-date { display: block; font-size: 16px; opacity: 0.9; }
+/* 时钟交互（2026-10-19）：可点（12/24 制切换）+ 长按/悬停看完整日期。
+   .xp-clock-fulltip 是长按弹出的小气泡，钉在时钟上方 —— 任务栏在底部，
+   气泡只能往上长；原生的 title 悬停提示仍然保留（双保险）。 */
+.xp-clock-clickable { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.xp-clock-clickable:hover { background: rgba(255, 255, 255, 0.15); }
+.xp-clock-fulltip {
+  position: absolute; bottom: calc(100% + 8px);
+  /* right: 4px 会撞恢复小球：播放器隐藏后 .xp-music-resume（36px 圆钮，
+     right:18px）正好占住任务栏右上角上方，气泡从时钟正上弹出就压在球上。
+     改为往左让出 ~44px（球宽 36 + 间隙 8），气泡整体落在空旷区；
+     时钟自身只有 ~64px 宽，气泡向左展开仍在屏幕内。 */
+  right: 48px;
+  background: var(--surface-2); color: var(--text-main, #222);
+  border: 2px solid var(--xp-blue-border);
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.35);
+  padding: 5px 10px; font-size: 14px; white-space: nowrap;
+  text-shadow: none;
+}
+.xp-taskbar-clock { position: relative; }   /* fulltip 的定位基准 */
 
 .xp-start-menu {
   position: fixed; bottom: var(--taskbar-height); left: 4px;
@@ -2248,6 +2351,91 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 .xp-bs-code { font-family: inherit; }
 .xp-bs-foot { margin-top: 22px; opacity: 0.85; font-style: italic; }
 
+/* ---------- 闲置屏保：XP 泡泡（2026-10-19 站主要求） ----------
+   60 秒无操作（时长在 _config.yml screensaver.idle_seconds）全屏浮起深色层，
+   泡泡在屏幕内部漂浮（左右摆 + 轻微上下浮动，不出屏）。
+   任意键/点击退出。层级 10080：盖住正文与装饰图，低于蓝屏(10090)/开始菜单(10000
+   之上的菜单层级)/错误窗 —— 系统级界面永远可点。 */
+.xp-screensaver {
+  position: fixed; inset: 0; z-index: 10080;
+  /* 2026-10-19 站主：背景只轻轻压暗（0.3），正文隐约可见，像真的屏保蒙一层 */
+  background: rgba(0, 0, 24, 0.3);
+  overflow: hidden; cursor: pointer;
+}
+.xp-ss-bubble {
+  position: absolute;               /* bottom/left/大小由 JS 每颗随机（都在屏内） */
+  border-radius: 50%;
+  /* 参考站主给的样图：内部全透明，只有边缘一圈彩色。
+     2026-10-19 三调（站主）：高光改成左上倾斜椭圆（样图那样斜 45° 左右的
+     长条高光，用 ellipse 渐变 + 旋转容器的伪元素画，圆渐变画不出斜椭圆）。
+     色相 --h 由 JS 给随机起点，hue-rotate 慢慢转圈变色。 */
+  background: radial-gradient(circle at 50% 50%,
+      hsla(var(--h), 95%, 92%, 0.04) 58%,                          /* 内里全透明 */
+      hsla(var(--h), 95%, 70%, 0.65) 84%,                          /* 边缘起色更早更实 */
+      hsla(var(--h), 100%, 62%, 0.98) 97%,                         /* 外圈近乎不透明、更亮 */
+      hsla(var(--h), 100%, 70%, 0.4) 100%);
+  border: 1px solid hsla(var(--h), 100%, 75%, 0.85);
+  box-shadow:
+    inset 0 0 12px hsla(var(--h), 100%, 72%, 0.55),
+    0 0 16px hsla(var(--h), 100%, 65%, 0.45);
+  filter: hue-rotate(0deg);
+  animation-name: xp-ss-sway, xp-ss-bob, xp-ss-hue;
+  animation-timing-function: ease-in-out, ease-in-out, linear;
+  animation-iteration-count: infinite, infinite, infinite;
+  animation-direction: alternate, alternate, normal;
+  will-change: transform;
+}
+/* 斜椭圆高光：伪元素旋转 45°（站主定稿）。
+   2026-10-19 四调：纯实色无渐变、更贴近泡泡外缘（尺寸用三调的 22%×36%）。 */
+.xp-ss-bubble::before {
+  content: '';
+  position: absolute;
+  left: 15%; top: 12%;
+  width: 7%; height: 20%;
+  border-radius: 50%;
+  transform: rotate(40deg);
+  background: rgba(255, 255, 255, 0.95);
+}
+/* 颜色变换：hue-rotate 绕色环慢慢转（时长跟 sway/bob 一样由 JS 随机给，
+   用 animation-duration 的第三列） */
+@keyframes xp-ss-hue {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
+}
+@keyframes xp-ss-sway {
+  from { margin-left: 0; }
+  to   { margin-left: 34px; }
+}
+@keyframes xp-ss-bob {
+  from { transform: translateY(-14px); }
+  to   { transform: translateY(14px); }
+}
+.xp-ss-tip {
+  position: absolute; left: 50%; bottom: 7vh; transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.75); font-size: 15px; letter-spacing: 0.12em;
+  animation: xp-ss-tip-pulse 2.4s ease-in-out infinite;
+}
+@keyframes xp-ss-tip-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* JS 层同样不触发（双保险）；万一触发到，也不放动画 */
+  .xp-ss-bubble, .xp-ss-tip { animation: none; }
+}
+/* 手机瘦身（2026-10-19 实测：安卓上 hue-rotate 滤镜动画 + will-change 把
+   GPU 干停摆 —— ticks 停在 29 秒、滑动几秒才响应）。小屏（≤640px）：
+   禁掉逐帧重光栅化的滤镜动画，去掉 will-change 提示，减少阴影层数。 */
+@media (max-width: 640px) {
+  .xp-ss-bubble {
+    animation-name: xp-ss-sway, xp-ss-bob;
+    animation-duration: 10s, 6s;                     /* 收敛到固定慢速，省算色 */
+    filter: none;
+    box-shadow: inset 0 0 10px hsla(var(--h), 100%, 72%, 0.5);
+    will-change: auto;
+  }
+}
+
 /* ---------- 关机阶段的「色散故障」效果（2026-10-14 站主要求，两次迭代） ----------
    挂在 <html> 的 .xp-glitching 上，三层叠加出 CRT/信号不良的动态色散：
      · ::before / ::after —— 红/蓝双通道重影，各自以不同速率抖动错位
@@ -2341,14 +2529,29 @@ html.xp-glitching::after {
   .bento-item > .xp-bubble,
   .bento-item > .retro-mp4-player { width: 100%; }
 }
-@container (max-width: 520px) {
-  .profile-content { flex-direction: column; align-items: center; text-align: center; }
-  .profile-avatar { width: 96px; height: 96px; flex: 0 0 auto; }
-  .profile-text { flex: 0 0 auto; width: 100%; }
+/* 用户账户卡：**全宽度统一「头像在左、文字+图标在右」**（2026-10-19 站主指示，
+    窄屏不再切上下式 —— 之前那份 @container (max-width: 600px) 上下式规则
+    （更早还分成 520px container + 640px media 双份）已随需求删除）。
+    窄卡分两档收紧（2026-10-19 第四轮，站主确认「窄屏头像占比稍大」）：
+    · 480~600px：头像 30% 封顶、min 88px；字号过渡档（标题 19px）。
+    · ≤480px（手机实机）：头像放宽到 40% 封顶、min 108px —— 手机上卡片全宽，
+      头像太小吃不出形象；文字栏剩 ~55% 仍够 16px 正文一行 9~10 字；
+      标题也回升到 21px 保住层次。图标行保持 30px 可点尺寸。 */
+@container (max-width: 600px) {
+  .profile-content { gap: 12px; }
+  .profile-avatar { width: auto; height: auto; max-width: 30%; min-width: 88px; margin: 4px 0; align-self: center; }
+  .profile-text { gap: 2px; }
   .profile-text h2,
-  .profile-text h2 .username { font-size: 20px; }
-  .profile-text p { font-size: 15px; line-height: 1.5; }
-  .profile-icons { justify-content: center; }
+  .profile-text h2 .username { font-size: 19px; letter-spacing: 0.3px; }
+  .profile-text p { font-size: 16px; line-height: 1.5; }
+  .profile-icons { margin-top: 6px; gap: 6px; }
+  .profile-icon { width: 30px; height: 30px; }
+}
+@container (max-width: 480px) {
+  .profile-content { gap: 10px; }
+  .profile-avatar { max-width: 40%; min-width: 108px; }
+  .profile-text h2,
+  .profile-text h2 .username { font-size: 21px; }
 }
 
 .xp-bento > * { animation: popIn 0.45s ease backwards; }
@@ -2437,13 +2640,21 @@ html.xp-glitching::after {
        **曾踩过的坑**：把宽度定成 152px 而按键留 24px，一排 186px 塞进 132px
        的框里，按键直接穿出播放器右边界（移动端截图可见）。 */
   @media (max-width: 900px) {
-    .xp-music-floating { width: 168px; right: 8px; bottom: calc(var(--taskbar-height) + 8px); }
+    /* 200px 与 scripts/xp-player.js 的 autoScale()=0.75 成对改（200×0.75=150px
+       视觉宽，2026-10-19 站主三轮对比后定稿回 0.75 —— 0.9 显得太大）。
+       收起态一行 7 个键：150 视觉宽 → CSS 内宽 180×0.75=135... 实际按键仍是
+       CSS 22px（scale 只影响视觉），7×22+6×3=172 ≤ CSS 内宽 180 ✓，
+       视觉上按键同步缩小所以不挤。 */
+    .xp-music-floating { width: 200px; right: 8px; bottom: calc(var(--taskbar-height) + 8px); }
     /* 手机/平板：页面底部留出**整块收起态播放器**的高度，否则滚到最底时
-       播放器会压住最后一张卡（首页是底部通栏「搜索 · 关于本站 · 致谢」，
-       ≈100px 高，正好被 0.6 缩放后的贴纸盖住右半边）。
-       收起态 ≈ 32px CSS 高，autoScale 0.6 → 视觉 19px，再加 8px 离任务栏的间距
-       与 12px 呼吸 = 44px；这里直接用 56px（含余量）。 */
-    body { padding-bottom: calc(var(--taskbar-height) + 56px); }
+       播放器会压住最后一张卡（首页是底部通栏「搜索 · 关于本站 · 致谢」）。
+       收起态 ≈ 40px CSS 高，autoScale 0.9 → 视觉 36px，再加 8px 离任务栏的
+       间距与 12px 呼吸 ≈ 56px；这里用 64px（含余量）。 */
+    body { padding-bottom: calc(var(--taskbar-height) + 58px); }
+    /* 隐藏后的恢复小球右下角与长按时钟气泡冲突：上移让位（见 .xp-clock-fulltip
+       的注释——气泡已左移 48px 避开这个角落，但球体本身贴着任务栏上沿仍会
+       视觉打架，抬 6px 错开层次）。 */
+    .xp-music-resume { bottom: calc(var(--taskbar-height) + 20px); }
   }
   .retro-mp4-player { padding: 8px 8px; gap: 6px; }
   .mp4-brand { font-size: 14px; letter-spacing: 0.5px; }
@@ -2451,14 +2662,14 @@ html.xp-glitching::after {
   .mp4-song-title { font-size: 14px; }
   .mp4-song-author { font-size: 11px; }
   .mp4-progress-times { font-size: 13px; }
-  .mp4-floating .mp4-btn { width: 18px; height: 18px; }
-  .mp4-floating .mp4-btn-play { width: 18px; }
-  .mp4-floating .mp4-btn svg { width: 11px; height: 11px; }
+  .mp4-floating .mp4-btn { width: 22px; height: 22px; }
+  .mp4-floating .mp4-btn-play { width: 22px; }
+  .mp4-floating .mp4-btn svg { width: 13px; height: 13px; }
   /* 正文给悬浮播放器让出底部空间（2026-10-17）：
      ≤900px 播放器默认收成一条小贴纸（约 100×34，见 scripts/xp-player.js 的
      autoScale），贴在右下角。页面最后一段正文/页脚要能滚到它上方，
      不要被这张贴纸盖住 —— 加一段与贴纸等高的底部留白。 */
-  body { padding-bottom: calc(var(--taskbar-height) + 56px); }
+  body { padding-bottom: calc(var(--taskbar-height) + 60px); }
   /* ★ 2026-10-18：这里原来写的是 flex-direction: column —— 卡片一竖排，
      头像、正文、图标行、四宫格数据就全挤成一竖条，390px 实机上「用户账户」
      被撑成 1000+px 高（截图 v26-390 可复现）。改成纵向排列的写法：
@@ -2468,15 +2679,8 @@ html.xp-glitching::after {
      文字一个字一行、撑到 1000+px 高的真正原因。 */
   .xp-bento > * > .xp-window,
   .xp-bento > * > .xp-bubble { width: 100%; }
-  /* 用户账户窄屏改上下式（2026-10-18 站主 p3）：头像居中在上，
-     名字/简介/图标居中在下 —— 不再是「头像左、文字右」。 */
-  .profile-content { flex-direction: column; align-items: center; text-align: center; }
-  .profile-avatar { width: 96px; height: 96px; flex: 0 0 auto; }
-  .profile-text { flex: 0 0 auto; width: 100%; }
-  .profile-text h2,
-  .profile-text h2 .username { font-size: 20px; }
-  .profile-text p { font-size: 15px; }
-  .profile-icons { justify-content: center; }
+  /* 用户账户卡窄屏「上下式」排版已统一收敛到上面的 @container (max-width: 600px)
+     （卡片自身宽度判定；≤640px 视口下卡片必然命中），这里不再重复一份 .profile-*。 */
   .xp-bubble { transform: none; }   /* 不要写 margin:0 —— 那会把 ≤900px 里给向下拖尾留出的空间清零 */
   .recent-work-item { width: 150px; }
   /* 底部「搜索 & 致谢」在窄屏改纵向：必须清掉 flex-basis，
@@ -2781,7 +2985,12 @@ pre *, code * {
    等高怎么来的：账户卡被强制跨满 3 行（minheight 由 .bento-profile > .xp-window 给 100%），
    便利贴同样跨 3 行，两格用的是同一批网格行 → 上下边缘天然对齐，不用写死 px。 */
 .bento-bubble  { grid-column: 1 / 5;   grid-row: 1 / 3; }
-.bento-profile { grid-column: 5 / 13;  grid-row: 1 / 3; }
+/* ★ 2026-10-19 站主定稿：账户卡脱离网格行、窗口高度收成「文字 + 图标行」。
+   原来跨 1/3 两行和便利贴共行，行高被 grid-auto-rows 撑到 ~210px，
+   文字再短窗口也那么高（align-items:stretch 只是拉头像，动不了窗口）。
+   改 grid-row: auto + align-self: start 后窗口由内容撑；代价：底部
+   不再与左侧便利贴对齐（站主知情选定）。 */
+.bento-profile { grid-column: 5 / 13;  grid-row: auto; align-self: start; }
 .bento-music   { grid-column: 1 / 4;   grid-row: 3 / 5; }
 .bento-articles{ grid-column: 4 / 13;  grid-row: 3 / 5; }
 .bento-meta    { grid-column: 1 / 4;   grid-row: 5 / 7; align-self: center; }
@@ -2837,12 +3046,6 @@ pre *, code * {
      ① 标题不换行——换行会把标题栏撑成两行，窗口看起来破相；
      ② 标题左缘留 6px 呼吸（站主：不要顶格）。 */
   .bento-music .xp-window-title-text { white-space: nowrap; padding-left: 6px; }
-  /* 「唉，汁本！」与「详细属性」两个窗口在窄屏并排（2026-10-18 站主要求）：
-     .bento-music 桌面端是 column（:2800），窄屏改 row —— 计数器窄一些、
-     属性列表占主要宽度；高度不一致时顶对齐。 */
-  .bento-music { flex-direction: row; align-items: flex-start; }
-  .bento-music .xp-duck-window { flex: 0 0 46%; }
-  .bento-music .xp-window:not(.xp-duck-window) { flex: 1 1 auto; }
 }
 
 /* ============ 游戏页 / 工具页（两页结构相同，共用 .app-page 这一组类） ============
@@ -2929,4 +3132,115 @@ html.dark .pane-subhead { color: #a8c4e8; }
 /* PC 宽屏：两栏并排 */
 @media (min-width: 1201px) {
   .app-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   MP4 播放器样式精修层（2026-10-20）
+   ------------------------------------------------------------
+   只做视觉增强，不改布局结构/尺寸/JS 行为：
+     · 屏幕 LCD 化：扫描线 + 暗角，绿色荧光文字辉光
+     · 封面：唱片刻痕环 + 播放时呼吸辉光
+     · 进度条：Luna 式高光渐变填充 + 凹槽底
+     · 按钮：XP 按下凹陷反馈
+   全部写成追加覆盖层，方便整体回退。
+   ============================================================ */
+
+/* ---- 1) LCD 屏幕：扫描线 + 暗角 ---- */
+.mp4-screen {
+  position: relative;
+  background:
+    radial-gradient(120% 90% at 50% 30%, #232323 0%, #161616 55%, #0d0d0d 100%);
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.mp4-screen::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.028) 0px,
+    rgba(255, 255, 255, 0.028) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+  z-index: 2;
+}
+.mp4-screen-content { position: relative; z-index: 3; }
+
+/* ---- 2) 荧光文字辉光 ---- */
+.mp4-song-title,
+.mp4-screen-content.mp4-screen-v .mp4-song-author {
+  text-shadow: 0 0 6px rgba(124, 252, 0, 0.45);
+}
+.mp4-play-indicator {
+  box-shadow: 0 0 6px rgba(124, 252, 0, 0.8);
+}
+
+/* ---- 3) 封面：唱片刻痕环 + 播放呼吸 ---- */
+.mp4-screen-content.mp4-screen-v .mp4-cover-placeholder,
+.mp4-cover-placeholder {
+  border: 2px solid #4a4a4a;
+  box-shadow:
+    inset 0 0 0 3px #111,
+    inset 0 0 0 4px #3a3a3a,
+    inset 0 0 0 6px #191919,
+    inset 0 0 12px rgba(124, 252, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
+#xp-music-floating.is-playing .mp4-cover-placeholder,
+.retro-mp4-player.is-playing .mp4-cover-placeholder {
+  animation: mp4-cover-breathe 2.6s ease-in-out infinite;
+}
+@keyframes mp4-cover-breathe {
+  0%, 100% { box-shadow:
+    inset 0 0 0 3px #111, inset 0 0 0 4px #3a3a3a, inset 0 0 0 6px #191919,
+    inset 0 0 12px rgba(124, 252, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.5),
+    0 0 0 rgba(124, 252, 0, 0); }
+  50% { box-shadow:
+    inset 0 0 0 3px #111, inset 0 0 0 4px #3a3a3a, inset 0 0 0 6px #191919,
+    inset 0 0 12px rgba(124, 252, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(124, 252, 0, 0.28); }
+}
+
+/* ---- 4) 进度条：凹槽底 + Luna 高光填充 ---- */
+.mp4-progress-bar {
+  background: linear-gradient(to bottom, #a9a9a1 0%, #c9c9c1 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.35);
+}
+.mp4-progress-fill {
+  background: linear-gradient(to bottom,
+    #a8f07a 0%, #7cfc00 35%, #5ec428 70%, #4caf50 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: width 0.25s linear;
+}
+html.dark .mp4-progress-bar {
+  background: linear-gradient(to bottom, #9c9ca4 0%, #b8b8c0 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+/* ---- 5) 按钮：XP 按下凹陷 ---- */
+.mp4-btn {
+  transition: background 0.12s, box-shadow 0.08s, transform 0.08s;
+}
+.mp4-btn:active {
+  background: var(--face, #d6d6ce);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.35);
+  transform: translateY(1px);
+}
+.mp4-btn:focus-visible {
+  outline: 1px dotted #333; outline-offset: -3px;
+}
+.mp4-floating .mp4-btn:active { transform: none; }   /* 浮动键小，不位移只凹陷 */
+
+/* ---- 6) 动效减免 + 深色模式辉光收敛 ---- */
+@media (prefers-reduced-motion: reduce) {
+  #xp-music-floating.is-playing .mp4-cover-placeholder,
+  .retro-mp4-player.is-playing .mp4-cover-placeholder { animation: none; }
+}
+html.dark .mp4-song-title,
+html.dark .mp4-screen-content.mp4-screen-v .mp4-song-author {
+  text-shadow: 0 0 6px rgba(140, 255, 60, 0.35);
 }

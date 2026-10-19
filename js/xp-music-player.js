@@ -226,17 +226,18 @@
        s=0.8 时又比 left 大 40px，钳位下限 4 使它**永远贴不到屏幕边缘**。
      固定在左上角后 left/top 与视觉位置一一对应，上面两个毛病一起消失，
      clampPos 也不用再做任何换算。 */
-  /* 手机单列（≤900px）时整个播放器缩到 0.6 —— **与 CSS 里那条
-     @media (max-width: 900px) .xp-music-floating { width: 168px } 必须成对改**
-     （见 xp-custom.css 第 14 节附近的说明）。168 × 0.6 ≈ 100px 宽，
-     收起态在手机上就是一张 100×34 的小贴纸，不再盖住右半屏。 */
+  /* 手机单列（≤900px）时整个播放器缩到 0.9 —— **与 CSS 里那条
+     @media (max-width: 900px) .xp-music-floating { width: 200px } 必须成对改**
+     （见 xp-custom.css 第 14 节附近的说明）。200 × 0.9 = 180px 视觉宽，
+     2026-10-19 站主二次反馈「还是过小」，从 0.75/186 再上调（视觉宽 +29%）；
+     390px 屏上占宽不到一半，不会盖正文。 */
   function autoScale() {
     var mq = window.matchMedia;
-    return (mq && mq('(max-width: 900px)').matches) ? 0.6 : 1;
+    return (mq && mq('(max-width: 900px)').matches) ? 0.75 : 1;
   }
-  /* 手机上也只给两档：小(0.48) / 标准(0.6)。第三档 0.75 在 390px 屏上仍有
-     126px 宽，恰好把那句「再点一次更小」的退路堵死，所以触屏单列时砍掉。
-     桌面端仍是三档。档位存同一个 LocalStorage 键，跨设备切换时会各自钳制。 */
+  /* 手机上也只给两档：小(0.85) / 标准(1) —— 乘 autoScale 0.9 后即
+     0.77 / 0.9，第三档会把展开态顶回 200px+，所以触屏单列时砍掉。
+     桌面端仍是三档。档位存同一个 LocalStorage 键。 */
   /* ★ 2026-10-18 修 bug：这一行的 SCALE_STEPS 从来没有定义过（它只是注释里
      「小 / 标准 / 大 三档」的口头叫法），于是 autoScale()==1（桌面）时这里抛
      ReferenceError: SCALE_STEPS is not defined —— 整个播放器脚本从这一刻起
@@ -244,7 +245,7 @@
      现在直接把三档写在这里。 */
   var SCALE_STEPS = [0.8, 1, 1.25];
   function getScaleSteps() {
-    return autoScale() < 1 ? [0.8, 1] : SCALE_STEPS;
+    return autoScale() < 1 ? [0.85, 1] : SCALE_STEPS;
   }
   function applyScale(step) {
     var el = document.getElementById('xp-music-floating');
@@ -273,18 +274,40 @@
     applyScale(isNaN(s) ? 1 : s);
   });
 
-  /* ---- 歌名跑马灯 ---- */
+  /* ---- 歌名/歌手跑马灯 ----
+     标题和歌手都包 .mp4-title-inner 结构，超宽各自滚动（2026-10-19 站主要求
+     「歌名/歌手专辑名过长则滚动播放」——以前只有标题滚，歌手是硬截断）。
+     2026-10-19 二版：改用开源通行的「双份内容无缝循环」方案
+     （参考 Ryan Mulligan《The Infinite Marquee》/ Delcano seamless marquee）：
+     JS 把文本写两份进 inner，CSS 让整条 track 位移 -50%，首尾无空档。
+     以前单份 + padding-left:100% 的写法每轮都有大段空白，且复位时跳变。 */
   function marquee() {
-    var inner = document.querySelector('.mp4-title-inner');
+    var inners = document.querySelectorAll('.mp4-title-inner');
+    for (var k = 0; k < inners.length; k++) {
+      var inner = inners[k];
+      inner.classList.remove('mp4-marquee');
+      void inner.offsetWidth;
+      if (inner.scrollWidth > inner.clientWidth + 2) inner.classList.add('mp4-marquee');
+    }
+  }
+  /* 把文本写进 inner（双份，供无缝循环）。量宽用单份宽度：两份后
+     scrollWidth ≈ 单份 ×2 + gap，仍必然大于父宽，判断条件不变。 */
+  function setMarqueeText(inner, text) {
     if (!inner) return;
-    inner.classList.remove('mp4-marquee');
-    void inner.offsetWidth;
-    if (inner.scrollWidth > inner.clientWidth + 2) inner.classList.add('mp4-marquee');
+    inner.textContent = '';
+    var t1 = document.createElement('span');
+    t1.className = 'mp4-marquee-copy';
+    t1.textContent = text;
+    var t2 = t1.cloneNode(true);
+    inner.appendChild(t1);
+    inner.appendChild(t2);
   }
 
   function renderEmpty() {
-    var inner = document.querySelector('.mp4-title-inner');
-    if (inner) inner.textContent = (window.XP_MUSIC_UI || {}).empty || '未配置曲目';
+    var inners = document.querySelectorAll('.mp4-title-inner');
+    for (var k = 0; k < inners.length; k++) {
+      setMarqueeText(inners[k], (window.XP_MUSIC_UI || {}).empty || '未配置曲目');
+    }
     ['mp4-play','mp4-prev','mp4-next'].forEach(function (id) {
       var b = $(id); if (b) { b.disabled = true; b.setAttribute('aria-disabled','true'); }
     });
@@ -322,9 +345,15 @@
 
   function updateSongInfo(i) {
     var song = songs[i]; if (!song) return;
-    var inner = document.querySelector('.mp4-title-inner');
-    if (inner) inner.textContent = song.title || '';
-    if ($('mp4-author')) $('mp4-author').textContent = song.author || '';
+    /* 标题 inner 是 markup 里自带的第一个；歌手 inner 在 L431 动态重建。
+       都用「先清 marquee → 写文本 → 量宽 → 必要时再滚」的统一路径。 */
+    var inner = document.querySelector('.mp4-song-title .mp4-title-inner');
+    if (inner) setMarqueeText(inner, song.title || '');
+    if ($('mp4-author')) {
+      /* 歌手行与标题同构：外层 .mp4-song-author 截宽，内层 inner 双份跑马灯 */
+      $('mp4-author').innerHTML = '<span class="mp4-title-inner"></span>';
+      setMarqueeText($('mp4-author').firstChild, song.author || '');
+    }
     var link = $('mp4-link');
     if (link) {
       var t = neUrl(song);
@@ -357,6 +386,13 @@
     if (pu) pu.style.display = playing ? '' : 'none';
     if (dot) dot.style.display = playing ? 'inline-block' : 'none';
     var btn = $('mp4-play'); if (btn) btn.setAttribute('aria-label', playing ? '暂停' : '播放');
+    /* 呼吸辉光挂钩：播放态给容器加 is-playing，封面随之脉动（CSS 精修层）。
+       浮动条挂在 #xp-music-floating 上；首页 bento 格里的播放器没有这层
+       包裹，直接挂在最近的 .retro-mp4-player 上 —— 两处都照顾到。 */
+    var fl = document.getElementById('xp-music-floating');
+    if (fl) fl.classList.toggle('is-playing', !!playing);
+    var box2 = fl || (btn && btn.closest ? btn.closest('.retro-mp4-player') : null);
+    if (box2 && box2 !== fl) box2.classList.toggle('is-playing', !!playing);
   }
 
   function initPlayer() {
