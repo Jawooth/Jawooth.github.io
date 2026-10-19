@@ -3189,30 +3189,12 @@ html.dark .pane-subhead { color: #a8c4e8; }
   box-shadow: 0 0 6px rgba(124, 252, 0, 0.8);
 }
 
-/* ---- 3) 封面：唱片刻痕环 + 播放呼吸 ---- */
+/* ---- 3) 封面：简化为普通封面框（2026-10-20 站主要求去掉唱片刻痕设计，
+        播放器模拟的是复古 MP4，不是唱片机）。播放呼吸动画一并移除。 ---- */
 .mp4-screen-content.mp4-screen-v .mp4-cover-placeholder,
 .mp4-cover-placeholder {
   border: 2px solid #4a4a4a;
-  box-shadow:
-    inset 0 0 0 3px #111,
-    inset 0 0 0 4px #3a3a3a,
-    inset 0 0 0 6px #191919,
-    inset 0 0 12px rgba(124, 252, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.5);
-}
-#xp-music-floating.is-playing .mp4-cover-placeholder,
-.retro-mp4-player.is-playing .mp4-cover-placeholder {
-  animation: mp4-cover-breathe 2.6s ease-in-out infinite;
-}
-@keyframes mp4-cover-breathe {
-  0%, 100% { box-shadow:
-    inset 0 0 0 3px #111, inset 0 0 0 4px #3a3a3a, inset 0 0 0 6px #191919,
-    inset 0 0 12px rgba(124, 252, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.5),
-    0 0 0 rgba(124, 252, 0, 0); }
-  50% { box-shadow:
-    inset 0 0 0 3px #111, inset 0 0 0 4px #3a3a3a, inset 0 0 0 6px #191919,
-    inset 0 0 12px rgba(124, 252, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.5),
-    0 0 10px rgba(124, 252, 0, 0.28); }
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* ---- 4) 进度条：凹槽底 + Luna 高光填充 ---- */
@@ -3245,11 +3227,7 @@ html.dark .mp4-progress-bar {
 }
 .mp4-floating .mp4-btn:active { transform: none; }   /* 浮动键小，不位移只凹陷 */
 
-/* ---- 6) 动效减免 + 深色模式辉光收敛 ---- */
-@media (prefers-reduced-motion: reduce) {
-  #xp-music-floating.is-playing .mp4-cover-placeholder,
-  .retro-mp4-player.is-playing .mp4-cover-placeholder { animation: none; }
-}
+/* ---- 6) 动效减免（封面呼吸已移除，保留规则占位防止空引用） ---- */
 html.dark .mp4-song-title,
 html.dark .mp4-screen-content.mp4-screen-v .mp4-song-author {
   text-shadow: 0 0 6px rgba(140, 255, 60, 0.35);
