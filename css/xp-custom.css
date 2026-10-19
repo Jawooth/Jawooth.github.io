@@ -1066,7 +1066,7 @@ html.dark .profile-icon { color: var(--link); }
 /* 2026-10-19 修复「标题叠在封面上」（三版）：文字条带不再是悬浮半透明层，
    而是 flex 兄弟节点 —— 封面圆和文字条带上下排开，物理上不重叠。 */
 .mp4-screen-content.mp4-screen-v {
-  flex-direction: column; gap: 8px;
+  flex-direction: column; gap: 4px;
   align-items: center; text-align: center;
   /* 2026-10-20 站主要求：内容块在屏幕里水平垂直都居中，不要顶格 */
   justify-content: center;
@@ -1076,9 +1076,10 @@ html.dark .profile-icon { color: var(--link); }
   flex-shrink: 0;                 /* 高度不够时缩封面、不缩文字条带 */
   background: rgba(0, 0, 0, 0.55);
   border-radius: 4px;
-  padding: 4px 6px;
+  padding: 2px 4px;               /* 2026-10-20：4px→2px，收掉与封面间的大空隙 */
   box-sizing: border-box;
 }
+.mp4-screen-content.mp4-screen-v .mp4-song-author { margin-top: 0; }
 .mp4-play-indicator {
   display: inline-block; width: 6px; height: 6px; background: #7cfc00;
   border-radius: 50%; animation: blink 1s infinite; flex-shrink: 0;
@@ -1227,9 +1228,11 @@ html.dark .mp4-progress-bar { background: #b8b8c0; }
   animation: mp4-marquee 12s linear infinite;
 }
 /* 2026-10-20：滚动时父级必须回到 flex-start —— justify-content:center
-   会让溢出内容两侧截断，动画左半程看不见。不滚（单份）时保持居中。 */
+   会让溢出内容两侧截断，动画左半程看不见。不滚（单份）时保持居中。
+   inner 在 marquee 态也要锁左上起点，否则 inline-block 基线/居中把 track 推歪。 */
 .mp4-song-title-wrap:has(.mp4-marquee),
-.mp4-song-author:has(.mp4-marquee) { justify-content: flex-start; }
+.mp4-song-author:has(.mp4-marquee) { justify-content: flex-start; text-align: left; }
+.mp4-title-inner.mp4-marquee { margin: 0; }
 .mp4-marquee-copy { flex-shrink: 0; padding-right: 28px; }   /* 两份之间的间隙 */
 @keyframes mp4-marquee {
   0%   { transform: translateX(0); }

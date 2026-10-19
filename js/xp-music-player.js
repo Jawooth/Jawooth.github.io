@@ -282,18 +282,35 @@
      JS 把文本写两份进 inner，CSS 让整条 track 位移 -50%，首尾无空档。
      以前单份 + padding-left:100% 的写法每轮都有大段空白，且复位时跳变。 */
   function marquee() {
+    /* 2026-10-20 重写：以前量 inner 自身的 scrollWidth/clientWidth，
+       但 inner 在 flex 里会被拉伸/收缩，clientWidth 跟着内容走，
+       「是否超宽」判断永远失真（表现为静止的两份文本）。
+       现在用「单份文本自然宽 vs 截宽容器的可用宽」判断：
+       · 容器 = inner 的父级（.mp4-song-title 或 .mp4-song-author），它有
+         overflow:hidden 且宽度由布局定，是稳定的参照。
+       · 单份宽 = 第一份 copy 的 offsetWidth + padding-right。
+       超宽 → 补第二份 + 挂 mp4-marquee；否则只留一份（居中静止）。 */
     var inners = document.querySelectorAll('.mp4-title-inner');
     for (var k = 0; k < inners.length; k++) {
       var inner = inners[k];
+      var box = inner.parentElement;            /* 截宽容器 */
+      if (!box) continue;
+      var copy = inner.querySelector('.mp4-marquee-copy');
+      if (!copy) continue;
       inner.classList.remove('mp4-marquee');
+      /* 先删掉可能残留的第二份，量「单份」的真实宽度 */
+      var copies = inner.querySelectorAll('.mp4-marquee-copy');
+      for (var c = copies.length - 1; c >= 1; c--) copies[c].remove();
       void inner.offsetWidth;
-      if (inner.scrollWidth > inner.clientWidth + 2) inner.classList.add('mp4-marquee');
+      var need = copy.offsetWidth + 28 > box.clientWidth + 2;   /* 28 = copy 的 padding-right */
+      if (need) {
+        inner.appendChild(copy.cloneNode(true));
+        inner.classList.add('mp4-marquee');
+      }
     }
   }
-  /* 把文本写进 inner。2026-10-20 站主要求：不超宽时只显示一份文本
-     （跟着 text-align 居中/左对齐），超宽才补第二份做无缝滚动——
-     否则短歌名会像截图里那样「前后显示两个」。
-     量宽技巧：先只放一份量自然宽，判断是否需要滚动，需要再 clone。 */
+  /* 把文本写进 inner（单份）。是否补第二份滚动，统一交给 marquee() 量宽决定 ——
+     量宽时机在 setTimeout(marquee,0) 里，布局已稳定，判断才可靠。 */
   function setMarqueeText(inner, text) {
     if (!inner) return;
     inner.textContent = '';
@@ -301,11 +318,6 @@
     t1.className = 'mp4-marquee-copy';
     t1.textContent = text;
     inner.appendChild(t1);
-    /* 单份已超宽 → 补第二份 + 挂 mp4-marquee（marquee() 会量宽挂类）；
-       没超宽就保持单份，普通文本布局，居中显示 */
-    if (t1.offsetWidth > inner.clientWidth + 2) {
-      inner.appendChild(t1.cloneNode(true));
-    }
   }
 
   function renderEmpty() {
