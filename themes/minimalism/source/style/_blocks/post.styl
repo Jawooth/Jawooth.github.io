@@ -1,30 +1,3 @@
-.post-detail {
-  padding: 0;
-  .post-title {
-    font-size: 24px;
-    margin: 24px 0;
-    color: var(--c-base-black);
-  }
-  .post-detail-info {
-    padding: 0 0 32px;
-  }
-  .feature-container {
-    padding-top: 56.25%;
-    background-size: cover;
-    background-position: center;
-    border-radius: 2px;
-    box-shadow: 0 0 30px #eee;
-  }
-}
-
-.next-post {
-  text-align: center;
-  .post-title {
-    display: inline-block;
-    font-size: 24px;
-  }
-}
-
 .post-content {
   flex-shrink: 0;
   width: 100%;
@@ -200,50 +173,7 @@
   }
 }
 
-@media (min-width: 1400px) {
-  .top-div {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  .top-box {
-    &:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 8px;
-      bottom: 0;
-      width: 1px;
-      background-color: #ebedef;
-      opacity: 0.5;
-    }
-    .top-box-child {
-      list-style: none;
-      padding-left: 16px;
-    }
-    li {
-      a {
-        display: block;
-        color: #868e96;
-        padding: 4px;
-        transition: all 0.3s;
-        font-size: 16px;
-      }
-    }
-    li a.current {
-      color: #006CFF;
-      background: #fafafa;
-    }
-    li a:hover {
-      background: #fafafa;
-    }
-    list-style: none;
-    width: 200px;
-    position: sticky;
-    top: 80px;
-    right: 0;
-    padding-left: 20px;
-  }
-}
+/* 原 .top-div / .top-box / .top-box-child 侧栏目录样式：主题旧版 TOC 用的，
+   现在目录由 scripts/xp-content.js 渲染成 XP 窗口，这些类没有任何页面在用，故删。
+   同时删掉 .github-emoji / .github-emoji-fallback（GitHub 表情解析从未启用）。 */
 
-.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }

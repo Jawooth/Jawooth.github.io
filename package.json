@@ -7,10 +7,10 @@
     "generate": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server -p 4010"
+    "server": "hexo server -p 4010 --ip 127.0.0.1"
   },
   "hexo": {
-    "version": "7.3.0"
+    "version": "8.1.2"
   },
   "comments": {
     "pinned": "所有依赖都锁定到确切的已安装版本（不使用 ^ 范围）。个人博客优先『今天能跑，明年还能跑』，npm update 不应该悄悄改变站点行为。升级请一次只升一个包，升完先 npm run build 并本地预览确认。",
@@ -18,16 +18,18 @@
     "build": "npm run build = clean + generate。必须先用它：Hexo 的增量 generate 感知不到 source/_data/*.yml 与 scripts/*.js 的改动，只改文章/样式时才可以用 npm run generate 走快路。"
   },
   "dependencies": {
-    "hexo": "7.3.0",
+    "hexo": "8.1.2",
+    "hexo-blog-encrypt": "4.1.0",
     "hexo-deployer-git": "4.0.0",
     "hexo-generator-archive": "2.0.0",
     "hexo-generator-category": "2.0.0",
     "hexo-generator-index": "3.0.0",
     "hexo-generator-tag": "2.0.0",
     "hexo-renderer-ejs": "2.0.0",
-    "hexo-renderer-marked": "6.3.0",
+    "hexo-renderer-marked": "7.0.1",
     "hexo-renderer-stylus": "3.0.1",
     "hexo-server": "3.0.0",
-    "hexo-wordcount": "6.0.1"
+    "hexo-wordcount": "6.0.1",
+    "pixelarticons": "^2.4.2"
   }
 }

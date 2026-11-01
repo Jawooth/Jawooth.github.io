@@ -1,18 +1,17 @@
 <%#
-  杂谈列表页（/blog/）
+  文字列表页（/blog/）—— 原「杂谈」与「文章」两个分区在 2026-10-18 合并成这一页
   ------------------------------------------------------------------
   XP 窗口外壳 + 带封面的文章卡片流 + 侧栏，底部注入待办窗口。
   卡片流由 scripts/xp-content.js 的 xp_post_cards helper 生成。
 %><%- include('./includes/header') %>
 
   <div class="content-container xp-shell">
-    <div class="xp-window-title">
-      <span class="xp-window-title-text post-title-text">杂谈 · 全部文章</span>
-      <%- xp_bullet() %>
-    </div>
+    <%- include('./includes/xp-window-title', { title: '文字 · 全部文章', h1: true }) %>
 
     <div class="post-info">
-      <span><i class="icon icon-menu-outline"></i> 共 <%= xp_num_of('posts') %> 篇</span>
+      <%# 'essays' = 排掉「作品」之后的篇数（和 post-hide.js 里 index 生成器的过滤一致）；
+          用 'posts' 会把作品也算进来，头部就会写着一个和卡片数对不上的数字。 %>
+      <span><i class="icon icon-menu-outline"></i> 共 <%= xp_num_of('essays') %> 篇</span>
       <% if (page.total > 1) { %>
         <span>第 <%= page.current %> / <%= page.total %> 页</span>
       <% } %>
@@ -23,19 +22,10 @@
         <%- xp_widget_todo(0) %>
         <%- xp_post_cards(page.posts) %>
 
-        <% if (page.total > 1) { %>
-          <div class="pagination-container">
-            <% if (page.prev) { %>
-              <a href="<%- url_for(page.prev_link) %>"><i class="icon icon-arrow-ios-back-outline"></i> 上一页</a>
-            <% } else { %><span></span><% } %>
-            <% if (page.next) { %>
-              <a href="<%- url_for(page.next_link) %>">下一页 <i class="icon icon-arrow-ios-forward-outline"></i></a>
-            <% } %>
-          </div>
-        <% } %>
+        <%- include('./includes/xp-pagination') %>
       </div>
 
-      <%- include('./includes/xp-aside', { page: page, kind: 'list' }) %>
+      <%- include('./includes/xp-aside', { page: page, isPost: false }) %>
     </div>
   </div>
 

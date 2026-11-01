@@ -2,18 +2,22 @@
   侧栏 widget 栏
   ------------------------------------------------------------------
   参数：
-    page —— 当前页面对象
-    kind —— 'post'（文章页，显示目录）| 'list'（杂谈列表）| 'archive'（归档/分类）| 'page'
+    page      —— 当前页面对象
+    isPost    —— true 时显示文章目录（TOC），false 时显示站点统计。
+                 原来这里收的是 kind 字符串（'post'/'list'/'archive'/'page'），
+                 但除了 'post' 之外三种取值走的是同一条分支 —— 参数看起来有
+                 四种行为，实际只有两种，改标题栏时很容易以为要配套改这里。
+                 现在直接用布尔值，调用方一眼能看出只有「文章页 / 其他」两种。
 
   组件长什么样在这里，数据来自 scripts/xp-content.js 里的 xp_widget_* helper。
   小屏（≤1000px）会自动移到正文下方并横向排布，见 xp-custom.css 第 10 节。
 %>
 <aside class="xp-aside">
-  <% if (kind === 'post') { %>
+  <% if (isPost) { %>
     <%- xp_widget_toc(page.content) %>
   <% } %>
   <%- xp_widget_author() %>
-  <% if (kind !== 'post') { %>
+  <% if (!isPost) { %>
     <%- xp_widget_stats() %>
   <% } %>
   <%- xp_widget_recent(5) %>

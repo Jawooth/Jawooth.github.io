@@ -44,13 +44,38 @@ __pycache__/
 _yaml_templates/
 source/_discarded/
 
-# Hexo Pro 客户端的部署设置（它还会顺带重写 _config.yml，见手册）
+# Hexo Pro 客户端的部署设置（它还会顺带重写 _config.yml，见 README.md 第 10 节）
 deploy_config.json
 
-# HexoHub 客户端（现在装在仓库外面 D:\tools\HexoHub，见手册 13.4）
+# HexoHub 客户端（现在装在仓库外面 D:\tools\HexoHub，见 README.md 第 10 节）
 # 这两行只是保险：万一客户端又被放进仓库目录，也不会被提交
 HexoHub/
 HexoHub*.exe
 
 # 客户端生成的空配置（曾被误提交，已清理）
 _admin-config.yml
+
+# DSH 沙箱排查时留下的 ACL 审计记录（2026-10-18）
+# 只有记录、不含站点内容；真要留证据就挪进 backup\，别放在仓库根目录显眼处
+.acl-recovery/
+
+# 调试用的截图与临时产物：留在磁盘上，不进仓库
+# （截图是排查问题时留的证据，重新截一次就有；83 MB 进仓库没意义）
+.screenshots/
+tools/shots/
+tools/icons/preview/
+tools/icons/_edge-hl/
+tools/icons/_edge-hl2/
+tools/icons/*.png
+tools/fonts/*.png
+
+# 工具脚本的临时备份与中间产物
+scripts/*.pixel-backup.js
+tools/_*.js
+tools/_*.py
+_favicon_*.png
+
+# 图标工坊的调试脚本与预览页（临时验证用，重跑就有）
+tools/icons/_*.js
+tools/icons/_*.html
+tools/icons/preview.html

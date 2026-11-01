@@ -2,26 +2,53 @@
 'use strict';
 
 // 菜单
-document.querySelector('.menu-switch').addEventListener('click', function() {
-  const menuContainer = document.querySelector('.menu-container');
+/* ⚠ 2026-10-18：这里原来直接 querySelector('.menu-switch').addEventListener ——
+   .menu-switch 只存在于页面顶栏（.site-header-container）里，而 xp-custom.css
+   把整个顶栏 display:none 了（导航改由底部开始菜单承担）。于是 querySelector 返回
+   null，这一整段直接抛 TypeError，**文件里后面所有功能（复制代码按钮等）都跟着不执行**。
+   所以先判空再绑定；同时加了 aria-expanded / 键盘 Esc 收起，形状对齐开始菜单。
+   （顶栏若哪天恢复显示，这段仍然可用。） */
+const menuSwitch = document.querySelector('.menu-switch');
+const menuContainer = document.querySelector('.menu-container');
 
-  if (this.classList.contains('icon-menu-outline')) {
-    this.classList.replace('icon-menu-outline', 'icon-close-outline');
+function setMenuOpen(open) {
+  if (!menuSwitch || !menuContainer) return;
+  if (open) {
+    menuSwitch.classList.replace('icon-menu-outline', 'icon-close-outline');
     menuContainer.style.opacity = '1';
     menuContainer.style.height = 'auto';
     menuContainer.style['z-index'] = '1024';
   } else {
-    this.classList.replace('icon-close-outline', 'icon-menu-outline');
+    menuSwitch.classList.replace('icon-close-outline', 'icon-menu-outline');
     menuContainer.style.opacity = '0';
     menuContainer.style['z-index'] = '0';
-
     setTimeout(() => {
-      if (this.classList.contains('icon-menu-outline')) {
+      if (menuSwitch.classList.contains('icon-menu-outline')) {
         menuContainer.style.height = '0';
       }
     }, 600);
   }
-});
+  menuSwitch.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+if (menuSwitch && menuContainer) {
+  menuSwitch.setAttribute('role', 'button');
+  menuSwitch.setAttribute('tabindex', '0');
+  menuSwitch.setAttribute('aria-label', '导航菜单');
+  menuSwitch.setAttribute('aria-expanded', 'false');
+  menuSwitch.addEventListener('click', function () {
+    setMenuOpen(!this.classList.contains('icon-close-outline'));
+  });
+  menuSwitch.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setMenuOpen(!this.classList.contains('icon-close-outline'));
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setMenuOpen(false);
+  });
+}
 
 // 代码复制
 function addCopyIcons() {
@@ -29,15 +56,19 @@ function addCopyIcons() {
   copyIcon.className = 'fa-solid icon icon-copy copy-code';
   copyIcon.title = '复制代码';
 
-  document.querySelectorAll('.post-detail figure').forEach(figure => {
+  /* 选择器是 .post-content —— 模板（post.ejs:39 / page.ejs:19）输出的就是它。
+     原先这里写的是 .post-detail，那是主题老版的类名，改名后没跟着改：
+     页面里根本没有 .post-detail，于是「复制代码」按钮一直是 0 个、功能静默失效。
+     （2026-10 修，配合 post.styl 里 .copy-code 的作用域一起改。） */
+  document.querySelectorAll('.post-content figure').forEach(figure => {
     figure.appendChild(copyIcon.cloneNode(true));
   });
 
-  document.querySelectorAll('.post-detail pre[class*=language-].line-numbers').forEach(codeBlock => {
+  document.querySelectorAll('.post-content pre[class*=language-].line-numbers').forEach(codeBlock => {
     codeBlock.appendChild(copyIcon.cloneNode(true));
   });
 
-  document.querySelectorAll('.post-detail .copy-code').forEach(copyCodeBtn => {
+  document.querySelectorAll('.post-content .copy-code').forEach(copyCodeBtn => {
     copyCodeBtn.addEventListener('click', function() {
       const selection = window.getSelection();
       const range = document.createRange();
@@ -80,105 +111,25 @@ function setLanguageAttributes() {
 }
 
 // 文章详情侧边目录
-function handleScroll() {
-  const mainNavLinks = document.querySelectorAll('.top-box a');
-  const fromTop = window.scrollY + 100;
-
-  mainNavLinks.forEach((link, index) => {
-    const section = document.getElementById(decodeURI(link.hash).substring(1));
-    let nextSection = null;
-    if (mainNavLinks[index + 1]) {
-      nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-    }
-
-    if (section.offsetTop <= fromTop && (!nextSection || nextSection.offsetTop > fromTop)) {
-      link.classList.add('current');
-    } else {
-      link.classList.remove('current');
-    }
-  });
-}
-
-function bindScrollEvent() {
-  window.addEventListener('scroll', () => {
-    handleScroll();
-  });
-}
-
-// 点击锚点滚动条偏移
-function bindClickEvent() {
-  const topBoxLinks = document.querySelectorAll('.top-box-link');
-  topBoxLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      setTimeout(() => {
-        window.scrollTo(window.pageXOffset, window.pageYOffset - 54);
-        console.log(window.pageYOffset - 54, '滚动条位置');
-      }, 0);
-    });
-  });
-}
-
-function lazyload(imgs, data) {
-  data.now = Date.now();
-  data.needLoad = Array.from(imgs).some(i => i.hasAttribute('lazyload'));
-
-  const h = window.innerHeight;
-  const s = document.documentElement.scrollTop || document.body.scrollTop;
-
-  imgs.forEach(img => {
-    if (img.hasAttribute('lazyload') && !img.hasAttribute('loading')) {
-
-      if ((h + s) > img.offsetTop) {
-        img.setAttribute('loading', true);
-        const loadImageTimeout = setTimeout(() => {
-          // eslint-disable-next-line no-undef
-          const temp = new Image();
-          const src = img.getAttribute('data-src');
-          temp.src = src;
-          temp.onload = () => {
-            img.src = src;
-            img.removeAttribute('lazyload');
-            img.removeAttribute('loading');
-            clearTimeout(loadImageTimeout);
-          };
-        }, 300);
-      }
-    }
-  });
-}
+// 2026-10 删除：这一整段（原 handleScroll / bindScrollEvent / bindClickEvent）
+// 查的是 .top-box a 与 .top-box-link，而站内**没有任何模板输出这两个类**
+// （post.ejs 用的是 .post-content，目录由 xp-content.js 渲染成 .xp-toc、
+//   由 xp-enhance.js 绑定滚动高亮）。
+// 也就是说主题这套目录早已被站内自己的实现取代，留着只是每次滚动白跑一遍查询，
+// 并且会让人误以为改这里能影响页面目录。要恢复目录请改 xp-enhance.js。
 
 // 图片懒加载
-function lazyloadLoad() {
-  if (window.theme_config.image && window.theme_config.image.lazyload_enable) {
-    const imgs = document.querySelectorAll('img');
-
-    const data = {
-      now: Date.now(),
-      needLoad: true
-    };
-
-
-    lazyload(imgs, data);
-
-    window.onscroll = () => {
-      if (Date.now() - data.now > 50 && data.needLoad) {
-        lazyload(imgs, data);
-      }
-    };
-  }
-}
+// 2026-10 删除：主题这套 lazyload（原 lazyload / lazyloadLoad）整段是空转的 ——
+// 它开头就判断 window.theme_config.image.lazyload_enable，而 _config.minimalism.yml
+// 里那一项固定为 false（站内改用构建期注入原生 loading="lazy"，见 xp-enhance.js）。
+// 留着只会给人「这里能开懒加载」的错觉。
 
 // 初始化页面
 function themeBoot() {
   if (window.is_post) {
     addCopyIcons();
     setLanguageAttributes();
-    bindScrollEvent();
-    bindClickEvent();
   }
-
-  lazyloadLoad();
-
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -192,142 +143,10 @@ window.addEventListener('hexo-blog-decrypt', () => {
 
 
 // 搜索弹窗交互与搜索逻辑
-(function() {
-  const theme_config = window.theme_config || {};
-  if (!theme_config || !theme_config.search || !theme_config.search.enable) {
-    return;
-  }
-  const language = theme_config.language || 'zh-CN';
-
-  // 动态插入搜索弹窗结构到 body
-  const modalHtml = `
-    <div id="search-modal" class="search-modal" style="display:none;">
-      <div class="search-modal-mask"></div>
-      <div class="search-modal-content">
-        <span class="search-modal-close" id="search-modal-close">&times;</span>
-        <div id="search-container">
-          <input type="text" id="search-input" placeholder="${theme_config.search.placeholder || (language === 'en' ? 'Enter keyword search...' : '输入关键词搜索...')}">
-          <ul id="search-results"></ul>
-        </div>
-      </div>
-    </div>
-  `;
-  const temp = document.createElement('div');
-  temp.innerHTML = modalHtml;
-  document.body.appendChild(temp.firstElementChild);
-
-  // 创建右下角悬浮按钮
-  const floatBtn = document.createElement('button');
-  floatBtn.id = 'search-float-btn';
-  floatBtn.title = language === 'en' ? 'Search' : '搜索';
-  const searchIcon = '<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#409eff" stroke-width="2" fill="none"/><line x1="17" y1="17" x2="21" y2="21" stroke="#409eff" stroke-width="2" stroke-linecap="round"/></svg>';
-  const closeIcon = '<svg width="22" height="22" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke="#f56c6c" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="#f56c6c" stroke-width="2" stroke-linecap="round"/></svg>';
-  floatBtn.innerHTML = searchIcon;
-  document.body.appendChild(floatBtn);
-
-  const modal = document.getElementById('search-modal');
-  const closeBtn = document.getElementById('search-modal-close');
-  const mask = document.querySelector('.search-modal-mask');
-
-  // 搜索数据缓存
-  let posts = [];
-  let algoliaLoaded = false;
-  let algoliaIndex = null;
-
-  // 搜索类型
-  const searchType = theme_config.search.type || 'json';
-
-  // 打开弹窗时绑定 input 事件
-  function openModal() {
-    modal.style.display = 'flex';
-    floatBtn.innerHTML = closeIcon;
-    const input = document.getElementById('search-input');
-    const results = document.getElementById('search-results');
-    setTimeout(() => { input && input.focus(); }, 100);
-    // 解绑旧事件，防止多次绑定
-    input.oninput = null;
-    if (searchType === 'algolia') {
-      if (!algoliaLoaded) {
-        const appId = theme_config.search.algolia.appID;
-        const apiKey = theme_config.search.algolia.apiKey;
-        const indexName = theme_config.search.algolia.indexName;
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js';
-        script.onload = function() {
-          // eslint-disable-next-line no-undef
-          const client = algoliasearch(appId, apiKey);
-          algoliaIndex = client.initIndex(indexName);
-          algoliaLoaded = true;
-        };
-        document.body.appendChild(script);
-      }
-      input.oninput = function() {
-        if (!algoliaIndex) return;
-        const keyword = this.value.trim();
-        renderResults(results, []);
-        if (!keyword) return;
-        algoliaIndex.search(keyword).then(({ hits }) => {
-          renderResults(results, hits);
-        });
-      };
-    } else {
-      // 本地 JSON
-      if (posts.length === 0) {
-        fetch('/search.json')
-          .then(response => response.json())
-          .then(data => { posts = data; });
-      }
-      input.oninput = function() {
-        const keyword = this.value.trim().toLowerCase();
-        if (!keyword) return renderResults(results, []);
-        const filtered = posts.filter(post =>
-          (post.title && post.title.toLowerCase().includes(keyword))
-          || (post.content && post.content.toLowerCase().includes(keyword))
-        );
-        renderResults(results, filtered);
-      };
-    }
-  }
-
-  function closeModal() {
-    modal.style.display = 'none';
-    floatBtn.innerHTML = searchIcon;
-    const input = document.getElementById('search-input');
-    const results = document.getElementById('search-results');
-    if (input) input.value = '';
-    if (results) results.innerHTML = '';
-  }
-
-  function renderResults(results, list) {
-    results.innerHTML = '';
-    if (!list.length) {
-      const text = theme_config.language === 'en' ? 'No results found' : '未找到结果';
-      results.innerHTML = '<li style="color:#888;padding:1em;">' + text + '</li>';
-      return;
-    }
-    list.forEach(item => {
-      let summary = '';
-      if (item.content) {
-        const clean = item.content.replace(/<[^>]+>/g, '').replace(/\n/g, '');
-        summary = clean.length > 80 ? clean.slice(0, 80) + '...' : clean;
-      }
-      const li = document.createElement('li');
-      li.innerHTML = `<a href="${item.url || item.permalink}" target="_blank"><div class="search-title">${item.title}</div><div class="search-summary">${summary}</div></a>`;
-      results.appendChild(li);
-    });
-  }
-
-  // 悬浮按钮切换弹窗显示/隐藏
-  floatBtn.onclick = function() {
-    if (modal.style.display === 'flex') {
-      closeModal();
-    } else {
-      openModal();
-    }
-  };
-  if (closeBtn) closeBtn.onclick = closeModal;
-  if (mask) mask.onclick = closeModal;
-  window.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
-}());
+// 2026-10-12 安全审查后整段删除（原 194-333 行）：
+//   1. 本站 search.enable 为 false，这段从未激活，是死代码；
+//   2. 它用未转义的 item.title/url 拼 innerHTML（存储型 XSS 面），且
+//      target=\"_blank\" 缺 rel=\"noopener noreferrer\"（反向 tabnabbing）；
+//   3. 全站搜索已由 source/index.md 自建（xp-content.js，esc() 正确转义）。
+// 若将来真要启用主题搜索，不要直接从 git 历史里捞回来 —— 重写时先过 esc()、
+// 补 rel，并评估 algolia CDN 引入的第三方信任面。

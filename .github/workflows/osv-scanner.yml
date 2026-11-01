@@ -1,0 +1,24 @@
+name: OSV-Scanner 依赖漏洞扫描
+
+# 每周一扫描一次 npm 依赖（package-lock.json 里的全部传递依赖）。
+# 和 verify-site.py 里的 npm audit 的区别：OSV-Scanner 用离线漏洞库，不受
+# npmmirror / 官方源连通性影响，结果进 GitHub Security > Code scanning 面板。
+#
+# fail-on-vuln: false —— 本站威胁模型下现有 10 个顾问全是「构建期本地」风险
+# （glob DoS 之类，GitHub Pages 只服务静态文件，访客面不受影响，见 README 第 10 节）。
+# 每周扫出发红会变成狼来了，所以只报告、不拦截；真出了高危再看Security 面板。
+
+on:
+  schedule:
+    - cron: '30 12 * * 1'    # 每周一 12:30 UTC（北京时间周一 20:30）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write     # 上传 SARIF 到 Security > Code scanning
+
+jobs:
+  scan:
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.3.2
+    with:
+      fail-on-vuln: false

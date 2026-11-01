@@ -6,15 +6,19 @@
 %><%- include('./includes/header') %>
 
   <div class="content-container xp-shell">
-    <div class="xp-window-title">
-      <span class="xp-window-title-text post-title-text"><%
-        if (page.category) { %>分类 · <%= page.category %><%
-        } else if (page.year && page.month) { %>归档 · <%= page.year %> 年 <%= page.month %> 月<%
-        } else if (page.year) { %>归档 · <%= page.year %> 年<%
-        } else { %>归档<%
-        } %></span>
-      <%- xp_bullet() %>
-    </div>
+    <%
+      /* 三种归档入口共用一个模板，标题文本只有这一处不同。
+         动态部分（category名）自己转义后再拼，因为要走 titleHtml 通道。 */
+      const esc = (s) => String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      let archiveTitle;
+      if (page.category) { archiveTitle = '分类 · ' + esc(page.category); }
+      else if (page.year && page.month) { archiveTitle = '归档 · ' + page.year + ' 年 ' + page.month + ' 月'; }
+      else if (page.year) { archiveTitle = '归档 · ' + page.year + ' 年'; }
+      else { archiveTitle = '归档'; }
+    %>
+    <%- include('./includes/xp-window-title', { titleHtml: archiveTitle, h1: true }) %>
 
     <div class="post-info">
       <span><i class="icon icon-calendar-outline"></i> 共 <%= page.posts ? page.posts.length : 0 %> 篇</span>
@@ -25,7 +29,7 @@
         <%- include('./includes/xp-timeline', { page: page }) %>
       </div>
 
-      <%- include('./includes/xp-aside', { page: page, kind: 'archive' }) %>
+      <%- include('./includes/xp-aside', { page: page, isPost: false }) %>
     </div>
   </div>
 

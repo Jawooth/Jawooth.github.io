@@ -9,10 +9,7 @@
 %><%- include('./includes/header') %>
 
   <div class="content-container xp-shell">
-    <div class="xp-window-title">
-      <span class="xp-window-title-text post-title-text"><%= page.title || config.title %></span>
-      <%- xp_bullet() %>
-    </div>
+    <%- include('./includes/xp-window-title', { title: page.title || config.title, h1: true }) %>
 
     <div class="xp-shell-body">
       <div class="xp-shell-main">
@@ -21,7 +18,7 @@
         </div>
       </div>
 
-      <%- include('./includes/xp-aside', { page: page, kind: 'page' }) %>
+      <%- include('./includes/xp-aside', { page: page, isPost: false }) %>
     </div>
   </div>
 

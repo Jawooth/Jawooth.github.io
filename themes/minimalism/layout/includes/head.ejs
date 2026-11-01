@@ -1,19 +1,36 @@
 <%
     var lang = config.language || 'zh-CN';
+    var SITE = config.title || '';
+
+    /* 页面标题
+       ---------------------------------------------------------------
+       - 有 front matter `title` 的页面照常用它（首页 / 作品 / 游戏 / 攻略 …）。
+       - 由生成器产出的页面（/blog/、/archives/、/tags/xxx/、/categories/xxx/）
+         在 page 上**没有 title**，必须在这里按类型补一个；否则 title 会回退成
+         站点名，下面再拼一次站点名，得到「我的小站 | 我的小站」这种重复标题
+         （浏览器标签页、搜索结果、分享预览都会很难看）。
+       - 原来这里还有 tags / categories / about 三个分支：它们拼标题时**又**拼了一次
+         站点名（会得到「标签 | 站点名 | 站点名」），而且本站的页面标题早就改成
+         中文了（标签 / 分类），那几个分支永远匹配不到 —— 属于死代码，已删除。 */
     var title = page.title;
-    // tags, categories, about pages title
-    if (title === 'tags') {
-        title = lang === 'en' ? 'Tags | ' + config.title : '标签 | ' + config.title;
-    } else if (title === 'categories') {
-        title = lang === 'en' ? 'Categories | ' + config.title : '分类归档 | ' + config.title;
-    } else if (title === 'about') {
-        title = lang === 'en' ? 'About | ' + config.title : '关于 | ' + config.title;
-    } else if (!title) {
-        title = config.title;
+    if (!title && page.tag) {
+        title = (lang === 'en' ? 'Tag: ' : '标签：') + page.tag;
+    } else if (!title && page.category) {
+        title = (lang === 'en' ? 'Category: ' : '分类：') + page.category;
+    } else if (!title && page.year && page.month) {
+        title = lang === 'en' ? 'Archive: ' + page.year + '-' + page.month
+                              : '归档：' + page.year + ' 年 ' + page.month + ' 月';
+    } else if (!title && page.year) {
+        title = lang === 'en' ? 'Archive: ' + page.year : '归档：' + page.year + ' 年';
+    } else if (!title && page.archive) {
+        title = lang === 'en' ? 'Archive' : '归档';
+    } else if (!title && page.posts) {
+        /* 剩下的「带文章列表、又不是标签 / 分类 / 归档」的就是 /blog/ 文字列表页 */
+        title = lang === 'en' ? 'Posts' : '文字';
     }
 
-    // final page title.
-    var pageTitle = title ? title + ' | ' + config.title : config.title;
+    // 标题本体会不会和站点名重复？会的话就只留站点名，不再拼第二遍。
+    var pageTitle = (!title || title === SITE) ? SITE : (title + ' | ' + SITE);
     // keywords.
     var keyWords = config.keywords ? config.keywords : config.title;
     if (page.keywords) {
@@ -27,9 +44,34 @@
         description = page.description;
     } else if (page.summary) {
         description = page.summary;
+    } else if (page.desc) {
+        /* front matter 的 desc（卡片上的那句话简介）也顺便当给搜索引擎看的摘要 ——
+           站主写了一句 desc，结果搜索结果里显示的却是正文前 120 字，白写了 */
+        description = page.desc;
     } else if (page.hasOwnProperty('__post') && page.__post) {
-        description = strip_html(page.content).substring(0, 120);
+        /* 正文兜底摘要：strip_html 只去标签，**留下 HTML 实体**（marked 会把引号
+           输出成 &quot;）。这些实体再交给下面 EJS 的插值输出时，& 会被转义成
+           &amp; —— meta description 里就出现字面 &amp;quot;（2026-10-12 修复，
+           线上旧版同样有这个问题）。所以先解码实体再截断；
+           解码顺序为「先 quot 后 amp」，对双重编码的输入也只解码一次。 */
+        description = strip_html(page.content)
+            .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"').replace(/&#34;/g, '"')
+            .replace(/&#39;/g, "'").replace(/&apos;/g, "'")
+            .replace(/&amp;/g, '&')
+            .substring(0, 120);
     }
+    /* description 会写进 content="…" 属性：不转义双引号的话，
+       文章 desc 里出现一个 " （例如 desc: 说"你好"）就会把属性提前截断，
+       后半句变成裸标签渲染在页面上。
+       转义交给 EJS 的插值输出自己做（& < > " ' 它都会转）——以前这里手工
+       把引号替换成 &quot; 实体，EJS 又会把 & 转成 &amp;，结果 meta description
+       里出现字面 &quot;（2026-10-12 审查修复，已实测确认双重转义）。
+       注意：本注释块里不要出现 EJS 标签字样（含百分号的定界符），
+       分词器不认脚本内的注释，会提前截断整个脚本段。
+       这里只做压缩空白：正文兜底出来的摘要常带换行 / 连续空格。 */
+    var descriptionAttr = String(description || '')
+        .replace(/\s+/g, ' ').trim();
 %>
 <% if (theme.dark_theme && theme.dark_theme.enable) { %>
     <% if (theme.dark_theme.mode === 'dark') { %>
@@ -43,12 +85,29 @@
 <!-- 站点名拼进标题：主题原本算了 pageTitle 却没用，导致每个标签页标题都只是「首页」 -->
 <title><%= pageTitle %></title>
 <meta name="keywords" content="<%= keyWords %>">
-<meta name="description" content="<%- description %>">
+<meta name="description" content="<%= descriptionAttr %>">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- theme-color：移动端地址栏/任务栏跟主题色走（用实测的页面底：浅色桌面浅蓝 / 深色窗面深蓝） -->
+<% if (theme.dark_theme && theme.dark_theme.enable) { %>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bde5f7">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a2e">
+<% } else { %>
+<meta name="theme-color" content="#bde5f7">
+<% } %>
 <meta property="og:title" content="<%= pageTitle %>">
-<meta property="og:description" content="<%- description %>">
+<meta property="og:description" content="<%= descriptionAttr %>">
+<meta property="og:site_name" content="<%= SITE %>">
 <% if (page.img && page.img !== '') { %><meta property="og:image" content="<%= full_url_for(page.img) %>"><% } %>
+<!-- 分享到 Twitter / X / 部分国内客户端时用的卡片类型：有大图就用大图卡 -->
+<meta name="twitter:card" content="<%= (page.img && page.img !== '') ? 'summary_large_image' : 'summary' %>">
 <link rel="shortcut icon" href="<%= url_for(theme.favicon) %>">
+<!-- 站标（像素兔子，上红下黄渐变）也登记成标准 icon / apple-touch-icon：
+     Safari、Windows「添加到桌面」等地方只认 rel="icon"，不认 shortcut icon。 -->
+<link rel="icon" type="image/x-icon" href="<%= url_for(theme.favicon) %>">
+<!-- 正文字体 preload（2026-10-12）：它是全站最大的自持资源（子集化后约 177 KB，
+     见 xp-custom.css 第 0 节）。font-display:swap 之前就拿在手里，减少 FOUT 字形闪烁。
+     crossorigin 是字体预加载的规范要求（即便同源）。 -->
+<link rel="preload" href="<%= url_for('/fonts/fusion-pixel-12px-proportional-zh_hans.woff2') %>" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<%= url_for('/style/main.css') %>">

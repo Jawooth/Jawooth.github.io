@@ -5,7 +5,7 @@
 #   把歌单 id 填到下面的 netease_playlist（**只要数字**，不要贴整条链接，
 #   也不要填 creatorId —— 那是用户 id，不是歌单 id），然后运行一次：
 #
-#       py -3 tools\fetch-netease.py
+#       py -3 tools\fetch\fetch-netease.py
 #
 #   （注意是 py -3 不是 python：这台电脑的 python 是系统商店的占位程序，
 #     直接敲 python 会提示 "Python was not found"。）

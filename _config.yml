@@ -14,7 +14,12 @@ timezone: 'Asia/Shanghai'
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: https://Jawooth.github.io
-permalink: :year/:month/:day/:title/
+# 网址规则：**不带日期**，直接用文件名（`关于平台的迷思.md` → `/关于平台的迷思/`）。
+# 想给某篇一个英文短网址，在那篇的 front matter 里加一行 `permalink: my-slug` 即可，
+# 它会覆盖这里（新建的文章见 source/_posts 里已有的例子）。
+# ⚠ 2026-10 换过规则：换之前发布的文章用的是「/年/月/日/文件名/」，那些旧网址已经
+#   逐篇用 front matter 的 `permalink:` 钉住 —— **别删那些行**，删了老链接就 404 了。
+permalink: :title/
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -45,15 +50,16 @@ relative_link: false
 future: true
 syntax_highlighter: highlight.js
 highlight:
-  line_number: true
+  # 原为 true，但主题 figure.styl 把 .gutter display:none（编译产物 main.css 同样隐藏），
+  # 开了也不会显示，还会让每段代码多输出一层 <table><td class=gutter> 结构。
+  # 改 false：代码块退化成纯 <pre><code>，行号不发射，少一层冗余 DOM。
+  line_number: false
   auto_detect: false
   tab_replace: ''
   wrap: true
   hljs: false
-prismjs:
-  preprocess: true
-  line_number: true
-  tab_replace: ''
+# 原 prismjs 配置段已删：syntax_highlighter 钉的是 highlight.js，
+# prismjs 段从未生效（main.styl 里对应的 prism 样式条件也已一并清掉）。
 
 # 允许 Markdown 文件内直接写 HTML（XP 窗口布局需要）
 marked:
@@ -94,7 +100,16 @@ pagination_dir: page
 # Include / Exclude file(s)
 ## include:/exclude: options only apply to the 'source/' folder
 include:
+## 排除的文件不会进 public/（这里是「只排除、不删文件」的正确开关；
+## 下面的 ignore: 是文件监听用的，管不到产物）。
+## 装饰图目录里的说明文档是给「改站的人」看的，不是站点内容 —— 不排除的话
+## Hexo 会把它渲染成 /images/decor/README.html 一起发布上线。
 exclude:
+  - 'images/decor/README.md'
+  # 同理：vendor/xp-css/README.md 是给「升级 XP.css 的人」看的说明，
+  # 不是站点内容 —— 不排除就会被渲染成 /vendor/xp-css/README.html 一起发布。
+  # LICENSE 不排除：MIT 要求随分发附带，跟着 XP.css 一起上线是对的。
+  - 'vendor/xp-css/README.md'
 ignore:
   - '**/*.bak'
   - '**/*.orig'
@@ -103,6 +118,65 @@ ignore:
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: minimalism
+
+# 文章加密（hexo-blog-encrypt 4.1.0）
+## 怎么用：在要加密的那篇文章的 front matter 里加一行 password: 你的密码
+##   （不加 password 的文章完全不受影响，照常公开。）
+## ⚠ 这是「别让路过的人随便看到」级别的防护，不是真正的安全措施：
+##   正文密文会完整下载到访客浏览器，密码也在前端校验 —— 挡得住随手点开的人，
+##   挡不住真有心想破解的人。别用它保护敏感个人信息或机密。
+## 列表页/首页的卡片仍会显示标题和 desc（这是刻意的：站主要求「标题简介照常显示」）。
+encrypt:
+  # 密钥派生轮数（PBKDF2-HMAC-SHA256）。插件默认 250000，构建时会警告
+  # 「低于 OWASP 建议的 600000」。这里显式提到 600000：
+  #   · 成本：访客解密时多算一点，实测仍在 1 秒内（浏览器 JS 实现）；
+  #   · 收益：爆破成本翻 2.4 倍 —— 但真正的短板永远是密码本身的位数，
+  #     加轮数只是「顺手把该拧的螺丝拧满」，别指望它救弱口令（见 README 5.1）。
+  kdf:
+    iterations: 600000
+  # 列表页卡片上代替正文显示的摘要（写了 desc 的照常用 desc）
+  abstract: 这篇文章被加密了，输入密码才能看。
+  # 密码输入框上方的提示
+  message: 请输入密码
+  # 密码错误时的提示
+  wrong_pass_message: 密码不对，再试试。
+  theme: default
+  silent: false
+  # 解密按钮上的文字（默认是「解密」，这里改成「确认」）
+  decryptButton:
+    show: true
+    text: 确认
+
+# 关机彩蛋的文案（开始菜单 →「关机」）
+## 点「关机」会先弹一个模拟系统错误窗口，再进蓝屏；点任意处恢复。
+## 全部文案都在这里改，不用动 scripts/xp-taskbar.js（2026-10-14 提到配置里）。
+shutdown:
+  # 开始菜单底部那个按钮上的字
+  button: 关机
+  # 错误弹窗：标题栏文字
+  error_title: Warning
+  # 错误弹窗：正文（想分两行就写两条）
+  error_lines:
+    - 关闭计算机时发生严重错误。
+    - 系统即将停止响应，未保存的内容将会丢失。
+  # 错误弹窗：确定按钮
+  error_ok: 确定
+  # 蓝屏：顶部标题（{site} 会替换成站点名）
+  bs_head: '{site} 遇到问题需要关闭'
+  # 蓝屏：正文段落
+  bs_lines:
+    - 一个问题已经发生，Windows 需要重新启动。我们只收集某些错误信息，然后为你重新启动。
+  # 蓝屏：那个假进度条后面的文字（进度百分比会拼在前面）
+  bs_progress_suffix: 完成
+  # 蓝屏：停止代码那一行
+  bs_code: '停止代码：KFC_CRAZY_FRIDAY_VME50'
+  # 蓝屏：最下面那行提示
+  bs_foot: 点击任意位置重启
+  # 音效开关（2026-10-14 新增）：
+  #   点「关机」时一声错误音「咚」，进蓝屏时一段下行的关机音。
+  #   声音由浏览器现场合成，不引入任何音频文件；不想要就改成 false。
+  #   注意：托盘那个静音按钮优先级更高 —— 静音开着时这里写 true 也不出声。
+  sound: true
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment

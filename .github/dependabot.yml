@@ -1,0 +1,26 @@
+# Dependabot：不自动升级，只开 PR —— 正好匹配 package.json 注释里
+# 「一次只升一个包、升完 build + verify-site + 截图对比后再合」的策略。
+version: 2
+updates:
+  # npm 依赖（含全部传递依赖，锁版本仓库最需要这个）
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore(deps)
+
+  # GitHub Actions 本身（deploy / osv-scanner 里用到的第三方 action）
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore(ci)

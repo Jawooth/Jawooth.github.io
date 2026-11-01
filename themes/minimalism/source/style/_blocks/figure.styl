@@ -14,7 +14,7 @@
     margin: 0;
     padding: 0;
   }
-  .gutter { // 才疏学浅 就不显示行号了
+  .gutter { // 行号不显示，见 _config.yml highlight.line_number: false（不发射行号结构）
     display: none;
   }
   .code {
@@ -28,7 +28,9 @@
     top: 4px;
     font-size: 16px;
     font-weight: bold;
-    color: #ccc;
+    // #ccc 在 #fafafa 底上只有 1.54:1，WCAG AA 不达标（浅色模式仔细看几乎看不清）。
+    // 沿用代码正文色 #476582，_config.yml highlight.line_number:false 后这是语言标签唯一落点。
+    color: #476582;
   }
   &:hover .copy-code {
     display: block;

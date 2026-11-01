@@ -24,20 +24,11 @@ layout: xp-page
 <!-- ========== 带 1：我是谁 ========== -->
 <div class="bento-item bento-profile">
 <div class="xp-window">
-<div class="xp-window-title">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-<circle cx="8" cy="5" r="3.5" fill="#ffcc99" stroke="#996633" stroke-width="0.5"></circle>
-<path d="M2 14c0-4 3-6 6-6s6 2 6 6" fill="#6699cc" stroke="#336699" stroke-width="0.5"></path>
-</svg>
-用户账户
-</span>
-<span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
-</div>
+<%- include('./includes/xp-window-title', { title='用户账户', icon='user' }) %>
 <div class="xp-window-body">
 <div class="profile-content">
 <!-- 名字 / 介绍 / 图标 都在 source/_data/profile.yml 里改 -->
-<img class="profile-avatar" src="{% xp_profile avatar %}" alt="{% xp_profile name %} 的头像" width="256" height="256">
+<img id="xp-avatar" class="profile-avatar" src="{% xp_profile avatar %}" alt="{% xp_profile name %} 的头像" width="256" height="256">
 <div class="profile-text">
 <h2>{% xp_profile_title %}</h2>
 {% xp_profile_lines intro %}
@@ -53,27 +44,34 @@ layout: xp-page
 
 <!-- ========== 带 1：复古 MP4 播放器 ========== -->
 <div class="bento-item bento-music">
-<!-- 曲目 / 歌单 / 播放器标题都在 source/_data/music.yml 里配置；
-     播放器的外观与行为由下面那一个 xp_music 标签输出（要改长相或行为才需要看 scripts/xp-player.js） -->
-{% xp_music %}
+<!-- ★ 这里不要再写 {% xp_music %}：播放器已改由 includes/footer.ejs 统一注入全站一份
+     （fixed 右下角）。首页若再调一次，右下角会叠出两个播放器。
+     曲目 / 歌单 / 标题仍看 source/_data/music.yml；外观与行为看 scripts/xp-player.js。 -->
+<div class="xp-window xp-duck-window">
+<%- include('./includes/xp-window-title', { title='唉，汁本！', icon='duck', buttons=false }) %>
+<div class="xp-window-body xp-duck-body">
+<div class="xp-duck-main">
+<p class="xp-duck-line">已被做局</p>
+<span class="xp-duck-num"><span class="xp-duck-count" id="duck-count">0</span><span class="xp-duck-line">次。</span></span>
+</div>
+<button class="xp-btn xp-btn-small xp-duck-clear" id="duck-clear" type="button">清除计数</button>
+</div>
+</div>
+<div class="xp-window">
+<%- include('./includes/xp-window-title', { title='详细属性', icon='clipboard', buttons=false }) %>
+<div class="xp-window-body">
+<ul class="xp-intro-list">
+<li><a href="/about-me/">呃可能是属性啥的吧</a></li>
+<li><a href="/about-me2/">天雷滚滚好怕怕</a></li>
+</ul>
+</div>
+</div>
 </div>
 
 <!-- ========== 带 2：最近作品 ========== -->
 <div class="bento-item bento-recent">
 <div class="xp-window">
-<div class="xp-window-title">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-<path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"></path>
-<circle cx="5" cy="6" r="1.2" fill="#ff6666"></circle>
-<circle cx="11" cy="6" r="1.2" fill="#66cc66"></circle>
-<circle cx="5" cy="10" r="1.2" fill="#6666ff"></circle>
-<circle cx="10" cy="11" r="1.2" fill="#ffff66"></circle>
-</svg>
-最近作品
-</span>
-<span class="xp-window-btns" aria-hidden="true"><i class="xp-window-btn">_</i><i class="xp-window-btn">□</i><i class="xp-window-btn close">×</i></span>
-</div>
+<%- include('./includes/xp-window-title', { title='最近作品', icon='palette' }) %>
 <div class="xp-window-body">
 {% xp_recent_works 3 %}
 </div>
@@ -83,12 +81,7 @@ layout: xp-page
 <!-- ========== 带 3：最新文章 ========== -->
 <div class="bento-item bento-articles">
 <div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#0066cc" stroke-width="0.5"/><path d="M4 5h8M4 8h8M4 11h5" stroke="#666" stroke-width="1" stroke-linecap="round"/></svg>
-最新文章
-</span>
-</div>
+<%- include('./includes/xp-window-title', { title='最新文章', icon='post', compact=true, buttons=false }) %>
 <div class="xp-window-body compact-body">
 {% xp_recent_posts 4 exclude=作品 %}
 </div>
@@ -98,12 +91,7 @@ layout: xp-page
 <!-- ========== 带 3：标签云 ========== -->
 <div class="bento-item bento-tags">
 <div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8l6-6 6 6-6 6-6-6z" fill="#ffe0e0" stroke="#cc6666" stroke-width="0.5"/><circle cx="8" cy="8" r="2" fill="#cc6666"/></svg>
-标签云
-</span>
-</div>
+<%- include('./includes/xp-window-title', { title='标签云', icon='tag', compact=true, buttons=false }) %>
 <div class="xp-window-body compact-body">
 {% xp_tag_cloud pill %}
 </div>
@@ -113,12 +101,7 @@ layout: xp-page
 <!-- ========== 带 3：小站数据 ========== -->
 <div class="bento-item bento-stats">
 <div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" fill="#f0f0e8" stroke="#666" stroke-width="0.5"/><path d="M3 12l3-4 3 2 4-6" fill="none" stroke="#60b060" stroke-width="1.5"/></svg>
-小站数据
-</span>
-</div>
+<%- include('./includes/xp-window-title', { title='小站数据', icon='chart', compact=true, buttons=false }) %>
 <div class="xp-window-body compact-body">
 {% xp_stat_rows %}
 </div>
@@ -128,18 +111,18 @@ layout: xp-page
 <!-- ========== 带 3：快速导航 ========== -->
 <div class="bento-item bento-nav">
 <div class="xp-window">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#e0e8ff" stroke="#003399" stroke-width="0.5"/><path d="M8 3v5l3 3" fill="none" stroke="#003399" stroke-width="1.5" stroke-linecap="round"/></svg>
-快速导航
-</span>
-</div>
+<%- include('./includes/xp-window-title', { title='快速导航', icon='compass', compact=true, buttons=false }) %>
 <div class="xp-window-body compact-body">
 <div class="quick-nav-grid">
-<a class="nav-tile" href="/works/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z" fill="#ff9999" stroke="#cc6666" stroke-width="0.5"/><circle cx="5" cy="6" r="1.2" fill="#ff6666"/><circle cx="11" cy="6" r="1.2" fill="#66cc66"/><circle cx="5" cy="10" r="1.2" fill="#6666ff"/><circle cx="10" cy="11" r="1.2" fill="#ffff66"/></svg></span><span>作品集</span></a>
-<a class="nav-tile" href="/games/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="4" width="12" height="8" rx="3" fill="#4a4a4a" stroke="#222" stroke-width="0.5"/><circle cx="5" cy="8" r="1.5" fill="#d0d0d0"/><circle cx="11" cy="7" r="1" fill="#ff6b6b"/><circle cx="12" cy="9" r="1" fill="#6b8cff"/><rect x="4" y="7" width="2" height="0.8" fill="#d0d0d0"/><rect x="4.6" y="6.2" width="0.8" height="2.5" fill="#d0d0d0"/></svg></span><span>游戏</span></a>
-<a class="nav-tile" href="/guides/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h5v12H2z" fill="#c44" stroke="#900" stroke-width="0.5"/><path d="M14 2H9v12h5V2z" fill="#47c" stroke="#039" stroke-width="0.5"/><line x1="7" y1="2" x2="9" y2="2" stroke="#666" stroke-width="0.5"/><line x1="7" y1="14" x2="9" y2="14" stroke="#666" stroke-width="0.5"/></svg></span><span>攻略</span></a>
-<a class="nav-tile" href="/blog/"><span class="nav-icon"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1" width="12" height="14" rx="1" fill="#fff" stroke="#666" stroke-width="0.5"/><line x1="4" y1="5" x2="12" y2="5" stroke="#666" stroke-width="0.8"/><line x1="4" y1="8" x2="12" y2="8" stroke="#666" stroke-width="0.8"/><line x1="4" y1="11" x2="9" y2="11" stroke="#666" stroke-width="0.8"/></svg></span><span>杂谈</span></a>
+<!-- 图标与开始菜单/任务栏同一份真源（scripts/xp-taskbar.js 的 START_ICONS），
+     由 xp_page_icon tag 构建期渲染 —— 站主 2026-10-18 要求两处文字图标统一。
+     文字也用开始菜单的叫法（绘画/文字/游戏/工具）。 -->
+<a class="nav-tile" href="/works/"><span class="nav-icon">{% xp_page_icon /works/ 20 %}</span><span>绘画</span></a>
+<a class="nav-tile" href="/blog/"><span class="nav-icon">{% xp_page_icon /blog/ 20 %}</span><span>文字</span></a>
+<a class="nav-tile" href="/games/"><span class="nav-icon">{% xp_page_icon /games/ 20 %}</span><span>游戏</span></a>
+<a class="nav-tile" href="/archives/"><span class="nav-icon">{% xp_page_icon /archives/ 20 %}</span><span>归档</span></a>
+<!-- 「工具」并入「游戏」（2026-11-01 站主要求）：/games/ 页并排两个窗口，
+     导航不再单列工具；第 4 格换成「归档」补位。 -->
 </div>
 </div>
 </div>
@@ -148,19 +131,14 @@ layout: xp-page
 <!-- ========== 带 4：搜索 · 关于 · 致谢（通栏；/#about 锚点指这里） ========== -->
 <div class="bento-item bento-links">
 <div class="xp-window" id="about">
-<div class="xp-window-title compact">
-<span class="xp-window-title-text">
-<svg class="inline-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#333" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
-搜索 · 关于本站 · 致谢
-</span>
-</div>
+<%- include('./includes/xp-window-title', { title='搜索 · 关于本站 · 致谢', icon='search', compact=true, buttons=false }) %>
 <div class="xp-window-body compact-body links-body">
 <div class="links-col">
 <form class="xp-search-wrap" id="site-search-form" role="search">
 <div class="xp-search-box">
 <label class="xp-sr-only" for="site-search-input">搜索文章</label>
 <input type="search" class="xp-search-input" id="site-search-input" placeholder="搜索文章…" autocomplete="off">
-<button class="xp-search-btn" id="site-search-btn" type="submit">Go</button>
+<button class="xp-search-btn" id="site-search-btn" type="submit">搜索</button>
 </div>
 <div class="xp-search-results" id="site-search-results"></div>
 </form>
@@ -177,7 +155,7 @@ layout: xp-page
 <!-- 致谢：原先在「关于」页，现已搬到这里（删条目就删下面这几行） -->
 <div class="credits-col">
 <div class="credits-title">
-<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.4-5.5-7A3.2 3.2 0 0 1 8 4.6a3.2 3.2 0 0 1 5.5 2.4C13.5 10.6 8 14 8 14z" fill="#ff8080" stroke="#cc4444" stroke-width="0.5"/></svg>
+<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><use href="#nav-thanks"/></svg>
 致谢 &amp; 参考
 </div>
 <ul class="credits-list">
@@ -239,6 +217,9 @@ layout: xp-page
     }
   }
 
+  /* 供头像点击彩蛋调用：换下一句（头像的脚本在下面「头像彩蛋」那块） */
+  window.XPQuoteRefresh = function () { idx += 1; render(idx); };
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();
@@ -247,15 +228,18 @@ layout: xp-page
 <!-- ========== 网名轮换：名字列表在 source/_data/profile.yml 的 names 里 ========== -->
 <script>
 (function () {
-  var data = window.XP_NAMES || { list: [], rotate: 0 };
-  var list = data.list || [];
   var el = document.getElementById('xpName');
-  if (!el || list.length < 2) return;
+  if (!el) return;
+  var list = [];
+  var rotate = 0;
+  try { list = JSON.parse(el.getAttribute('data-names') || '[]'); } catch (e) {}
+  if (typeof el.getAttribute('data-rotate') === 'string') rotate = Number(el.getAttribute('data-rotate')) || 0;
+  if (list.length < 2) return;
 
   var idx = Math.floor(Math.random() * list.length);
   el.textContent = list[idx];
 
-  var seconds = Number(data.rotate) || 0;
+  var seconds = Number(rotate) || 0;
   if (seconds > 0) {
     setInterval(function () {
       idx = (idx + 1) % list.length;
@@ -263,6 +247,200 @@ layout: xp-page
       setTimeout(function () { el.textContent = list[idx]; el.style.opacity = '1'; }, 200);
     }, seconds * 1000);
   }
+})();
+</script>
+
+
+<!-- ========== 头像彩蛋：捏鸭子音效 + 弹跳 + 便签换句 + 做局计数 + 每满 100 次烟花 ==========
+     计数器落在访问者浏览器的 localStorage（xp_duck_count），跨刷新累计；
+     「清除计数」要点两次（3 秒内）才真的清零，防手滑。
+     ★ 2026-10-18：这份实现取自已部署版本（.deploy_git/index.html）。
+       之前从 backup/ 恢复的那份是删减版，缺 fireworks() 与 isMilestone()，
+       所以点满 100 次没有庆祝弹窗 —— 改这里时别再把函数弄丢。 -->
+<script>
+(function () {
+  /* —— 橡皮鸭音效：两声短促的「吱——咕」，锯齿波 + 音高包络 + 低通滤波 —— */
+  function squeak() {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      squeak.ctx = squeak.ctx || new AC();
+      var ctx = squeak.ctx;
+      if (ctx.state === 'suspended') ctx.resume();
+      var t = ctx.currentTime;
+      [0, 0.16].forEach(function (delay, i) {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        var filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 2400;
+        filter.Q.value = 4;
+        osc.type = 'sawtooth';
+        var s = t + delay;
+        var dur = i ? 0.22 : 0.18;
+        var base = i ? 750 : 900;   /* 第二声低一点，像把鸭子挤到没气了 */
+        osc.frequency.setValueAtTime(base, s);
+        osc.frequency.exponentialRampToValueAtTime(base * 1.9, s + dur * 0.35);
+        osc.frequency.exponentialRampToValueAtTime(base * 0.55, s + dur);
+        gain.gain.setValueAtTime(0.0001, s);
+        gain.gain.exponentialRampToValueAtTime(0.3, s + 0.02);   /* 峰值 0.3：比播放器音乐略响一档 */
+        gain.gain.exponentialRampToValueAtTime(0.0001, s + dur);
+        osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+        osc.start(s); osc.stop(s + dur + 0.02);
+      });
+    } catch (e) { /* 音频出任何问题都不影响换句和弹跳 */ }
+  }
+
+  /* —— 烟花：一个固定遮罩 + 中心爆点 + 22 颗粒子向外飞散，2.05s 后整体淡出 ——
+     DOM 节点全部由这里创建，样式在 xp-custom.css 的 .xp-firework* 一节。
+     减弱动态效果时 N=0（不生成粒子），只留中间那句庆祝文字。 */
+  function fireworks(times) {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* 顺便播一声上扬的「咻——啪」，和鸭子音效同一套 Web Audio 合成 */
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        var ctx = squeak.ctx || (squeak.ctx = new AC());
+        if (ctx.state === 'suspended') ctx.resume();
+        var t0 = ctx.currentTime;
+        /* 咻：音高快速上滑 */
+        var o1 = ctx.createOscillator(), g1 = ctx.createGain();
+        o1.type = 'sine';
+        o1.frequency.setValueAtTime(320, t0);
+        o1.frequency.exponentialRampToValueAtTime(1500, t0 + 0.28);
+        g1.gain.setValueAtTime(0.0001, t0);
+        g1.gain.exponentialRampToValueAtTime(0.18, t0 + 0.05);
+        g1.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.3);
+        o1.connect(g1); g1.connect(ctx.destination);
+        o1.start(t0); o1.stop(t0 + 0.32);
+        /* 啪：一小撮噪声，用随机频率的高频振荡近似 */
+        var o2 = ctx.createOscillator(), g2 = ctx.createGain();
+        o2.type = 'triangle';
+        o2.frequency.setValueAtTime(900, t0 + 0.3);
+        o2.frequency.exponentialRampToValueAtTime(180, t0 + 0.62);
+        g2.gain.setValueAtTime(0.0001, t0 + 0.3);
+        g2.gain.exponentialRampToValueAtTime(0.22, t0 + 0.33);
+        g2.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.65);
+        o2.connect(g2); g2.connect(ctx.destination);
+        o2.start(t0 + 0.3); o2.stop(t0 + 0.68);
+      }
+    } catch (e) { /* 没声音也要放烟花 */ }
+
+    /* 暴风式庆祝会一屏几十个节点，先清掉上一轮没结束的，避免叠在一起 */
+    var old = document.querySelectorAll('.xp-firework');
+    for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+
+    var layer = document.createElement('div');
+    layer.className = 'xp-firework';
+    layer.setAttribute('aria-hidden', 'true');
+
+    var box = document.createElement('div');
+    box.className = 'xp-firework-burst';
+
+    var COLORS = ['#ff5a5a', '#ffd166', '#7cfc00', '#53a8f3', '#c77dff', '#ff9ecd'];
+    var N = reduce ? 0 : 22;
+    for (var k = 0; k < N; k++) {
+      var p = document.createElement('i');
+      var ang = (Math.PI * 2 * k) / N + Math.random() * 0.2;
+      var dist = 70 + Math.random() * 90;
+      p.className = 'xp-firework-dot';
+      p.style.setProperty('--dx', (Math.cos(ang) * dist).toFixed(1) + 'px');
+      p.style.setProperty('--dy', (Math.sin(ang) * dist).toFixed(1) + 'px');
+      p.style.background = COLORS[k % COLORS.length];
+      p.style.animationDelay = (Math.random() * 0.08).toFixed(2) + 's';
+      box.appendChild(p);
+    }
+
+    /* 中间的庆祝文字，顺便告诉访客「这次点击有彩蛋」 */
+    var label = document.createElement('span');
+    label.className = 'xp-firework-text';
+    label.textContent = '🎉 第 ' + times + ' 次！';
+    box.appendChild(label);
+
+    layer.appendChild(box);
+    document.body.appendChild(layer);
+
+    var done = function () {
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+    };
+    layer.addEventListener('animationend', function (ev) {
+      /* 只认最外层那一次结束，避免被内部粒子的 animationend 提前拆掉 */
+      if (ev.target === layer) done();
+    });
+    setTimeout(done, 2600);   /* 兜底：万一 animationend 没触发也别留垃圾节点 */
+  }
+
+  function init() {
+    var avatar = document.getElementById('xp-avatar');
+    if (!avatar) return;
+
+    /* 捏鸭计数器：总数存访问者浏览器 localStorage，跨刷新累计 */
+    var duckEl = document.getElementById('duck-count');
+    var duckCount = 0;
+    try { duckCount = parseInt(localStorage.getItem('xp_duck_count'), 10) || 0; } catch (e) {}
+    /* m00789：位数多时给数字盒降字号（.many=5-6 位 / .huge=7 位+），
+       配合 xp-custom.css 的 .xp-duck-num 规则，保证「已被做局 N 次。」+ 按钮一行放下 */
+    function setDuck(n) {
+      if (!duckEl) return;
+      duckEl.textContent = n;
+      var num = duckEl.parentNode;   // .xp-duck-num
+      if (!num) return;
+      var d = String(n).length;
+      num.classList.toggle('many', d >= 5 && d <= 6);
+      num.classList.toggle('huge', d >= 7);
+    }
+    setDuck(duckCount);
+
+    /* 每满 100 次点击 —— 从 0 开始每累计 100 次放一次烟花（100 / 200 / 300…）。
+       用「整除」判断而不是 ===100，这样 200、300 次也都会庆祝；
+       刷新后从 localStorage 恢复计数，再点满下一个整百同样会触发。 */
+    function isMilestone(n) { return n > 0 && n % 100 === 0; }
+
+    avatar.addEventListener('click', function () {
+      squeak();
+      avatar.classList.remove('bouncing');
+      void avatar.offsetWidth;   /* 强制重排：连续点击也能重放弹跳动画 */
+      avatar.classList.add('bouncing');
+      if (typeof window.XPQuoteRefresh === 'function') window.XPQuoteRefresh();
+      duckCount += 1;
+      try { localStorage.setItem('xp_duck_count', String(duckCount)); } catch (e) {}
+      if (duckEl) setDuck(duckCount);
+      if (isMilestone(duckCount)) fireworks(duckCount);
+    });
+
+    /* 清除计数：两段式确认 —— 第一次点变成「再点一次确认」，3 秒内再点才真的清零；
+       超时没点就自动恢复原样，防止手滑把记录全删了。 */
+    var clearBtn = document.getElementById('duck-clear');
+    if (clearBtn) {
+      var armTimer = null;
+      clearBtn.addEventListener('click', function () {
+        if (clearBtn.getAttribute('data-armed') === '1') {
+          clearTimeout(armTimer);
+          clearBtn.removeAttribute('data-armed');
+          clearBtn.textContent = '已清零';
+          duckCount = 0;
+          try { localStorage.setItem('xp_duck_count', '0'); } catch (e) {}
+          if (duckEl) setDuck('0');
+          setTimeout(function () { clearBtn.textContent = '清除计数'; }, 1200);
+        } else {
+          clearBtn.setAttribute('data-armed', '1');
+          clearBtn.textContent = '再点一次确认';
+          armTimer = setTimeout(function () {
+            clearBtn.removeAttribute('data-armed');
+            clearBtn.textContent = '清除计数';
+          }, 3000);
+        }
+      });
+    }
+
+    avatar.addEventListener('animationend', function () {
+      avatar.classList.remove('bouncing');
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
 </script>
 
@@ -334,30 +512,44 @@ layout: xp-page
      想要"手工拼贴感"可以在格子上加回 .tilt-left / .tilt-right / .tilt-soft 等类，
      但边线就不会齐平了。 -->
 <style>
-.xp-bento { grid-auto-rows: 96px; }
-/* 快速导航现在只有 4 个瓦片（作品集/游戏/攻略/杂谈），排成 2×2 更整齐 */
+.xp-bento { grid-auto-rows: minmax(96px, auto); }
+/* 快速导航 4 个瓦片（绘画/游戏/文字/工具），排成 2×2 更整齐 */
 .bento-nav .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
 
-/* 带 1：身份带 —— 气泡 / 我 / 播放器 */
-.bento-bubble  { grid-column: 1 / 4;   grid-row: 1 / 3; }
-.bento-profile { grid-column: 4 / 10;  grid-row: 1 / 3; }
-.bento-music   { grid-column: 10 / 13; grid-row: 1 / 3; }
+/* 带 3 之后的格子用 `span 2` 而不是写死行号（1/4 之类）：
+   上面那一带可能自己长高（见 .bento-recent 的说明），写死行号的格子会把行号挤错位。
+   `span 2` 只声明「跨 2 行」，起始行交给网格自动排 —— 顺序与 DOM 一致。 */
+.bento-bubble  { grid-column: 1 / 4;   grid-row: span 2; }
+.bento-profile { grid-column: 4 / 10;  grid-row: span 2; }
+.bento-music   { grid-column: 10 / 13; grid-row: span 2; }
 
-/* 带 2：最近作品（原先右侧的待办窗口已按站主要求撤掉，这里占满整行） */
-.bento-recent  { grid-column: 1 / 13;  grid-row: 3 / 5; }
+/* 带 2：最近作品（原先右侧的待办窗口已按站主要求撤掉，这里占满整行）
+   ★ 2026-10-18：这一带的高度**不再固定 2 行**。卡片缩略图是 16:9，卡高由卡宽
+   算出来：1400px 下 170px 宽 → 约 182px，加上窗口标题栏与内边距要 200px 以上，
+   而 2 行固定 = 210px，正好把卡片底部（日期那一行）压在窗口下沿切掉。
+   宽度越窄卡片越高（641~1240px 那档卡宽 = 列宽/4，1000px 实测 218px → 卡高 183px），
+   固定行高无论怎么调都会在某些宽度上切一张。
+   改成 `span 2`（只占 2 行、不写死结束行）+ 自动行高的下限：
+   内容矮时仍是 2 行的节奏，内容高时这一带自己长高，把下面几带往下推。
+   ⚠ 不能改成 `grid-row: auto` —— 那样会离开第 3 行、被后面几带的自动排版挤乱。 */
+.bento-recent  { grid-column: 1 / 13;  grid-row: span 2; }
 
 /* 带 3：四等分 —— 文章 / 标签 / 数据 / 导航 */
-.bento-articles{ grid-column: 1 / 4;   grid-row: 5 / 7; }
-.bento-tags    { grid-column: 4 / 7;   grid-row: 5 / 7; }
-.bento-stats   { grid-column: 7 / 10;  grid-row: 5 / 7; }
-.bento-nav     { grid-column: 10 / 13; grid-row: 5 / 7; }
+.bento-articles{ grid-column: 1 / 4;   grid-row: span 2; }
+.bento-tags    { grid-column: 4 / 7;   grid-row: span 2; }
+.bento-stats   { grid-column: 7 / 10;  grid-row: span 2; }
+.bento-nav     { grid-column: 10 / 13; grid-row: span 2; }
 
 /* 带 4：通栏（搜索 · 关于本站 · 致谢）；原「关于本站」窗口已并入这里，故整行 2 行高 */
-.bento-links   { grid-column: 1 / 13;  grid-row: 7 / 9; }
+.bento-links   { grid-column: 1 / 13;  grid-row: span 2; }
 
 @media (max-width: 900px) {
   /* 小屏放弃固定行高，回到内容决定高度 */
   .xp-bento { grid-auto-rows: auto; }
+  /* ★ 2026-10-18：一行一格时，便签和账户卡不再占同一批网格行，
+     「不超过账户卡」的上限就无从谈起 —— 直接把上限放开（见 xp-custom.css 里
+     --bubble-bento-max 的说明），否则长句子会被 210px 硬切掉。 */
+  .bento-bubble > .xp-bubble { max-height: none; }
   .bento-bubble  { grid-column: 1 / 7;  grid-row: auto; }
   .bento-profile { grid-column: 1 / 7;  grid-row: auto; }
   .bento-music   { grid-column: 1 / 7;  grid-row: auto; }

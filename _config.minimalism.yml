@@ -3,6 +3,19 @@
 # ============================================
 
 # 导航菜单（URL 统一带尾斜杠，避免 301 与重复 URL）
+# 顺序由这里决定：首页 → 绘画 → 文字 → 游戏 → 归档。
+#
+# ★ 2026-10-18 站主要求：原来的「文章」(/guides/) 与「杂谈」(/blog/) 合并成一项「文字」，
+#   位置在「绘画」和「游戏」之间。合并后：
+#     · 「文字」指向 /blog/，里面同时收录原来两个分区的所有文章，每篇带分类标签；
+#     · 旧的 /guides/ 由 themes/minimalism/scripts/filters/post-hide.js 里注册的
+#       跳转生成器 301 到 /blog/，旧链接不会失效。
+#   ⚠ 别再往这里加回「文章」或「杂谈」两个键：开始菜单是从这里读的，
+#     加回去就会出现「文字」和「文章」两个入口指向同一批内容的重复感。
+#
+# ★ 2026-11-01 站主要求：「工具」并入「游戏」—— /games/ 页本来就并排着
+#   「小游戏」和「小工具」两个窗口，导航/开始菜单不再单列「工具」。
+#   旧的 /tools/ 页保留但只做跳转（meta refresh → /games/），旧链接不失效。
 menu:
   Index:
     url: /
@@ -11,19 +24,36 @@ menu:
   Works:
     url: /works/
     External: false
-    name: 作品
+    name: 绘画
+  Essays:
+    url: /blog/
+    External: false
+    name: 文字
   Games:
     url: /games/
     External: false
-    name: 游戏/工具
-  Guides:
-    url: /guides/
+    name: 游戏
+  Archive:
+    url: /archives/
     External: false
-    name: 攻略教程
-  Archives:
-    url: /blog/
-    External: false
-    name: 杂谈
+    name: 归档
+
+# 「文字」列表（/blog/，也就是菜单里的「文字」）里**不出现**的分类。
+# 作品有自己的作品页，混进文字列表会让两边的定位都变糊 —— 这里只排掉它。
+# 只影响这个列表（含它的分页）：文章本身、归档 / 标签 / 分类页、
+# 首页「最近作品」、侧栏「最近文章」都不受影响（侧栏另有自己的过滤）。
+#
+# ★ 2026-10-18 起这里**不再排掉「文章」分类**：文章页与杂谈页合并成了「文字」，
+#   原来只在 /guides/ 出现的「文章」分类现在也要出现在 /blog/ 里。
+index_exclude_categories:
+  - 作品
+
+# 旧「文章」列表（/guides/）的分类名。合并后 /guides/ 只做 301 跳转，
+# 这个键保留是为了让跳转生成器知道「哪些分类曾被当成分区」，
+# 将来想拆回来时也不用重新找配置。
+articles_category: 文章
+# 列表每页显示几篇（「文字」列表沿用这个值）
+articles_per_page: 10
 
 # 文章目录（TOC）
 # 主题 post.ejs 会对所有页面输出目录，页面缺少 page.ejs 时会回落到文章模板，
@@ -50,8 +80,8 @@ contact:
   bluesky:
 
 # 首页头像图片
-# 注意：不要用 /images/avatar.png —— 那是主题自带的占位头像，
-# 主题资源在站点资源之后写入，同名的站点文件会被覆盖。
+# 头像图片：先用 source/_data/profile.yml 里的 avatar，没填才用这里。
+# 两个默认值都指向 /images/site-avatar.png（站点自己的图，不要改用主题源里的占位图）。
 avatar: /images/site-avatar.png
 
 # 站点图标
@@ -80,6 +110,7 @@ comment:
       mark:
 
 # 底部链接
+# （致谢入口在侧栏「关于我」的按钮和首页通栏里，页脚不再放一份 —— 2026-10-15 站主去掉）
 bottom_link:
   rss:
     url:
@@ -93,8 +124,11 @@ bottom_source:
   enable: false
 
 # 脚注
+# 全站 0 篇文章用脚注语法，filters/footnotes.js 的 after_post_render 处理纯空跑，
+# 所以整个关掉（main.styl 里 footnotes.styl 的 import 也已改成按此开关条件引入）。
+# 哪天真写了脚注，把 enable 改回 true 即可。
 footnote:
-  enable: true
+  enable: false
   ignoreCodeBlock: false
 
 # 图片配置

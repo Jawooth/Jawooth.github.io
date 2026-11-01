@@ -5,10 +5,7 @@
 %><%- include('./includes/header') %>
 
   <div class="content-container xp-shell">
-    <div class="xp-window-title">
-      <span class="xp-window-title-text post-title-text">标签 · <%= page.tag %></span>
-      <%- xp_bullet() %>
-    </div>
+    <%- include('./includes/xp-window-title', { title: '标签 · ' + page.tag, h1: true }) %>
 
     <div class="post-info">
       <span><i class="icon icon-pricetags-outline"></i> 共 <%= page.posts ? page.posts.length : 0 %> 篇</span>
@@ -20,7 +17,7 @@
         <%- xp_post_cards(page.posts) %>
       </div>
 
-      <%- include('./includes/xp-aside', { page: page, kind: 'list' }) %>
+      <%- include('./includes/xp-aside', { page: page, isPost: false }) %>
     </div>
   </div>
 

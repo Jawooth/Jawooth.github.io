@@ -1,0 +1,13 @@
+# 首页两侧装饰图列表（2026-10-13 起生效，取代旧的 left/right 固定两张）
+# 想加几张加几张；删掉某一项就是撤掉那张图；全部清空（保留 `items: []` 一行）则两侧不显示。
+#
+# 每一项四个字段：
+#   image: 图片路径 —— 先把图放进 source\images\decor\，这里写 /images/decor/文件名（支持动图）
+#   side:  left 或 right —— 贴哪一侧
+#   top:   距离浏览器窗口顶部的距离，如 120px 或 30%
+#   width: 显示宽度（像素数字），高度按原图比例自动
+#
+# 注意：只在窗口宽度 ≥1500px 的大屏显示（窄屏两侧没有空间，自动隐藏，不会报错）。
+items:
+  - { image: "/images/decor/left.png",  side: "left",  random: true, width: 160 }
+  - { image: "/images/decor/right.png", side: "right", random: true, width: 160 }

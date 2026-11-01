@@ -22,18 +22,17 @@ hexo.extend.helper.register('static_link', name => {
 
 hexo.extend.helper.register('css_link', name => {
   const config = cdnConfig();
+  /* 白名单只保留本主题 source 里真实存在、且有模板引用的文件。
+     jquery / fancybox / simple-lightbox 三套曾服务于 photo_zoom（已关），
+     本地文件本就不存在，2026-11 清理时删掉。gitalk/twikoo 保留给 comment.ejs。 */
   const css_list = {
     'theme_main': '/style/main.css',
-    'jquery.fancybox': '/style/jquery.fancybox.min.css',
-    'gitalk': '/style/gitalk.min.css',
-    'simple-lightbox': '/style/simple-lightbox.min.css'
+    'gitalk': '/style/gitalk.min.css'
   };
 
   const boot_css_list = {
     'theme_main': '/style/main.css',
-    'jquery.fancybox': 'https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css',
-    'gitalk': 'https://cdn.bootcdn.net/ajax/libs/gitalk/1.7.2/gitalk.min.css',
-    'simple-lightbox': 'https://cdn.bootcdn.net/ajax/libs/simplelightbox/2.13.0/simple-lightbox.min.css'
+    'gitalk': 'https://cdn.bootcdn.net/ajax/libs/gitalk/1.7.2/gitalk.min.css'
   };
 
   let path = renderPath(css_list[name] ? css_list[name] : name);
@@ -53,20 +52,14 @@ hexo.extend.helper.register('css_link', name => {
 hexo.extend.helper.register('js_link', name => {
   const config = cdnConfig();
   const js_list = {
-    'jquery': '/js/jquery.min.js',
-    'jquery.fancybox': '/js/jquery.fancybox.min.js',
     'theme_main': '/js/main.js',
     'gitalk': '/js/gitalk.min.js',
-    'simple-lightbox': '/js/simple-lightbox.min.js',
     'twikoo': '/js/twikoo.min.js'
   };
 
   const boot_js_list = {
-    'jquery': 'https://cdn.bootcdn.net/ajax/libs/jquery/1.8.0/jquery.min.js',
-    'jquery.fancybox': 'https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js',
     'theme_main': '/js/main.js',
     'gitalk': 'https://cdn.bootcdn.net/ajax/libs/gitalk/1.7.2/gitalk.min.js',
-    'simple-lightbox': 'https://cdn.bootcdn.net/ajax/libs/simplelightbox/2.13.0/simple-lightbox.min.js',
     'twikoo': 'https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.16/twikoo.min.js'
   };
 

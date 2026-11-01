@@ -1,0 +1,55 @@
+<%#
+  XP 窗口标题栏（.xp-window-title）
+  ------------------------------------------------------------------
+  站内页面模板原本各自复制了这段 3 行样板，只有中间的标题文本不同；2026-10-18
+  又把「图标 + 标题 + 装饰按钮」合成了一行，所以这里再加两个可选参数。
+  抽到这里以后，改标题栏结构只需要改这一个文件。
+
+  参数（全部可选，按优先级）：
+    titleHtml  调用方自己保证安全（已经拼好且逐段转义过）。只有 post 的锁图标
+               和 archive 的多分支标题用得到。
+    title      纯文本，内部会做 HTML 转义。动态内容（page.title / page.tag /
+               page.category）一律走这个，才和原来逐字符转义的行为一致。
+    icon       图标 id，对应 scripts/xp-enhance.js 里 ICON_SPRITE 的 #icon-xxx
+               （如 'post'、'palette'、'compass'）。会画成 14×14 的标题图标。
+    iconSize   图标边长，默认 14。首页的小窗口标题用 12。
+    cls        加在 .xp-window-title-text 上的额外 class。
+    compact    true 时给标题栏加 .compact（矮一号的窗口标题，首页小格子用）。
+    buttons    false 时不画右侧的最小化/最大化/关闭按钮组（首页装饰性窗口就是这种）。
+    h1         true 时在同一行输出一个 sr-only <h1>（屏幕阅读器/大纲可用的页面标题）。
+               站内标题栏的 span 是 XP 视觉用的，不是真正的文档标题；没有它，
+               页面大纲会退回到 display:none 的「我的小站」（见 navigation_bar.ejs）。
+               首页那些装饰性小窗口不传 h1，避免把每个小格子都标记成页面标题。
+
+  ⚠ 坑（2026-10-18 踩过）：把标题写成「图标 + 文字」后，个别窗口标题
+    （详细属性、喵计次！）自己仍手写内联 <svg>，显得和别的窗口不齐 ——
+    新页面一律走 icon 参数，不要再手画图标。
+  ⚠ 标题里出现尖括号或 & 而不转义，轻则破版，重则能被注入标记。
+%><%
+  let rawTitle;
+  if (typeof titleHtml !== 'undefined' && titleHtml !== null) {
+    rawTitle = String(titleHtml);           // 调用方已保证安全
+  } else if (typeof title !== 'undefined' && title !== null) {
+    rawTitle = String(title)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  } else {
+    rawTitle = '';
+  }
+  const _icon = (typeof icon === 'string' && icon) ? icon : '';
+  const _size = (typeof iconSize === 'number' && iconSize > 0) ? iconSize : 16;
+  const _cls = (typeof cls === 'string' && cls) ? ' ' + cls : '';
+  const _compact = (typeof compact !== 'undefined' && compact) ? ' compact' : '';
+  const _buttons = (typeof buttons === 'undefined' || buttons);
+  const _h1 = (typeof h1 !== 'undefined' && h1 ? true : false);
+  const _iconHtml = _icon
+    ? '<svg class="inline-icon" width="' + _size + '" height="' + _size +
+      '" aria-hidden="true"><use href="#icon-' + _icon + '"/></svg>'
+    : '';
+%>    <div class="xp-window-title<%- _compact %>">
+<% if (_h1) { %>      <h1 class="xp-sr-only"><%- rawTitle %></h1>
+<% } %>      <span class="xp-window-title-text post-title-text<%- _cls %>"><%- _iconHtml %><%- rawTitle %></span>
+<% if (_buttons) { %>      <%- xp_bullet() %>
+<% } %>    </div>

@@ -5,7 +5,7 @@ categories: [随笔]
 tags: [生活]
 ---
 
-欢迎来到我的小站，这篇是 Hexo 的默认示例文章，留作写文章的格式参考。
+Hexo 的默认示例文章，留作写文章的格式参考。
 
 ## Quick Start
 
@@ -40,3 +40,4 @@ $ hexo deploy
 ```
 
 More info: [Deployment](https://hexo.io/docs/one-command-deployment.html)
+

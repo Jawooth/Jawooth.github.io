@@ -1,0 +1,52 @@
+name: 构建并部署到 GitHub Pages
+
+# 为什么要有这个工作流（2026-10-12 审查新增）：
+#   本机 hexo-deployer-git 部署依赖本机网络与 git 凭据，站主在 README 0.1 节
+#   记过 Clash 代理对 registry.npmjs.org / GitHub 的 TLS 失败坑。改成 CI 部署后，
+#   push 即构建发布，本机只保留菜单 [3] 作为手动通道。
+#
+# ⚠ 首次启用前必须先提交构建资源：
+#   目前 source/fonts/（两个 woff2 + OFL.txt）、source/images/decor/、
+#   以及未提交的新文章都还没 git add。本地部署不需要它们入库（public/ 是本地
+#   构建的），但 CI 是从仓库 checkout 的——缺一个字体会让全站掉系统字体。
+#   先执行：git add source/fonts source/images/decor 并提交，再推上去。
+
+on:
+  push:
+    branches: [master]      # 仓库默认分支是 master；若改名，这里同步改
+  workflow_dispatch:        # 允许在 Actions 页面手动点「Run workflow」
+
+permissions:
+  contents: write           # peaceiris 推送 gh-pages 分支需要写权限
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'   # 与站主本机一致；Hexo 8 要求 Node >= 20.19
+          cache: npm
+
+      # 严格按 package-lock.json 安装——和 package.json 注释里的锁版本策略一致
+      - run: npm ci
+
+      - run: npx hexo generate
+
+      # 部署前的最后一道闸：内容自检（断链 / 未渲染标签 / 结构 / 体积 / 用字覆盖）。
+      # 不过 npm audit：CI 网络对 registry.npmjs.org 偶发 ECONNRESET，不让它拦截部署
+      # （漏洞扫描由 .github/workflows/osv-scanner.yml 每周定时做）。
+      - name: 站点自检 verify-site.py
+        run: |
+          pip install pyyaml fonttools brotli
+          python3 tools/check/verify-site.py --no-audit
+
+      - name: 部署到 gh-pages 分支
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages      # 与现有 hexo-deployer-git 的部署分支一致
+          commit_message: "站点更新：${{ github.event.head_commit.message }}"

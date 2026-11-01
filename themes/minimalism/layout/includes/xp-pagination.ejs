@@ -1,0 +1,17 @@
+<%#
+  分页控件（.pagination-container）
+  ------------------------------------------------------------------
+  原本在 index.ejs 与 articles.ejs 里逐字复制了两份（5 行完全一样）。
+  只有在 page.total > 1 时才输出，所以单页站点上永远看不到它。
+
+  调用方直接 include 即可，不用传参数（读的是当前 page）。
+%><% if (page.total > 1) { %>
+    <div class="pagination-container">
+      <% if (page.prev) { %>
+        <a href="<%- url_for(page.prev_link) %>"><i class="icon icon-arrow-ios-back-outline"></i> 上一页</a>
+      <% } else { %><span></span><% } %>
+      <% if (page.next) { %>
+        <a href="<%- url_for(page.next_link) %>">下一页 <i class="icon icon-arrow-ios-forward-outline"></i></a>
+      <% } %>
+    </div>
+<% } %>

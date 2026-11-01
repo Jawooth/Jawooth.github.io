@@ -1,23 +1,17 @@
 # 待办事项（唯一真源）
-# 只显示在「杂谈」页（/blog/）的待办窗口里；首页「小站数据」的待办数字也来自这里。
+# 只显示在「文字」页（/blog/）的待办窗口里；首页账户卡右下角的待办数字也来自这里。
 # state: doing(进行中) | todo(待做) | done(已完成)   —— 只能填这三种，写别的会静默算成「待做」
+# url:   可选字段。填了就变成可点击的直达链接 —— 站内写 /works/ 这类路径，
+#        站外写完整 https://…（自动新标签页打开并带小箭头）；不填就是纯文字，排版不变。
 # 显示顺序固定：进行中 → 待做 → 已完成
-# 字段说明见 CONTENT-GUIDE.md 第 4 节，日常操作见 README.md
-- text: 整理作品集页面
+# 字段说明见 README.md 第 6.3 节
+- text: 整完一堆乱七八糟描述不上来的怪事
   state: doing
-- text: 学习插画基础
-  state: doing
-- text: 写一篇新的插画过程
+- text: 补特摄片
   state: todo
-- text: 设计像素小游戏
+- text: 补p系列
   state: todo
-- text: 写一篇网站建设教程
+- text: 给网站丰富更多小玩意
   state: todo
-- text: 上传更多作品
+- text: 给产儿整同人游戏
   state: todo
-- text: 完成个人网站搭建
-  state: done
-- text: 确定网站风格和方向
-  state: done
-- text: 学习 Hexo 基础使用
-  state: done

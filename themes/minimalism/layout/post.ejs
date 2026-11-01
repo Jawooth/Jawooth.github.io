@@ -1,21 +1,31 @@
 <%#
-  文章页（XP 窗口外壳 + 两栏 + 目录 + 相关文章）
+  文章页（XP 窗口外壳 + 两栏 + 目录 + 上一篇/下一篇）
   ------------------------------------------------------------------
   结构：
     .content-container.xp-shell
       ├─ .xp-window-title   标题栏（文章标题 + 装饰按钮）
       ├─ .post-info         日期 / 分类 / 标签 / 字数
       └─ .xp-shell-body
-           ├─ .xp-shell-main  大图 + 正文 + 相关文章 + 下一篇
+           ├─ .xp-shell-main  大图 + 正文 + 上一篇/下一篇
            └─ .xp-aside       侧栏（目录 / 作者 / 最近文章 / 标签云 / 浏览）
   早期版本这套外壳是用 after_render 过滤器注入 HTML 实现的，现已改为模板直出。
 %><%- include('./includes/header') %>
 
   <div class="content-container xp-shell">
-    <div class="xp-window-title">
-      <span class="xp-window-title-text post-title-text"><%= page.title %></span>
-      <%- xp_bullet() %>
-    </div>
+    <%
+      /* 标题 + （加密文章才有的）锁图标。
+         锁图标是本站唯一一处 —— 早期只有 post.ejs 有它，别的模板复制标题栏时都漏了。
+         现在标题栏是共用 partial，锁图标跟着标题一起传进去。
+         标题自己转义（原来这里是 EJS 的转义输出），拼好后才走 titleHtml 通道。 */
+      const escTitle = String(page.title == null ? '' : page.title)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      let postTitleHtml = escTitle;
+      if (page.password) {
+        postTitleHtml += '<span class="xp-lock" title="需要密码" aria-label="需要密码"><svg width="1.15em" height="1.15em" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="#icon-lock"></use></svg></span>';
+      }
+    %>
+    <%- include('./includes/xp-window-title', { titleHtml: postTitleHtml, h1: true }) %>
 
     <div class="post-info">
       <span><i class="icon icon-calendar-outline"></i> <%= date(page.date, config.date_format) %></span>
@@ -32,29 +42,51 @@
 
     <div class="xp-shell-body">
       <div class="xp-shell-main">
-        <% if (page.img && page.img !== '') { %>
-          <div class="feature-container" style="background-image: url('<%= page.img %>')"></div>
-        <% } %>
+        <%#
+          2026-10-18 works waterfall redesign removed the front-matter img
+          feature image here. Card already shows cover; detail page repeats it.
+          og:image still uses page.img in head.ejs for share cards.
+          Restore from git history if ever needed. EJS comments leak any text
+          containing tag delimiters, so keep this block ASCII-only.
+        %>
 
         <div class="post-content">
           <%- page.content %>
         </div>
 
-        <%- xp_related(page, 3) %>
-
-        <% if (page.next) { %>
-          <div class="next-post">
-            <a class="purple-link" href="<%- url_for(page.next.path) %>">
-              <h3 class="post-title">
-                <% var lang = config.language || 'zh-CN'; %>
-                <%= lang === 'en' ? 'Next post: ' : '下一篇：' %><%= page.next.title %>
-              </h3>
-            </a>
-          </div>
+        <%#
+          上一篇 / 下一篇：就是「按时间排的文章列表」里相邻的两篇，规则由 Hexo 定死：
+            page.prev = 列表里的前一篇 = **更新**的那篇
+            page.next = 列表里的后一篇 = **更早**的那篇
+          （列表是新的在前，所以往下读就是越读越早，和「下一篇」的说法一致。）
+          早期这里还有一块「相关文章」窗口（按同分类 / 同标签打分挑），已按站主要求去掉。
+        %>
+        <% if (page.prev || page.next) { %>
+          <nav class="post-nav" aria-label="上一篇 / 下一篇">
+            <% var lang = config.language || 'zh-CN'; %>
+            <% if (page.prev) { %>
+              <a class="post-nav-item prev" href="<%- url_for(page.prev.path) %>" rel="prev">
+                <span class="post-nav-label"><%= lang === 'en' ? 'Newer' : '上一篇' %></span>
+                <span class="post-nav-title"><%= page.prev.title %></span>
+              </a>
+            <% } else { %><span class="post-nav-spacer" aria-hidden="true"></span><% } %>
+            <% if (page.next) { %>
+              <a class="post-nav-item next" href="<%- url_for(page.next.path) %>" rel="next">
+                <span class="post-nav-label"><%= lang === 'en' ? 'Older' : '下一篇' %></span>
+                <span class="post-nav-title"><%= page.next.title %></span>
+              </a>
+            <% } else { %><span class="post-nav-spacer" aria-hidden="true"></span><% } %>
+          </nav>
         <% } %>
+
+        <%# 点赞：本地点赞（计数只存访客自己的浏览器，见 README 第 12 节）。
+            加密文章不加（内容还没读到，赞了没意义），由 xp_like 内部判断。 %>
+        <div class="post-actions">
+          <%- xp_like(page) %>
+        </div>
       </div>
 
-      <%- include('./includes/xp-aside', { page: page, kind: 'post' }) %>
+      <%- include('./includes/xp-aside', { page: page, isPost: true }) %>
     </div>
   </div>
 

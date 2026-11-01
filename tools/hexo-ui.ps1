@@ -263,54 +263,136 @@ function Open-PreviewBrowser {
   try { Start-Process $Url | Out-Null } catch { Write-Warn ("没能自动打开浏览器，请手动访问：" + $Url) }
 }
 
+# ------------------------------------------------------------
+#  预览的公共逻辑（[2] 看效果 与 [6] 菜单里的「开预览」共用）
+# ------------------------------------------------------------
+# 为什么要抽出来：这两处原本各写了一份「4000 优先、否则 4010、都没有就起一个」
+# 的近 30 行重复代码。本项目吃过「改一处忘一处」的亏（见 README 第 13 节 6.1b
+# 附近），所以只留这一份。
+#
+# 返回值：'hub' 表示用的是 HexoHub 的 4000；'local' 表示用的是 4010；
+#         'failed' 表示 4010 起不来。调用方据此决定要不要补一句「没有热重载」。
+function Resolve-PreviewTarget {
+  param([switch]$StartIfMissing)
+
+  # 4000 是 HexoHub 的预览端口。HexoHub 的「服务器预览」模式要嵌 iframe
+  # 指过来，所以优先复用它；它没跑就用我们自己的 4010。
+  if (Get-PortOwner -Port $HexoHubPort) { return 'hub' }
+
+  if (-not (Get-PortOwner -Port $LocalPort)) {
+    if (-not $StartIfMissing) { return 'missing' }
+
+    Write-Line ("  正在新开一个窗口启动预览服务器（端口 " + $LocalPort + "）...")
+    Write-Line
+    Write-Warn "新开的那个窗口（写着 Hexo server is running）要一直开着，"
+    Write-Line "      关掉它预览就停了。这个菜单窗口可以留着。"
+    Write-Line
+    Start-PreviewWindow
+
+    if (-not (Get-PortOwner -Port $LocalPort)) {
+      Write-Bad ("启动失败：端口 " + $LocalPort + " 上没有监听到服务。")
+      Write-Line "      请把新窗口里红色/报错的文字发给帮你维护网站的人。"
+      return 'failed'
+    }
+  }
+  return 'local'
+}
+
+# 预览用的地址与「怎么在 HexoHub 里用它」的说明，两种入口共用。
+function Show-PreviewHint {
+  param([string]$Target)
+
+  if ($Target -eq 'hub') {
+    Write-Line "      在 HexoHub 里看文章效果，记得：设置 -> 预览模式 ->「服务器预览」，"
+    Write-Line "      「iframe地址获取方式」选「根地址」。"
+    Write-Line "      （不要选「Hexo标准地址」：它会拼出 /年/月/日/标题/ 这种地址，"
+    Write-Line "        而本站的 permalink 是 :title/ 不含日期，一定会报 Cannot GET。）"
+  }
+}
+
+function Open-ResolvedPreview {
+  param([string]$Target)
+
+  if ($Target -eq 'hub') {
+    $url = "http://localhost:" + $HexoHubPort + "/"
+  } else {
+    $url = "http://127.0.0.1:" + $LocalPort + "/"
+  }
+  Write-Host ("  正在打开浏览器：" + $url) -ForegroundColor Cyan
+  Open-PreviewBrowser -Url $url
+  return $url
+}
+
+# ------------------------------------------------------------
+#  [2] 看效果 —— 完整流程：重新生成 + 打开预览
+# ------------------------------------------------------------
 function Invoke-Look {
   Write-Head "看效果：重新生成，然后打开本地预览"
 
+  # 构建时 4000 必须让开（HexoHub 的预览会锁住 public\），所以这里单独检查，
+  # 不能直接复用 Resolve-PreviewTarget。
   if (-not (Confirm-Port4000Clear)) { return }
 
-  Write-Line "  第 1/2 步：重新生成网站（hexo clean + hexo generate）..."
+  Write-Line "  生成网站（hexo clean + hexo generate）..."
   Write-Line
   & npm run build
   $rc = $LASTEXITCODE
   Write-Line
   if ($rc -ne 0) {
     Write-Bad ("生成失败（退出码 " + $rc + "）。请把上面红色/报错的文字发给帮你维护网站的人。")
-    Write-Line "      也可以先跑一次在线的自检：菜单里的 [7] 全面自检。"
+    Write-Line "      也可以先跑一次在线自检：菜单里的 [6] 全面自检。"
     return
   }
   Write-OK "网站已重新生成。"
 
   Write-Line
-  Write-Line "  第 2/2 步：打开本地预览..."
+  Write-Line "  打开本地预览..."
+  Write-Line
 
-  $hubOwner = Get-PortOwner -Port $HexoHubPort
-  if ($hubOwner) {
-    Write-Line ("  HexoHub 的预览（端口 4000）正在运行，直接用它：")
-    Write-Host  "        http://localhost:4000/" -ForegroundColor Cyan
-    Open-PreviewBrowser -Url 'http://localhost:4000/'
-    return
+  $target = Resolve-PreviewTarget -StartIfMissing
+  if ($target -eq 'failed') { return }
+
+  Show-PreviewHint -Target $target
+  Open-ResolvedPreview -Target $target | Out-Null
+}
+
+# ------------------------------------------------------------
+#  [6] -> [1] 开预览 —— 只启动服务器，不重新生成（写文章时用这个）
+# ------------------------------------------------------------
+# 为什么单独做一个：写文章时需要反复「保存 md -> 看网页对不对」。
+# 走 [2] 每次都要 hexo clean + generate（好几秒），而且会先把预览关掉；
+# 这里只保证 4010 上有一个 hexo server 常驻 —— 省掉反复关停预览。
+#
+# 【给维护者：不要把这里写成「热重载」】2026-10 实测：本机 hexo server 改完
+# source\_posts\*.md 后，盯着服务器日志等 30 秒一行新增都没有，页面始终是旧
+# 内容（只服务启动那一刻生成的快照）。所以这里的价值是「把站点挂起来、
+# 省掉反复关停」，内容更新仍然必须按 [2]。
+function Invoke-OpenPreview {
+  Write-Head "开预览：启动本地预览服务器（不重新生成）"
+
+  $target = Resolve-PreviewTarget -StartIfMissing
+  if ($target -eq 'failed') { return }
+
+  if ($target -eq 'hub') {
+    Write-OK ("检测到 HexoHub 的预览服务器已经在端口 " + $HexoHubPort + " 上运行。")
+    Write-Line
+  } elseif (Get-PortOwner -Port $LocalPort) {
+    Write-OK ("本地预览（端口 " + $LocalPort + "）已经在跑了。")
+  } else {
+    Write-OK "预览服务器已启动。"
   }
 
-  $localOwner = Get-PortOwner -Port $LocalPort
-  if ($localOwner) {
-    Write-Line ("  本地预览（端口 4010）已经在跑了，直接打开：")
-    Write-Host  "        http://127.0.0.1:4010/" -ForegroundColor Cyan
-    Open-PreviewBrowser -Url 'http://127.0.0.1:4010/'
-    return
-  }
+  Write-Line
+  Write-Line "  ⚠ 实测：它【没有】热重载 —— 改完文章必须回菜单按 [2] 重新生成，"
+  Write-Line "    否则浏览器刷新看到的还是旧内容（这里只服务启动时的那份快照）。"
+  Write-Line "    它的价值是省掉反复关停预览，不是省掉重新生成。"
+  Write-Line
 
-  Write-Line "  现在还没有预览，正在新开一个窗口启动它（端口 4010）..."
+  Show-PreviewHint -Target $target
+  $url = Open-ResolvedPreview -Target $target
   Write-Line
-  Write-Warn "新开的那个窗口（写着 Hexo server is running）要一直开着，"
-  Write-Line "      关掉它预览就停了。这个菜单窗口可以留着。"
-  Write-Line
-  Start-PreviewWindow
-  Write-Host  "  正在打开浏览器：http://127.0.0.1:4010/" -ForegroundColor Cyan
-  Open-PreviewBrowser -Url 'http://127.0.0.1:4010/'
-  Write-Line
-  Write-Line "  小提醒：预览显示的是「上一次生成」的结果。"
-  Write-Line "  改完文章、图片或 source\_data 里的文件，要再选一次 [2] 看效果。"
-  Write-Line "  只改了 CSS 的话，浏览器按 Ctrl+F5 刷新就够了。"
+  Write-Line ("  建议把 " + $url + " 加进浏览器收藏夹，")
+  Write-Line "  以后写文章就直接点收藏夹，不用再回来按菜单。"
 }
 
 # ------------------------------------------------------------
@@ -336,7 +418,7 @@ function Invoke-DeploySteps {
     if ($LASTEXITCODE -ne 0) {
       Write-Line
       Write-Bad "生成失败，已经停下，线上没有任何改动。"
-      Write-Line "      建议先跑菜单里的 [7] 全面自检，看看是不是有文章写坏了。"
+      Write-Line "      建议先跑菜单里的 [6] 全面自检，看看是不是有文章写坏了。"
       return $false
     }
   } else {
@@ -498,7 +580,7 @@ function Invoke-Undo {
 }
 
 # ------------------------------------------------------------
-#  [6] 更新歌单
+#  [7] → [2] 更新歌单
 # ------------------------------------------------------------
 function Invoke-Music {
   Write-Head "更新歌单：换了网易云歌单之后跑一次"
@@ -518,7 +600,7 @@ function Invoke-Music {
   Write-Line
   Write-Line "  正在按 source\_data\music.yml 里的歌单编号重新抓取曲目..."
   Write-Line
-  Invoke-Python -Py $py -Script (Join-Path $PSScriptRoot 'fetch-netease.py')
+  Invoke-Python -Py $py -Script (Join-Path $PSScriptRoot 'fetch\fetch-netease.py')
   $rc = $LASTEXITCODE
   Write-Line
   Write-Host ('-' * 60) -ForegroundColor DarkCyan
@@ -536,7 +618,7 @@ function Invoke-Music {
 }
 
 # ------------------------------------------------------------
-#  [7] 全面自检
+#  [6] 全面自检
 # ------------------------------------------------------------
 function Invoke-SelfCheck {
   Write-Head "全面自检：检查断链、没渲染的标签、图片大小"
@@ -550,7 +632,7 @@ function Invoke-SelfCheck {
 
   Write-Line "  正在检查网站内容，可能要十几秒..."
   Write-Line
-  Invoke-Python -Py $py -Script (Join-Path $PSScriptRoot 'verify-site.py')
+  Invoke-Python -Py $py -Script (Join-Path $PSScriptRoot 'check\verify-site.py')
   $rc = $LASTEXITCODE
   Write-Line
   Write-Host ('-' * 60) -ForegroundColor DarkCyan
@@ -573,16 +655,58 @@ function Show-Menu {
   Write-Host  "  我的小站 —— 只双击这一个文件" -ForegroundColor Cyan
   Write-Rule
   Write-Line
+  Write-Host  "  ── 日常 ──────────────────────────────────" -ForegroundColor DarkGray
   Write-Host  "  [1] " -ForegroundColor Yellow -NoNewline; Write-Host "写 / 改文章     打开 HexoHub 编辑器（写文章、拖图片）"
   Write-Host  "  [2] " -ForegroundColor Yellow -NoNewline; Write-Host "看效果          重新生成，然后用浏览器打开本地预览"
   Write-Host  "  [3] " -ForegroundColor Yellow -NoNewline; Write-Host "发布上线        生成并上传到线上（别人就能看到了）"
+  Write-Line
+  Write-Host  "  ── 改错了 / 不放心 ───────────────────────" -ForegroundColor DarkGray
   Write-Host  "  [4] " -ForegroundColor Yellow -NoNewline; Write-Host "先备份          动手删东西/换图片之前，先留个底"
   Write-Host  "  [5] " -ForegroundColor Yellow -NoNewline; Write-Host "撤回改动        改坏了？回到上次能用的样子"
-  Write-Host  "  [6] " -ForegroundColor Yellow -NoNewline; Write-Host "更新歌单        换了网易云歌单之后"
-  Write-Host  "  [7] " -ForegroundColor Yellow -NoNewline; Write-Host "全面自检        检查断链、没渲染的标签、图片大小"
+  Write-Host  "  [6] " -ForegroundColor Yellow -NoNewline; Write-Host "全面自检        检查断链、没渲染的标签、图片大小"
+  Write-Line
+  Write-Host  "  ── 更多功能 ──────────────────────────────" -ForegroundColor DarkGray
+  Write-Host  "  [7] " -ForegroundColor Yellow -NoNewline; Write-Host "其他功能        开预览（不重新生成）、更新歌单"
+  Write-Line
   Write-Host  "  [0] " -ForegroundColor Yellow -NoNewline; Write-Host "退出"
   Write-Line
   Write-Rule
+}
+
+# 「其他功能」二级菜单：把不常用、或需要额外知识的操作收到这里，
+# 让主菜单只留日常三件事 + 出错时三件事。
+function Show-MoreMenu {
+  Write-Line
+  Write-Rule
+  Write-Host  "  其他功能" -ForegroundColor Cyan
+  Write-Rule
+  Write-Line
+  Write-Host  "  [1] " -ForegroundColor Yellow -NoNewline; Write-Host "开预览          启动预览服务器（不重新生成）；改完内容仍需按 [2]"
+  Write-Host  "  [2] " -ForegroundColor Yellow -NoNewline; Write-Host "更新歌单        换了网易云歌单之后（需要联网）"
+  Write-Line
+  Write-Host  "  [0] " -ForegroundColor Yellow -NoNewline; Write-Host "返回主菜单"
+  Write-Line
+  Write-Rule
+}
+
+function Invoke-MoreMenu {
+  while ($true) {
+    Show-MoreMenu
+    $choice = Read-Host "  输入数字后按回车"
+
+    if ([string]::IsNullOrWhiteSpace($choice) -and [Console]::IsInputRedirected) { return }
+
+    switch ($choice) {
+      '1' { Invoke-OpenPreview; Wait-Key }
+      '2' { Invoke-Music;       Wait-Key }
+      '0' { return }
+      default {
+        Write-Line
+        Write-Warn "看不懂这个输入，请输入 0、1 或 2，然后按回车。"
+        continue
+      }
+    }
+  }
 }
 
 Write-Line
@@ -608,8 +732,8 @@ while ($running) {
     '3' { Invoke-Publish }
     '4' { Invoke-Backup }
     '5' { Invoke-Undo }
-    '6' { Invoke-Music }
-    '7' { Invoke-SelfCheck }
+    '6' { Invoke-SelfCheck }
+    '7' { Invoke-MoreMenu; continue }
     '0' {
       Write-Line
       Write-Host "  再见！有需要就再双击一次「1 开始使用.cmd」。" -ForegroundColor Cyan
