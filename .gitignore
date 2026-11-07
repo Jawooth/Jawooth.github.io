@@ -84,3 +84,7 @@ _favicon_*.png
 tools/icons/_*.js
 tools/icons/_*.html
 tools/icons/preview.html
+
+# 工作目录里的助手笔记（.workbuddy/memory 下的每日工作日志）
+# 只服务本机接续，不是站点内容，别跟着仓库一起公开
+.workbuddy/
