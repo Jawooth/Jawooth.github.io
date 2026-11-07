@@ -1,54 +1,9 @@
 /* global window, document */
 'use strict';
 
-// 菜单
-/* ⚠ 2026-10-18：这里原来直接 querySelector('.menu-switch').addEventListener ——
-   .menu-switch 只存在于页面顶栏（.site-header-container）里，而 xp-custom.css
-   把整个顶栏 display:none 了（导航改由底部开始菜单承担）。于是 querySelector 返回
-   null，这一整段直接抛 TypeError，**文件里后面所有功能（复制代码按钮等）都跟着不执行**。
-   所以先判空再绑定；同时加了 aria-expanded / 键盘 Esc 收起，形状对齐开始菜单。
-   （顶栏若哪天恢复显示，这段仍然可用。） */
-const menuSwitch = document.querySelector('.menu-switch');
-const menuContainer = document.querySelector('.menu-container');
-
-function setMenuOpen(open) {
-  if (!menuSwitch || !menuContainer) return;
-  if (open) {
-    menuSwitch.classList.replace('icon-menu-outline', 'icon-close-outline');
-    menuContainer.style.opacity = '1';
-    menuContainer.style.height = 'auto';
-    menuContainer.style['z-index'] = '1024';
-  } else {
-    menuSwitch.classList.replace('icon-close-outline', 'icon-menu-outline');
-    menuContainer.style.opacity = '0';
-    menuContainer.style['z-index'] = '0';
-    setTimeout(() => {
-      if (menuSwitch.classList.contains('icon-menu-outline')) {
-        menuContainer.style.height = '0';
-      }
-    }, 600);
-  }
-  menuSwitch.setAttribute('aria-expanded', open ? 'true' : 'false');
-}
-
-if (menuSwitch && menuContainer) {
-  menuSwitch.setAttribute('role', 'button');
-  menuSwitch.setAttribute('tabindex', '0');
-  menuSwitch.setAttribute('aria-label', '导航菜单');
-  menuSwitch.setAttribute('aria-expanded', 'false');
-  menuSwitch.addEventListener('click', function () {
-    setMenuOpen(!this.classList.contains('icon-close-outline'));
-  });
-  menuSwitch.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      setMenuOpen(!this.classList.contains('icon-close-outline'));
-    }
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setMenuOpen(false);
-  });
-}
+// 顶栏折叠菜单已于 2026-11-03 删除：顶栏本身从 2026-10 起就被 xp-custom.css 隐藏，
+// 站内导航由底部任务栏的开始菜单承担（scripts/xp-taskbar.js）。这段代码只会
+// querySelector 到 null，留着是纯死码 —— 连同 includes/navigation_bar.ejs 一起删了。
 
 // 代码复制
 function addCopyIcons() {

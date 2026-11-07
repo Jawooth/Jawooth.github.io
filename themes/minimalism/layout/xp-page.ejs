@@ -11,9 +11,11 @@
 
   这个模板只做三件事：套页面外壳、输出页面内容、收尾。
   页面自己负责内部结构（XP 窗口 / 便当格布局等）。
-%><%# 桌面式页面没有 xp-window-title 标题栏，页面标题落不到大纲。
-    补一个 sr-only h1（真标题），浏览器/读屏文件大纲才有页面级标题。
-    page.title 会转义（%> 用转义输出）。 %><%- include('./includes/header') %>
+%><%#
+  桌面式页面没有 xp-window-title 标题栏，页面标题落不到大纲。
+  补一个 sr-only h1（真标题），浏览器/读屏文件大纲才有页面级标题。
+  page.title 走 EJS 转义输出（小于号与和号会被转义）。
+%><%- include('./includes/header') %>
 
   <div class="content-container">
     <h1 class="xp-sr-only"><%- page.title || config.title %></h1>

@@ -1,16 +1,15 @@
-@import "_core/colors";
+// 主题样式层 · 入口（2026-11-03 瘦身 Stage B 之后只剩这一层重置）
+//
+// 原先这里 import 了 13 个文件（colors / footnotes / fonts / footer / header /
+// link / list / pagination / post / figure / search-modal / night-node），
+// 大约 20 KB 的 .styl。但它们和 source/css/xp-custom.css 做的事高度重叠，
+// 而且是「隐形真源」：这份 CSS 未分层、又比 XP.css 先加载，赢了一大堆声明，
+// 站点的设计系统却写在 xp-custom.css 里 —— 改那边的值改不动，因为这些值被这里按死。
+//
+// 2026-11-03 做了一次逐声明的层叠实测（jsdom 对 18 个页面 × 明暗两套、
+// 三万多条声明算「谁真的赢」），把仍然生效的规则全部搬进了 xp-custom.css，
+// 并逐条比对了 18 页 × 57 个计算样式属性的基线快照，视觉零变化。
+//
+// 所以现在只剩 base.styl —— 浏览器重置 + 结构骨架。
+// 它必须保持**未分层**：XP.css 整个包在 @layer xp-css 里，未分层规则永远赢过分层规则。
 @import "_core/base";
-@import "_core/footnotes" if hexo-config('footnote.enable');
-
-@import "_blocks/fonts";
-@import "_blocks/footer";
-@import "_blocks/header";
-@import "_blocks/link";
-@import "_blocks/list";
-@import "_blocks/pagination";
-@import "_blocks/post";
-@import "_blocks/figure";
-
-@import "_blocks/search-modal.css" if hexo-config('search.enable');
-
-@import "_core/night-node" if hexo-config('dark_theme.enable');

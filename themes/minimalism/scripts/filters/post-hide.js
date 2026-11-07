@@ -183,3 +183,48 @@ hexo.extend.generator.register('articles-redirect', () => {
    注：is_hide helper 曾在这里注册，但它用箭头函数取 this、模板也从不引用，
    属于死代码，已删（2026-11 清理）。 */
 
+/* ---------- /tools/ → /games/ 跳转页（2026-11-02） ----------
+   「工具」在 2026-11-01 并进了「游戏」。原来的 /tools/ 页是个 39 KB 的完整主题页，
+   里面只有一行 <script>location.replace('/games/')</script>：
+   · JS 被禁用 / 被拦截时页面上什么都不剩，只剩一片空桌面；
+   · 搜索引擎抓到一个 39 KB 的空壳页，还以为是真页面。
+   现在改成和 /guides/ 一样的轻量跳转页（不到 1 KB）：
+   meta refresh + rel="canonical" + 一行 JS 兜底 + 一个肉眼可见的链接，
+   JS 禁了也有话说，搜索引擎也知道正主是 /games/。
+   source/tools/index.md 已删除 —— 那个文件会先生成一份 39 KB 的页面，
+   和这里的生成器撞车。 */
+hexo.extend.generator.register('tools-redirect', () => {
+  const to = '/games/';
+  const page = () => `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>页面已合并 · 正在前往「游戏」</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="${to}">
+<meta http-equiv="refresh" content="0; url=${to}">
+<style>
+  html, body { height: 100%; }
+  body {
+    margin: 0; display: flex; align-items: center; justify-content: center;
+    background: #3a6ea5; color: #f3f2ea;
+    font-family: "Fusion Pixel 12px Proportional zh_hans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; text-align: center;
+  }
+  a { color: #ffe6a7; }
+</style>
+</head>
+<body>
+  <div>
+    <p>「工具」已经并进「游戏」了，正在带你过去……</p>
+    <p><a href="${to}">如果没自动跳转，点这里前往「游戏」</a></p>
+  </div>
+  <script>location.replace(${JSON.stringify(to)});</script>
+</body>
+</html>`;
+  return [
+    { path: 'tools/index.html', data: page() },
+    { path: 'tools/page/1/index.html', data: page() }
+  ];
+});
+

@@ -22,7 +22,9 @@
 <% } %>
 <% groups.forEach(function (g) { %>
   <div class="xp-timeline-year">
-    <span><%= g.year %> 年</span>
+    <%# 2026-11-02：年份原来是纯文字，年份页 /archives/<年>/ 在站内没有任何入口，
+        只能手打地址访问（内容还和归档首页重复一遍）。把它变成链接。 %>
+    <a class="xp-timeline-year-link" href="<%- url_for(config.archive_dir + '/' + g.year + '/') %>"><%= g.year %> 年</a>
     <span class="count"><%= g.posts.length %> 篇</span>
   </div>
   <ul class="xp-timeline-list">

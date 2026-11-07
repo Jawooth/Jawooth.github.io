@@ -6,4 +6,18 @@
   <body>
     <div id="app" class="main">
 
-<%- partial('includes/navigation_bar', '', {cache: true}) %>
+<%#
+  顶部导航（navigation_bar）已于 2026-11-03 整块删除：
+  它从 2026-10 起就被 xp-custom.css 的 .site-header-container{display:none} 关掉了，
+  站内真正的导航是任务栏的开始菜单（scripts/xp-taskbar.js 读同一份 theme.menu 配置）。
+  留着它只有坏处：每页多一整块不可见的 DOM、多一个看不见的 <h1>（站名），
+  菜单链接还得挂 tabindex="-1" aria-hidden="true" 才不至于把键盘用户困在隐形元素里。
+%>
+
+<%#
+  主内容地标（2026-11-02 无障碍修复）。
+  原来整页只有一个 div#app，屏幕阅读器读不出「正文在哪」，
+  现在把正文区包进 main 标签。main 是 .main（flex 列）里的一个 flex 子项，
+  内部仍由 .content-container 撑开高度，页面外观一行不变。
+  闭合标签在 includes/footer.ejs —— 每个模板的正文都夹在这两者之间。
+%><main class="xp-main">

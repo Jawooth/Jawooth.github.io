@@ -1,3 +1,11 @@
+<%#
+  正文结束（2026-11-02 无障碍修复）：main 的开标签在 includes/header.ejs，
+  这里闭合它。页脚与浮层放在 main 之外 —— main 只装「正文」。
+  最后的 </div> 闭合 header.ejs 里的 div#app。
+  修之前这里有两行多余的 </div>（全站每页净少一个闭合标签），
+  浏览器会自行纠正，但 DOM 结构是错的。
+%></main>
+
 <footer>
 <div class="site-footer">
   <div class="social-container">
@@ -24,12 +32,17 @@
 </footer>
 
 <%- xp_decor() %>
-<%- xp_music() %>
+<%#
+  2026-11-04：这里原来有一行全站播放器注入，把播放器当右下角浮层。
+  站主要求播放器融入页面之后，改成由各页面模板自己放：
+    · 首页 bento-music 格 / 侧栏首卡 —— xp_music() 竖排卡片
+    · 单栏页底部 —— xp_music('bar') 横排一条
+  全站注入会和新落位重复（一页两个播放器），所以这里彻底删掉。
+%>
 <%- xp_window_actions() %>
 <%- xp_screensaver() %>
 
       </div>
-    </div>
     <%- partial('includes/scripts', '') %>
   </body>
 </html>
