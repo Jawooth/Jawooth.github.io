@@ -22,10 +22,10 @@
     if (clockEl) clockEl.title = CLOCK_TIP(now);
     if (timeEl) {
       if (use24()) {
-        timeEl.textContent = pad(now.getHours()) + '：' + pad(now.getMinutes());
+        timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
       } else {
         var h = now.getHours() % 12; if (h === 0) h = 12;
-        timeEl.textContent = h + '：' + pad(now.getMinutes()) + (now.getHours() < 12 ? 'am' : 'pm');
+        timeEl.textContent = h + ':' + pad(now.getMinutes()) + (now.getHours() < 12 ? 'am' : 'pm');
       }
     }
     if (dateEl) dateEl.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日';
@@ -72,8 +72,8 @@
   // ========== 当前页面的标题与图标 ==========
   /* 图标表与开始菜单同源（START_ICONS），构建期序列化进来 —— 两边永远一致，
      不会出现"开始菜单改了图标、任务栏还是旧的"（2026-10-15 站主要求两处对应）。 */
-  var PAGE_ICONS = {"/":"<path d=\"M8 1L1 7v8h5v-5h4v5h5V7L8 1z\" fill=\"#cc6633\" stroke=\"#993300\" stroke-width=\"0.5\"/><rect x=\"6\" y=\"10\" width=\"4\" height=\"5\" fill=\"#663300\" stroke=\"#330000\" stroke-width=\"0.5\"/>","/works/":"<path d=\"M8 1C4 1 1 4 1 8s3 7 7 7c1 0 2-1 2-2s-1-1-1-2 1-2 2-2 2 1 2 2 1 2 2 2 2-1 2-2c0-3-3-7-7-7z\" fill=\"#ff9999\" stroke=\"#cc6666\" stroke-width=\"0.5\"/><circle cx=\"5\" cy=\"6\" r=\"1.2\" fill=\"#ff6666\"/><circle cx=\"11\" cy=\"6\" r=\"1.2\" fill=\"#66cc66\"/><circle cx=\"5\" cy=\"10\" r=\"1.2\" fill=\"#6666ff\"/><circle cx=\"10\" cy=\"11\" r=\"1.2\" fill=\"#ffff66\"/>","/blog/":"<rect x=\"3\" y=\"1.5\" width=\"10\" height=\"13\" rx=\"1\" fill=\"#fdfdf8\" stroke=\"#336699\" stroke-width=\"0.8\"/><rect x=\"3\" y=\"1.5\" width=\"10\" height=\"3\" fill=\"#3366cc\"/><line x1=\"5\" y1=\"7\" x2=\"11\" y2=\"7\" stroke=\"#88aacc\" stroke-width=\"0.9\"/><line x1=\"5\" y1=\"9.3\" x2=\"11\" y2=\"9.3\" stroke=\"#88aacc\" stroke-width=\"0.9\"/><line x1=\"5\" y1=\"11.6\" x2=\"9\" y2=\"11.6\" stroke=\"#88aacc\" stroke-width=\"0.9\"/>","/games/":"<rect x=\"2\" y=\"4\" width=\"12\" height=\"8\" rx=\"3\" fill=\"#333333\" stroke=\"#000000\" stroke-width=\"0.5\"/><circle cx=\"5\" cy=\"8\" r=\"1.5\" fill=\"#666666\"/><circle cx=\"11\" cy=\"7\" r=\"1\" fill=\"#ff3333\"/><circle cx=\"12\" cy=\"9\" r=\"1\" fill=\"#3333ff\"/>","/tools/":"<path d=\"M13.2 3.4l-2.6 2.6 -1.8-1.8 2.6-2.6c-1.5-0.6-3.3-0.3-4.5 0.9 -1.2 1.2-1.5 3-0.9 4.5l-4.9 4.9 2.2 2.2 4.9-4.9c1.5 0.6 3.3 0.3 4.5-0.9 1.2-1.2 1.5-3 0.5-4.9z\" fill=\"#9aa4ae\" stroke=\"#4a545e\" stroke-width=\"0.7\"/><circle cx=\"11.4\" cy=\"4.6\" r=\"1.1\" fill=\"#e9edf2\" stroke=\"#4a545e\" stroke-width=\"0.5\"/>","/guides/":"<path d=\"M2 3h12v8H5l-3 3V3z\" fill=\"#ccddee\" stroke=\"#336699\" stroke-width=\"0.5\"/><circle cx=\"5.5\" cy=\"7\" r=\"1\" fill=\"#336699\"/><circle cx=\"8\" cy=\"7\" r=\"1\" fill=\"#336699\"/><circle cx=\"10.5\" cy=\"7\" r=\"1\" fill=\"#336699\"/>","/archives/":"<rect x=\"2\" y=\"3\" width=\"12\" height=\"11\" fill=\"#ccddee\" stroke=\"#336699\" stroke-width=\"0.5\"/><rect x=\"2\" y=\"3\" width=\"12\" height=\"3\" fill=\"#336699\"/><rect x=\"2\" y=\"8\" width=\"12\" height=\"2\" fill=\"#99bbdd\"/>","/thanks/":"<path d=\"M8 14s-5.5-3.4-5.5-7A3.2 3.2 0 0 1 8 4.6a3.2 3.2 0 0 1 5.5 2.4C13.5 10.6 8 14 8 14z\" fill=\"#ff8080\" stroke=\"#cc4444\" stroke-width=\"0.6\"/>"};
-  var PAGE_ICON_FALLBACK = "<path d=\"M3 1h7l3 3v11H3V1z\" fill=\"#ffffff\" stroke=\"#003399\" stroke-width=\"1\"/><path d=\"M10 1v3h3\" fill=\"none\" stroke=\"#003399\" stroke-width=\"1\"/><line x1=\"5\" y1=\"7\" x2=\"11\" y2=\"7\" stroke=\"#003399\" stroke-width=\"1\"/><line x1=\"5\" y1=\"9\" x2=\"11\" y2=\"9\" stroke=\"#003399\" stroke-width=\"1\"/><line x1=\"5\" y1=\"11\" x2=\"9\" y2=\"11\" stroke=\"#003399\" stroke-width=\"1\"/>";
+  var PAGE_ICONS = {"/":"<g transform=\"scale(0.3333333333333333)\"><g fill=\"none\" stroke-width=\"4\"><path fill=\"#ef5b52\" stroke=\"#6b7480\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 18V42H39V18L24 6L9 18Z\"/><path fill=\"#4a86e8\" stroke=\"#fff\" stroke-linejoin=\"round\" d=\"M19 29V42H29V29H19Z\"/><path stroke=\"#6b7480\" stroke-linecap=\"round\" d=\"M9 42H39\"/></g></g>","/works/":"<g transform=\"scale(0.3333333333333333)\"><g fill=\"#ffffff\" stroke=\"#6b7480\" stroke-width=\"4\" stroke-linejoin=\"round\"><path d=\"M24 5C11.85 5 2 13.954 2 25C2 36.046 11.85 45 24 45C27.314 45 30 42.314 30 39C30 37.4 29.37 35.94 28.34 34.87C27.34 33.83 26.72 32.48 26.72 31C26.72 27.69 29.4 25 32.72 25H37C40.87 25 44 21.87 44 18C44 10.82 34.15 5 24 5Z\"/></g><circle cx=\"13\" cy=\"17\" r=\"3.2\" fill=\"#ef5b52\"/><circle cx=\"24\" cy=\"13\" r=\"3.2\" fill=\"#ffd24a\"/><circle cx=\"35\" cy=\"17\" r=\"3.2\" fill=\"#55b463\"/><circle cx=\"11\" cy=\"28\" r=\"3.2\" fill=\"#4a86e8\"/><circle cx=\"19\" cy=\"34\" r=\"3.2\" fill=\"#f79240\"/></g>","/blog/":"<g transform=\"scale(0.3333333333333333)\"><g fill=\"none\" stroke-linejoin=\"round\" stroke-width=\"4\"><path fill=\"#f79240\" stroke=\"#6b7480\" d=\"M8 6C8 4.89543 8.89543 4 10 4H30L40 14V42C40 43.1046 39.1046 44 38 44H10C8.89543 44 8 43.1046 8 42V6Z\"/><path stroke=\"#fff\" stroke-linecap=\"round\" d=\"M16 20H32\"/><path stroke=\"#fff\" stroke-linecap=\"round\" d=\"M16 28H32\"/></g></g>","/games/":"<g transform=\"scale(0.3333333333333333)\"><g fill=\"none\" stroke-linejoin=\"round\" stroke-width=\"4\"><path fill=\"#9fd8f8\" stroke=\"#6b7480\" d=\"M32 18H16C9.37258 18 4 23.3726 4 30C4 36.6274 9.37258 42 16 42H32C38.6274 42 44 36.6274 44 30C44 23.3726 38.6274 18 32 18Z\"/><path stroke=\"#6b7480\" stroke-linecap=\"round\" d=\"M16 26V34\"/><path stroke=\"#6b7480\" stroke-linecap=\"round\" d=\"M12 30H20\"/><path stroke=\"#6b7480\" stroke-linecap=\"round\" d=\"M24 16V9.71429H32V4\"/><path fill=\"#6b7480\" stroke=\"#6b7480\" d=\"M32 34C34.2091 34 36 32.2091 36 30C36 27.7909 34.2091 26 32 26C29.7909 26 28 27.7909 28 30C28 32.2091 29.7909 34 32 34Z\"/></g></g>","/tools/":"<g transform=\"scale(0.3333333333333333)\"><g stroke=\"#6b7480\" stroke-width=\"2.6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path fill=\"#dde3ec\" d=\"M12.2 43.2C10.6 44.8 8 44.8 6.4 43.2L4.8 41.6C3.2 40 3.2 37.4 4.8 35.8L19.4 21.2C18.5 18.6 18.7 15.6 20 13.1C22 9.2 26.3 6.9 30.7 7.5C32.4 7.7 33.9 8.3 35.2 9.2L29.3 15.1C28.5 15.9 28.5 17.2 29.3 18L30 18.7C30.8 19.5 32.1 19.5 32.9 18.7L38.8 12.8C39.7 14.1 40.3 15.6 40.5 17.3C41.1 21.7 38.8 26 34.9 28C32.4 29.3 29.4 29.5 26.8 28.6Z\"/></g></g>","/guides/":"<g transform=\"scale(0.3333333333333333)\"><g fill=\"#f79240\" stroke=\"#6b7480\" stroke-linejoin=\"round\" stroke-width=\"4\"><path d=\"M5 7H16C20.4183 7 24 10.5817 24 15V42C24 38.6863 21.3137 36 18 36H5V7Z\" fill=\"#f79240\"><path d=\"M43 7H32C27.5817 7 24 10.5817 24 15V42C24 38.6863 26.6863 36 30 36H43V7Z\" fill=\"#f79240\"></g></g>","/archives/":"<g transform=\"scale(0.3333333333333333)\"><g fill=\"none\" stroke-linejoin=\"round\" stroke-width=\"4\"><rect width=\"36\" height=\"30\" x=\"6\" y=\"12\" fill=\"#55b463\" stroke=\"#6b7480\" rx=\"2\"/><path stroke=\"#fff\" stroke-linecap=\"round\" d=\"M17.9497 24.0083L29.9497 24.0083\"/><path stroke=\"#6b7480\" stroke-linecap=\"round\" d=\"M6 13L13 5H35L42 13\"/></g></g>","/thanks/":"<g transform=\"scale(0.3333333333333333)\"><path fill=\"#ef5b52\" stroke=\"#6b7480\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"4\" d=\"M15 8C8.92487 8 4 12.9249 4 19C4 30 17 40 24 42.3262C31 40 44 30 44 19C44 12.9249 39.0751 8 33 8C29.2797 8 25.9907 9.8469 24 12.6738C22.0093 9.8469 18.7203 8 15 8Z\"/></g>"};
+  var PAGE_ICON_FALLBACK = "<g transform=\"scale(0.3333333333333333)\"><g fill=\"none\"><path fill=\"#6b7480\" stroke=\"#6b7480\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"4\" d=\"M10 44H38C39.1046 44 40 43.1046 40 42V14H30V4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z\"/><path stroke=\"#6b7480\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"4\" d=\"M30 4L40 14\"/><path stroke=\"#fff\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"4\" d=\"M24 31V28C26.2091 28 28 25.9853 28 23.5C28 21.0147 26.2091 19 24 19C21.7909 19 20 21.0147 20 23.5\"/><path fill=\"#fff\" fill-rule=\"evenodd\" d=\"M24 39C25.3807 39 26.5 37.8807 26.5 36.5C26.5 35.1193 25.3807 34 24 34C22.6193 34 21.5 35.1193 21.5 36.5C21.5 37.8807 22.6193 39 24 39Z\" clip-rule=\"evenodd\"/></g></g>";
   /* 同一张表挂到 window 上：页面里临时要插个图标（错误提示之类）可以取这里。
      首页「快速导航」瓦片不靠它 —— 那些是在构建期由 xp_page_icon 标签直接渲染好的。 */
   try { window.hexo_page_icons = PAGE_ICONS; } catch (e) {}
@@ -81,7 +81,7 @@
     var path = window.location.pathname.replace(/index\.html$/, '');
     /* 任务栏左下角那个「当前页面名」也读导航配置（由构建期注入 PAGE_TITLES），
        免得导航改名后这里还显示旧名字（2026-10-14 同一个坑踩了两次）。 */
-    var pages = {"/":"首页","/works/":"绘画","/blog/":"文字","/games/":"游戏","/tools/":"工具","/archives/":"归档","/tags/":"标签","/categories/":"分类","/thanks/":"致谢"};
+    var pages = {"/":"首页","/works/":"绘画","/blog/":"文字","/games/":"游戏","/archives/":"归档","/tags/":"标签","/categories/":"分类","/thanks/":"致谢"};
     var title = pages[path] || document.title || '页面';
     var titleEl = document.getElementById('xpTaskbarTitle');
     if (titleEl) titleEl.textContent = title;
@@ -142,11 +142,117 @@
   }
   applyThemeUI(document.documentElement.classList.contains('dark'));
 
+  // ========== 回到顶部（托盘按钮） ==========
+  /* 出现时机：滚过一屏才显示。顶部时隐藏，否则它在「本来就在顶部」的页面上
+     什么也做不了，白占托盘位置。
+     滚动监听用 passive + rAF 节流：scroll 事件每帧都可能触发，直接改 DOM 会掉帧。 */
+  function initBackToTop() {
+    var btn = document.getElementById('xpTopBtn');
+    if (!btn) return;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var maxY = Math.max(0, (document.documentElement.scrollHeight || 0) - vh);
+      /* 阈值取「0.9 屏」与「整页可滚动距离的一半」里较小的那个。
+         为什么不能只写 0.9 屏：短文整页只能滚 805px 而视口 900px，
+         0.9 屏 = 810 > 805 ⇒ 按钮永远不出现（实测 /about-me/ 滚到底仍 hidden）。
+         另外 maxY 很小时（页面本来就一屏）干脆不显示 —— 它没有意义。 */
+      var need = Math.min(vh * 0.9, maxY * 0.5);
+      var show = maxY > 120 && y > need;
+      /* 状态已经对了就别再动 DOM。注意是「hidden === !show」——
+         写成「show === hidden」会把逻辑整个反过来（今天真踩过：
+         滚到底按钮仍然不出现）。 */
+      if (btn.hidden === !show) return;
+      if (show) btn.removeAttribute('hidden'); else btn.setAttribute('hidden', '');
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      if (window.requestAnimationFrame) window.requestAnimationFrame(update);
+      else setTimeout(update, 60);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    btn.addEventListener('click', function () {
+      /* 尊重系统的「减少动态效果」：开了就别滚，直接跳。
+         matchMedia 不存在时（老浏览器）按需要平滑处理。 */
+      var reduce = false;
+      try { reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (err) {}
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: reduce ? 'auto' : 'smooth' });
+      } catch (err) {
+        window.scrollTo(0, 0);          /* 不支持对象参数时退回两参数形式 */
+      }
+      /* 键盘用户点完，焦点留在按钮上会看不见自己在哪 —— 送回文档开头。 */
+      var main = document.querySelector('main') || document.body;
+      if (main && main.focus) {
+        try { main.setAttribute('tabindex', '-1'); main.focus({ preventScroll: true }); } catch (err) {}
+      }
+    });
+    update();
+  }
+  initBackToTop();
+
+  // ========== 阅读进度条（只在有正文的页面上出现） ==========
+  /* 为什么放在任务栏脚本里而不是文章模板：它要跟着滚动实时算，
+     而任务栏脚本本来就每页都跑、且已经有一个滚动监听（回到顶部）。
+     用 .post-content 的存在与否当开关：没有正文的页面（首页/列表页/致谢…）
+     直接退出，一条线都不出现。 */
+  function initReadBar() {
+    var bar = document.getElementById('xpReadBar');
+    var fill = document.getElementById('xpReadFill');
+    var body = document.querySelector('.post-content');
+    if (!bar || !fill || !body) return;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var maxY = Math.max(0, (document.documentElement.scrollHeight || 0) - vh);
+      /* 进度按「整页可滚动距离」算，不按正文元素算。
+         试过按 .post-content 自身算，短文章上完全不成立 —— 实测 /about-me/ 的正文
+         只比视口高 152px，那条线只在 150px 的滚动窗口里闪一下就到 100% 然后隐藏，
+         等于没有。整页口径虽然把页脚那 100 多 px 也算进去，但单调、可预期，
+         和读者「我这页看到哪了」的直觉一致。 */
+      var p = maxY > 0 ? y / maxY : 0;
+      if (p < 0) p = 0;
+      if (p > 1) p = 1;
+      /* 页顶不显示（还没开始读）；页面本来就一屏时不显示（没有进度可言）。 */
+      var show = maxY > 120 && y > 40 && p > 0.005;
+      /* ⚠ 判断写「!==」不是「===」：hidden 与 show 应当是相反的，
+         hidden === !show 表示「状态已经对了」，这时什么都不用做。
+         写成 === 再进分支，就等于「状态对了才去改」，会把该显示的按回隐藏 ——
+         今天在回到顶部那一份上踩过同样的反转，这里是第二次。 */
+      if (bar.hidden !== !show) {
+        if (show) bar.removeAttribute('hidden'); else bar.setAttribute('hidden', '');
+      }
+      fill.style.width = (p * 100).toFixed(2) + '%';
+      bar.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      if (window.requestAnimationFrame) window.requestAnimationFrame(update);
+      else setTimeout(update, 60);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+  initReadBar();
+
   // ========== 托盘音量：静音 / 取消静音（对所有音频生效） ==========
   var muted = false;
   function applyMute() {
     var media = document.querySelectorAll('audio, video');
     for (var i = 0; i < media.length; i++) media[i].muted = muted;
+    /* 2026-11-02：音乐播放器的 <audio> 是 APlayer 运行时 createElement 出来的，
+       从不挂进 DOM —— 上面那句 querySelectorAll 抓不到它。以前点托盘喇叭对音乐
+       一点用都没有。播放器把这一路暴露成 window.__XP_AUDIO__，这里一起管住。 */
+    if (window.__XP_AUDIO__) window.__XP_AUDIO__.muted = muted;
+    /* 播放器可能比任务栏晚初始化（脚本顺序 / 网络慢），把静音状态也挂出去，
+       播放器建好 audio 时自己读这一份，免得「先点了静音，播放器后来才响」。 */
+    window.__XP_MUTED__ = muted;
     var on = document.getElementById('xpVolOn');
     var off = document.getElementById('xpVolOff');
     var btn = document.getElementById('xpVolumeBtn');
@@ -277,10 +383,8 @@
     box.innerHTML =
       '<div class="xp-window-title">' +
         '<span class="xp-window-title-text">' +
-          '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">' +
-            '<circle cx="8" cy="8" r="7" fill="#e8b800" stroke="#8a6d00" stroke-width="1"/>' +
-            '<rect x="7.2" y="4" width="1.6" height="5" fill="#3a2c00"/>' +
-            '<rect x="7.2" y="10.4" width="1.6" height="1.6" fill="#3a2c00"/>' +
+          '<svg width="1.15em" height="1.15em" viewBox="0 0 16 16" aria-hidden="true">' +
+            '<use href="#icon-warn"></use>' +
           '</svg> ' + T.errorTitle +
         '</span>' +
         '<span class="xp-window-btns" role="group" aria-label="窗口操作">' +
@@ -298,8 +402,7 @@
         '<div class="xp-error-row">' +
           '<div class="xp-error-icon" aria-hidden="true">' +
             '<svg width="34" height="34" viewBox="0 0 16 16">' +
-              '<circle cx="8" cy="8" r="7" fill="#e04343" stroke="#8a1f1f" stroke-width="1"/>' +
-              '<path d="M4.6 4.6l6.8 6.8M11.4 4.6l-6.8 6.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>' +
+              '<use href="#icon-critical"></use>' +
             '</svg>' +
           '</div>' +
           '<p class="xp-error-text">' + T.errorLines.join('<br>') + '</p>' +

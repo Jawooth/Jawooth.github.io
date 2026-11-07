@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /tools/
+Disallow: /guides/
+Disallow: /search.json
+
+Sitemap: https://Jawooth.github.io/sitemap.xml
