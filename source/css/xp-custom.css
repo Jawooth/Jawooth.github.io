@@ -3890,10 +3890,32 @@ pre *, code * {
       2026-10 合并到这里：一是自检要求页面内联 CSS 不超过 4KB，二是两份重复的
       规则改一处忘一处（当时就漏改过一次）。 */
 
-/* 容器行高：.xp-bento 默认 grid-auto-rows: minmax(110px, auto)，那是为卡片定的最小行高。
-   但分区小标题只有二十来像素高，却被这一行强行撑到 110px，
+/* 容器行高：.xp-bento 默认 grid-auto-rows: minmax(96px, auto)，那是为卡片定的最小行高。
+   但分区小标题只有二十来像素高，却被这一行强行撑高，
    于是标题下方空出一大块。这里把最小行高降到 34px，行高仍会按内容自动增长。 */
 .app-page .xp-bento { grid-auto-rows: minmax(34px, auto); }
+
+/* 卡片下方的「都还在做」占位说明条（2026-11-07，README 14.1 ⑥）。
+   六张卡全是 planned，内容到卡片底就结束，下面大半屏是壁纸 ——
+   空白要有一条收尾的话，才像「有意留白」而不是加载坏了。
+   材质与 .xp-empty 一致（虚线边 + --surface-2 + --text-muted），只是单行、不摆站标；
+   走 token，深色模式自动适配，不用写第二套。 */
+.app-wip-note {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: var(--fs-note);
+  text-align: center;
+}
+.app-wip-note svg { flex: none; }
 
 /* ★ 窄屏（≤640px）防溢出：游戏页/工具页现在多了一层 .app-row，
    而 .main 是 display:flex 的容器，flex 子项默认 min-width:auto 会按内容的

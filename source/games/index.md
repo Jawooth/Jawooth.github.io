@@ -39,6 +39,16 @@ layout: xp-page
 
 {% xp_apps pane tool games %}
 
+<!-- 2026-11-07 占位说明（README 14.1 ⑥）：卡片全是 planned，内容到卡片底就结束，
+     下面大半屏是壁纸 —— 空白得有一条收尾的话，才像「有意留白」而不是加载坏了。
+     放在 .xp-bento 里占整行（grid-column: 1/-1），与上面卡片同容器同 gap，不用另管边距。
+     文案刻意不写数字（apps.yml 加减卡片这里不会跟着错）；图标由 xp-enhance.js
+     按页扫描 <use> 自动进 sprite，不用登记。 -->
+<p class="app-wip-note">
+<svg width="1.1em" height="1.1em" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="#icon-todo-pending"/></svg>
+都还在做 —— 卡片先摆出来占个位，做完一个上线一个。
+</p>
+
 </div>
 
 </div>

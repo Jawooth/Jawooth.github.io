@@ -120,12 +120,35 @@ function allPosts() {
   return q2a(hexo.database.model('Post').find(query, { lean: false })).sort((a, b) => b.date - a.date);
 }
 
+/* 这个标签「能让访客看到」的文章数 —— 即公开文章数，加密文章不算。
+   ── 为什么不能用 tag.length ──
+   tag.length 数的是 PostTag 关联条数，而 source/ 下的页面（首页的标签云、
+   /tags/ 索引、/works/ 的标签云）在 load 阶段就渲染完了，早于下面那个
+   before_generate filter 清关联的时机 —— 同一份数据在同一个构建里会得到两个
+   数字（标签云写 3 篇、点进 /tags/碎碎念/ 只有 2 篇）。所以要一个两种时机都
+   成立的判据：只数公开文章。清关联之后剩下的本来全是公开文章，结果一致。
+   ── 返回 0 的含义 ──
+   这个标签没有任何公开文章在用（可能全是加密文章，也可能关联已被清空），
+   调用方应当整体隐藏它。 */
+function tagPublicCount(tag) {
+  const PostTag = hexo.database.model('PostTag');
+  const Post = hexo.database.model('Post');
+  const ids = q2a(PostTag.find({ tag_id: tag._id })).map((r) => r.post_id);
+  if (!ids.length) return 0;
+  /* 用数据库直查而不是 tag.posts：后者走 ctx.locals.get('posts')，而 locals 在某些
+     时机是「只加载了一部分文章」的快照（本文件顶部有一整段解释这个坑），会把还有
+     公开文章的标签误判成 0，标签凭空消失。 */
+  return q2a(Post.find({ _id: { $in: ids } })).filter((p) => !p.password).length;
+}
+
 function allTags() {
   /* 排序规则：先按文章数从多到少，同数量的再按名字排。      第二级排序不能省：hexo.database 里标签的初始顺序取决于各个      处理器异步完成的先后，每次构建都不一样；只按文章数排的话，      同数量的标签每次都换位置 —— 现象就是「没改任何东西，构建出来的      页面却次次不同」，标签云顺序乱跳，diff 也没法看。
-*/
+     计数用 tagPublicCount 而不是 tag.length，理由见上面那段。 */
   return q2a(hexo.database.model('Tag').find({}, { lean: false }))
-    .filter((t) => t.length)
-    .sort((a, b) => (b.length - a.length) || String(a.name).localeCompare(String(b.name), 'zh'));
+    .map((t) => ({ t, n: tagPublicCount(t) }))
+    .filter((x) => x.n > 0)
+    .sort((a, b) => (b.n - a.n) || String(a.t.name).localeCompare(String(b.t.name), 'zh'))
+    .map((x) => x.t);
 }
 
 function allCategories() {
@@ -293,7 +316,10 @@ function tagCloud() {
      字号写进 --pill-size 自定义属性，实际字号仍由 CSS 决定（.tag-pill 用 var 读它），
      这样以后改整体字号只改 CSS 一处，不必回来改这里。
      （原有一个 cloud 变体：输出 .cloud-tag 方胶囊，全站无调用，2026-11-07 连同样式一起删了。） */
-  const maxCount = Math.max.apply(null, tags.map((t) => t.length));
+  /* 计数一律用 tagPublicCount：加密文章不算数，光看 tag.length 会在
+     load 阶段渲染的页面（首页、/works/）和 generator 产物之间对不上（见该函数注释）。 */
+  const counted = tags.map((t) => ({ t, n: tagPublicCount(t) }));
+  const maxCount = Math.max.apply(null, counted.map((x) => x.n));
   const sizeOf = (n) => {
     if (maxCount <= 1) return 16;
     const ratio = Math.log(n) / Math.log(maxCount);
@@ -309,9 +335,9 @@ function tagCloud() {
     for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
     return PILL_CLASSES[h % PILL_CLASSES.length];
   };
-  const items = tags.map((t) => (
-    `<a class="tag-pill ${colorOf(t.name)}" style="--pill-size:${sizeOf(t.length)}px" href="${href(t.path)}" title="${t.name} · ${t.length} 篇">${esc(t.name)}` +
-    `<span class="tag-count">${t.length}</span></a>`
+  const items = counted.map(({ t, n }) => (
+    `<a class="tag-pill ${colorOf(t.name)}" style="--pill-size:${sizeOf(n)}px" href="${href(t.path)}" title="${t.name} · ${n} 篇">${esc(t.name)}` +
+    `<span class="tag-count">${n}</span></a>`
   ));
   return oneLine(`<div class="tag-cloud">${items.join('')}</div>`);
 }
@@ -1183,6 +1209,44 @@ hexo.extend.filter.register('after_post_render', (data) => {
     data.title || data.source || '?', reason, iter, WEAK_PW_MIN);
 });
 
+/* 加密文章的标签不进入任何索引（2026-11-07）
+   ── 问题 ──
+   hexo-blog-encrypt 只加密 content；tags 属于 front matter，会被原样写进 Tag 模型
+   和 PostTag 关联表。于是「大烧烤」正文锁着，标签「争议话题」照样出现在侧栏标签云、
+   /tags/ 索引、它自己的 /tags/争议话题/ 页面、atom/rss 的 <category>、以及列表卡片的
+   标签行 —— 锁只锁了正文，标签在外面挂着当线索。
+   ── 为什么是 before_generate，不是 before_post_render ──
+   tags 的写入发生在 processor 阶段（node_modules/hexo/dist/plugins/processor/post.js
+   的 doc.setTags，读的是 front matter 解析出的 data.tags），早于 before_post_render；
+   在那个钩子上改 data.tags 已经晚了，关联表早建好了。before_generate 时全站文章都已
+   入库、关联表也已建好，这时改才有效。hexo 在跑 before_generate **之前**就 invalidate
+   了 locals（hexo/dist/hexo/index.js 的 _generate），所以这里读完再 invalidate 一次，
+   generator 拿到的就是改后的数据。
+   ── 为什么整篇清空，而不是只清「只被加密文章用」的标签 ──
+   共享标签（如「碎碎念」）不能整个删掉 —— 还有公开文章在用。只删独有标签的话，就得
+   在这里重算「每个标签是否只剩加密文章」，等于在库里另建一份统计，且和 hexo 自己的
+   Tag.length 容易走岔。整篇清空的语义更简单也更好讲：**加密文章的标签完全不参与
+   索引与计数**。
+   ── 代价（有意的）──
+   解锁后的文章页也不显示标签了（page.tags 为空）。静态站里标签一旦进了 HTML 就是公开的，
+   「解锁后才显示」需要再拉一次接口，不值得。把 password 去掉就会自动恢复 —— 删密码必然
+   改动文件，processor 会重新 setTags。 */
+hexo.extend.filter.register('before_generate', async () => {
+  const posts = q2a(hexo.database.model('Post').find({}, { lean: false }));
+  const locked = [];
+  for (const post of posts) {
+    if (!post.password) continue;
+    /* setTags 是异步的（它可能新建 Tag 记录），必须 await —— 不 await 的话
+       generator 可能先跑，读到的还是清空前的关联。 */
+    await post.setTags([]);
+    locked.push(post.title || post.source);
+  }
+  if (locked.length) {
+    hexo.locals.invalidate();
+    hexo.log.info('[xp-content] 加密文章的标签不参与索引：%s', locked.join('、'));
+  }
+});
+
 /* 加密了就返回锁形图标，否则空字符一 —— 让模板里少写一层三全 */
 const lockMarkIf = (post) => (isLocked(post) ? lockMark() : '');
 
@@ -1250,17 +1314,19 @@ hexo.extend.helper.register('xp_post_cards', function (posts) {
 
 /* 标签 / 分类索引页（同时注册成 helper 一 markdown 标签，两处复用同一份实现）。    两类页面结构相同，只差数据源（allTags / allCategories），抽成一个函数。
 */
-function indexGridHtml(items, emptyText) {
+function indexGridHtml(items, emptyText, countOf) {
   if (!items.length) return `<p class="xp-empty">${emptyText}</p>`;
+  /* countOf 可选：标签用 tagPublicCount（加密文章不算数），分类仍用 length。 */
+  const count = countOf || ((t) => t.length);
   const cells = items.map((t) => (
     `<a class="xp-index-item" href="${href(t.path)}"><span class="name">${esc(t.name)}</span>` +
-    `<span class="count">${t.length} 篇</span></a>`
+    `<span class="count">${count(t)} 篇</span></a>`
   ));
   return oneLine(`<div class="xp-index-grid">${cells.join('')}</div>`);
 }
 
 function tagIndexHtml() {
-  return indexGridHtml(allTags(), '还没有标签');
+  return indexGridHtml(allTags(), '还没有标签', tagPublicCount);
 }
 
 function categoryIndexHtml() {
