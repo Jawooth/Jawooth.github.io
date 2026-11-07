@@ -43,3 +43,8 @@ layout: xp-page
 
 </div>
 </div>
+
+<!-- 2026-11-04：播放器页内化。这一页是便当格页（没有侧栏），
+     便当格里只有「游戏 / 工具」标题条与两栏卡片，插进网格会破坏并排结构 ——
+     所以放在页尾一条，与 /works/、/tags/、/categories/ 保持同一外观。 -->
+<div class="xp-page-player">{% xp_music bar %}</div>

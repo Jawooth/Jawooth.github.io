@@ -67,15 +67,16 @@ layout: xp-page
 </div>
 </div>
 
-<!-- 创作中 -->
+<!-- 创作中：2026-11-06 站主要求与其它窗口统一 —— 去掉了虚线外框、橙色标题栏
+     与半透明，也去掉了内容里的「进行中」角标（标题已经写着「创作中」，
+     角标是同一句话的第二次说法）。现在它只是一扇普通窗口。 -->
 <div class="works-item works-upcoming">
-<div class="xp-window work-window-card upcoming">
+<div class="xp-window">
 <%- include('./includes/xp-window-title', { title='创作中', icon='clock' }) %>
 <div class="xp-window-body">
 <div class="upcoming-content">
 <div class="upcoming-icon"><svg width="32" height="32" viewBox="0 0 16 16" aria-hidden="true"><use href="#icon-pencil"/></svg></div>
 <p>下一幅作品正在酝酿中，敬请期待……</p>
-<span class="work-status doing">进行中</span>
 </div>
 </div>
 </div>
@@ -84,7 +85,11 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 页面级排布（组件样式统一在 /css/xp-custom.css） ========== -->
+<!-- 2026-11-04：播放器页内化。这一页是便当格页（没有侧栏），
+     便当格里每格都排满了，塞播放器要动整张排布表 —— 所以放在页尾一条，
+     和 /tags/、/categories/ 等单栏页保持一致的外观。 -->
+<div class="xp-page-player">{% xp_music bar %}</div>
+
 <style>
 .works-header,
 .works-gallery { grid-column: 1 / -1; grid-row: span 1; }

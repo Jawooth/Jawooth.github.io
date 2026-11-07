@@ -38,8 +38,18 @@ sitemap: true
       </li>
       <li>
         <a href="https://github.com/DIYgod/APlayer" target="_blank" rel="noopener">APlayer</a>
-        <span class="thanks-use">首页音乐播放器（歌单由本站的 fetch-netease.py 从网易云同步后静态注入）</span>
+        <span class="thanks-use">页面内的音乐播放器（歌单由本站的 fetch-netease.py 从网易云同步后静态注入）</span>
         <span class="thanks-license">MIT · DIYgod</span>
+      </li>
+      <li>
+        <a href="https://github.com/simple-icons/simple-icons" target="_blank" rel="noopener">Simple Icons</a>
+        <span class="thanks-use">社交图标（GitHub / B 站 / 小红书 / Pixiv / X 等）的品牌图形</span>
+        <span class="thanks-license">CC0 1.0</span>
+      </li>
+      <li>
+        <a href="https://iconpark.oceanengine.com/" target="_blank" rel="noopener">IconPark</a>
+        <span class="thanks-use">界面图标（播放器按钮、窗口图标、任务栏托盘等），按本站配色重新上色</span>
+        <span class="thanks-license">Apache-2.0 · 字节跳动</span>
       </li>
     </ul>
   </div>
@@ -114,6 +124,9 @@ sitemap: true
 </div>
 
 </div>
+
+<!-- 2026-11-04：单栏页没有侧栏，播放器放页面底部一条（横排 bar 变体）。 -->
+<div class="xp-page-player">{% xp_music bar %}</div>
 
 <style>
 /* 致谢页排版：条目一行三段（名称 / 用途 / 协议），窄屏折行 */

@@ -18,3 +18,5 @@ layout: xp-page
 </div>
 </div>
 </div>
+<!-- 2026-11-04：单栏页没有侧栏，播放器放页面底部一条（横排 bar 变体）。 -->
+<div class="xp-page-player">{% xp_music bar %}</div>

@@ -178,6 +178,25 @@ shutdown:
   #   注意：托盘那个静音按钮优先级更高 —— 静音开着时这里写 true 也不出声。
   sound: true
 
+# Feed（2026-11-05 新增）
+## 站主按优先度批准的第一项：RSS / Atom。
+## 静态文字博客唯一不依赖平台算法的订阅出口，之前 public/ 根完全没有 feed。
+## 同时输出 atom.xml 与 rss2.xml 两种，阅读器认哪个都行；autodiscovery 让浏览器
+## 地址栏自动亮起订阅图标（hexo-generator-feed 会往每页 <head> 注入 <link>）。
+## 只放最近 20 篇全文以外的摘要 —— limit 是条数，content_limit 是摘要字数。
+## 加密文章（大烧烤）由 hexo-blog-encrypt 处理，正文本来就是密文，不会外泄。
+feed:
+  enable: true
+  type: [atom, rss2]
+  path: ''
+  limit: 20
+  hub: ''
+  content: true
+  content_limit: 200
+  content_limit_delim: ' '
+  order_by: '-date'
+  autodiscovery: true
+
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:

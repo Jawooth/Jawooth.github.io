@@ -96,6 +96,13 @@ function buildStartItems() {
    而常量会在模块加载时就把值定死 —— 那时配置还是空的（见上面的说明）。 */
 function taskbarHTML() {
   return `
+<!-- 阅读进度条（2026-11-05）。贴在窗口最顶端、任务栏之外的一条 3px 细线。
+     放在这里而不是文章模板里：任务栏脚本每页都注入，而进度条只需要 DOM
+     里有一个元素 —— 有没有正文由 initReadBar() 判断，没有就不显示。
+     用 CSS 变量控制高度，方便和任务栏的缩放保持一致。 -->
+<div class="xp-readbar" id="xpReadBar" role="progressbar" aria-label="阅读进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+  <div class="xp-readbar-fill" id="xpReadFill"></div>
+</div>
 <!-- XP 底部任务栏 -->
 <div class="xp-taskbar">
   <div class="xp-taskbar-left">
@@ -116,6 +123,15 @@ function taskbarHTML() {
   </div>
 
   <div class="xp-taskbar-right">
+    <!-- 回到顶部（2026-11-05 站主按优先度批准的功能之一）。
+         做成托盘小按钮而不是页脚浮球：本站的常驻 chrome 就是任务栏，
+         浮球会压内容（播放器就为此从右下角浮层改成页内），托盘天然不占地。
+         默认 hidden，滚动超过一屏才出现 —— 在页面顶部时它没有意义。
+         箭头手绘、不走图标管线：node_modules 里 icon-park 的包是空的，
+         现在无法重跑 emit-smooth，加新 id 会构建失败（见 README 第 14 节）。 -->
+    <button class="xp-tray-btn" id="xpTopBtn" type="button" title="回到顶部" aria-label="回到顶部" hidden>
+      <svg viewBox="0 0 16 16" width="1.2em" height="1.2em" aria-hidden="true"><path d="M8 3.2L3.1 8h2.6v4.8h4.6V8h2.6z" fill="currentColor"/></svg>
+    </button>
     <button class="xp-tray-btn" id="xpVolumeBtn" type="button" title="静音 / 取消静音" aria-pressed="false" aria-label="静音切换">
       <svg id="xpVolOn" viewBox="0 0 16 16" width="1.2em" height="1.2em" aria-hidden="true"><g>${pixOrThrow('tray-vol-on')}</g></svg>
       <svg id="xpVolOff" viewBox="0 0 16 16" width="1.2em" height="1.2em" aria-hidden="true" style="display:none"><g>${pixOrThrow('tray-vol-off')}</g></svg>
@@ -336,11 +352,117 @@ return `
   }
   applyThemeUI(document.documentElement.classList.contains('dark'));
 
+  // ========== 回到顶部（托盘按钮） ==========
+  /* 出现时机：滚过一屏才显示。顶部时隐藏，否则它在「本来就在顶部」的页面上
+     什么也做不了，白占托盘位置。
+     滚动监听用 passive + rAF 节流：scroll 事件每帧都可能触发，直接改 DOM 会掉帧。 */
+  function initBackToTop() {
+    var btn = document.getElementById('xpTopBtn');
+    if (!btn) return;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var maxY = Math.max(0, (document.documentElement.scrollHeight || 0) - vh);
+      /* 阈值取「0.9 屏」与「整页可滚动距离的一半」里较小的那个。
+         为什么不能只写 0.9 屏：短文整页只能滚 805px 而视口 900px，
+         0.9 屏 = 810 > 805 ⇒ 按钮永远不出现（实测 /about-me/ 滚到底仍 hidden）。
+         另外 maxY 很小时（页面本来就一屏）干脆不显示 —— 它没有意义。 */
+      var need = Math.min(vh * 0.9, maxY * 0.5);
+      var show = maxY > 120 && y > need;
+      /* 状态已经对了就别再动 DOM。注意是「hidden === !show」——
+         写成「show === hidden」会把逻辑整个反过来（今天真踩过：
+         滚到底按钮仍然不出现）。 */
+      if (btn.hidden === !show) return;
+      if (show) btn.removeAttribute('hidden'); else btn.setAttribute('hidden', '');
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      if (window.requestAnimationFrame) window.requestAnimationFrame(update);
+      else setTimeout(update, 60);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    btn.addEventListener('click', function () {
+      /* 尊重系统的「减少动态效果」：开了就别滚，直接跳。
+         matchMedia 不存在时（老浏览器）按需要平滑处理。 */
+      var reduce = false;
+      try { reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (err) {}
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: reduce ? 'auto' : 'smooth' });
+      } catch (err) {
+        window.scrollTo(0, 0);          /* 不支持对象参数时退回两参数形式 */
+      }
+      /* 键盘用户点完，焦点留在按钮上会看不见自己在哪 —— 送回文档开头。 */
+      var main = document.querySelector('main') || document.body;
+      if (main && main.focus) {
+        try { main.setAttribute('tabindex', '-1'); main.focus({ preventScroll: true }); } catch (err) {}
+      }
+    });
+    update();
+  }
+  initBackToTop();
+
+  // ========== 阅读进度条（只在有正文的页面上出现） ==========
+  /* 为什么放在任务栏脚本里而不是文章模板：它要跟着滚动实时算，
+     而任务栏脚本本来就每页都跑、且已经有一个滚动监听（回到顶部）。
+     用 .post-content 的存在与否当开关：没有正文的页面（首页/列表页/致谢…）
+     直接退出，一条线都不出现。 */
+  function initReadBar() {
+    var bar = document.getElementById('xpReadBar');
+    var fill = document.getElementById('xpReadFill');
+    var body = document.querySelector('.post-content');
+    if (!bar || !fill || !body) return;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var maxY = Math.max(0, (document.documentElement.scrollHeight || 0) - vh);
+      /* 进度按「整页可滚动距离」算，不按正文元素算。
+         试过按 .post-content 自身算，短文章上完全不成立 —— 实测 /about-me/ 的正文
+         只比视口高 152px，那条线只在 150px 的滚动窗口里闪一下就到 100% 然后隐藏，
+         等于没有。整页口径虽然把页脚那 100 多 px 也算进去，但单调、可预期，
+         和读者「我这页看到哪了」的直觉一致。 */
+      var p = maxY > 0 ? y / maxY : 0;
+      if (p < 0) p = 0;
+      if (p > 1) p = 1;
+      /* 页顶不显示（还没开始读）；页面本来就一屏时不显示（没有进度可言）。 */
+      var show = maxY > 120 && y > 40 && p > 0.005;
+      /* ⚠ 判断写「!==」不是「===」：hidden 与 show 应当是相反的，
+         hidden === !show 表示「状态已经对了」，这时什么都不用做。
+         写成 === 再进分支，就等于「状态对了才去改」，会把该显示的按回隐藏 ——
+         今天在回到顶部那一份上踩过同样的反转，这里是第二次。 */
+      if (bar.hidden !== !show) {
+        if (show) bar.removeAttribute('hidden'); else bar.setAttribute('hidden', '');
+      }
+      fill.style.width = (p * 100).toFixed(2) + '%';
+      bar.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      if (window.requestAnimationFrame) window.requestAnimationFrame(update);
+      else setTimeout(update, 60);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+  initReadBar();
+
   // ========== 托盘音量：静音 / 取消静音（对所有音频生效） ==========
   var muted = false;
   function applyMute() {
     var media = document.querySelectorAll('audio, video');
     for (var i = 0; i < media.length; i++) media[i].muted = muted;
+    /* 2026-11-02：音乐播放器的 <audio> 是 APlayer 运行时 createElement 出来的，
+       从不挂进 DOM —— 上面那句 querySelectorAll 抓不到它。以前点托盘喇叭对音乐
+       一点用都没有。播放器把这一路暴露成 window.__XP_AUDIO__，这里一起管住。 */
+    if (window.__XP_AUDIO__) window.__XP_AUDIO__.muted = muted;
+    /* 播放器可能比任务栏晚初始化（脚本顺序 / 网络慢），把静音状态也挂出去，
+       播放器建好 audio 时自己读这一份，免得「先点了静音，播放器后来才响」。 */
+    window.__XP_MUTED__ = muted;
     var on = document.getElementById('xpVolOn');
     var off = document.getElementById('xpVolOff');
     var btn = document.getElementById('xpVolumeBtn');

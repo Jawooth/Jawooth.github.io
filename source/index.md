@@ -42,11 +42,17 @@ layout: xp-page
 </div>
 </div>
 
-<!-- ========== 带 1：复古 MP4 播放器 ========== -->
+<!-- ========== 带 1：播放器 + 计数器 + 详细属性 ========== -->
 <div class="bento-item bento-music">
-<!-- ★ 这里不要再写 {% xp_music %}：播放器已改由 includes/footer.ejs 统一注入全站一份
-     （fixed 右下角）。首页若再调一次，右下角会叠出两个播放器。
+<!-- ★ 2026-11-04：播放器改成页内组件，这一格竖叠三张 ——
+     播放器卡（xp_music() 默认竖排卡片变体）/「唉，汁本！」鸭子计数 /「详细属性」。
+     原来播放器是全站 fixed 浮层（includes/footer.ejs 注入），会压住这个格子，
+     现在浮层已删，这一个就是全站唯一的播放器入口（每页各一份，切页靠
+     LocalStorage 续进度，不是同一路音频流 —— 详见 README §14）。
      曲目 / 歌单 / 标题仍看 source/_data/music.yml；外观与行为看 scripts/xp-player.js。 -->
+<!-- md 正文里不能写 EJS 的 include/helper 输出语法（xp-md-include 会报「未处理的 EJS 写法」），
+     播放器在这里用 hexo tag 写法，默认竖排卡片变体。 -->
+{% xp_music %}
 <div class="xp-window xp-duck-window">
 <%- include('./includes/xp-window-title', { title='唉，汁本！', icon='duck', buttons=false }) %>
 <div class="xp-window-body xp-duck-body">
@@ -61,8 +67,15 @@ layout: xp-page
 <%- include('./includes/xp-window-title', { title='详细属性', icon='clipboard', buttons=false }) %>
 <div class="xp-window-body">
 <ul class="xp-intro-list">
-<li><a href="/about-me/">呃可能是属性啥的吧</a></li>
-<li><a href="/about-me2/">天雷滚滚好怕怕</a></li>
+<!-- ⚠ 2026-11-05 纠正：这张窗叫「详细属性」，列的必须是**置顶的自我介绍文**
+     （front matter 里 sticky: 1 / sticky: 2 的那两篇）。上一轮我为了填空随手
+     加了两条普通文章，链接文字还是自己编的（「死后会去哪里呢」实际标题是
+     「死是凉爽的夏夜」、「平台带来的思考」实际是「关于平台的迷思」）——
+     既不是置顶文、标题也对不上，已撤回。
+     现在改成「标题 + 一句话简介（取文章 front matter 的 desc）」，用真实内容
+     把窗填满，而不是拿无关链接凑数。 -->
+<li><a href="/about-me/">呃可能是属性啥的吧</a><span class="xp-intro-desc">从空间日志搬过来的，字有点多不看也没事。</span></li>
+<li><a href="/about-me2/">天雷滚滚好怕怕</a><span class="xp-intro-desc">关于我可能雷到你的地方。</span></li>
 </ul>
 </div>
 </div>
@@ -140,7 +153,9 @@ layout: xp-page
 <input type="search" class="xp-search-input" id="site-search-input" placeholder="搜索文章…" autocomplete="off">
 <button class="xp-search-btn" id="site-search-btn" type="submit">搜索</button>
 </div>
-<div class="xp-search-results" id="site-search-results"></div>
+<!-- aria-live="polite"：搜索结果一改就朗读一遍，屏幕阅读器用户才知道「搜到了几条」。
+     role="status" 是它的等价写法（隐含 aria-live=polite）。 -->
+<div class="xp-search-results" id="site-search-results" role="status" aria-live="polite" aria-atomic="true"></div>
 </form>
 </div>
 <!-- 关于本站：原先单独的「关于本站」窗口已并入这里（文案在 profile.yml 的 about: 下） -->
@@ -159,13 +174,17 @@ layout: xp-page
 致谢 &amp; 参考
 </div>
 <ul class="credits-list">
-<li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> · 静态站点生成器</li>
-<li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a> · XP 风格灵感</li>
-<li><a href="https://npmjs.com/package/hexo-theme-minimalism" target="_blank" rel="noopener">minimalism</a> · 主题基础框架</li>
-<li><a href="https://aplayer.js.org/" target="_blank" rel="noopener">APlayer</a> · 音乐播放器（可选）</li>
-<li><a href="https://github.com/TakWolf/ark-pixel-font" target="_blank" rel="noopener">Ark Pixel</a> · 像素中文字体（OFL）</li>
-<li>AI 助手 · 协助搭建与设计</li>
+<li><a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a><span class="credits-use">静态站点生成器</span></li>
+<li><a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener">XP.css</a><span class="credits-use">XP 界面风格</span></li>
+<li><a href="https://npmjs.com/package/hexo-theme-minimalism" target="_blank" rel="noopener">minimalism</a><span class="credits-use">主题基础框架</span></li>
+<li><a href="https://github.com/DIYgod/APlayer" target="_blank" rel="noopener">APlayer</a><span class="credits-use">页面内音乐播放器</span></li>
+<li><a href="https://github.com/TakWolf/fusion-pixel-font" target="_blank" rel="noopener">缝合像素字体</a><span class="credits-use">正文字体</span></li>
+<li><a href="https://github.com/TakWolf/ark-pixel-font" target="_blank" rel="noopener">Ark Pixel</a><span class="credits-use">像素中文字体</span></li>
+<li><a href="https://github.com/simple-icons/simple-icons" target="_blank" rel="noopener">Simple Icons</a><span class="credits-use">社交品牌图标</span></li>
+<li><a href="https://iconpark.oceanengine.com/" target="_blank" rel="noopener">IconPark</a><span class="credits-use">界面图标</span></li>
+<li><a href="https://98.js.org/" target="_blank" rel="noopener">98.js.org</a><span class="credits-use">桌面隐喻的灵感</span></li>
 </ul>
+<p class="credits-more"><a href="/thanks/">完整致谢与许可证 →</a></p>
 </div>
 </div>
 </div>
@@ -507,57 +526,8 @@ layout: xp-page
 </script>
 
 <!-- ========== 页面级排布 ==========
-     规则：12 栏 × 固定 96px 行高（gap 18px），每个横带 = 2 行 = 210px，
-     同一横带里的窗口上下边缘自然对齐。DOM 顺序与视觉顺序保持一致。
-     想要"手工拼贴感"可以在格子上加回 .tilt-left / .tilt-right / .tilt-soft 等类，
-     但边线就不会齐平了。 -->
-<style>
-.xp-bento { grid-auto-rows: minmax(96px, auto); }
-/* 快速导航 4 个瓦片（绘画/游戏/文字/工具），排成 2×2 更整齐 */
-.bento-nav .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
-
-/* 带 3 之后的格子用 `span 2` 而不是写死行号（1/4 之类）：
-   上面那一带可能自己长高（见 .bento-recent 的说明），写死行号的格子会把行号挤错位。
-   `span 2` 只声明「跨 2 行」，起始行交给网格自动排 —— 顺序与 DOM 一致。 */
-.bento-bubble  { grid-column: 1 / 4;   grid-row: span 2; }
-.bento-profile { grid-column: 4 / 10;  grid-row: span 2; }
-.bento-music   { grid-column: 10 / 13; grid-row: span 2; }
-
-/* 带 2：最近作品（原先右侧的待办窗口已按站主要求撤掉，这里占满整行）
-   ★ 2026-10-18：这一带的高度**不再固定 2 行**。卡片缩略图是 16:9，卡高由卡宽
-   算出来：1400px 下 170px 宽 → 约 182px，加上窗口标题栏与内边距要 200px 以上，
-   而 2 行固定 = 210px，正好把卡片底部（日期那一行）压在窗口下沿切掉。
-   宽度越窄卡片越高（641~1240px 那档卡宽 = 列宽/4，1000px 实测 218px → 卡高 183px），
-   固定行高无论怎么调都会在某些宽度上切一张。
-   改成 `span 2`（只占 2 行、不写死结束行）+ 自动行高的下限：
-   内容矮时仍是 2 行的节奏，内容高时这一带自己长高，把下面几带往下推。
-   ⚠ 不能改成 `grid-row: auto` —— 那样会离开第 3 行、被后面几带的自动排版挤乱。 */
-.bento-recent  { grid-column: 1 / 13;  grid-row: span 2; }
-
-/* 带 3：四等分 —— 文章 / 标签 / 数据 / 导航 */
-.bento-articles{ grid-column: 1 / 4;   grid-row: span 2; }
-.bento-tags    { grid-column: 4 / 7;   grid-row: span 2; }
-.bento-stats   { grid-column: 7 / 10;  grid-row: span 2; }
-.bento-nav     { grid-column: 10 / 13; grid-row: span 2; }
-
-/* 带 4：通栏（搜索 · 关于本站 · 致谢）；原「关于本站」窗口已并入这里，故整行 2 行高 */
-.bento-links   { grid-column: 1 / 13;  grid-row: span 2; }
-
-@media (max-width: 900px) {
-  /* 小屏放弃固定行高，回到内容决定高度 */
-  .xp-bento { grid-auto-rows: auto; }
-  /* ★ 2026-10-18：一行一格时，便签和账户卡不再占同一批网格行，
-     「不超过账户卡」的上限就无从谈起 —— 直接把上限放开（见 xp-custom.css 里
-     --bubble-bento-max 的说明），否则长句子会被 210px 硬切掉。 */
-  .bento-bubble > .xp-bubble { max-height: none; }
-  .bento-bubble  { grid-column: 1 / 7;  grid-row: auto; }
-  .bento-profile { grid-column: 1 / 7;  grid-row: auto; }
-  .bento-music   { grid-column: 1 / 7;  grid-row: auto; }
-  .bento-recent  { grid-column: 1 / 7;  grid-row: auto; }
-  .bento-articles{ grid-column: 1 / 4;  grid-row: auto; }
-  .bento-tags    { grid-column: 4 / 7;  grid-row: auto; }
-  .bento-stats   { grid-column: 1 / 4;  grid-row: auto; }
-  .bento-nav     { grid-column: 4 / 7;  grid-row: auto; }
-  .bento-links   { grid-column: 1 / 7;  grid-row: auto; }
-}
-</style>
+     2026-11-02：这一段原来是一份内联 <style>（首页便当格的 12 栏定位表）。
+     它和 source/css/xp-custom.css 里的同一张表各写一份、互相矛盾，
+     谁生效取决于加载顺序 —— 已经把内联那份按原样搬进 xp-custom.css，
+     这里的整块 <style> 删除，排布只剩一个真源。改首页布局请改
+     source/css/xp-custom.css 的「首页便当格排布」一节。 -->
