@@ -74,6 +74,14 @@ index_generator:
   per_page: 10
   order_by: -date
 
+# Archive generator
+# 月归档（/archives/<年>/<月>/）不生成。它是 /archives/ 主时间线的子集，
+# 全站没有任何入口指过去（2026-11-07 实测 4 个孤儿页：2025/07、2025/09、
+# 2026/09、2026/10），留着只是重复内容 + 每次构建多 4 个目录。年度页保留。
+# 若哪天要在归档页做「按年展开」的入口，把下面的 monthly 改回 true 即可。
+archive_generator:
+  monthly: false
+
 # Category & Tag
 default_category: uncategorized
 category_map:

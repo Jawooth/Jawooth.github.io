@@ -98,10 +98,14 @@ hexo.extend.generator.register('xp-seo', function () {
     rows.push({ loc: abs('/' + t.path + '/'), changefreq: 'weekly', priority: '0.4' });
   });
 
-  /* ⑤ 归档（年 / 年-月两级，与 hexo-generator-archive 的 archive_dir 对齐）
-     本站开着年月归档页，不收录的话搜索引擎只能看到 /archives/ 一个入口。 */
+  /* ⑤ 归档（索引 / 年 / 年-月）
+     ⚠ 月度子页必须跟着 archive_generator.monthly 走。2026-11-07 把月归档
+       关掉（_config.yml）之后，这段原本仍按文章日期算 URL 写进 sitemap，
+       等于主动把爬虫引到 4 个 404。sitemap 是照着生成器的开关手算的，
+       两边必须同步 —— 改任一处的归档配置，回来核对这里。 */
   const archiveDir = cfg.archive_dir || 'archives';
   rows.push({ loc: abs('/' + archiveDir + '/'), changefreq: 'weekly', priority: '0.6' });
+  const genMonthly = (cfg.archive_generator || {}).monthly !== false;
   const months = new Set();
   const years = new Set();
   posts.forEach((p) => {
@@ -110,7 +114,7 @@ hexo.extend.generator.register('xp-seo', function () {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     years.add(String(y));
-    months.add(y + '/' + m);
+    if (genMonthly) months.add(y + '/' + m);
   });
   years.forEach((y) => {
     rows.push({ loc: abs('/' + archiveDir + '/' + y + '/'), changefreq: 'weekly', priority: '0.4' });
