@@ -132,6 +132,12 @@ hexo.extend.generator.register('xp-seo', function () {
     uniq.push(r);
   });
 
+  /* 按 loc 排序再输出。不排序的话行序取决于数据库里 pages 的插入顺序，而那是
+     各 processor 异步完成的先后 —— 同一份源码连建两次 sitemap 都不一样
+     （2026-11-07 做「搜索进侧栏」的回归对比时发现的：33 条 URL 全同、顺序却换了）。
+     搜索引擎不在乎顺序，但排序能让「这次构建和上次差在哪」变得可 diff。 */
+  uniq.sort((a, b) => (a.loc < b.loc ? -1 : a.loc > b.loc ? 1 : 0));
+
   const xml = ['<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     .concat(uniq.map((r) => [

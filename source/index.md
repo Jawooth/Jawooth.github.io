@@ -147,16 +147,10 @@ layout: xp-page
 <%- include('./includes/xp-window-title', { title='搜索 · 关于本站 · 致谢', icon='search', compact=true, buttons=false }) %>
 <div class="xp-window-body compact-body links-body">
 <div class="links-col">
-<form class="xp-search-wrap" id="site-search-form" role="search">
-<div class="xp-search-box">
-<label class="xp-sr-only" for="site-search-input">搜索文章</label>
-<input type="search" class="xp-search-input" id="site-search-input" placeholder="搜索文章…" autocomplete="off">
-<button class="xp-search-btn" id="site-search-btn" type="submit">搜索</button>
-</div>
-<!-- aria-live="polite"：搜索结果一改就朗读一遍，屏幕阅读器用户才知道「搜到了几条」。
-     role="status" 是它的等价写法（隐含 aria-live=polite）。 -->
-<div class="xp-search-results" id="site-search-results" role="status" aria-live="polite" aria-atomic="true"></div>
-</form>
+<!-- 2026-11-07：标记与驱动脚本搬进共享组件（scripts/xp-content.js 的 xp_search_box，
+     脚本外链 /js/xp-search.js），侧栏搜索卡用的是同一份；这里不再各写一套。
+     标记出来就带 role="search" 和 aria-live，别在 markdown 里手写第二份。 -->
+{% xp_search_box %}
 </div>
 <!-- 关于本站：原先单独的「关于本站」窗口已并入这里（文案在 profile.yml 的 about: 下） -->
 <div class="about-col">
@@ -464,66 +458,8 @@ layout: xp-page
 </script>
 
 
-<!-- ========== 站内搜索（数据来自构建期生成的 /search.json） ========== -->
-<script>
-(function () {
-  var input = document.getElementById('site-search-input');
-  var form = document.getElementById('site-search-form');
-  var results = document.getElementById('site-search-results');
-  if (!input || !results) return;
-  var posts = null;
-  var loading = false;
-
-  function esc(s) {
-    return String(s || '').replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
-    });
-  }
-
-  function render(list, keyword) {
-    if (!list.length) {
-      results.innerHTML = '<p class="xp-search-hint">没有找到与「' + esc(keyword) + '」相关的文章</p>';
-      return;
-    }
-    var html = '<ul>';
-    list.slice(0, 6).forEach(function (p) {
-      html += '<li><a href="' + esc(p.url) + '">' + esc(p.title) +
-        '<span class="res-meta">' + esc(p.date) + ' · ' + esc(p.meta) + '</span></a></li>';
-    });
-    html += '</ul>';
-    results.innerHTML = html;
-  }
-
-  function search(keyword) {
-    var kw = keyword.trim().toLowerCase();
-    if (!kw) { results.innerHTML = ''; return; }
-    if (!posts) {
-      if (loading) return;
-      loading = true;
-      results.innerHTML = '<p class="xp-search-hint">正在加载索引…</p>';
-      fetch('/search.json')
-        .then(function (r) { return r.json(); })
-        .then(function (data) { posts = (data && data.posts) || []; loading = false; search(keyword); })
-        .catch(function () { loading = false; results.innerHTML = '<p class="xp-search-hint">索引加载失败</p>'; });
-      return;
-    }
-    var hit = posts.filter(function (p) {
-      return (p.title && p.title.toLowerCase().indexOf(kw) >= 0) ||
-        (p.text && p.text.toLowerCase().indexOf(kw) >= 0) ||
-        (p.meta && p.meta.toLowerCase().indexOf(kw) >= 0);
-    });
-    render(hit, keyword);
-  }
-
-  input.addEventListener('input', function () { search(input.value); });
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      search(input.value);
-    });
-  }
-})();
-</script>
+<!-- 站内搜索的标记与脚本已搬进共享组件（scripts/xp-content.js 的 xp_search_box
+     + /js/xp-search.js），2026-11-07 随「搜索进侧栏」一并迁移，这里不再有内联脚本。 -->
 
 <!-- ========== 页面级排布 ==========
      2026-11-02：这一段原来是一份内联 <style>（首页便当格的 12 栏定位表）。

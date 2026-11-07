@@ -1977,6 +1977,15 @@ html.dark .xp-search-input { background: var(--surface-2); color: var(--text); b
 .xp-search-results .res-meta { display: block; font-size: var(--fs-text); color: var(--text-muted); margin-top: 2px; }
 .xp-search-hint { font-size: var(--fs-text); color: var(--text-muted); margin: 4px 0 0; }
 
+/* 侧栏搜索卡（2026-11-07 搜索进侧栏，README 14.1）。
+   输入框 28px 定高原本是 .links-col（首页 about 窗口）专属 —— 侧栏卡里
+   输入框会按 padding 自适应出另一个高度，两个入口不一样高。统一成 28。 */
+.xp-widget-search .xp-search-box { flex: 0 0 auto; }
+.xp-widget-search .xp-search-input { height: 28px; box-sizing: border-box; }
+/* 结果列表压在卡片底部往下顶：侧栏卡片没有「绝对定位浮层」的惯例，
+   就让它把下面的卡片推下去（.xp-aside 有 14px 的 gap，视觉上是同一块）。 */
+.xp-widget-search .xp-search-results li a { padding: 5px 6px; }
+
 /* ============ 8) 作品页组件 ============ */
 .filter-status { margin: 8px 0 0; font-size: var(--fs-ui); color: var(--text-muted); }
 

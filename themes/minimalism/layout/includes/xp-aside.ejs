@@ -22,6 +22,11 @@
     底部一条 —— 见各页 md 里的 {% xp_music bar %}。
   %>
   <%- xp_music() %>
+  <%# 搜索卡（2026-11-07，README 14.1）：原来只有首页有搜索框，其它页面搜东西得先回首页。
+      放在播放器之后、其余 widget 之前 —— 播放器第一张卡是 2026-11-04 定的，不动；
+      搜索是工具类卡片里用得最勤的，越靠上越好。单栏页（/tags/、/categories/、
+      /thanks/、404、首页）没有侧栏，仍走各自的入口（首页是 about 窗口里的搜索框）。 %>
+  <%- xp_widget_search() %>
   <% if (isPost) { %>
     <%- xp_widget_toc(page.content) %>
   <% } %>

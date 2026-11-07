@@ -20,7 +20,7 @@ const yaml = require('js-yaml');
 /* 播放器的「外观」与「行为」放在单独文件里，见 scripts/xp-player.js */
 const playerView = require('./xp-player');
 /* 复用「常量脚本外链化」机制（generator 虚拟路由 + ?v= 版本号），hexo 传入 */
-const { routeJs } = require('./_xp-route-js');
+const { routeJs, withJsVer } = require('./_xp-route-js');
 /* 点阵图标库：首页的社交图标行也用这一套（见下文 PROFILE_ICONS：
 */
 const { GLYPHS: PIX_GLYPHS } = require('./xp-icons');
@@ -687,6 +687,121 @@ hexo.extend.generator.register('xp-search-index', () => {
     path: 'search.json',
     data: JSON.stringify({ posts })
   };
+});
+
+/* ---------------------------------------------------------------- 站内搜索框 */
+/* 搜索框的**标记**只有一个真源（这里），驱动脚本外链成 /js/xp-search.js（下面）。
+   首页的「搜索 · 关于本站 · 致谢」窗口和侧栏搜索卡都从这里出。
+   以前首页那套是写在 index.md 里的表单 + 50 行内联 <script>，别处要用只能整段复制
+   —— 2026-11-07 搜索进侧栏时改成共享组件，顺带消掉了那份拷贝。
+   id 用序号保证页内唯一（一页多个搜索框也不打架）；驱动只认 data-xp-search。 */
+/* id 不用全局计数器：页面渲染是异步的，计数器到几取决于完成顺序，
+   每次构建都不一样 —— 产物 diff 会满屏漂移（2026-11-07 双构建验证抓到的）。
+   改成按用途定死：侧栏卡是 -widget，markdown 里的标签是 -box。
+   一页出现两个同用途搜索框时 id 会撞，但两种入口（about 窗口 / 侧栏）不会同页。 */
+function searchBoxHtml(variant) {
+  const id = 'xp-search-input-' + (variant || 'box');
+  return oneLine(
+    `<form class="xp-search-wrap" role="search" data-xp-search>` +
+    `<div class="xp-search-box">` +
+    `<label class="xp-sr-only" for="${id}">搜索文章</label>` +
+    `<input type="search" class="xp-search-input" id="${id}" placeholder="搜索文章…" autocomplete="off">` +
+    `<button class="xp-search-btn" type="submit">搜索</button>` +
+    `</div>` +
+    /* aria-live="polite"：搜索结果一改就朗读一遍，屏幕阅读器用户才知道「搜到了几条」。
+       role="status" 是它的等价写法（隐含 aria-live=polite）。 */
+    `<div class="xp-search-results" role="status" aria-live="polite" aria-atomic="true"></div>` +
+    `</form>`
+  );
+}
+hexo.extend.helper.register('xp_widget_search', () => widget('站内搜索', searchBoxHtml('widget'), 'xp-widget-search'));
+registerTag('xp_search_box', () => searchBoxHtml());
+
+/* 驱动脚本：页面里每个 form[data-xp-search] 各接一套输入/提交事件，索引全站共享一份。
+   常量脚本，走 routeJs 外链（同 xp-win-actions 的理由：每页 HTML 少 ~2KB，共享缓存）。 */
+const SEARCH_DRIVER = `
+/* 站内搜索驱动（构建期由 scripts/xp-content.js 生成，勿手改）。
+   索引 /search.json 由 xp-search-index 生成器产出；首次输入时才拉取。 */
+(function () {
+  'use strict';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('form[data-xp-search]'));
+  if (!boxes.length) return;
+  var posts = null;
+  var loading = false;
+
+  function esc(s) {
+    return String(s || '').replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function out(box) { return box.querySelector('.xp-search-results'); }
+
+  function render(box, list, keyword) {
+    var o = out(box);
+    if (!o) return;
+    if (!list.length) {
+      o.innerHTML = '<p class="xp-search-hint">没有找到与「' + esc(keyword) + '」相关的文章</p>';
+      return;
+    }
+    var html = '<ul>';
+    list.slice(0, 6).forEach(function (p) {
+      html += '<li><a href="' + esc(p.url) + '">' + esc(p.title) +
+        '<span class="res-meta">' + esc(p.date) + ' · ' + esc(p.meta) + '</span></a></li>';
+    });
+    o.innerHTML = html + '</ul>';
+  }
+
+  /* 有输入的框都重搜一遍：索引加载完成的那一刻，所有正等着结果的框一起出结果。
+     （单框时代是回调里只重跑触发的那一个；多框之后偷这个懒会丢结果。） */
+  function refreshAll() {
+    boxes.forEach(function (b) {
+      var i = b.querySelector('.xp-search-input');
+      if (i && i.value.trim()) search(b);
+    });
+  }
+
+  function search(box) {
+    var input = box.querySelector('.xp-search-input');
+    var o = out(box);
+    if (!input || !o) return;
+    var raw = input.value.trim();
+    var kw = raw.toLowerCase();
+    if (!kw) { o.innerHTML = ''; return; }
+    if (!posts) {
+      if (loading) return;
+      loading = true;
+      o.innerHTML = '<p class="xp-search-hint">正在加载索引…</p>';
+      fetch('/search.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) { posts = (data && data.posts) || []; loading = false; refreshAll(); })
+        .catch(function () { loading = false; refreshAll('fail'); });
+      return;
+    }
+    var hit = posts.filter(function (p) {
+      return (p.title && p.title.toLowerCase().indexOf(kw) >= 0) ||
+        (p.text && p.text.toLowerCase().indexOf(kw) >= 0) ||
+        (p.meta && p.meta.toLowerCase().indexOf(kw) >= 0);
+    });
+    render(box, hit, raw);
+  }
+
+  boxes.forEach(function (box) {
+    var input = box.querySelector('.xp-search-input');
+    if (!input) return;
+    input.addEventListener('input', function () { search(box); });
+    box.addEventListener('submit', function (e) { e.preventDefault(); search(box); });
+  });
+})();
+`;
+routeJs(hexo, '/js/xp-search.js', () => SEARCH_DRIVER);
+
+/* 哪页有搜索框，哪页才挂驱动（页面上有 data-xp-search 标记才注入 <script>）。
+   放 after_render 而不是模板里：aside 模板和各 md 都可能产出搜索框，
+   在一处收口，不用每个调用方记得引脚本。 */
+hexo.extend.filter.register('after_render:html', (str) => {
+  if (!str || str.indexOf('data-xp-search') < 0 || str.indexOf('/js/xp-search.js') >= 0) return str;
+  return str.replace('</body>', withJsVer('<script src="/js/xp-search.js" defer></script>', '/js/xp-search.js') + '\n</body>');
 });
 
 /* ---------------------------------------------------------------- 播放器与便签 */

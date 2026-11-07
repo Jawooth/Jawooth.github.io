@@ -125,8 +125,20 @@ if "stat-row" not in home and "meta-stat" not in home:
     fail("首页缺少统计行（stat-row / meta-stat 都没有）")
 if "recent-work-thumb" not in home:
     fail("首页缺少最近作品缩略图")
-if "site-search-form" not in home:
-    fail("首页缺少站内搜索框")
+if "data-xp-search" not in home:
+    fail("首页缺少站内搜索框（共享标记 data-xp-search，见 xp-content.js 的 xp_search_box）")
+# 搜索进了侧栏（2026-11-07）：带 .xp-aside 的页面必须也有搜索卡 + 驱动脚本。
+for rel in ["blog/index.html", "archives/index.html", "about-bcy/index.html"]:
+    s = read(rel)
+    if "xp-aside" in s and "data-xp-search" not in s:
+        fail("%s 有侧栏但没有搜索卡" % rel)
+    if "data-xp-search" in s and "/js/xp-search.js" not in s:
+        fail("%s 有搜索框但没挂驱动脚本 /js/xp-search.js" % rel)
+# 单栏页没有侧栏，不要求有搜索框；但驱动脚本不许乱挂（没有框却加载脚本是浪费）。
+for rel in ["tags/index.html", "thanks/index.html"]:
+    s = read(rel)
+    if "data-xp-search" not in s and "/js/xp-search.js" in s:
+        warn("%s 没有搜索框却加载了搜索驱动" % rel)
 if "top-box" in home:
     fail("首页混进了文章目录（TOC），说明页面模板回落到了 post.ejs")
 
