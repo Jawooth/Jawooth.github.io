@@ -256,7 +256,13 @@ function statRows() {
        所以这里也只剩一行，链接到 /blog/。别再拆回两行 —— 菜单里已经没有        /guides/ 这个入口了（它现在只做 301 跳转）。
 */
     { cls: 'done', label: '文字', key: 'essays', href: '/blog/' },
-    { cls: 'todo', label: '待办', key: 'todo_todo', href: '/blog/#xp-todo' }
+    { cls: 'todo', label: '待办', key: 'todo_todo', href: '/blog/#xp-todo' },
+    /* 2026-11-05 站主「小站数据这块有点空」：原来只有三行，261px 高的卡片里
+       只用了 87px，下面 130px 全是空白。补三行把同样的口径铺满 ——
+       标签 / 分类 / 归档都是站内已有的索引页，点进去都有东西，不是凑数。 */
+    { cls: 'info', label: '标签', key: 'tags', href: '/tags/' },
+    { cls: 'info', label: '分类', key: 'categories', href: '/categories/' },
+    { cls: 'info', label: '归档', key: 'months', href: '/archives/' }
   ];
   return oneLine(rows.map((r) => (
     `<div class="stat-row"><span class="stat-dot ${r.cls}"></span>` +
@@ -561,7 +567,7 @@ function workCardHtml(post) {
   )).join('');
   return (
     `<article class="work-card" data-tags="${esc(tags.join(' '))}" data-origin="${esc(workOrigin(post))}">` +
-    `<a class="work-thumb" href="${href(post.path)}">` +
+    `<a class="work-thumb" href="${href(post.path)}" aria-label="${esc(title)}">` +
     (thumb ? `<img src="${esc(thumb)}" alt="${esc(title)}" loading="lazy" decoding="async"${dim}>` : '') +
     `</a>` +
     `<div class="work-card-body">` +
@@ -589,7 +595,10 @@ function workGallery() {
 
   const tabs = workOrigins().map((o, i) => {
     const n = posts.filter((p) => workOrigin(p) === o).length;
-    return `<button type="button" class="work-tab${i === 0 ? ' is-active' : ''}" data-origin="${esc(o)}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}">${esc(o)} <span class="tab-count">${n}</span></button>`;
+    /* 2026-11-02：补全 ARIA 三件套 —— id / aria-controls / 漫游 tabindex。
+       原来每个 tab 只有 role="tab" + aria-selected，屏幕阅读器读不出
+       「这个标签页控制下面哪块内容」，键盘用户也不能用左右方向键在标签之间走。 */
+    return `<button type="button" class="work-tab${i === 0 ? ' is-active' : ''}" data-origin="${esc(o)}" id="work-tab-${i}" role="tab" aria-controls="work-pane-${i}" aria-selected="${i === 0 ? 'true' : 'false'}" tabindex="${i === 0 ? '0' : '-1'}">${esc(o)} <span class="tab-count">${n}</span></button>`;
   }).join('');
 
   const pills = tags.map((t) => (
@@ -597,11 +606,11 @@ function workGallery() {
   )).join('');
 
   /* 每个栏目一Pane，内容按时间从新到旧平铺成瀑布流（不再按分期折叠） */
-  const panes = workOrigins().map((origin) => {
+  const panes = workOrigins().map((origin, i) => {
     const mine = posts.filter((p) => workOrigin(p) === origin)
       .slice().sort((a, b) => (new Date(b.date) - new Date(a.date)) || String(b.path).localeCompare(String(a.path)));
     return (
-      `<div class="work-pane${origin === workOrigins()[0] ? ' is-active' : ''}" data-origin="${esc(origin)}" role="tabpanel"${origin === workOrigins()[0] ? '' : ' hidden'}>` +
+      `<div class="work-pane${origin === workOrigins()[0] ? ' is-active' : ''}" data-origin="${esc(origin)}" id="work-pane-${i}" role="tabpanel" aria-labelledby="work-tab-${i}"${origin === workOrigins()[0] ? '' : ' hidden'}>` +
       (mine.length
         ? `<div class="work-grid">${mine.map(workCardHtml).join('')}</div>`
         : '<p class="xp-empty">这个栏目还没有作品</p>') +
@@ -637,13 +646,25 @@ function workGallery() {
     `var hit=activeTags.length===0?false:activeTags.some(function(t){return list.indexOf(t)>=0;});` +
     `var hide=activeTags.length===0?false:(blocked?hit:!hit);` +
     `c.hidden=hide;if(!hide)shown++;}` +
-    `if(status){status.textContent=activeTags.length===0?('共 '+cards.length+' 件作品'):((blocked?'已屏蔽':'只看')+'「'+activeTags.join('、')+'」：'+shown+' 件');}` +
+    /* 2026-11-02：没在筛标签时，数字应该报「全部栏目一共几件」，而不是「当前栏目几件」。
+       原来按当前 pane 数，切到「同人」就显示「共 1 件作品」，而页面头部的小标签写着
+       「3 件作品」，两个数字对不上，看着像少了两件。这里改成跨栏目总数。 */
+    `var total=0;for(var t=0;t<panes.length;t++){total+=panes[t].querySelectorAll('.work-card').length;}` +
+    `if(status){status.textContent=activeTags.length===0?('共 '+total+' 件作品'):((blocked?'已屏蔽':'只看')+'「'+activeTags.join('、')+'」：'+shown+' 件');}` +
     `}` +
     `for(var i=0;i<tabs.length;i++){(function(btn){btn.addEventListener('click',function(){` +
-    `for(var j=0;j<tabs.length;j++){tabs[j].classList.toggle('is-active',tabs[j]===btn);tabs[j].setAttribute('aria-selected',tabs[j]===btn?'true':'false');}` +
+    `for(var j=0;j<tabs.length;j++){tabs[j].classList.toggle('is-active',tabs[j]===btn);tabs[j].setAttribute('aria-selected',tabs[j]===btn?'true':'false');tabs[j].setAttribute('tabindex',tabs[j]===btn?'0':'-1');}` +
     `for(var k=0;k<panes.length;k++){panes[k].hidden=panes[k].getAttribute('data-origin')!==btn.getAttribute('data-origin');}` +
     `activeTags=[];for(var m=0;m<pills.length;m++){pills[m].classList.remove('is-active');pills[m].setAttribute('aria-pressed','false');}` +
     `apply();});})(tabs[i]);}` +
+    /* 2026-11-02：标签页之间的左右方向键导航（ARIA 标签页的标准做法）。
+       原来只能一个一个 Tab 过去，键盘用户翻栏目很慢。 */
+    `for(var i=0;i<tabs.length;i++){(function(btn){btn.addEventListener('keydown',function(ev){` +
+    `if(ev.key!=='ArrowRight'&&ev.key!=='ArrowLeft')return;ev.preventDefault();` +
+    `var dir=ev.key==='ArrowRight'?1:-1;var idx=0;` +
+    `for(var j=0;j<tabs.length;j++){if(tabs[j]===btn){idx=j;break;}}` +
+    `var next=tabs[(idx+dir+tabs.length)%tabs.length];if(next){next.click();next.focus();}` +
+    `});})(tabs[i]);}` +
     `for(var i=0;i<pills.length;i++){(function(btn){btn.addEventListener('click',function(){` +
     `var t=btn.getAttribute('data-tag');var idx=activeTags.indexOf(t);` +
     `if(idx>=0){activeTags.splice(idx,1);btn.classList.remove('is-active');btn.setAttribute('aria-pressed','false');}` +
@@ -719,13 +740,19 @@ function musicUi() {
   };
 }
 
-/* 播放器：同时注册成 tag 和 helper。    · tag 模式（{% xp_music %}）：在页面内联插入（主要是历史兼容，首页 bento 里之前用的）。    · helper 模式（footer.ejs 里调用）：全局固定浮动条，每个页面都渲染，切页面不丢状态。    两种模式输出完全相同的 HTML（脚本里会自动判断自己是不是第一个实例，避免重复初始化）。    ⚠️ 外观和驱动脚本都**不能**过 oneLine()：驱动脚本里有 // 注释与依赖换行的
+/* 播放器：同时注册成 tag 和 helper。
+   2026-11-04 改造：播放器不再是全站右下角浮层，改成页内组件，按落位两种变体：
+     · 竖排卡片（默认）—— 首页便当格 .bento-music、列表页/文章页侧栏首卡
+     · 横排一条 bar    —— 单栏页底部（{% xp_music bar %} / xp_music('bar')）
+   tag 与 helper 输出的 HTML 完全相同；驱动脚本用 window.__XP_MUSIC_INITED__
+   做防御性去重（一页只会放一处）。
+   ⚠️ 外观和驱动脚本都**不能**过 oneLine()：驱动脚本里有 // 注释与依赖换行的
    语句，压成一行会把注释后面的代码整段吃掉。
 */
-function musicBlock() {
+function musicBlock(variant) {
   const { tracks, netease } = musicData();
   const ui = musicUi();
-  const shell = playerView.markup(ui.title);
+  const shell = playerView.markup(ui.title, variant);
   /* 驱动脚本是常量（不随页面/曲目变化），外链成 /js/xp-music-player.js 共享缓存，      每页 HTML 看 ~20KB；曲目数据 window.XP_MUSIC 仍留内联（页级数据）。
 */
   const driver = '<script src="/js/xp-music-player.js" defer></script>';
@@ -750,10 +777,35 @@ function musicBlock() {
     : '';
   return assets + config + '\n' + shell + '\n' + driver;
 }
-hexo.extend.tag.register('xp_music', () => musicBlock());
-hexo.extend.helper.register('xp_music', () => musicBlock());
+hexo.extend.tag.register('xp_music', (args) => musicBlock(args && args[0]));
+hexo.extend.helper.register('xp_music', (variant) => musicBlock(variant));
 /* 播放器驱动外链文件（内容见 xp-player.js 的 DRIVER；上面 musicBlock 引用它） */
 routeJs(hexo, '/js/xp-music-player.js', () => playerView.driver);
+
+/* 歌词数据（2026-11-05）：构建期抓好、输出成同源 JSON，播放器运行时 fetch。
+   为什么不内联进每页 HTML：44 首共 ~38KB 歌词，40 个页面各带一份等于多传
+   1.5MB，还得跟着每页 HTML 一起过 gzip。外链之后全站只下一次，且被浏览器缓存。
+   为什么不运行时直连网易云：music.163.com/api/song/lyric 没有任何 CORS 头，
+   也不支持 JSONP，浏览器侧必被拦。
+   数据结构：{ v: 1, lyrics: { "<曲目 id>": "<LRC 原文>" } }
+   曲目 id 从 music-tracks.yml 的 url 里取（...outer/url?id=123.mp3）。
+   数据文件由 tools/fetch/fetch-lyrics.py 生成（34/44 首有歌词，其余是纯音乐）。 */
+function lyricsBundle() {
+  const raw = dataFile('music-lyrics');
+  const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.lyrics) ? raw.lyrics : []);
+  const map = {};
+  const tl = {};
+  list.forEach((it) => {
+    if (!it || !it.id) return;
+    const lrc = String(it.lrc || '').trim();
+    if (!lrc) return;
+    map[String(it.id)] = lrc;
+    const tlrc = String(it.tlrc || '').trim();
+    if (tlrc) tl[String(it.id)] = tlrc;
+  });
+  return JSON.stringify({ v: 2, lyrics: map, tlrc: tl });
+}
+routeJs(hexo, '/js/xp-lyrics.json', () => lyricsBundle());
 
 /* ---------------------------------------------------------------- 视频 */
 /* 两条路，页面里都只写一行标签：
@@ -1048,7 +1100,10 @@ routeJs(hexo, '/js/xp-win-actions.js', () => `
     chip.type = 'button';
     chip.className = 'xp-restore-chip';
     var name = titleOf(win);
-    chip.textContent = '恢复。' + name + '。';
+    /* 2026-11-06：原来写的是 '恢复。' + name + '。' —— 窗口标题本身常带标点
+       （「参考过设计与思路的项目」），再补句号会变成两句独立的话，读起来像
+       两条不同的提示。改成冒号分隔：'恢复：前端库（…）'。 */
+    chip.textContent = '恢复：' + name;
     chip.title = name + ' —— 点击恢复窗口';
     chip.setAttribute('aria-label', '恢复窗口 ' + name);
     chip.addEventListener('click', function () {
@@ -1058,12 +1113,28 @@ routeJs(hexo, '/js/xp-win-actions.js', () => `
     restoreBar().appendChild(chip);
   }
 
+  /* 页面外壳也算一个「窗口」（2026-11-02 修复）：
+     归档 / 分类 / 标签 / 独立页面这几页的标题栏是 xp-window-title.ejs 画的，
+     外面套的是 .content-container，不是 .xp-window。
+     以前点最小化/最大化/关闭三个按钮毫无反应（btn.closest('.xp-window') 找不到就 return）。
+     现在找不到 .xp-window 时退回外壳，外壳复用同一套状态类，
+     配套样式在 source/css/xp-custom.css 的「页面外壳的窗口状态」一节。 */
+  function windowOf(btn) {
+    var win = btn.closest('.xp-window');
+    if (win) return win;
+    var title = btn.closest('.xp-window-title');
+    if (!title) return null;
+    var shell = title.parentElement;
+    if (!shell || !shell.classList.contains('content-container')) return null;
+    return shell;
+  }
+
   function act(btn) {
     /* data-xp-local = 临时浮层（邮箱弹窗、关机错误窗）的豁免标记，        它们自带关闭逻辑，绝不能进「最小化/恢复 chip」这套常驻窗口流程，
        否则关掉浮层后左下角会冒出一个多余的「恢复」按钮（2026-10-14 实测踩过）。
 */
     if (btn.getAttribute('data-xp-local')) return;
-    var win = btn.closest('.xp-window');
+    var win = windowOf(btn);
     if (!win) return;
     var a = btn.getAttribute('data-action');
     if (a === 'min') win.classList.toggle('is-minimized');
@@ -1195,9 +1266,14 @@ function likeBlock(post, opts) {
   );
 }
 
-/* 点赞的存储键：用文章路径，改标题不会丢赞 */
+/* 点赞的存储键：用文章路径，改标题不会丢赞。
+   注意：这里只返回「原始路径」，不加 xp_like: 前缀 ——
+   前缀由前台 xp-enhance.js 的 XPLikeBackend 统一加（它存的是
+   xp_like:<路径> 和 xp_like_mine:<路径>）。
+   2026-11-02 修：以前这里已经拼过一次 xp_like:，前台又拼一次，
+   实际存成了 xp_like:xp_like:<路径>，和 xp-enhance.js 的注释对不上。 */
 function likeKey(post) {
-  return 'xp_like:' + String(post.path || '');
+  return String(post.path || '');
 }
 
 hexo.extend.helper.register('xp_like', function (post) { return likeBlock(post); });
@@ -1464,6 +1540,87 @@ xp-window / .xp-window-title / .xp-window-btn），
   return oneLine(html.join(''));
 });
 
+/* ---------------------------------------------------------------- 相关文章（2026-11-05） */
+/* 按「共享分类 / 共享标签」打分，取前 N 篇。
+   ── 为什么这么打分 ──
+   · 分类比标签权威：一篇文归到哪一类是站主主动划分的，标签往往是随手打的，
+     所以同一分类 +3 分、同一标签 +2 分。
+   · 排序第二关键字是「更新时间更近」，让读者先看到跟当前站内容更同步的文章。
+   · 没有任何交集时**不输出**（返回空串），而不是硬推一批无关文章 —— 本站
+     一共只有 10 篇，强行凑数会把「陶罐素描」推给「关于平台的迷思」。
+   ── 和「上一篇 / 下一篇」的分工 ──
+   上/下篇是时间轴上相邻的两篇（写死的线性顺序）；这里是内容上相关但可能
+   隔很远的几篇。两者互补，所以放在 .post-nav 之后。 */
+function relatedPosts(page, limit) {
+  const n = Math.max(1, Math.min(6, parseInt(limit, 10) || 3));
+  if (!page || !page.path) return '';
+
+  const tagKey = (t) => String((t && (t.name || t)) || '').trim();
+  const catKey = (c) => String((c && (c.name || c)) || '').trim();
+
+  /* 当前页的分类名 / 标签名各做一份 Set，后面 O(1) 查 */
+  const myTags = new Set((page.tags ? page.tags.toArray() : []).map(tagKey).filter(Boolean));
+  const myCats = new Set((page.categories ? page.categories.toArray() : []).map(catKey).filter(Boolean));
+
+  /* 一篇都没有标签也没有分类时，怎么算都不相关 */
+  if (!myTags.size && !myCats.size) return '';
+
+  const scored = [];
+  hexo.locals.get('posts').forEach((p) => {
+    if (p.path === page.path) return;                 /* 排除自己 */
+    if (p.draft) return;
+    let score = 0;
+    (p.categories ? p.categories.toArray() : []).forEach((c) => {
+      if (myCats.has(catKey(c))) score += 3;
+    });
+    (p.tags ? p.tags.toArray() : []).forEach((t) => {
+      if (myTags.has(tagKey(t))) score += 2;
+    });
+    if (score > 0) scored.push({ post: p, score });
+  });
+
+  if (!scored.length) return '';
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(b.post.date) - new Date(a.post.date);
+  });
+
+  const items = scored.slice(0, n).map((it) => {
+    const p = it.post;
+    /* 加密文章给个锁提示，别让读者点进去才发现要密码 */
+    const lock = p.password
+      ? '<span class="post-related-lock" title="需要密码" aria-label="需要密码">' +
+        '<svg width="1em" height="1em" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="#icon-lock"></use></svg></span>'
+      : '';
+    /* ⚠ 这里不能用模板的 date() 辅助函数：Hexo 把 date 注入 EJS 的 locals，
+       但 scripts/ 下的 IIFE 作用域里根本没有它（本文件自己只有 href/esc/json/
+       oneLine 四个小工具）。所以用一个最小的本地格式化，只输出 YYYY-MM-DD ——
+       相关文章列表里日期只是配菜，不需要站主配的 date_format 那么花。 */
+    const d = fmtDay(p.date);
+    return oneLine(
+      `<li><a class="post-related-link" href="${esc(href(p.path))}">${esc(p.title || '(无标题)')}${lock}</a>` +
+      `<span class="post-related-date">${esc(d)}</span></li>`
+    );
+  });
+
+  return oneLine(
+    '<section class="post-related" aria-labelledby="xp-related-title">' +
+    '<h2 class="post-related-title" id="xp-related-title">相关文章</h2>' +
+    '<ul class="post-related-list">' + items.join('') + '</ul>' +
+    '</section>'
+  );
+}
+
+/* YYYY-MM-DD（本地时区）。日期存在是 moment 对象，不存在就返回空串。 */
+function fmtDay(d) {
+  if (!d) return '';
+  const t = d instanceof Date ? d : new Date(d);
+  if (isNaN(t.getTime())) return '';
+  const p2 = (n) => (n < 10 ? '0' + n : String(n));
+  return t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate());
+}
+
 /* ---------------------------------------------------------------- 注册 */
 function registerTag(name, fn) {
   hexo.extend.tag.register(name, function (args) {
@@ -1481,6 +1638,11 @@ registerTag('xp_recent_posts', (args) => {
 registerTag('xp_recent_works', (args) => recentWorks(parseInt(args[0], 10) || 3));
 registerTag('xp_tag_cloud', (args) => tagCloud(args[0]));
 registerTag('xp_todo', (args) => todoMini(parseInt(args[0], 10) || 4));
+/* {% xp_related %} / {% xp_related 4 %} —— 文章页底部「相关文章」（默认 3 篇）。
+   ⚠ 只能在文章页用：它要读当前页的 categories / tags，别的页面调会返回空串。 */
+hexo.extend.helper.register('xp_related', function (limit) {
+  return relatedPosts(this.page, limit);
+});
 /* {% xp_apps game %} 仍是"只要卡片"（老写法）；{% xp_apps pane game %} 才出一整块窗口 */
 registerTag('xp_apps', (args) => {
   const a = (args || []).map((s) => String(s).trim());
