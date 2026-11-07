@@ -38,7 +38,7 @@
   
   <link rel="stylesheet" href="/vendor/xp-css/XP.css?v=c9f96187">
   
-  <link rel="stylesheet" href="/css/xp-custom.css?v=8128e8b7">
+  <link rel="stylesheet" href="/css/xp-custom.css?v=3d268568">
   
   <link rel="stylesheet" href="/css/xp-icons.css?v=918e8a9b">
 <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="我的小站" type="application/atom+xml">
@@ -240,15 +240,8 @@
 <div class="xp-window-title compact"><span class="xp-window-title-text post-title-text"><svg class="inline-icon" width="14" height="14" aria-hidden="true"><use href="#icon-search"/></svg>搜索 · 关于本站 · 致谢</span></div>
 <div class="xp-window-body compact-body links-body">
 <div class="links-col">
-<form class="xp-search-wrap" id="site-search-form" role="search">
-<div class="xp-search-box">
-<label class="xp-sr-only" for="site-search-input">搜索文章</label>
-<input type="search" class="xp-search-input" id="site-search-input" placeholder="搜索文章…" autocomplete="off">
-<button class="xp-search-btn" id="site-search-btn" type="submit">搜索</button>
-</div>
 
-<div class="xp-search-results" id="site-search-results" role="status" aria-live="polite" aria-atomic="true"></div>
-</form>
+<form class="xp-search-wrap" role="search" data-xp-search><div class="xp-search-box"><label class="xp-sr-only" for="xp-search-input-box">搜索文章</label><input type="search" class="xp-search-input" id="xp-search-input-box" placeholder="搜索文章…" autocomplete="off"><button class="xp-search-btn" type="submit">搜索</button></div><div class="xp-search-results" role="status" aria-live="polite" aria-atomic="true"></div></form>
 </div>
 
 <div class="about-col">
@@ -552,65 +545,6 @@
 
 
 
-<script>
-(function () {
-  var input = document.getElementById('site-search-input');
-  var form = document.getElementById('site-search-form');
-  var results = document.getElementById('site-search-results');
-  if (!input || !results) return;
-  var posts = null;
-  var loading = false;
-
-  function esc(s) {
-    return String(s || '').replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
-    });
-  }
-
-  function render(list, keyword) {
-    if (!list.length) {
-      results.innerHTML = '<p class="xp-search-hint">没有找到与「' + esc(keyword) + '」相关的文章</p>';
-      return;
-    }
-    var html = '<ul>';
-    list.slice(0, 6).forEach(function (p) {
-      html += '<li><a href="' + esc(p.url) + '">' + esc(p.title) +
-        '<span class="res-meta">' + esc(p.date) + ' · ' + esc(p.meta) + '</span></a></li>';
-    });
-    html += '</ul>';
-    results.innerHTML = html;
-  }
-
-  function search(keyword) {
-    var kw = keyword.trim().toLowerCase();
-    if (!kw) { results.innerHTML = ''; return; }
-    if (!posts) {
-      if (loading) return;
-      loading = true;
-      results.innerHTML = '<p class="xp-search-hint">正在加载索引…</p>';
-      fetch('/search.json')
-        .then(function (r) { return r.json(); })
-        .then(function (data) { posts = (data && data.posts) || []; loading = false; search(keyword); })
-        .catch(function () { loading = false; results.innerHTML = '<p class="xp-search-hint">索引加载失败</p>'; });
-      return;
-    }
-    var hit = posts.filter(function (p) {
-      return (p.title && p.title.toLowerCase().indexOf(kw) >= 0) ||
-        (p.text && p.text.toLowerCase().indexOf(kw) >= 0) ||
-        (p.meta && p.meta.toLowerCase().indexOf(kw) >= 0);
-    });
-    render(hit, keyword);
-  }
-
-  input.addEventListener('input', function () { search(input.value); });
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      search(input.value);
-    });
-  }
-})();
-</script>
 
 
 
@@ -664,7 +598,8 @@
 
 
 
-  <script src="/js/xp-like.js?v=2f676be2" defer></script>
+  <script src="/js/xp-like.js?v=2f676be2" defer></script><script src="/js/xp-search.js?v=637875d3" defer></script>
+
 <!-- 阅读进度条（2026-11-05）。贴在窗口最顶端、任务栏之外的一条 3px 细线。
      放在这里而不是文章模板里：任务栏脚本每页都注入，而进度条只需要 DOM
      里有一个元素 —— 有没有正文由 initReadBar() 判断，没有就不显示。
