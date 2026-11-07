@@ -194,7 +194,6 @@ HexoHub 是这个博客的「操作面板」，管**文章 + 图片 + 生成上�
 | **闲置屏保**（触发秒数 / 泡泡数 / 提示文字） | 根目录 `_config.yml` 的 `screensaver:` 段 |
 | **待办清单**（文字页侧栏 + 首页数字） | `source\_data\todo.yml` |
 | **游戏 / 工具卡片**（游戏页） | `source\_data\apps.yml` |
-| **攻略 / 教程清单**（**目前无页面读取**，见 6.5） | `source\_data\guides.yml` |
 | **播放器的曲目、窗口标题** | `source\_data\music.yml`（换网易云歌单后按 `7` → `[2]`） |
 | **作品页的栏目与分期** | `source\_data\works.yml` |
 | **关机彩蛋的文字**（错误弹窗 / 蓝屏） | `_config.yml` 的 `shutdown:` 段（见 **7.1**） |
@@ -843,23 +842,18 @@ localStorage（键 `xp_duck_count`），清浏览器数据会归零。窗口里�
 
 上线一个小游戏 = `status: online` + 补 `url: /games/brick/`。图标只在各自页面内定义，跨页不通用。
 
-### 6.5 guides.yml（攻略条目，分组 → 条目）
+### 6.5 guides.yml（已于 2026-11-07 删除）
 
-> ⚠️ **这个文件目前没有任何页面在渲染它（2026-11-07 核对）。** 2026-10-18 导航里的
-> 「文章」与「杂谈」合并成「文字」（指向 `/blog/`）后，`/guides/` 只剩一张跳转桩，
-> `{% xp_guides %}` 标签全站零引用，`xp_num guides_planned/guides_online` 也没人用，
-> 7 条条目在 48 个产物页面里 0 命中。字段表留在下面是为了**将来要恢复**时不用再翻代码；
-> 不想恢复的话，删掉本文件即可（`xp-content.js` 里 `dataFile('guides')` 会走空数组兜底）。
-> 真要恢复成实体页：把 `themes\minimalism\scripts\filters\post-hide.js` 的
-> `articles-redirect` 生成器改回文章列表（原实现见 git 历史）。
-
-| 层级 | 字段 | 能填 | 写错 → |
-|---|---|---|---|
-| 分组 | `label` / `icon` | 分组名 / 这 5 个 id：`icon-book`、`icon-game-guide`、`icon-art-guide`、`icon-tech-guide`、`icon-bulb` | 空白 |
-| 分组 | `tag_class` | **只有 `tag-game`（红）/ `tag-art`（绿）/ `tag-tech`（蓝）** | 白字无底色，等于消失 |
-| 分组 | `tag_text` / `items` | 标签文字 / 条目列表 | 空胶囊 / 0 条 |
-| 条目 | `title` / `date` | 标题 / **带引号** `'2026-10-05'` | 不加引号显示一长串英文日期 |
-| 条目 | `status` / `url` | 只有 `online` 有意义 / `online` 时必填 | 显示「待写」 |
+> 这里原来放「攻略 / 教程清单」的数据（分组 → 条目，7 条全是 `status: planned` 的模板占位：
+> 星露谷、塞尔达、原神、插画、色轮……）。**2026-10-18** 导航里的「文章」(`/guides/`) 并入
+> 「文字」(`/blog/`) 后，`/guides/` 只剩一张跳转桩，这个文件再没有任何页面读取：
+> `{% xp_guides %}` 与 `xp_num guides_planned / guides_online` 全站零调用，48 个产物页
+> `guide-*` 类名 0 命中。**2026-11-07** 连同 `xp-content.js` 的 `guidesList()` /
+> `guideItems()` / `articlePosts()` 与 `xp-custom.css` 整块 `.guide-*` 样式一起拆除。
+>
+> 想恢复成实体页的话：从 git 历史取回 `source/_data/guides.yml` 和上面那几个函数，
+> 再把 `themes\minimalism\scripts\filters\post-hide.js` 的 `articles-redirect` 生成器改回文章列表
+> （原实现见 git 历史）。**别只新建同名文件就期待它渲染** —— 渲染链已经整套拆掉了。
 
 ### 6.6 music.yml（首页播放器）
 
@@ -892,7 +886,6 @@ localStorage（键 `xp_duck_count`），清浏览器数据会归零。窗口里�
 | 文章 | `categories` / `hide` | 算作品**必须含** `作品` / `true`、`false` |
 | todo.yml | `state` | `doing`、`todo`、`done` |
 | apps.yml | `group` / `status` / `icon` | `game`、`tool` / `online` / 上面 9 个 id 之一 |
-| guides.yml | `tag_class` / `icon` / `status` | `tag-game`、`tag-art`、`tag-tech` / 上面 5 个 id 之一 / `online` |
 | profile.yml | `contacts` 的键 | github / email / bilibili / xiaohongshu / x / weibo / pixiv / website |
 
 ---
@@ -914,7 +907,7 @@ Hexo 先读主题那份（默认值），后读 `_config.minimalism.yml`（优�
 | `contact` | **页脚**图标（与首页图标行 `profile.yml` 无关）；全留空则整块不显示 |
 | `dark_theme.mode` | `auto` = 跟随系统深浅色 |
 | `index_exclude_categories` | 「文字」列表（`/blog/`）里**不出现**的分类，默认只排掉 `作品`（2026-10-18 合并后不再排 `文章`，否则「文章」分类的篇目会从文字页消失） |
-| `articles_category` | 旧「文章」分区的分类名，默认 `文章`。合并后 `/guides/` 只做跳转，这个键留着是给 `xp_num articles` 与将来拆回来用 |
+| `articles_category` | 旧「文章」分区的分类名，默认 `文章`。`/guides/` 变成跳转桩后它只剩一个用途：决定 `articles-redirect` 要生成几个 `/guides/page/N/` 跳转桩（N = 该分类篇数 ÷ `articles_per_page`）。`xp_num articles` 已于 11-07 随 guides 数据链删除 |
 | `per_page`（在 `_config.yml`） | 列表每页篇数，现在是 **10**；`0` = 不分页 |
 
 ### 7.1 关机彩蛋的文字怎么改
@@ -1369,7 +1362,7 @@ node tools\check\audit-design.js http://127.0.0.1:4010
 - **不要在组件里写裸色值**，一律用 `xp-custom.css` 第 1 节的 token。
   例外（历史遗留，允许存在但不新增）：几处 XP 仿色（标题栏 `#0a246a` 一族）。
   （原来还有一条「`guides.yml` 的 `tag_class` 徽标底色」，那三条 `.tag-*.guide-tag` 规则
-  随 `/guides/` 页一起失效了，现在产物 0 命中，算在 14.1 ② 的死规则里。）
+  随 `/guides/` 页一起失效，已于 11-07 删除，见 14.3。）
 - **换主题色只改 `--xp-blue-border` 一处**，窗体 / 按钮 / 气泡一起变。
 - **深色模式成对写**：看变量在 `xp-custom.css` 里是否**同时**出现在 `:root` 和 `html.dark`。
 
@@ -1596,8 +1589,8 @@ XP 的圆角不是「设计感」，而是**材质语义**：越像实体窗体�
 
 | # | 事项 | 现状（2026-11-07） | 建议 | 估时 |
 |---|---|---|---|---|
-| ① | **字号 / 行高 / 间距没成体系** | `font-size` 有 17 种取值：16px 占 117 处（正文档），另有 11/12/13/14/15/17/18/20/21/22/24/26/32/40/44/52px 的散值，同一元素常被后写的规则改档。行高 14 种、间距 30+ 处硬编码、圆角 9 种。没有 `--space-*` / `--fs-*` 这类 token | 先建 token，再把正文与标题收敛成阶梯，最后换掉硬编码色。**一次做完，别分批** | 半天起 |
-| ② | **死 CSS 还没清完** | ①播放器旧形态的两套 `.mp4-*` 皮肤（约 1039 行与 3398 行各一套，产物里只有一个形态命中）；②给 `/guides/` 攻略列表用的 `.tag-game/.tag-art/.tag-tech.guide-tag` 三条配色（页面已不存在，产物 0 命中）。11-07 只清了另外两处死码（嵌套媒体查询、`.feature-container`） | 先量哪一套真正命中，再删另一套；三条 `.guide-tag` 可以直接删 | 1~2 h |
+| ① | **字号 / 行高 / 间距没成体系** | `font-size` 17 种取值，但 **16px 占 117 处（68%）**，真正散的只有 11–15px 那 32 处 —— 其中 **17 处集中在播放器 LCD 屏**（`xp-custom.css` 1323–1528、3457–3461、3852–3853）。那不是「散落的字号」而是**第二套尺度**：屏只有 200–340px 宽，字号连同 `line-height: 14/15/17/18/20px` 的硬编码行高都是为它定的格线。行高 23 种（含 6 个 px 值）、gap 17 种；圆角已在 13.3.2 落表 | **先缓**（11-07 决定）。真要动就分两族 token —— `--fs-*`（全站）与 `--lcd-*`（屏内），第一步只做等值替换（零视觉变化），收敛留到有明确设计意图时。**别拿全站 16px 统一套过去**，屏里的字会糊 | 半天起 |
+| ② | **零命中的死类还剩一批**（11-07 全站扫 389 个类名，38 个零命中） | **「两套 `.mp4-*` 皮肤」这条原判断是错的**：CSS 定义 35 个 `mp4-*` 类、产物命中 35 个，**差集为 0**；`.mp4-floating` 与 `.retro-mp4-player` 是同一组件的根类（各 40 页命中），只有 `/guides/` 那三条配色是真死（已随数据链删除）。剩下可删的：`.cloud-tag`（7 处，作品页早已改用 `.tag-cloud`）、`.pagination-container`（3 处）、`.xp-section-bar`（2 处）、`.tilt-left/right/soft`（3 处，只在 `min-width:901px` 里）、`.xp-video / .xp-embed / .xp-music-embed / .app-link / .is-link` | 可以删，但**先排除条件分支**：`.xp-empty`（9 处调用，只是数据都非空）、`.todo-link / .todo-ext`（`todo.yml` 补 `url` 就会用上）、highlight 的 13 个 token 类（hello-world 有代码块，只是没有 comment 行）—— 这三组都不能动 | 40 min |
 | ③ | **断点没收敛** | 主档 640/900/1200，另有 641/901/1100/1201/1240/1500 六个补丁档。13.3.1 已按实际值改写，文档与代码一致 | 要不要合并回三档是另一件事：每档都有具体组件依赖，合并要逐档量副作用，风险大于收益 —— **建议不动** | 半天（不建议现在做） |
 | ④ | 月级归档是孤儿页 | `/archives/<年>/<月>/` 能访问但没有入口，内容与主时间线重复 | 要么加链接，要么不生成 | 20 min |
 | ⑤ | 加密文章的标签明文可见 | `大烧烤` 设了密码，但标签「争议话题」在列表和标签云里照挂，还有自己的标签页 | 带密码的文章不输出标签，这类标签从标签云过滤。**注意**：密码保护的只是正文，标签本来不含内容，这是「要不要」不是「对不对」 | 20 min |
@@ -1608,7 +1601,6 @@ XP 的圆角不是「设计感」，而是**材质语义**：越像实体窗体�
 | ⑩ | 3 篇文章没有分类 | `呃可能是属性啥的吧` / `天雷滚滚好怕怕` / `纪念半次元，吗` 没有 `categories:`，任何分类页都看不到 | 站主自己补；补完分类页数字会变 | 10 min |
 | ⑪ | `hello-world.md` 还是 Hexo 默认示例 | 四段 Quick Start + 4 个代码块，是「随笔」里唯一的英文文章 | 留着当格式参考也行，建议先从「随笔」分类拿掉 | 10 min |
 | ⑫ | 任务栏压内容（可选） | 播放器页内化后，固定浮层只剩 36px 的任务栏：首页「快速导航」206 616px²、/works/ 标签云 159 001px²、文章页代码块 99 487px² | 给 `body` 底部补足任务栏高度的内边距。**不急** —— 视觉上是「贴着窗口下沿」，属于正常观感 | 30 min |
-| ⑬ | `guides.yml` 已无人读取 | 7 条攻略占位条目（全年 `planned`），`{% xp_guides %}` 零引用，48 个产物页面 0 命中 | 要么删文件（`dataFile` 会走空数组兜底），要么按 6.5 的办法恢复成实体页 | 10 min |
 
 ### 14.2 已经定下来的（含「决定不做」）
 
@@ -1627,6 +1619,19 @@ XP 的圆角不是「设计感」，而是**材质语义**：越像实体窗体�
 ### 14.3 变更记录（倒序）
 
 > 只记结论与坑。详细过程在 git log 和代码注释里，这里记的是**下一次动同一块地方时该知道的事**。
+
+#### 2026-11-07 · 拆掉 guides 孤儿数据链
+
+- **怎么判定它是孤儿**：`{% xp_guides %}` 标签仍注册着（`xp-content.js:1653`）但模板**零调用**；`xp_num guides_planned / guides_online` 零调用，连 `xp_num articles` 也零调用 —— `articlePosts()` 只为它而存在。48 个产物页 `guide-*` 类名 **0 命中**。数据本身是 7 条全 `planned` 的模板占位（星露谷、塞尔达、原神、插画、色轮…），站主并不写这些。
+- **删掉的**：`source\_data\guides.yml`；`xp-content.js` 里 `guidesList()` / `guideItems()` / `articlePosts()` / `xp_guides` 注册 / `num()` 的三个 case（合计 −2098 字符）；`xp-custom.css` 整块 `.guide-*` 与三条 `.tag-*.guide-tag`（−25 行）。
+- **必须留的**：`.tag-game / .tag-life / .tag-guide` 是**标签胶囊的色板槽位**（35 页命中 70 次），不是攻略列表专属；`/guides/` 跳转桩、它的 `articles-redirect` 生成器、`xp-seo.js` 的 `Disallow: /guides/`、`xp-taskbar.js` 的 `nav-guides` 图标也都要留 —— 跳转页本身还在。
+- **教训**：`.tag-game.guide-tag` 与 `.tag-pill` 同为单类选择器、又后加载，曾把「数码绘画」胶囊盖成深红（10-18 截图实锤）。拆这类「同前缀不同后缀」的规则，只删带后缀的那几条，`--pill-bg` 定义一个都不能动。
+
+#### 2026-11-07 · 纠正「两套播放器皮肤」的误判 + 全站死类扫描
+
+- 原待办写着「播放器旧形态的两套 `.mp4-*` 皮肤留在 1039 行与 3398 行」。实测：CSS 定义 35 个 `mp4-*` 类，产物命中 35 个，**差集为 0**；`.mp4-floating` 与 `.retro-mp4-player` 是同一组件的根类，各 40 页命中；那两行现在分别是 `.xp-bubble::before`（便当格卷角阴影）和 `.xp-bento` 的动画延迟 —— **行号早已漂移，记录指向了与播放器无关的地方**。照它去删会误删活代码。
+- 顺带做了次全站死类扫描（CSS 类名 vs 产物 HTML+JS 全文的正则差集）：389 个类名，38 个零命中。真死的已在 14.1 ② 列出；`.xp-empty`、`.todo-link`、highlight 的 13 个 token 类属于**条件分支/内容驱动**，不能按"零命中"处理。
+- **教训**：写待办时记「判据」而不是「行号」。行号会随每次编辑漂移，判据（CSS 定义 vs 产物命中）半年后还能复现。
 
 #### 2026-11-07 · 仓库去冗余（不动视觉）
 

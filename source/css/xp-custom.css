@@ -305,12 +305,11 @@ body {
    下面是 2026-10-13 用探针扫过全部页型之后的完整清单 —— 探针把每个元素的文本
    拆成 Range、用 getClientRects() 按 top 去重，数的是**真实行盒数**（不是
    用高度除行高估算，那种算法会被 padding 带偏）。1440 / 390 两个视口都扫了，
-   全站只有这 3 处，没有别的：
+   全站只有这 2 处，没有别的：
 
      选择器                在哪                                窄屏（390px）表现
      p.recent-work-date    首页「最近作品」横栏的日期          折 2 行
-     p（裸段落）           /works/ /games/ /guides/ 的页面说明句 折 2 行
-     .guide-title          攻略页条目标题                       折 2~3 行
+     p（裸段落）           /works/ /games/ 的页面说明句        折 2 行
 
    ① p —— 主题只给**文章正文**写了行高（post.styl 里 .post-content p = 1.725），
       其余地方的 p 一直继承 html 的 1.15。给裸 p 补 1.6 是安全的：
@@ -325,13 +324,9 @@ body {
         这个是量过、认可的结果：那两行紧挨着 46px 高的计数数字，18px 的行盒在旁边
         显得局促，25.6px 反而更平衡。其余单行 p 要么自带行高、要么在 nowrap 容器里，
         都没有可见变化 —— 全站扫过，没有第三个。
-   ② .guide-title —— 它是**列表里的标题**，不是散文，行高按本站卡片标题的习惯给
-      （兄弟组件 .work-card-title 是 1.35）。这里取 1.4，比卡片标题略松一点，
-      因为它最长会折到 3 行。
 
    以后新增会折行的文字就加在这一节，并把「在哪、为什么」一起写上。 */
 p { line-height: 1.6; }
-.guide-title { line-height: 1.4; }
 
 /* ---------- 主题层收归（2026-11-03 瘦身 Stage B） ----------
    下面这几条原先是 themes/minimalism/source/style 里的，编译进 style/main.css。
@@ -755,8 +750,7 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .xp-bento > * > .xp-bubble,
 .xp-bento > * > .retro-mp4-player,
 .xp-bento > * > .xp-section-bar,
-.xp-bento > * > .app-card,
-.xp-bento > * > .guide-list { width: 100%; }
+.xp-bento > * > .app-card { width: 100%; }
 
 /* ============ 7) 首页组件 ============ */
 /* 正文放大到 16px 之后，这张卡片的高度也得跟着调 —— 卡片高度受同一横带里的
@@ -2167,29 +2161,14 @@ html.dark .mini-stat strong { color: #9cc2ff; }
 .app-desc { margin: 0; font-size: 16px; color: var(--text-muted); }
 .app-link { position: absolute; inset: 0; z-index: 10; }
 
-.guide-list { list-style: none; padding: 0; margin: 0; }
-.guide-list li {
-  display: flex; align-items: center; gap: 12px;
-  padding: 8px 12px; margin: 4px 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  transition: background 0.2s, border-color 0.2s;
-}
-.guide-list li:hover { background: var(--surface-2); border-color: var(--xp-hover); }
-.guide-date { font-size: 16px; color: var(--text-muted); flex-shrink: 0; width: 90px; }
-.guide-title { flex: 1; font-size: 16px; color: var(--text-heading); text-decoration: none; }
-a.guide-title:hover { text-decoration: underline; }
-.guide-title.is-planned { color: var(--text-sub); }
-.guide-tag { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 16px; color: #fff; flex-shrink: 0; }
-/* ⚠ 下面三条 .tag-game/.tag-art/.tag-tech 是给 /guides/ 攻略列表的 .guide-tag 配色
-   （当时 guide-tag 与标签胶囊共用 tag-* 类名）。现在标签胶囊 .tag-pill 也用 .tag-game，
-   这条 background 会盖过 .tag-pill 的 var(--pill-bg)（后加载、同为单类选择器），
-   导致「数码绘画」胶囊变成深红底（2026-10-18 站主截图实锤）。
-   改成只作用于 .guide-tag，不再影响 .tag-pill。 */
-.tag-game.guide-tag { background: #c0504d; }
-.tag-art.guide-tag { background: #4a8f4a; }
-.tag-tech.guide-tag { background: #3f77b5; }
+/* 原 /guides/ 攻略列表的样式块（.guide-list / li / .guide-date / .guide-title /
+   .guide-tag / .tag-game|art|tech.guide-tag）已于 2026-11-07 删除：
+   那张列表页 10-18 就并成了 /blog/ 跳转桩，数据源 guides.yml 也没人读，
+   48 个产物页里这些类名 0 命中。现在 /guides/ 只剩一张跳转页，不需要列表样式。
+   顺带解掉一个隐患：那三条 .tag-*.guide-tag 的 background 与 .tag-pill 同为单类
+   选择器、又后加载，曾把「数码绘画」胶囊的底色盖成深红（2026-10-18 截图实锤）。
+   注意只删了带 .guide-tag 后缀的三条，.tag-game / .tag-life / .tag-guide 本身
+   是标签胶囊在用的色板槽位，不能动。 */
 
 /* .todo-list / .todo-item / .todo-tag / .tag-doing|todo|done 这些规则
    只被 /todo/ 的三栏全量视图用到，页面删除后一并移除（清单现在是杂谈页的 .todo-mini-list）。 */
@@ -2235,8 +2214,7 @@ html.dark .profile-email-pop .email-label { color: var(--link); background: rgba
    只有 24px 的用户名还保留加粗（2px 偏移相对于 24px 只有 1/12，不会糊，见下方规则）。 */
 .recent-work-title,
 .work-card-title,
-.app-info h4,
-.guide-title { font-family: var(--font-ui); font-size: 16px; }
+.app-info h4 { font-family: var(--font-ui); font-size: 16px; }
 
 /* 首页大标题（用户名）：24px 仍是点阵的锐利尺寸，2px 偏移足以加粗而不糊 */
 .profile-text h2 { font-family: var(--font-display); font-weight: 700; font-size: 24px; }
@@ -3427,8 +3405,6 @@ html.xp-glitching::after {
      应当和同排的窗口一样铺满整行，否则会像「比下面的窗口窄一截」。
      所以只有不属于 .xp-music-slot 的独立播放器才保留 200px 上限。 */
   .retro-mp4-player:not(.xp-music-slot .retro-mp4-player) { max-width: 200px; }
-  .guide-list li { flex-wrap: wrap; }
-  .guide-date { width: auto; order: 3; }
   .xp-taskbar { height: 32px; }
   .xp-taskbar-right { padding: 0 4px; }
   .xp-start-btn { height: 24px; padding: 2px 8px 2px 6px; font-size: 16px; }

@@ -8,7 +8,6 @@
  *   {% xp_stat_rows %}                  首页「小站数据」  *   {% xp_recent_posts 4 [exclude=分类]} 最近更新列表（exclude= 可排掉某个分类）
  *   {% xp_recent_works 3 %}              最近作品横栏  *   {% xp_tag_cloud pill|cloud %}        标签云（pill=首页胶囊 / cloud=作品页）
  *   {% xp_todo N %}                     待办清单（N=显示前 N 条；填 0=显示全部） *省略时默认 4 来 *（  *   {% xp_apps %}                        游戏/工具卡片（含分组标题条）
- *   {% xp_guides %}                      攻略/教程分组列表
  *   {% xp_work_gallery %}                作品页：原创/同人分栏 + 时间轴 + 标签筛选 + 原地展开
  *
  * 另外还有若干 hexo.extend.helper.register 注册的辅助函数（xp_quotes / xp_music /
@@ -87,7 +86,7 @@ function imageSize(src, fbW, fbH) {
   return fallback;
 }
 
-/* 数据文件缓存：一次构建里 todo/profile/apps/guides/quotes/music/decor 会被
+/* 数据文件缓存：一次构建里 todo/profile/apps/quotes/music/decor 会被
    十几一 tag/helper 反复读取（例如首页 num('todo_*') 一次就说 3 道 todo.yml），
    不缓存的话每个调用点都重读磁目 + 重解果 YAML。这里按文件名缓存解析结果，
    generateBefore 时清掉（watch 模式下数据文件改动后重新生成时能拿到新值）。    works 的缓存（worksCache，L487）是本模式的先例。
@@ -156,16 +155,6 @@ function essayPosts() {
   return allPosts().filter((p) => !catsOf(p).some((c) => exclude.indexOf(c) >= 0));
 }
 
-/* 「文章」分区（/guides/）的篇数。    ⚠ 必须和 themes/minimalism/scripts/filters/post-hide.js 里 articles 生成器同源：
-   两边都读 _config.minimalism.yml 的 articles_category，否则首页统计与
-   /guides/ 头部「共 N 篇」会对不上（essays 那条注释里记过同样的坑）。
-*/
-function articlePosts() {
-  const wanted = String((hexo.theme.config && hexo.theme.config.articles_category) || '文章').trim();
-  if (!wanted) return [];
-  return allPosts().filter((p) => catsOf(p).indexOf(wanted) >= 0);
-}
-
 function metaOf(post) {
   const cats = catsOf(post);
   if (cats.length) return cats[cats.length - 1];
@@ -189,22 +178,12 @@ function countByState(state) {
   return dataFile('todo').filter((t) => (t.state || 'todo') === state).length;
 }
 
-function guideItems() {
-  const out = [];
-  dataFile('guides').forEach((g) => {
-    (g.items || []).forEach((it) => out.push(it));
-  });
-  return out;
-}
-
 function num(key) {
   switch (key) {
     case 'posts': return allPosts().length;
-    /* 「文章」在首页统计与杂谈列表头部都用它 —— 它指的是**杂谈**，        不含作品（作品有自己的作品页），所以这里要跟列表一样排掉作品。
-*/
+    /* 「文章」在首页统计与杂谈列表头部都用它 —— 它指的是**杂谈**，
+       不含作品（作品有自己的作品页），所以这里要跟列表一样排掉作品。 */
     case 'essays': return essayPosts().length;
-    /* 「文章」分区（/guides/）的篇数，与 articles 生成器同源（见 articlePosts 的注释） */
-    case 'articles': return articlePosts().length;
     case 'tags': return allTags().length;
     case 'categories': return allCategories().length;
     case 'works': return workPosts().length;
@@ -215,8 +194,6 @@ function num(key) {
     case 'todo_done': return countByState('done');
     case 'apps_game': return dataFile('apps').filter((a) => a.group === 'game').length;
     case 'apps_tool': return dataFile('apps').filter((a) => a.group === 'tool').length;
-    case 'guides_planned': return guideItems().filter((it) => it.status !== 'online').length;
-    case 'guides_online': return guideItems().filter((it) => it.status === 'online').length;
     default:
       hexo.log.warn('[xp-content] 未知的统计键：%s', key);
       return 0;
@@ -466,31 +443,6 @@ function appsPane(key, kind) {
     `<div class="xp-window-body"><div class="pane-grid">${body}</div></div>` +
     `</div></div>`
   );
-}
-
-function guidesList() {
-  const groups = dataFile('guides');
-  if (!groups.length) return '<div class="guides-item"><p class="xp-empty">清单还没有内容</p></div>';
-  const out = groups.map((g) => {
-    const items = (g.items || []).map((it) => {
-      const online = it.status === 'online' && it.url;
-      const title = online
-        ? `<a class="guide-title" href="${esc(it.url)}">${esc(it.title)}</a>`
-        : `<span class="guide-title is-planned" title="待撰写">${esc(it.title)}</span>`;
-      return (
-        `<li class="guide-item"><span class="guide-date">${esc(it.date || '')}</span>${title}` +
-        (online ? '' : '<span class="xp-badge">待写</span>') +
-        `<span class="guide-tag ${g.tag_class}">${esc(g.tag_text)}</span></li>`
-      );
-    }).join('');
-    return (
-      `<div class="guides-item guides-section-title"><div class="xp-section-bar">` +
-      `<svg width="1.15em" height="1.15em" aria-hidden="true"><use href="#${g.icon}"/></svg>` +
-      `<span>${esc(g.label)} (${(g.items || []).length})</span></div></div>` +
-      `<div class="guides-item guides-list"><ul class="guide-list">${items}</ul></div>`
-    );
-  });
-  return oneLine(out.join(''));
 }
 
 /* ---------------------------------------------------------------- 作品集（分栏目 + 时间轴 + 筛选） */
@@ -1650,7 +1602,6 @@ registerTag('xp_apps', (args) => {
   if (a[0] === 'cards') return appsCards(a[1]);
   return appsCards(a[0]);
 });
-registerTag('xp_guides', () => guidesList());
 registerTag('xp_work_gallery', () => workGallery());
 
 /* 文章页标题栏右侧的装饰按钮（`_ ▣ ×`）——模板里用 xp_bullet() 取。    （这里原来还注册过一一 xp_todo_mini：待办窗口改用 index.ejs 直接谢 xp_widget_todo()
