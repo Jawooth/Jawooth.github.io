@@ -23,6 +23,7 @@
 | 体积与安全基线 | [第 11 节](#11-体积与安全基线) |
 | 给 AI 助手的交接说明 | [第 12 节](#12-给-ai-助手的交接说明) |
 | 视觉约束（写 UI 前必读） | [第 13 节](#13-视觉约束给-ai-助手看的一页纸) |
+| 待办 · 已定的事 · 变更记录 | [第 14 节](#14-待办--已决--变更记录) |
 
 ---
 
@@ -54,7 +55,7 @@
 | 你想干的事 | 用哪里 | 为什么 |
 |---|---|---|
 | 写文章、改文章、插图片、批量改标签、删文章 | **`1`（HexoHub）** | 只有它有编辑器 |
-| 改网名、自我介绍、首页句子、待办、游戏/攻略清单、歌单 | **记事本** | 这些是 `source\_data\` 下的数据文件（见第 6 节），HexoHub 管不到 |
+| 改网名、自我介绍、首页句子、待办、游戏清单、歌单 | **记事本** | 这些是 `source\_data\` 下的数据文件（见第 6 节），HexoHub 管不到 |
 | 让改动「生效」 | **`2`** | Hexo 不会自动感应，必须重新生成 |
 | 生成 + 上传一条龙 | **`3`** | 它就是「清理 → 生成 → 上传」 |
 
@@ -141,7 +142,7 @@
 | `npx hexo deploy` | `3` → `[2] 重建并上传` |
 | 只推现成结果 | `3` → `[1] 只重传` |
 | 备份 / `git checkout -- .` | `4` / `5` |
-| `py -3 tools\fetch\fetch-netease.py` / `py -3 tools\check\verify-site.py` | `6` / `7` |
+| `py -3 tools\fetch\fetch-netease.py` / `py -3 tools\check\verify-site.py` | `7` → `[2]` / `6` |
 
 命令都写在 `package.json` 里（`build` / `generate` / `server` / `deploy`）：**给 AI 可以直接写命令**（第 12 节），你自己只走菜单。
 
@@ -193,7 +194,7 @@ HexoHub 是这个博客的「操作面板」，管**文章 + 图片 + 生成上�
 | **闲置屏保**（触发秒数 / 泡泡数 / 提示文字） | 根目录 `_config.yml` 的 `screensaver:` 段 |
 | **待办清单**（文字页侧栏 + 首页数字） | `source\_data\todo.yml` |
 | **游戏 / 工具卡片**（游戏页） | `source\_data\apps.yml` |
-| **攻略 / 教程清单**（攻略页） | `source\_data\guides.yml` |
+| **攻略 / 教程清单**（**目前无页面读取**，见 6.5） | `source\_data\guides.yml` |
 | **播放器的曲目、窗口标题** | `source\_data\music.yml`（换网易云歌单后按 `7` → `[2]`） |
 | **作品页的栏目与分期** | `source\_data\works.yml` |
 | **关机彩蛋的文字**（错误弹窗 / 蓝屏） | `_config.yml` 的 `shutdown:` 段（见 **7.1**） |
@@ -217,15 +218,16 @@ D:\tools\hexo
 │  ├─ fonts\            像素字体（OFL 许可证随附，别删）
 │  └─ vendor\           自托管的前端库（XP.css、APlayer）
 ├─ themes\minimalism\   页面模板（改版式才需要动）
-├─ scripts\             构建期脚本：xp-content.js（标签/统计）· xp-player.js（播放器）·
-│                       xp-enhance.js（懒加载/放大/目录/SEO）· xp-taskbar.js
-├─ tools\               小工具（按用途分组，改完记得同步 README 里的路径）
+├─ scripts\             构建期脚本：xp-content.js（标签/统计/卡片）· xp-player.js（播放器）·
+│                       xp-taskbar.js（任务栏/开始菜单）· xp-enhance.js（懒加载/放大/目录/搜索）·
+│                       xp-seo.js（sitemap/robots）· xp-icons.js（图标真源）· xp-screensaver.js
+├─ tools\               小工具（按用途分组）
 │  ├─ hexo-ui.ps1       菜单引擎，UTF-8 BOM，改它别丢 BOM
-│  ├─ images\           import-artworks.py（批量导入）· make-work-images.py（单张/多图）·
-│  │                     work_images.py（图片处理共用逻辑）· optimize-images.py ·
-│  │                     make-assets.py（样例头像）· make-favicon.py（站标 favicon）
-│  ├─ fetch\            fetch-netease.py（拉网易云歌单）
-│  ├─ check\            verify-site.py（全面自检 = 菜单 6）
+│  ├─ images\           六个 .py：import-artworks（批量导入）· make-work-images（单张/多图）·
+│  │                     work_images（共用逻辑）· optimize-images · make-assets · make-favicon
+│  ├─ fetch\            fetch-netease.py（拉歌单）· fetch-lyrics.py（抓歌词）
+│  ├─ icons\            图标管线：park-map → emit-smooth → merge-smooth-xp-icons → verify
+│  ├─ check\            verify-site.py（全面自检 = 菜单 6）· audit-design.js（设计体检）
 │  └─ fonts\            make-pixel-fonts.py（字体子集化）
 ├─ backup\              备份（不进仓库、不会被发布，随便堆）
 ├─ public\              构建产物，**不要手动改**，每次生成都会被覆盖
@@ -280,7 +282,7 @@ D:\tools\hexo
 |---|---|
 | 首页全部窗口（`用户账户`、`最近作品`、`标签云`…） | `source\index.md` |
 | 作品页（`我的作品集`、`创作统计`…） | `source\works\index.md` |
-| 游戏页 / 攻略页顶部标题 | `source\games\index.md` / `source\guides\index.md` |
+| 游戏页顶部标题 | `source\games\index.md` |
 | 分类页 / 标签页顶部（`全部分类` / `全部标签`） | `source\categories\index.md` / `source\tags\index.md` |
 
 **两处例外（是脚本生成的，不在上面文件里）**：
@@ -288,7 +290,6 @@ D:\tools\hexo
 | 标题 | 改哪里 |
 |---|---|
 | 游戏页分组标题条（`小游戏 (3)`、`小工具 (3)`） | `scripts\xp-content.js` 的 `appsGrid()`，搜 `label: '小游戏'`（括号里数字自动统计，别手写） |
-| 攻略页分组标题条（`游戏攻略`、`绘画教程`…） | **`source\_data\guides.yml`** 每组的 `label:`（数据文件，改完不用动代码） |
 | 文字页主标题 `文字 · 全部文章` | `themes\minimalism\layout\index.ejs` 第 10 行 |
 | 文字页 / 各页侧栏 6 个窗口（`最近文章`、`标签云`、`小站数据`、`关于我`、`浏览`、`争取在死之前做完`） | `scripts\xp-content.js` 搜 `widget('…')`，改第一个参数 |
 
@@ -379,7 +380,7 @@ origin: 原创                # 原创 或 同人（决定作品页栏目）
 tags: [风景, 数码绘画]
 short_title: 山间小屋        # 卡片上的短标题（不填用 title）
 desc: 一句话简介，显示在卡片和最近作品里
-img: /images/works/landscape.jpg             # 文章顶部大图
+img: /images/works/landscape.jpg             # 分享卡片图（og:image）
 thumbnail: /images/works/landscape-thumb.jpg # 卡片封面（-thumb 小图省流量）
 status: done                # done = 已完成；doing = 进行中（卡片角标）
 ---
@@ -393,7 +394,7 @@ status: done                # done = 已完成；doing = 进行中（卡片角�
 | `date` | `2026-10-11 20:00:00` | 文件名日期 → 创建时间；决定**排序**与**分期** |
 | `tags` / `categories` | `[随笔]` 或 `[作品, 插画]` | 标签云无此词 / 不算作品 |
 | `desc` | 一句话 | 取正文第一段（超 96 字截成 `…`） |
-| `img` | `/images/works/xxx.jpg` | 文章页无大图、分享卡片无图 |
+| `img` | `/images/works/xxx.jpg` | 分享卡片无图（**文章页已不再显示顶部大图**，2026-10-18 瀑布流改版时移除） |
 | `thumbnail` | `/images/works/xxx-thumb.jpg` | 卡片退回用 `img`；**首页「最近作品」没它整卡不出现** |
 | `permalink` | `my-slug`（网址变 `/my-slug/`） | 用文件名当网址（见 2.6） |
 | `sticky` | 数字，越大越靠前 | `0`（只影响 `/blog/` 置顶，卡片标题右侧带「到顶」箭头） |
@@ -508,7 +509,7 @@ origin: 原创                  ← 作品栏目：原创 / 同人
 tags: [风景, 数码绘画]         ← 标签（作品页的筛选按钮由它生成）
 desc: 一幅山间小屋的风景插画    ← 卡片上那句话简介
 thumbnail: /images/works/x-thumb.jpg   ← 卡片封面
-img: /images/works/x-800.jpg           ← 文章页顶部大图
+img: /images/works/x-800.jpg           ← 分享卡片图（og:image）
 status: done                  ← done 已完成 / doing 进行中
 ---
 
@@ -619,7 +620,7 @@ py -3 tools\images\make-work-images.py "x.png" x --dry-run                      
 | 现象 | 原因 | 怎么办 |
 |---|---|---|
 | 卡片是灰底空框 | `thumbnail:` 路径写错或文件没生成 | 看 `source\images\works\` 里有没有 `<短名>-thumb.jpg` |
-| 文章页顶部大图是空的 | `img:` 路径写错 | 同上，找 `<短名>-800.jpg` |
+| 分享出去没有图 | `img:` 路径写错 | 同上，找 `<短名>-800.jpg`；只影响分享卡片，页面本身照常 |
 | 正文里的图不显示 | 图不在文章资源夹里 | 确认图在 `source\_posts\<文章名>\` 下，且引用写的是**文件名**不是完整路径 |
 | 改了图但页面没变 | 浏览器缓存 | `Ctrl + F5` 强制刷新 |
 | 全站都乱了 | 文件名含中文导致网址异常 | 按 `6` 自检，看它列出的问题文件名 |
@@ -651,7 +652,7 @@ py -3 tools\images\make-work-images.py "x.png" x --dry-run                      
 | 字段 | 用在哪 | 没写 → |
 |---|---|---|
 | `thumbnail:` | **卡片封面**（首页「最近作品」、作品页卡片、分享小图） | 退回用 `img:`；**首页「最近作品」没它整卡不出现** |
-| `img:` | 文章页顶部大图 + 分享大图 | 文章页无大图 |
+| `img:` | **分享大图**（og:image），兼作 `thumbnail` 的兜底 | 分享卡片没图 |
 
 **给作品换 / 自定义封面（三步）**：
 
@@ -844,11 +845,13 @@ localStorage（键 `xp_duck_count`），清浏览器数据会归零。窗口里�
 
 ### 6.5 guides.yml（攻略条目，分组 → 条目）
 
-> ⚠️ **2026-10-18 起 `/guides/` 不再是一个页面**：导航里的「文章」与「杂谈」合并成了
-> 「文字」（指向 `/blog/`），`/guides/` 只剩一张自动跳转页（跳去 `/blog/`）。
-> 这个数据文件本身没删，条目仍被「攻略」相关的窗口引用；但**再也没有一个
-> `/guides/` 列表页**把它们按分组列出来了。要恢复成实体页面，得把
-> `themes\minimalism\scripts\filters\post-hide.js` 里的 `articles-redirect` 生成器改回文章列表（原实现见 git 历史）。
+> ⚠️ **这个文件目前没有任何页面在渲染它（2026-11-07 核对）。** 2026-10-18 导航里的
+> 「文章」与「杂谈」合并成「文字」（指向 `/blog/`）后，`/guides/` 只剩一张跳转桩，
+> `{% xp_guides %}` 标签全站零引用，`xp_num guides_planned/guides_online` 也没人用，
+> 7 条条目在 48 个产物页面里 0 命中。字段表留在下面是为了**将来要恢复**时不用再翻代码；
+> 不想恢复的话，删掉本文件即可（`xp-content.js` 里 `dataFile('guides')` 会走空数组兜底）。
+> 真要恢复成实体页：把 `themes\minimalism\scripts\filters\post-hide.js` 的
+> `articles-redirect` 生成器改回文章列表（原实现见 git 历史）。
 
 | 层级 | 字段 | 能填 | 写错 → |
 |---|---|---|---|
@@ -1010,17 +1013,23 @@ shutdown:
 不会丢，**不必重新生成**）。**不要连点两次发布**；**代理必须开着**（直连连不通）。
 发布成功 ≠ 线上立刻更新（Pages 还要构建 30~120 秒，之后 `Ctrl + F5`）。
 
-**怎么确认传上去了**：按 `6` 自检，或让 AI 跑 `git -C D:\tools\hexo\.deploy_git log -1` ——
-出现刚刚时间的 `Site updated: …` 就是成功了。
+**怎么确认传上去了**：按 `6` 自检；或让 AI 跑 `git -C D:\tools\hexo\.deploy_git log -1`
+（`.deploy_git\` 是部署时克隆的 gh-pages 副本，**第一次部署会重新建**，出现刚刚时间的
+`Site updated: …` 就是成功了）。
 
-**另一条路：GitHub Actions 自动部署**（`.github\workflows\deploy.yml`）：把仓库 push 到 GitHub 后，
-由 CI 完成「安装依赖 → 构建 → 自检 → 部署 gh-pages」，不经本机代理，也就没有上面那个 TLS 卡住的坑。
-两种方式可以并存：本机菜单管「随手改随手发」，CI 管「提交记录即发布」。
+**另一条路：GitHub Actions 自动部署**（`.github\workflows\deploy.yml`）：push 到 `master` 就触发，
+由 CI 完成「`npm ci` → 构建 → 自检 → 推 gh-pages」，不经本机代理，也就没有上面那个 TLS 卡住的坑。
+两条路可以并存：本机菜单管「随手改随手发」，CI 管「提交记录即发布」。
 
-> ⚠️ **CI 是从仓库 checkout 构建的**，所以构建资源必须**先 `git add` 提交过**，CI 才能构建成功
-> （本地部署不需要，CI 需要）。**当前待办**：`source\fonts\` 下的两个像素字体
-> （`fusion-pixel-*.woff2` / `fusion-bold-pixel-*.woff2`）**尚未提交**，仓库里跟踪的还是旧版本文件名 ——
-> 想用 CI 部署，先执行 `git add source/fonts && git commit`。
+> **CI 已于 2026-11-07 跑通**（master 首次推送后 48 秒完成，gh-pages 紧接着构建成功）。
+> 之前一直是「配了但没生效」：仓库当时**没有 remote**，`deploy.yml` 从未被触发；
+> 构建资源（`source/fonts/`、`source/images/`、`source/vendor/`）也还没入库。
+> 现在这些都已在版本库里 —— **CI 从仓库 checkout 构建，本地文件没提交就等于线上没有**，
+> 这是它和本机部署最大的区别。
+>
+> 查 CI 结果：仓库页 → Actions →「构建并部署到 GitHub Pages」。
+> 它跑的是 `python3 tools/check/verify-site.py --no-audit`（故意跳过 npm audit，
+> 因为 CI 到 registry.npmjs.org 偶发 ECONNRESET，不让它拦住部署）。
 
 ### 8.3 备份与撤回（后悔药）
 
@@ -1089,7 +1098,7 @@ shutdown:
 
 ### 10.2 字体
 
-全站两套像素字体（外加主题自带的图标字体）：
+全站两套像素字体（主题自带的那套 iconfont 已于 2026-11-03 随瘦身删除 —— 那些元素没有文字，视觉早由 `xp-icons.css` 接管）：
 
 | 项目 | 情况 |
 |---|---|
@@ -1122,9 +1131,9 @@ shutdown:
 
 | 类型 | front matter | 模板 | 用在哪 |
 |---|---|---|---|
-| 桌面式页面 | `layout: xp-page` | `xp-page.ejs`（页面自己画窗口 / 便当格） | 首页、作品、游戏、攻略、标签、分类 |
-| 普通页面 | `layout: page` | `page.ejs`（自动套窗口外壳 + 侧栏） | 新增说明页、留言板 |
-| 文章 | 默认 | `post.ejs`（外壳 + 大图 + 目录 + 上一篇 / 下一篇） | `source\_posts\` |
+| 桌面式页面 | `layout: xp-page` | `xp-page.ejs`（页面自己画窗口 / 便当格） | 现在的 7 个页面全用它：首页、作品、游戏、标签、分类、致谢、404 |
+| 普通页面 | `layout: page` | `page.ejs`（自动套窗口外壳 + 侧栏） | **目前没有页面在用**（新建页面不写 `layout:` 时会落到这里） |
+| 文章 | 默认 | `post.ejs`（外壳 + 目录 + 相关文章 + 上一篇 / 下一篇） | `source\_posts\` |
 
 页面里的数字和清单都是**构建时算的，不要手写死**：
 
@@ -1133,7 +1142,7 @@ shutdown:
 | `{% xp_num posts\|tags\|categories\|works\|workcats\|months\|todo_doing\|todo_todo\|todo_done\|apps_game\|apps_tool %}` | 输出一个统计数字 |
 | `{% xp_stat_rows %}` / `{% xp_recent_posts 4 %}` / `{% xp_recent_works 3 %}` | 小站数据三行 / 最近更新 / 最近作品横栏 |
 | `{% xp_tag_cloud pill\|cloud %}` / `{% xp_tag_index %}` / `{% xp_category_index %}` | 标签云 / 标签索引 / 分类索引 |
-| `{% xp_todo 4 %}` / `{% xp_apps %}` / `{% xp_guides %}` | 待办（`0` = 全部）/ 游戏工具卡片 / 攻略清单 |
+| `{% xp_todo 4 %}` / `{% xp_apps %}` | 待办（`0` = 全部）/ 游戏工具卡片 |
 | `{% xp_work_gallery %}` / `{% xp_music %}` | 作品页画廊 / 播放器 |
 | `{% xp_bilibili BV号 %}` / `{% xp_video 路径 %}` | 视频（见第 4 节） |
 | `{% xp_profile_icons %}` | 首页「用户账户」图标行 |
@@ -1148,7 +1157,7 @@ shutdown:
 
 | 顺序 | 文件 | 作用 | 能不能改 |
 |---|---|---|---|
-| 1 | `style\main.css` | 主题自带样式（由 `themes\minimalism\source\style\*.styl` 编译出来）。**2026-11-03 瘦身后只剩 65 行浏览器重置**（`*{margin:0;padding:0}`、`html{line-height:1.15}`、表单控件 reset），版式与配色全在 `xp-custom.css` | 要改就改 `.styl`；但**别再往这里加东西** —— 它存在的唯一理由是「必须未分层才压得住 XP.css」 |
+| 1 | `style\main.css` | 主题自带样式（由 `themes\minimalism\source\style\*.styl` 编译出来）。**2026-11-03 瘦身后只剩 52 行 / 1 344 B 的浏览器重置**（`*{margin:0;padding:0}`、`html{line-height:1.15}`、表单控件 reset），版式与配色全在 `xp-custom.css` | 要改就改 `.styl`；但**别再往这里加东西** —— 它存在的唯一理由是「必须未分层才压得住 XP.css」 |
 | 2 | `vendor\xp-css\XP.css` | XP.css 官方库 v0.3.0，**自托管**（MIT） | 只按 `source\vendor\xp-css\README.md` 的流程整体升级 |
 | 3 | `css\xp-custom.css` | 本站设计系统（**唯一真源**，改样式基本都改这里） | 随便改 |
 
@@ -1220,13 +1229,13 @@ Get-ChildItem -Recurse public -File | Measure-Object -Property Length -Sum   # �
 (git ls-files | Measure-Object).Count                                        # 跟踪了多少文件
 ```
 
-写作时实测（只当量级参考）：`public\` 约 **73 个文件 / 3.55 MB**，首页 HTML 约 **81 KB**，
-`xp-custom.css` 约 **2750 行 / 238 KB**。**别追这些数字**，内容一多就会变，重要的是量法。
+写作时实测（只当量级参考）：`public\` 约 **94 个文件 / 5.0 MB**，首页 HTML 约 **81 KB**，
+`xp-custom.css` 源文件 **4 064 行 / 299 KB**（构建时压缩，产物里是 **162 KB**）。**别追这些数字**，内容一多就会变，重要的是量法。
 
 **GitHub Pages 的限制**：仓库建议 1 GB 以内，**单文件超 100 MB 直接推不上去**（50 MB 警告）——
 视频等大文件怎么办见第 4 节。
 
-- **XP.css 自托管**：`source\vendor\xp-css\` 进产物约 **246 KB**。其中三套 woff2 字体共 30 KB
+- **XP.css 自托管**：`source\vendor\xp-css\` 进产物约 **252 KB**。其中三套 woff2 字体共 30 KB
   **访客不会下载**（引用它们的选择器都被覆盖了，见 10.2），但会跟着仓库上传。
 - **已删的「从不加载」厂商资源**（gitalk、twikoo、jquery、fancybox、animate、prism 等 10 个，
   共 1.45 MB）：主题 `source\` 会整份复制进产物、每次部署白传，所以删了；`verify-site.py`
@@ -1236,7 +1245,8 @@ Get-ChildItem -Recurse public -File | Measure-Object -Property Length -Sum   # �
 - **大文件 / 客户端**：客户端一律装仓库外面（HexoHub 在 `D:\tools\HexoHub`，约 20 MB）。
 - **密钥**：评论、统计、algolia、CDN 全部留空 / 关闭；`.gitignore` 已含 `.env*`、`*.pem`、
   `*.key` 等。提交前可自查：`git -C D:\tools\hexo diff --cached | Select-String -Pattern 'secret|token|password|PRIVATE KEY'`。
-- **公开可下载**：`/search.json` 与 `/works-bodies.json` 任何人都能下载，别写不想公开的内容。
+- **公开可下载**：`/search.json`（全站标题与摘要索引）任何人都能下载，别写不想公开的内容。
+  ~~`/works-bodies.json`~~ 已随瀑布流改版删除，不必再考虑。
 - **页面会请求的第三方**：只有网易云（封面 `p1.music.126.net`、音频 `music.163.com`）；
   其余全自托管（字体、播放器、图标）。播放器封面走域名白名单（`scripts/xp-player.js` 的 `safePic()`）。
 - **npm audit 必须走官方源**：`.npmrc` 默认走 npmmirror，它的 audit 端点返回 404，会假装「没有漏洞」。
@@ -1252,8 +1262,8 @@ Get-ChildItem -Recurse public -File | Measure-Object -Property Length -Sum   # �
 
 > 写给「下一个接手改站的 AI」。站主日常看第 0~9 节就够。
 > **动手写 UI 之前先读第 13 节「视觉约束」**（一页纸），再读本节的不变量。
-> 其中第 9 节「反规则清单」与第 10 节「审美门禁」是一体的：清单给人和 AI 读，
-> 门禁把其中标 ⭐ 的部分变成 `verify-site.py` 的自动检查（跑自检就会提醒）。
+> 其中 13.7「反规则清单」与 `verify-site.py` 的**审美门禁**是一体的：清单给人读，
+> 门禁把其中标 ⭐ 的部分变成自动检查（跑自检就会提醒）。
 
 **构成**：Hexo **8.1.2** + 自持主题 `themes\minimalism`（源自 hexo-theme-minimalism 1.4.4，已本地化）
 + 自研 XP 设计系统。依赖锁死到确切版本（无 `^`），**不要 `npm update`**。
@@ -1261,13 +1271,13 @@ Get-ChildItem -Recurse public -File | Measure-Object -Property Length -Sum   # �
 | 关注点 | 文件 |
 |---|---|
 | XP 组件与颜色 | `source\css\xp-custom.css`（浅色 / 深色令牌） |
-| 页面内容与网格 | `source\index.md`、`source\{works,games,guides,tags,categories}\index.md` |
+| 页面内容与网格 | `source\index.md`、`source\{works,games,tags,categories}\index.md` |
 | 页面骨架 | `themes\minimalism\layout\*.ejs`、`includes\xp-*.ejs` |
 | 内容标签与统计 | `scripts\xp-content.js`（数字 / 列表 / 标签云 / 待办 / 画廊 / 视频标签） |
 | 播放器 · 增强 | `scripts\xp-player.js` · `xp-enhance.js` · `xp-taskbar.js` |
 | 配置 | `_config.yml`、`_config.minimalism.yml` |
 | 作品栏目与分期 | `source\_data\works.yml`（唯一来源；`xp-content.js` 的 DEFAULT 只是兜底） |
-| 自检 / 工具 | `tools\check\verify-site.py` · `tools\images\{import-artworks,make-work-images,work_images,make-assets,make-favicon,optimize-images}.py` · `tools\fetch\fetch-netease.py` · `tools\fonts\make-pixel-fonts.py` |
+| 自检 / 工具 | `tools\check\verify-site.py` · `tools\images\{import-artworks,make-work-images,work_images,make-assets,make-favicon,optimize-images}.py` · `tools\fetch\fetch-netease.py` · `tools\fetch\fetch-lyrics.py` · `tools\fonts\make-pixel-fonts.py` |
 
 **不变量（改代码前必读）**：
 
@@ -1300,53 +1310,40 @@ npm run build                # = hexo clean && hexo generate（= 菜单 2）：�
 py -3 tools\check\verify-site.py   # = 菜单 6：要「全部通过」
 ```
 
-10. **视觉验证**（Edge 无头截图；最小窗宽约 500px，**不能用 390 宽判断手机端溢出**）：
+10. **视觉验证与设计体检**（Edge 无头 / CDP；最小窗宽约 500px，**不能用 390 宽判断手机端溢出**）：
 
 ```powershell
-npx hexo server
+cd D:\tools\hexo
+npm run build
+npm run server          # 另开一个窗口；改过 scripts\*.js 必须重启
+
+# 设计体检：起无头 Edge → 跑断言（Edge 必须由 PowerShell 起，Node 派生的子进程在沙箱里起不来）
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\check\start-edge.ps1 -Profile audit
+node tools\check\audit-design.js http://127.0.0.1:4010
+
+# 只想截图时：
 & "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new --disable-gpu `
   --hide-scrollbars --virtual-time-budget=6000 --window-size=1600,1000 `
   "--screenshot=C:\temp\home.png" "http://127.0.0.1:4010/"
 ```
 
-至少看首页 / 作品页 / 文字页 / 游戏页 / 工具页在 1600px 与 500px 宽下的效果，并确认深色模式可读。
+- 截图至少看首页 / 作品页 / 文字页 / 游戏页 / 标签页在 1600px 与 500px 宽下的效果，并确认深色模式可读。
+- 体检产出在 `.screenshots\.tmp\audit-design\`（json + 每页明暗截图）；**断言失败时退出码是 2**，不是脚本崩了。
+- 它除了断言，还会**打印但不断言**三组数据：正文行长、代码块利用率、固定浮层压住内容的面积（对应 14.1 的 ① ②）。
+- 量浮层前每页要清 `localStorage`（`audit-design.js` 已代为清理），否则手机那轮的「收起」状态会带进桌面轮，量出来只有 200×30。
 
 11. **不要做的事**：不改 `public\`；不提交 `node_modules\`；不给页面加大段内联 `<style>`
     （组件样式进 `xp-custom.css`）；不手写死统计数字；不把客户端装进仓库；
     不用 PowerShell 的 `-replace` 改含中文的文件。改完提醒站主：动手前先按 `4` 备份。
 
-### 12.1 这个站是怎么变成现在这样的（改动时间线）
+### 12.1 这些规矩是怎么来的
 
-**为什么要有这张表**：不变量（上面 11 条）只说明「现在是什么规矩」，说不清「为什么是这个规矩」。
-踩过的坑都记在 commit 里，但没人会去翻 58 条 git log。**下一次要动同一块地方，先看这里
-对应的那几行——多半有人已经试过错的方向了。**
+不变量只说明「现在是什么规矩」，说不清「为什么」。动某一块之前先翻 **14.3 变更记录** ——
+它按日期记了每一轮改了什么、踩过什么坑、为什么最后选了现在这条路。最常被重新踩的三条先记住：
 
-按站点的六个阶段看：
-
-| 阶段 | 大致时间 | 干了什么 | 留下的规矩 / 坑 |
-|---|---|---|---|
-| **① 基线** | 2026-10-09 | XP 风设计系统整合、内容数据化（`source\_data\*.yml`）、主题自持、维护文档 | 内容一律进 YAML，改站不用碰代码 |
-| **② 版式** | 2026-10-09 | 两栏侧栏 + 卡片流 + 归档时间线 + 标签/分类索引页；样式表加内容版本号（`fileVersion`） | 改了样式看不到变化 = 浏览器缓存，靠版本号解决 |
-| **③ 首页与内容** | 2026-10-09 ~ 10 | 首页排布规整化、便签句子改数据轮换、播放器双模式、删除「关于」页并入首页、作品页重构（栏目·时间轴·筛选·展开） | 「删东西要成对」的由来：删页面要一并处理导航瓦片 / 死链 |
-| **④ 瘦身与收口** | 2026-10-10 | 删掉未使用厂商资源 **1.45 MB**、本地备份移出仓库、待办清单收敛到一处、播放器从 `index.md` 搬进 `xp-player.js`（首页少 199 行）、6 个双击脚本合并成「一个菜单」、4 份文档合并成 2 份 | 站点体积基线（第 11 节）就是这时候定的 |
-| **⑤ 播放器与自托管** | 2026-10-10 | 网易云歌单接进站内播放器、**自托管 APlayer**、去掉手写体 Caveat（最后一个第三方请求）、自托管 XP.css（包 `@layer`） | 第 8 条不变量（`ap.switchAudio`、别设 `order:'random'`）是这里踩出来的 |
-| **⑥ 字体与字号震荡** | 2026-10-10 ~ 11 | 上像素字体（方舟 12px）→ 全站统一 12/24px 求锐利 → **回退到 16px**（可读性优先）→ 去掉点阵合成粗体、强调改换色 | **这是本站最反复的一块**，见下方专述 |
-
-**⑥ 字体部分单独说清楚**（前后改了 4 次，最容易被误"优化"回去）：
-方舟像素 12px → 全站统一 12/24px 求锐利 → **回退 16px**（可读性优先，最终决定）→ 去掉点阵合成粗体、
-强调改换色。**结论：16px 是站主权衡后的决定，不是没想过锐利。**「12 的整数倍才锐利」文档里写着，
-但**不要**据此把字号改回 12px，也不要用 13~15px 的中间值；同理**别给 16px 标题加粗、别用斜体**。
-后来方舟像素换成缝合像素（Fusion Pixel），用 `tools\fonts\make-pixel-fonts.py` 子集化——
-所以才有「缺字监控」这项自检（新文章的汉字不在子集里会静默回退系统字体）。
-
-**⑦ 之后的改动**（2026-10 中下旬，未在这个时间线的粒度里）：
-`permalink` 改成 `:title/`（第 1 条不变量的由来）、新增 `/guides/`「文章」分区与
-`articles_category` / `index_exclude_categories`、窗口标题栏抽成 partial、样式表死代码清理。
-
-**2026-10-18 又改了一次方向**：`/guides/`「文章」与 `/blog/`「杂谈」合并成「文字」
-（菜单里只剩一项，指向 `/blog/`），`/guides/` 改为 301 式跳转页；游戏页与工具页在
-≥1201px 下两窗并排；站标（favicon）改成橙红色（#E54E1F）兔子、透明底。
-**这些还没有入库**——`git status` 里那一大批改动就是它们。
+1. **先量再改，别读代码下结论**：已有两次误诊（播放器「跑出画面」、手机文字溢出），真因都在计算方式，不在值。
+2. **删东西要成对**：删页面要一并处理导航、跳转桩、旧类名和断言。
+3. **表要和产物对得上**：`park-recolor.js` 的 TINT 表写着深蓝、产物却一直是浅蓝，十几轮没人发现 —— 因为没人比对。
 
 ---
 
@@ -1370,8 +1367,9 @@ npx hexo server
 完整变量表见 **10.1**，这里只记三条规则：
 
 - **不要在组件里写裸色值**，一律用 `xp-custom.css` 第 1 节的 token。
-  例外（历史遗留，允许存在但不新增）：几处 XP 仿色（标题栏 `#0a246a` 一族）与 `guides.yml`
-  的 `tag_class` 徽标底色（`.tag-art #4a8f4a` / `.tag-tech #3f77b5`）。
+  例外（历史遗留，允许存在但不新增）：几处 XP 仿色（标题栏 `#0a246a` 一族）。
+  （原来还有一条「`guides.yml` 的 `tag_class` 徽标底色」，那三条 `.tag-*.guide-tag` 规则
+  随 `/guides/` 页一起失效了，现在产物 0 命中，算在 14.1 ② 的死规则里。）
 - **换主题色只改 `--xp-blue-border` 一处**，窗体 / 按钮 / 气泡一起变。
 - **深色模式成对写**：看变量在 `xp-custom.css` 里是否**同时**出现在 `:root` 和 `html.dark`。
 
@@ -1384,17 +1382,11 @@ npx hexo server
 
 ---
 
-### 13.2 三层样式与 `@layer`（改样式前必须知道）
+### 13.2 三层样式与 `@layer`
 
-| 顺序 | 文件 | 能不能改 |
-|---|---|---|
-| 1 | `style\main.css`（由 `themes\minimalism\source\style\*.styl` 编译；瘦身后只剩浏览器重置） | 要改就改 `.styl`，但别往里加版式/配色 |
-| 2 | `vendor\xp-css\XP.css`（官方 v0.3.0，自托管） | 只按 `source\vendor\xp-css\README.md` 整体升级 |
-| 3 | `css\xp-custom.css`（本站设计系统，**唯一真源**） | 随便改 |
+三层的顺序、注入点、为什么自托管，全在 **10.4**。这里只留两条动手时必须记住的：
 
-注入点**只有一个**：`scripts\inject-xp-css.js`（细节见 10.4）。记住两件事：
-
-- **第 2 层整份包在 `@layer xp-css{ … }` 里。分层样式一律输给未分层样式** —— 跟选择器具体度无关。
+- **第 2 层（XP.css）整份包在 `@layer xp-css{ … }` 里，分层样式一律输给未分层样式** —— 跟选择器具体度无关。
   所以第 1、3 层永远赢，XP.css 只在「本站没写过的地方」生效。**不要把 XP.css 换成 CDN**（原文没有这层包裹）。
 - 少数 XP.css 仍然会赢的规则，已在 `xp-custom.css` **第 16 节「XP.css 兼容层」**逐条压回，
   每条都写了「不改会怎样」。改那里之前先读那段注释。
@@ -1403,38 +1395,53 @@ npx hexo server
 
 ### 13.3 版式：断点、圆角
 
-- 断点只有 `640 / 900 / 1200` 三档（见 13.3.1）：
-  `>1200` 桌面双栏；`901–1200` 双栏收窄；`641–900` 单栏；`≤640` 手机。
+- 断点的**主档**是 `640 / 900 / 1200`（见 13.3.1）：`>1200` 桌面双栏；`901–1200` 双栏收窄；`641–900` 单栏；`≤640` 手机。另有 641 / 901 / 1100 / 1201 / 1240 / 1500 六个补丁档，原因见 13.3.1。
+
 - 圆角按语义取值，不要随手写（13.3.2）。
 - 正文宽度：桌面主列约 44 字/行，单栏时 `max-width: 720px`（45 × 16px）——中文舒适区 30–45 字/行。
 - 卡片之间的对齐靠**网格**（首页便当格 12 栏、`gap: 18px`），不要用 margin 硬推。
 
-#### 13.3.1 断点：只有 640 / 900 / 1200（外加两个例外）
+#### 13.3.1 断点：主档 640 / 900 / 1200，另加六个补丁档
 
-`xp-custom.css` **第 13 节**的标题就写着「统一 640 / 900 / 1200」。加响应式规则时**只用这三个**。
+`xp-custom.css` **第 13 节**的标题写着「统一 640 / 900 / 1200」。新写响应式规则时**只用这三个**。
+文件里另有六个值，都是给具体组件补的，**不是新的一档**：
 
-| 断点 | 形态 |
-|---|---|
-| `> 1200` | 桌面双栏，主列 + 侧栏 |
-| `901 ~ 1200` | 双栏收窄（间距变小） |
-| `641 ~ 900` | 单栏，侧栏移到正文下方 |
-| `≤ 640` | 手机，间距再收 |
+| 断点 | 形态 / 用途 | 为什么有它 |
+|---|---|---|
+| `> 1200` | 桌面双栏，主列 + 侧栏 | 主档 |
+| `901 ~ 1200` | 双栏收窄（间距变小） | 主档 |
+| `641 ~ 900` | 单栏，侧栏移到正文下方 | 主档 |
+| `≤ 640` | 手机，间距再收 | 主档 |
+| `641` / `901` | 与主档差 1px | 「≤640 与 ≥641」这类成对写法，避免 640/641 那一像素同时命中 |
+| `1240` | `641~1240` 的右端 | 1241px 以上主列宽到 1060px，「最近作品」4 卡一行刚好，回到固定 170px 更好看 |
+| `1100` | 单点 | 迷你统计格换列 |
+| `1201` | 与 1200 差 1px | 游戏页两窗并排的起点 |
+| `1500` | 单点 | 首页两侧装饰图只在大屏显示 |
 
-
+**现状**：这张表与代码一致（2026-11-07 按实际值改写）。**要不要收敛回三档是另一件事**，
+见 14.1 ③ —— 现在动代码风险大、收益小。
 
 #### 13.3.2 圆角：按语义取值，不要随手写
 
 XP 的圆角不是「设计感」，而是**材质语义**：越像实体窗体越直，越是小控件才略有圆。
+下表就是 `verify-site.py` 审美门禁放行的**全部**值（`ALLOWED_RADIUS`），写表外的数字自检会报。
 
 | 圆角 | 用在哪 | 例子 |
 |---|---|---|
 | `0` | 窗体、卡片、面板、图片边框 | `.xp-window`、`.work-card`、便当格卡 |
-| `2px` | 窗口内的小块、标签、输入框 | `.meta-chip`、`.cloud-tag`、`input` |
-| `3px` | 按钮、标题栏按钮 | `.xp-button`、`.xp-window-btn` |
-| `11px`（唯一例外） | 作品页筛选胶囊 `.filter-pill`（配它自己的淡蓝底） | 改它前先看一眼作品页筛选栏 |
+| `2px` | 窗口内的小块、标签、输入框 | `.cloud-tag`、`input` |
+| `3px` | 按钮、标题栏按钮（**默认值**） | `.xp-button`、`.xp-window-btn` |
+| `4px` | 小控件、圆角头像 | 头像一族 |
+| `6px` | 侧栏头像方块、烟花文字浮标 | `.xp-aside-author img` |
+| `8px` | 邮箱弹窗的小标签 | `.profile-email-pop .email-label` |
+| `9px` / `11px` | 作品标签、作品页筛选胶囊（**在案的历史遗留**） | `.work-tag`、`.filter-pill` |
+| `12px` | 文章信息条的小胶囊徽标 | `.meta-chip` |
+| `50%` | 正圆 | 圆头像、状态圆点 |
+| `8px 8px 0 0` / `6px 6px 0 0` / `0 10px 10px 0` | 只圆某一侧（上沿或左右两端） | `.xp-window` 标题栏、`.xp-start-btn` |
 
-**边界规则**：XP 组件**不出现** 8~16px 的「浮动圆角卡片」—— 那是现代组件库的标志，
-XP 里不存在这种形状（Patina 那套 Aqua 规范也把它列为头号禁忌）。
+**边界规则**：`8~16px` 本身不是错（上表就有 8/9/11/12 的正经用途）—— 错的是**给浮动卡片加圆角**。
+门禁的判法是「同一规则块里同时出现 8~16px 圆角和 `box-shadow`」才算命中，因为那正是现代组件库
+的卡片长相；XP 里这种形状不存在（Patina 那套 Aqua 规范也把它列为头号禁忌）。
 
 #### 13.3a 往里注入 JS 时，注意四件事
 
@@ -1554,7 +1561,7 @@ XP 里不存在这种形状（Patina 那套 Aqua 规范也把它列为头号禁�
 | ❌ 不要 | 为什么 |
 |---|---|
 | 建「现代落地页」式的页面（hero 大标题区、居中最大宽单列、三列特性网格、链接列页脚） | 本站的布局模型是 **desktop 不是 page**：内容住在窗口里，导航住在任务栏与开始菜单里 |
-| 用 `!important` 堆叠来修层叠问题 | 本站现在只有 24 处 / 2400 行；`@layer` 已经让覆盖变得可控（见 13.2），先查是不是用错了层 |
+| 用 `!important` 堆叠来修层叠问题 | 本站现在只有 16 处 / 4 064 行；`@layer` 已经让覆盖变得可控（见 13.2），先查是不是用错了层 |
 | 在 `body` 上加全站 `line-height` | 会继承到每页 500+ 元素；实测 `.xp-window-body` 262.9 → 334.9px，紧凑控件会长高约 27% |
 | 把组件样式从 `xp-custom.css` 抄到别的 `.css` ⭐ | 唯一真源。v3.0 时代抄成 6 份、同一组件三套值、深色模式半失效，别再演一遍 |
 | 加「友好的空状态插画」「每个字段下的 helper text」 | 这两样是典型现代 Web 味，与 XP 风格冲突 |
@@ -1575,631 +1582,149 @@ XP 里不存在这种形状（Patina 那套 Aqua 规范也把它列为头号禁�
 
 ---
 
-## 14. 待办（2026-11-02 设计体检留下的）
+## 14. 待办 · 已决 · 变更记录
 
-这一节是 **2026-11-02 一次全站设计体检**的结果。体检范围：9 个页面 × 4 个断点（390 / 768 / 1280 / 1600）× 明暗两色，
-量的是浏览器里真实渲染出来的 DOM 与像素，不是读代码猜的。**结论以现象为准。**
+> 这一节原先拆成「14.1 已改掉」「14.2 还没动」「14.3 还没定」「14.5 功能补全」四套清单，
+> 同一件事在两三处各说一遍，而且「还没动」的条目里混着一半已经改完的。
+> 现在按**状态**重排：没做完的在 14.1，定下来的（含「决定不做」）在 14.2，做过的只留
+> 结论与坑在 14.3。**做完一项就从 14.1 删掉，到 14.3 记一行**，别再让它两头挂着。
+>
+> 测量口径：9 个页面 × 4 个断点（390 / 768 / 1280 / 1600）× 明暗两色，量**浏览器里真实渲染的
+> DOM 与像素**，不读代码猜。体检命令见 12 节不变量第 10 条。
 
-2026-11-03 追加了**主题层结构瘦身**（站主 m02978 授权，见 14.1.1）：那是一次「先量层叠、再搬规则、最后删层」的重构，
-验证方式是 18 页 × 57 个计算样式属性的改前/改后快照 diff，不是看代码确认。
+### 14.1 还没做的（按优先度）
 
-那次的体检脚本已经收成一条：`tools/check/audit-design.js`（配合 `cdp.js` + `start-edge.ps1`），
-一条命令跑完体检 + 定点断言，**25 条断言目前全绿**。以后改 UI 先跑它。
-
-### 14.1 已经改掉的（2026-11-02）
-
-| # | 问题 | 怎么改的 |
-|---|---|---|
-| ① | 链接的键盘焦点框几乎看不见（1.10~1.61:1） | 根因在**主题层**：`themes/minimalism/source/style/_blocks/link.styl` 里写了 `a:focus{outline:0}`，编译进 `public/style/main.css`，它比 xp-custom.css 的全局 `:focus-visible` 更具体、且先加载，把焦点框顶掉了。删掉那条规则即可，现在焦点轮廓 2px 虚线 `#003399`（白底 10.86:1），深色模式 `#9cc2ff`（深底 7.76:1） |
-| ③ | 归档/分类/标签/文章页的标题栏「最小化 / 最大化 / 关闭」点了没反应 | 这些页面的标题栏不在 `.xp-window` 里，`act()` 找不到窗口就 `return`。改成：找不到 `.xp-window` 时退到标题栏所在的 `.content-container` 外壳，并给外壳补上 `.is-minimized` / `.is-maximized` / `[data-xp-closed]` 三种状态的样式 |
-| ④ | 三处颜色不达标：标题栏顶色 `#0997ff`（3.05:1）、「创作中」橙 `#d09030`（2.72:1）、开始按钮绿 `#3a8f3a`（4.06:1，hover `#4aaf4a` 只有 2.79:1） | 换成 `#1179c8`（4.57）、`#9c6520`（4.89）、`#328230`（4.80，hover `#358235` 4.78） |
-| ⑤ | 页面没有 `<main>` 地标，屏幕阅读器读不出正文起点 | `header.ejs` 开 `<main class="xp-main">`、`footer.ejs` 收；`.xp-main` 定为 `.main` 的 flex 子项，不破坏原有列布局 |
-| ⑤ | 每个页面的 `<div>` 净少一个闭合（`header.ejs` 开了 `div#app` 没关、`footer.ejs` 多了两个孤立 `</div>`），任务栏/开始菜单/图标雪碧都被挤成 `#app` 的兄弟节点 | 补齐配平，现在 48 个页面全部开闭一致。**视觉上没差别**（那几个都是 `position:fixed`），是结构卫生问题 |
-| ④ | 深色模式下归档时间线的链接继承了正文色 `#0C1E29`（1.21:1） | `.xp-timeline-item a` 显式给 `color: var(--text-heading)` |
-| ⑦ | 404 页把占位符 `%path%` 原样打印出来 | 改成运行时用 `location.pathname + location.search` 填进去（404.html 是静态文件，没有服务端请求路径可用） |
-| ⑦ | `/tools/` 是个 39 KB 的主题页，内容只有一句 `location.replace('/games/')`，JS 一被拦就只剩一片空白 | 改成 858 字节的跳转桩：`<meta http-equiv="refresh">` + `rel="canonical"` + 可见链接 + `location.replace`，和 `/guides/` 同一套做法 |
-| ⑦ | 点赞的 localStorage 键被拼了两次前缀（`xp_like:xp_like:<路径>`） | 前缀只由前台 `xp-enhance.js` 的 `XPLikeBackend` 负责，生成侧的 `likeKey()` 改成只返回原始路径 |
-| — | 深色模式 404 页的 ✕ 图标是浅色那条深蓝 `#0054e3`，压在深底上只有 1.79:1 | 深色模式下改用 `--text-heading` |
-| ⑧ | 正文一行 44 个汉字，偏长（`.post-content` 710px） | `.main:has(.xp-shell)` 由 1060px 收到 **1000px** → 正文栏 **650px → 约 41 字/行**，落回 CSS 自己注释里写的 30–45 舒适区（`xp-custom.css:1937-1942`）。侧栏仍是 292px |
-| ⑧ | 代码块 84% 是空的（710px 宽，最长一行只有 117px） | `.highlight` 改 `width: fit-content; max-width: 100%` → 实测利用率 41%~67% |
-| ⑩ | 正文链接只靠颜色区分 | `.post-content a` 加 `text-decoration: underline` + `text-underline-offset: 2px`，hover 转 `--text-heading`（WCAG 1.4.1） |
-| ⑪ | `.headerlink` 0.85em，落在 h2 上比正文还大 | 改成 `1em`，锚点图标不再大于正文 |
-| ⑭ | 归档页年份不是链接，`/archives/<年>/<月>/` 只能手敲 | 年份做成链接指向 `/archives/<年>/`（月级页面仍是孤儿，见 14.2） |
-| ⑯ | 作品页头部写「3 件作品」、状态栏写「共 2 件作品」 | 前端统计改成**跨所有栏目**累加，切到「同人」栏目也不会再显示「共 1 件作品」。实测两处现在都是 3 |
-| ㉒ | 作品页标签页 ARIA 不完整、`a.work-thumb` 没有可访问名 | 标签页补 `id` / `aria-controls` / roving tabindex + 左右方向键切换；面板补 `id` / `aria-labelledby`；缩略图加 `aria-label` |
-| ㉓ | 搜索结果区没有 `aria-live` | `#site-search-results` 加 `role="status" aria-live="polite" aria-atomic="true"` |
-| ⑥ | 首页内联 `<style>` 与 xp-custom.css 各定义一遍 `.xp-bento` 网格（两套坐标打架） | 把**内联那套（真正生效的那套）**搬进 `xp-custom.css`，删掉 `source/index.md` 的内联块；同时清掉 xp-custom.css 里那套过时坐标（含 0 命中的 `.bento-meta`）。网格真源只剩一处 |
-| — | 播放器可以拖动，位置存 LocalStorage | 取消拖动：`scripts/xp-player.js` 删掉 `enableDrag` / `clampPos` / `restorePosition` / 位置存储键，**位置完全交给 CSS**（`right:18px; bottom:任务栏+14px`），缩放原点改成右下角，转屏/换档都不会出画。同时删掉 `touch-action:none`（否则固定在角落的播放器会吃掉手机滚动手势） |
-| — | 托盘的静音键对音乐一点用都没有 | APlayer 的 `<audio>` 是运行时 `createElement` 出来的、从不进 DOM，`document.querySelectorAll('audio, video')` 抓不到它。播放器把这路暴露成 `window.__XP_AUDIO__`，任务栏一起管住（并双向同步静音状态） |
-| — | 浏览器自动播放被拒时，播放器只是图标变成「暂停」，像是坏了 | APlayer 会吞掉 `NotAllowedError`。补一句人话提示条（「浏览器不让自动播放，点『▶』继续」），点播放后自动消失 |
-
-#### 14.1.1 主题层结构瘦身（2026-11-03）
-
-问题不在体积（主题层一共才 14 KB）而在**「同一条规则有两处真理」**：主题样式和 `xp-custom.css` 同时给正文颜色、代码块外壳、`.main` 宽度、深色 token 定值，谁赢取决于选择器特异性和加载顺序 —— 这类叠加每改一次都要重新推演一遍层叠。
-
-做法是**先算出「主题层到底还有哪几条真的在赢」，只把赢的搬走，然后整层删掉**。级联是逐条算出来的（jsdom 把每份样式表按源码顺序展开、按 (层, 特异性, 顺序) 排序，再对每个元素逐属性取赢家），不是看代码猜的：主题层 67 条规则里 **57 条至少有一条声明真的在赢**，其中 15 条是「视觉上被盖住但级联上仍赢」（顶栏那套）—— 后者靠 DOM 是否存在判断，直接连 DOM 一起删。
-
-| 做了什么 | 具体 |
-|---|---|
-| 结构骨架搬进 xp-custom.css | `.main{display:flex;min-height:100vh;flex-direction:column}`、`.content-container{width:100%;flex:1}`、`.post-content{flex-shrink:0;width:100%}`、`nav{overflow:hidden}`。页脚贴底、侧栏等高全靠这几条 |
-| 浏览器重置留在主题层 | `main.css` 只剩 65 行重置（`*{margin:0;padding:0}`、`html{line-height:1.15}`、表单控件 reset、`[type=search]` 两条、`b,strong`）。**必须保持未分层**：XP.css 整个包在 `@layer xp-css` 里，未分层规则永远赢过分层规则，重置放在这一层才压得住它 |
-| 正文排版搬进 xp-custom.css | 段落/列表/表格/图片/引用块的间距与色带，改用语义 token（新增 `--text-body` `--text-list`，深色下分别 `#c9d1d9` / `#c0c0c0` —— 两套色带不同，不能合并成一个） |
-| 代码块外壳搬进 xp-custom.css | `position/font-size/line-height/字体栈` + 语言标签 `.highlight:after{content:attr(...)}`（不写 `content` 语言标签就会消失）+ 复制按钮 `.copy-code` 的 hover 显隐 |
-| 裸锚点规则 | 主题 `a,.link{color:var(--c-base-black);text-decoration:none;cursor:pointer}` → xp-custom 的 `a{color:var(--text);text-decoration:none;cursor:pointer}`。**颜色这条必须写成语义 token**：省掉的话实测 `/works/` 的 `.work-thumb` 会掉进 XP.css 里的 `a{color:#00f}` 变纯蓝（分层规则只在「没人声明该属性」时才生效）；而主题原来的 `#0C1E29` 在深色模式下不换色，本身就是 bug |
-| 深色正文 | 深色标题改用 `#ddd`（主题 `night-node` 的行为），但**代码块外壳的 `#000` 不要搬** —— 实测它早被 xp-custom 的 `var(--surface)` 压过，搬进来反而是重新引入一块死声明 |
-| 删掉的东西 | `_blocks/` 整个目录（8 个 .styl）、`_core/colors.styl`、`_core/footnotes.styl`（`footnote.enable=false`，从不编译）、`_core/night-node.styl`、主题自带的 `iconfont.woff/woff2` 与 15 条字形（元素无文字，视觉早由 `xp-icons.css` 背景图接管）、`navigation_bar.ejs`（整块被 `display:none` 隐藏，但每页多一份不可见 DOM + 多一个看不见的 `<h1>` + 菜单项还得挂 `aria-hidden/tabindex=-1`）、`main.js` 里 48 行菜单开合逻辑（开关的 DOM 已不存在） |
-
-**结果**：`public/style/main.css` **13 161 B → 1 344 B**；每页 `<h1>` 从 2 个降到 1 个；`site-header-container` / `menu-container` / `menu-list` 在产物里 0 命中。构建 89 files / 730 ms，`verify-site.py` 48 页全绿。
-
-**零回归验证**：18 个页面 × 57 个计算样式属性，改前改后各拍一份快照对比（`.screenshots/.tmp/snap.js` + `snap-diff2.js`）。比对不能再用「全局序号」当 key —— 删掉顶栏 DOM 后每页元素都少 8 条、索引整体前移，会全线错配；改成按 `tag|class` 分桶、同类按出现顺序配对。**浅色 99 条差异、深色 96 条差异，逐条归类后只剩三类**：
-
-1. **设计内的删除**（每页固定 3 条）：`div.menu-container`、`nav.menu-list`、5 个 `a.menu.purple-link` 消失；
-2. **动画噪声**：`.mp4-play-indicator` 的 `opacity`、`.mp4-title-inner` 的 `width`（跑马灯/随机数，两次采样必然不同）；首页 `bubble-from` 段落数与 `.bento-bubble` 高度差是**引号轮换**（`quotes.yml` 数据驱动），不是回归；
-3. **两处真回归（已修）**：`/works/` 的 `a.work-thumb` 掉进 XP.css 的 `a{color:#00f}` 变纯蓝（→ 补裸 `a{color:var(--text)}`）；`/work-landscape-cottage/` 的 `.work-compare` 组件（作品页「过程对比」并排卡片）被正文排版大面积盖掉 —— 深色下那是实打实的回归，浅色下则是**旧问题终于修了**：这个组件自己的 CSS 写的是 `h4{font-size:16px;margin:0;border:none}`、`img{margin:0 0 8px}`、`p{line-height:1.6;color:var(--text-muted)}`，但它的选择器只有 0,1,0，一直被正文的 `.xp-shell .post-content h4/p/img`（0,3,0）压着，所以基线里 h4 带着正文的 `padding-top:16px` + `border-bottom:2px`、图片带着 `margin:14px`、整块虚高 32px。五条规则全部加上 `.xp-shell .post-content` 前缀后，**组件恢复成它自己写的紧凑样式**（这是设计意图，不是回归）。
-
-**踩过的坑（留给下次）**：`snap.js` 的参数顺序是 `<out> [base] [--dark]`，写成 `snap.js out.json --dark` 会让 `base='--dark'`，**所有 goto 静默失败**，输出一份每页都是同一个空白 DOM 的垃圾快照（18 页元素数全变 179、缺 `figure/table/pre`）；Edge 每跑几轮会僵死（CPU 空转、CDP 无响应），`Stop-Process -Name msedge -Force` + 重跑 `start-edge.ps1` 就好；`hexo server` 会缓存页面，改完模板/脚本必须重启 server 再测。
-
-#### 14.1.2 播放器改页内组件（2026-11-04）
-
-**站主要求**（原话）：「我想把播放器融入页面中而不是仅放在右下角……可以对已有的窗口进行尺寸改变（在不改变内容的前提）」；
-随后的三点确认：「1.接受；2.对应博客的具体哪些页面？3.去掉，并且不包含折叠功能」。
-
-**为什么不能只挪个位置**：原来那套是 `position:fixed` 的 200×300 浮层，不属于任何页面布局，所以它必然压内容 —— 首页压「标签云」206187px²、/blog/ 与 /archives/ 压侧栏「最近文章」246009px²、/works/ 压「作品集」275310px²，还挡住作品图的点击（`elementFromPoint` 落到它身上）。改成页内元素后这些数字全部归零。
-
-**三种落位**（同一个组件，由容器决定形态）：
-
-| 形态 | 落在哪 | 布局 | 类名 |
-|---|---|---|---|
-| 卡片（竖排） | 首页 `.bento-music` 格、所有带侧栏的页面（`.xp-aside` 首卡，31 页） | 品牌条 / 深色屏（封面+歌名）/ 进度 / 按钮竖排；侧栏 292×236，首页格 287×216 | `.xp-music-slot.is-card` |
-| 横条（一行） | 单栏页：`/tags/` `/categories/` `/thanks/` `/404`，以及没有侧栏的便当格页 `/works/` `/games/` | 品牌从左、屏吃剩余宽、进度与五个按钮靠右；高 72px、宽 900px（`.xp-page-player { max-width:900px; margin:18px auto 0 }`） | `.xp-music-slot.is-bar` |
-
-**具体改了哪些文件**：
-
-- `scripts/xp-player.js`（714 → 586 行）：`markup(title, variant)` 多一个 `variant` 参数（`'bar'` 出横条，其余出卡片）；根节点 `div.xp-music-floating#xp-music-floating` → `div.xp-music-slot[data-xp-player]`；**删掉三个按钮**（`#mp4-size` 调大小、`#mp4-close` 折叠、`#mp4-hide` 隐藏）与恢复小球 `#xp-music-resume`，`.mp4-controls` 只剩 上一首 / 播放 / 下一首 / 随机顺序 / 原曲链接 五个；DRIVER 里连带删掉 `SC`（折叠）、`SH`（隐藏）两个存储键、`hidePlayer/showPlayer/restoreHidden`、`autoScale/SCALE_STEPS/getScaleSteps/applyScale/restoreSize` 与 resize 监听、`mqTouch`（窄屏自动收起）、按钮绑定里那四个监听、`恢复持久化状态` 整块；启动时顺手 `localStorage.removeItem` 掉 `_c/_h/_s/_p` 四个历史键（老访客浏览器里的残留）。
-- `scripts/xp-content.js`：`musicBlock(variant)`；tag `{% xp_music %}` / `{% xp_music bar %}` 与 helper `xp_music()` / `xp_music('bar')` 都透传变体。
-- `themes/minimalism/layout/includes/footer.ejs`：删掉全站注入那一行（否则每页两个播放器）。
-- `themes/minimalism/layout/includes/xp-aside.ejs`：`<aside>` 后插一张 `xp_music()` —— 一次改动覆盖 archive/index/page/post/tag 五个模板共 31 页（侧栏本来 `position:sticky`，不需要额外粘性逻辑）。
-- `source/index.md`：`.bento-music` 格里插 `{% xp_music %}`；`source/tags|categories|thanks|404|works|games`：末尾插 `<div class="xp-page-player">{% xp_music bar %}</div>`。
-- `source/css/xp-custom.css`（3667 → 3615 行）：新增 `.xp-music-slot` 两形态 + 横条的六个子元素规则 + `≤640px` 折两行；**删掉**手机收起态 6 条、折叠态 10 条、隐藏态 6 条、移动端缩放那一段；`body{padding-bottom:taskbar+60px}` 那 60px 额外留白（原本给右下角贴纸让位）退回 `+20px`；打印时隐藏 `.xp-music-slot`；`.xp-clock-fulltip` 的 `right:48px` 改回 `8px`（原来让位给恢复小球）。
-- 首页便当格排布表：`.bento-music` 从 `10/13 span 2` 改成 **`10/13 span 4`**（该格 479px 高，竖叠三张：播放器 216 + 鸭子计数 + 详细属性）；`.bento-recent` 从通栏 `1/13` 收成 **`1/10`**（898px，三张缩略图 + 「查看全部」正好铺满）。
-
-**验证**：构建 89 files；`player-1..4` 四条断言 —— 40 个正文页各恰好 1 个播放器、四个旧类名（`xp-music-floating` / `xp-music-resume` / `mp4-collapsed` / `mp4-hidden`）在产物里 0 命中、31 个侧栏页全是卡片形态、6 个无侧栏页全是横条；`audit-design.js` **29/29 通过**；`verify-site.py` 48 页全绿。实测尺寸：卡片 292×236（侧栏）/ 287×216（首页格），横条 900×72（五个按钮总宽 156px、品牌 164px）。
-
-**踩过的三个坑**：
-
-1. `DRIVER` 是一个反引号模板字符串，注释里写 `` `:not(.is-playing)` `` 会提前闭合字符串 → `node --check` 报 `SyntaxError: Unexpected token ':'`。模板字符串的注释里**不要用反引号包选择器**。
-2. `footer.ejs` 里用 `<%# … %>` 写说明时，**注释正文里不能出现 `<%- … %>` 字面量** —— EJS 会把其中的 `%>` 当成注释结束符，报 `Could not find matching close tag for "<%#"`，`layout/includes/footer.ejs` 渲染失败会让**48 个 HTML 全部变成 0 字节**。
-3. `source/*.md` 是经过 `scripts/xp-md-include.js` 处理的，它只认 `<%- include('./includes/xp-window-title', {...}) %>` 这一种 EJS 写法，**其余 `<%-`（包括写在 HTML 注释里的）一律报「未处理的 EJS 写法」**。所以 md 里放播放器只能写 hexo tag `{% xp_music %}` / `{% xp_music bar %}`。
-
-**遗留（没做的）**：切页仍会断音 0.5~2 秒。静态多页站每跳一次页面，`<audio>` 元素就随页面销毁重建，只能靠 `xp_music_state_v1` 续曲目与进度。要真无缝得上 pjax（约 150–200 行 + 把每页 6/4/3 段内联脚本改成可重入），这条留在 14.3.1 里等站主决定。
-
-#### 14.1.3 播放器改竖卡 + 歌词窗口（2026-11-05）
-
-**站主要求**（原话）：「按照方案A来。不加pjax了，保持现状；此外，感觉播放器界面目前有点过大过空了，有没有什么比较好的设计方案？可以在保留风格的基础上大改（按实际情况出发）；以及是否可以引入一个在播放器中显示歌词的效果？」
-
-**为什么「过大过空」**：卡片形态的 DOM 一直是纵向的（`mp4-screen-v`），空的原因不是方向，是**高度不够**。屏里 `.mp4-cover` 是 `flex:1 1 0%`，会吃掉所有剩余高度再按 `aspect-ratio:1/1` 推出宽度 —— 首页格 287×216 时屏里只剩一个 **43px 的圆**，四周全黑。这不是审美问题，是算错了。
-
-**改法**：
-
-1. **4:5 竖卡**：`.xp-music-slot.is-card > .mp4-floating` 从 `height: var(--mp4-card-height, 236px)` 改成 `height:auto; aspect-ratio:4/5`。侧栏从 292×236 变 **292×365**、首页格从 287×216 变 **287×359**，多出来的高度全部给歌词窗口（不再有 43px 小圆）。
-2. **便当格连带调整**：`.bento-music` 从 `span 4` 改 **`span 5`**（479→589px，竖叠三张放得下 359 的播放器）；第 3 带被挤出一格，所以 `.bento-nav` 从 `10/13` 挪到 **`1/4`**、`.bento-links` 从通栏 `1/13` 改 **`4/13`**（898px）。文档总高 1288→1354px。
-3. **歌词窗口**：屏里改成「抬头 + 五行歌词」。抬头 = 52px 小封面 + 歌名（跑马灯）+ 歌手 + 右上角 `n/44` 曲序；歌词 = 固定五格，中间一行当前行（绿色荧光、两行容量）、上下各两行上下文（灰、半透明），**切行只换文字不重排**（格高恒定 24 / 当前行 40）。
-4. **无歌词退化**：44 首里 10 首是纯音乐。`applyLyrics()` 检测不到歌词时给 `.mp4-screen-content` 加 `.is-nolyric` —— 变成 96px 居中大封面 + 歌名 + 歌手，歌词格与曲序隐藏，不留空屏。
-5. **横条形态只留一句**：72px 高的屏放不下五行，`.mp4-screen-h .mp4-lyric:not(.is-cur){display:none}`，只显示当前这句（最多两行），歌名 14px / 歌手 12px、曲序隐藏。
-
-**歌词数据怎么来**（这是这次唯一有外部依赖的部分）：
-
-- 网易云的歌词接口 `https://music.163.com/api/song/lyric?id=…&lv=1&kv=1&tv=-1` **返回 200 但没有任何 `Access-Control-*` 头**，也不支持 JSONP（加 `&callback=` 仍返回纯 JSON）⇒ 浏览器里同页 fetch 必被 CORS 拦，只能在**构建期抓**。
-- `tools/fetch/fetch-lyrics.py`（187 行，仿 `fetch-netease.py` 的写法）从 `source/_data/music-tracks.yml` 读 44 首的 id，逐首抓，`clean_lrc()` 只保留 `[mm:ss.xx]` 开头且有正文的行（扔掉 `[ti:]/[ar:]` 头与间奏空行），失败沿用上次结果，写出 `source/_data/music-lyrics.yml`（**69 KB，44 首中 34 首有词**）。参数 `--proxy/--missing-only/--sleep`。
-- `scripts/xp-content.js` 的 `lyricsBundle()` 把它折成 `{v:1, lyrics:{id: lrc}}`，用 `routeJs(hexo, '/js/xp-lyrics.json', …)` 输出成同源静态文件（**67 KB，不进每页 HTML**）；播放器运行时 `fetch('/js/xp-lyrics.json')` 后 `lrcParse()` 成 `[{t,s}]`，`timeupdate` 里二分查行号。
-- **过滤制作信息行**：网易云把「作词 : xxx」「作曲 : xxx」也塞进带时间轴的正文（00:00.00），不滤的话开头 5~10 秒屏里全是署名。`lrcParse` 用 `CREDIT_RE`（作词/作曲/编曲/… + 冒号）与纯分隔符两条规则扔掉。
-
-**踩过的坑**：
-
-1. **前奏阶段歌词窗口是空的**（本次最难找的一个）。`lyricIndexAt()` 在还没唱到第一句时返回 `-1`，而 `applyLyrics()` 换歌时也把 `lyrCur` 置成 `-1` —— `paintTick()` 算出 `cur === lyrCur` 就直接 `return`，于是整个前奏屏里一片空。修法两条：`paintLyric()` 在 `cur < 0` 时铺「开头五行」全部按灰色上下文显示（不标当前行）；`applyLyrics()` 改用一个哨兵值 `-99` 强制重画（不能写 `-1`）。
-2. **模板字符串里写 `*/` 会闭合注释**：DRIVER 是反引号字符串，注释里出现 `*/` 会让产物 `public/js/xp-music-player.js` 报 `SyntaxError: Invalid or unexpected token`，页面表现为播放器整个不初始化（`__XP_MUSIC_INITED__` 为 false）。每次改完必须 `node --check public/js/xp-music-player.js`。
-3. **`.mp4-song-info` 的宽度被旧规则压住**：`.mp4-screen-content.mp4-screen-v .mp4-song-info`（0,3,0）写死 `width:100%` + 半透明底，抬头里会和 52px 封面抢宽度（实测标题框右缘超出屏右缘 48px）。要用同特异性或更高特异性覆盖（`.mp4-screen-content .mp4-lcd-head .mp4-song-info`）。
-4. **手机 280px 装不下**：布局顺序变了以后，卡片 280px 里屏内只剩 175px，五格被 flex 压成 18px、歌词窗口是空的。量过之后窄屏改 **340px**（屏 ~235px：抬头 52 + 歌词 120 + 间隔），并把格高压到 20px / 当前行 34px。
-5. **`verify-site.py` §7 的字体覆盖检查会误报**：歌词里的日文汉字（魚・扉・嘘・僕…）有两百多个不在 GB2312 里，一旦把 `music-lyrics.yml` 算进「站点用字」，这条检查就永远报缺 250+ 字。正确做法不是「重裁字体」（把像素字体扩到覆盖日文常用汉字，正文 woff2 要从 180 KB 涨到 600 KB+，为几十秒歌词不值得），而是**在扫描列表里排除这个文件** —— 歌词走系统字体回退可以接受，正文与界面文字仍全部落在子集覆盖内。已在 `tools/check/verify-site.py` §7 加了这个排除并写明理由。
-
-**验证**：构建 90 files；`audit-design.js` **29/29**；`verify-site.py` 48 页全绿（提醒仍是原来的 4 条：图片 1.74MB / music.yml tracks 空 / 缺「嬷闝」2 字 / npm audit）。实测几何：桌面卡片 287×359（屏 263×248、抬头 243×52、歌词窗 243×160 五格 24+40）、侧栏卡片 292×365、横条 900×72、手机 390px 卡片 354×340（屏 330×235、歌词窗 310×149）。截图核对过：有歌词（日语长句两行折行）/ 前奏铺五行 / 无歌词退化大封面 / 横条只显示当前句 / 手机四种落位。
-
-**没做的**：切页仍断音（站主 2026-11-05 明确「不加 pjax 了，保持现状」）。歌词滚动是「整格跳行」而不是逐字卡拉 OK —— 后者需要解析逐字时间轴（网易云部分歌曲的 `yrc`），数据量与收益都不划算。
-
-#### 14.1.4 播放器图标加深 + 歌词行距 + 社交图标（2026-11-05）
-
-**站主要求**（原话）：「令播放器底部的按键图标大一些、颜色深一些，并且查看有没有更合适的图标；当前歌词和下一行之间有一行空行（如图）是正常的吗？此外"用户账户"的社交图标也使用相同颜色，并且稍小一点，不要顶格。」
-
-**1. 图标颜色一直没生效（根因，值得记住）**：`tools/icons/park-recolor.js` 的 TINT 表里 11 个 `icon-media-*` 写的是 `['n','N']`（站内深蓝 #0054e3 / #003dd7），但 `tools/icons/emit-smooth.js:18` 是 `const { PALETTE } = require('../../scripts/xp-icons.js')`，而 `scripts/xp-icons.js` 的 `PALETTE` **只有 18 个键、没有 n/N**（n/N 只定义在 `park-recolor.js` 的 `PALETTE_HEX` 里）⇒ `PALETTE['n']` 是 undefined ⇒ 走 emit 里的 `|| '#4a86e8'` 兜底。**表上写着深蓝、产物里一直是浅蓝，十几轮都没人发现**，因为没人去比对表与产物。
-
-修法：`emit-smooth.js:18` 改成 `const PALETTE = PALETTE_HEX;`（超集），并在上方写注释记下这次漂移。**⚠ 改色必须重跑 `node tools/icons/emit-smooth.js` + `node tools/icons/merge-smooth-xp-icons.js`，不能手改 `smooth-glyphs.js`（会被下一次 emit 覆盖）。**
-
-**2. 社交组不走 TINT**：`emit-smooth.js:93` 的 `if (SOCIAL[id]) { out[id] = siBody(id); continue; }` 在 recolor 之前短路，`tools/icons/social-native.js:7` 的 `const BLUE = '#4a86e8'` 直接写死 fill ⇒ 社交图标要改色只能改这个常量（已改 `#0054e3`）；`park-recolor.js` 里那 12 条 `icon-social-*` 的 `['b','c']` 也一并改成 `['n','N']` 保持一致，但它们对 simple-icons 品牌图形无效。
-
-**3. 换了五个更贴播放器语义的图标**（`tools/icons/park-map.js`）：`prev: arrow-left → go-start`、`play: play → play-one`（圆底三角→纯三角）、`pause: pause-one → pause`（圆底→两条竖线）、`next: arrow-right → go-end`、`list: list → music-list`（勾选清单→带播放符）。
-
-**4. 图标尺寸**：`.mp4-floating .mp4-btn svg` 从 **13px → 17px**。原来的 13px 是「20×20 小键时代」的算术；页内化后按钮已铺满整行（268px / 5 键 ≈ 52px 宽），13px 显得没画满。键高 26px 时 17px 上下各留 4.5px，再大（18px）会贴到 XP 立体高光的内阴影。
-
-**5. 歌词「空行」：不是数据问题，是排版 bug**。站主看到的当前行与下一行之间的空隙，不是 LRC 里的时间间隔造成的（`paintLyric()` 是**固定五格**，第 k 格永远显示「当前行 + (k-2)」，时间间隔根本不留白）。真因是 `.mp4-lyric.is-cur` 为两行容量写死了 **`height:40px`**，而 `line-height` 只有 20px —— 单行歌词在 40px 框里顶格、下方空出 20px。改成 `height:auto; min-height:20px`（手机分支 34px → `height:auto; min-height:17px`）。修完实测五格高度 **[24,24,20,24,24]**。
-
-**6. 社交图标**：`.profile-icons` 加 `padding-left:2px`、`gap` 8→7px（「不要顶格」）；`.profile-icon` 34→**30px**、`svg` 24→**21px**（「稍小」）；容器查询里 svg 18px、方块 26px。
-
-**7. 深色模式下的补偿**：图标改成 #0054e3 后，浅色键面（#e5e4db）上 **4.87:1** 达标，深色键面（#3c3c4e）上只剩 **1.73:1**。因为 glyph 颜色写死在 SVG 里、改不了 CSS 变量，加了一条 `html.dark .mp4-btn svg, html.dark .profile-icon svg { filter: brightness(2.2) }` → 约 #00b9ff，对深色键面 **4.82:1**。播放器与社交共用同一条规则，保证两边永远同色。
-
-**验证**：`emit-smooth.js` 75 icons、`merge-smooth-xp-icons.js` 写 `scripts/xp-icons.js`、`tools/icons/verify.js` 全 OK（顺手改了 verify 里那条过期规则：社交组自 m02896 起走 simple-icons 实心真身，不该再要求「必须线条」）；产物里 `#0054e3` 16 处、`#4a86e8` 只剩 4 处（都是彩色图标里的蓝色颜料点）；`audit-design.js` **29/29**；`verify-site.py` 全绿（仍是原来 4 条提醒）。
-
-#### 14.1.5 首页三处留白 + 歌词翻译（2026-11-05）
-
-**站主要求**（原话）：「1.如图，令社交图标和方块稍大一点，以及个人账户窗口排版似乎有些空？2.还有什么个人博客比较常见但本站尚未添加的功能吗？3.如p2，这个地方稍微有些空，可不可以加点其他东西？4.如果播放器内歌曲包含外语，是否可以添加同时显示歌词翻译的功能？」
-
-**1. 社交图标又放大了一档**：上一轮按「稍小一点」收到 30/21，站主看过觉得偏小 ⇒ `.profile-icon` 回到 **34×34**、`svg` **24×24**；容器查询里 26/18 → **28/19**。
-
-**2. 用户账户卡「有些空」：不是宽度问题是纵向节奏**。实测文字块 122px 放在 181px 的内容区里（`justify-content:center` 上下各留 ~30px），右侧其实是贴满的（`textRight` 与 `winRight` 只差 8px 边框）。所以不塞新内容，只拉纵向节奏：标题下留白 2→6px、段落行距 1.55→1.75、段落间距 3→6px、图标行上边距 10→14px。
-
-**3. 右侧那块 287×139 的纯壁纸**：`.bento-music` 是 `span 5` 只盖到第 5 行（y≈654），旁边第三带占第 5~6 行（到 y≈793）⇒ 播放器列右侧漏出一块空洞。改成 **`span 6`** 与第三带齐平，多出来的高度由「唉，汁本！」那张窗吃掉（它本来就是 `flex:1 1 auto`）。
-
-**4. 「小站数据」下半 131px 全空**：body 218px 只用了 87px（三行 `.stat-row` 各 29px）。`statRows()` 从 3 行扩到 **6 行**，新增 标签 / 分类 / 归档 三条 —— 都是站内已有的索引页（`/tags/` `/categories/` `/archives/`），点进去都有内容，不是凑数。`num()` 本来就支持 `tags` `categories` `months` 三个键。
-
-**5. 「详细属性」窗补两条入口**：原来只有两条自介链接，补 `/about-death/` 与 `/platform-thought/` 两条正文页入口（都是实际有内容的文章，不是索引页）。
-
-**6. 歌词翻译**：
-- **数据侧**：网易云歌词接口的响应里有 `tlyric` 字段（翻译歌词，LRC 格式）。`tools/fetch/fetch-lyrics.py` 扩展后实测 **44 首里 34 首有原文歌词、27 首带翻译**（翻译覆盖率比预期高）。`source/_data/music-lyrics.yml` 从 69 KB 涨到 **113 KB**。抓取时新增 `clean_translation()`——网易云会在没有翻译的行上塞纯时间轴空行占位，那些必须扔掉，否则播放器会以为「这一句有译文」而把行高翻倍。
-- **构建侧**：`lyricsBundle()` 输出 `{ v:2, lyrics:{id:lrc}, tlrc:{id:tlrc} }`，产物 `public/js/xp-lyrics.json` 111 KB。
-- **渲染侧**：`paintLyric()` 的当前格若有译文，动态建 `<span class="mp4-lyric-tl">` 并给格加 `.has-tl`；原文与译文的匹配**按时间戳做，容差 0.6 秒**（不能用秒当键——网易云偶尔差几十毫秒会整行对不上）。样式：译文比原文小一档、绿一档（`#9fd8a8`，11px/15px），**用系统字体栈而不是像素字体**——中文翻译用像素字体在 11px 下笔画会糊成一团。横条形态里译文同行跟在原文后面。
-- **一个坑**：判断某格是否需要重画时**不能读 `cell.textContent`**（有译文的格 textContent 含译文，每帧都会判定「变了」而重排），改用 `cell.getAttribute('data-lrc')` 比对。
-- **已知限制**：译文与原文的对应依赖网易云源数据本身的质量。实测有的歌 `tlrc` 比 `lrc` 少开头两行（作词/作曲署名），导致译文整体偏移一句——这是源数据错位，不是本地匹配算法的问题，不改。
-
-**验证**：构建 90 files；`audit-design.js` **29/29**；`verify-site.py` 48 页全绿（仍是原来 4 条提醒）。实测：`.bento-music` 高度 619→**758px**（与第三带齐平，空洞消失）、小站数据 6 行、详细属性 4 条、桌面社交图标 34px、手机（容器查询）28px、首页文档高 1354px 不变。歌词翻译实测切到《あだばしや》：五格高度 [24,24,36,24,24]，当前格 `hasTl=true`、译文「啃噬掉那副身躯」正确显示在绿字下方。
-
-### 14.2 还没动的（按建议顺序排）
-| # | 事项 | 现状 | 建议 | 工作量 |
+| # | 事项 | 现状（2026-11-07） | 建议 | 估时 |
 |---|---|---|---|---|
-| ② | **浮动播放器压住内容** | ~~`.xp-music-floating`（200×300，固定右下）压住内容：首页「快速导航」窗 **211145px²**、/works/ 「作品集」**252890px²**、/blog/ 与 /archives/ 侧栏「最近文章」**91391px²**~~ | **2026-11-04 已解决**：播放器改成页内组件，不再是 `position:fixed`，一格不压（详见 14.1.2）。`.xp-taskbar`（固定 36px）那部分仍在：首页「快速导航」**206616px²**、/works/ 标签云 **159001px²**、文章页代码块 **99487px²**、/blog/ 最后一张卡片 **38434px²** | 任务栏那半 30 min（可选） |
-| ⑥ | **字号 / 行高 / 间距没成体系** | 字号：16px 用了 115 处，另有 20+ 个 11/12/13/14/15/18/19/20/21/22/24/26/32/40/44px 的散值，而且互相打架（`:806` 的 26px 被 `:2782` 的 19px、`:2791` 的 21px 盖掉；`:1003` 的 clamp 被 `:1004` 的 15px 拍平）。行高有 14 种。间距没有 `--space/--gap/--pad` 一类的 token，30+ 处硬编码 px。颜色有 192 处硬编码 hex，违反 13.1「只用 token」 | 先建 `--space-1..8` / `--fs-*` 一组 token，把 16px 正文和各级标题收敛成阶梯，再把硬编码色换成 token。**一次做完，别分批** | 半天起（结构性重构） |
-| ⑥ | **死 CSS 与「双份真理」** | `xp-custom.css:1757` 是个嵌在 `@media(max-width:640px)` 里的 `@media(min-width:641px)`，永远不会生效；`.feature-container`（:1938/:2396）匹配 0 个元素；两套完整的 `.mp4-*` 皮肤（:1039-1218 与 :3398-3485）。**已修**：首页内联 `<style>` 已并进 xp-custom.css、`.bento-meta`（0 命中）与那套过时网格坐标已删；`.main` 宽度现在只在 xp-custom.css 里写（主题 `list.styl` 随瘦身一起删了）；**主题层已按 14.1.1 做完结构瘦身** | 剩下的死规则与两套 `.mp4-*` 皮肤继续删 | 半天起 |
-| ⑥ | 断点与圆角对不上 | 实际用了 640 / 900 / 901 / 1200 / 1201 / 1240 / 1500；13.3.1 却写着只有 640 / 900 / 1200。圆角实际有 4 / 6 / 8 / 9 / 12，13.3.2 只允许 0 / 2 / 3 / 11。**2026-11-03**：主题 `post.styl` 那档 1400 已随主题层瘦身消失，断点现在只剩 `xp-custom.css` 一处 | 要么收敛断点，要么把表改成实际值。**表和代码必须一致**，别两样都留 | 1 h |
-| ⑧ | **正文行太长** | ~~`.post-content` 宽 710px，一行 44 个汉字~~ | **2026-11-02 已改**：`.main:has(.xp-shell)` 1060 → 1000，正文栏 650px / 约 41 字每行（实测），落回 30–45 舒适区 | — |
-| ⑧ | **代码块 84% 是空的** | ~~代码块跟着正文一起 710px 宽，最长一行只有 117px~~ | **2026-11-02 已改**：`.highlight` 用 `width: fit-content`，实测利用率 41%~67%。**如果还嫌宽**，可以再给代码块单独一套更窄的版心 | 10 min（可选） |
-| ⑩ | 正文链接只靠颜色区分 | ~~`.post-content a` 没有下划线~~ | **2026-11-02 已改**：加 `text-decoration: underline` + `text-underline-offset: 2px`，hover 转 `--text-heading` | — |
-| ⑪ | `.headerlink` 比正文还大 | ~~`font-size: 0.85em`~~ | **2026-11-02 已改**：`0.85em` → `1em` | — |
-| ⑭ | 归档页的年份不是链接 | 年份标题原是纯 `<span>` | **2026-11-02 已改**：年份做成链接指向 `/archives/<年>/`。**月级页面 `/archives/<年>/<月>/` 仍是孤儿**（内容与主时间线重复） | 20 min（月级） |
-| ⑯ | 作品页数字自相矛盾 | ~~头部写「3 件作品」、状态栏写「共 2 件作品」~~ | **2026-11-02 已改**：前端统计改成跨栏目累加。实测：头部 3、状态栏 3（切栏目也一致） | — |
-| ⑰ | 加密文章的标签公开可见 | `大烧烤.md` 设了密码（0710），但它的标签「争议话题」在列表里明文挂着，而且这个标签**自己还有一个 `/tags/争议话题/` 页面**，被收录进了 34 个已生成页面的标签云 | 密码保护的是**正文**（`xp-content.js` 会把带密码文章的正文从搜索索引里剔掉），标签本来就不含内容。**要改的话**：加密码的文章在列表里不输出标签，并把这类标签从标签云里过滤掉 | 20 min |
-| ⑱ | 搜索只在首页有 | 其它页面没有搜索框，搜东西得先回首页 | 放进任务栏或每页侧栏 | 1 h |
-| ⑳ | 没有常驻主导航 | 主导航实际上是任务栏的「开始」菜单。**2026-11-03**：主题那套藏起来的顶栏（`.site-header-container` + `.menu-container`，`height:0;opacity:0` + `aria-hidden` + 每项 `tabindex="-1"`）已随瘦身整块删除 —— 它本来就 `display:none`，删掉不改变任何观感，但这个「假导航」不再误导后来的维护者 | 要么给一个可见的顶部导航，要么把开始菜单的可达性做扎实 | 半天 |
-| ㉑ | 点击目标偏小 | 窗口按钮 21×21、`.xp-tray-btn` 27×23、作品页复选框 13×13（触控最小建议 24×24）。**2026-11-04**：播放器那几个键已经不是 18×18 了 —— 卡片形态按宽度均分成 ≥26px 的方块，横条形态固定 28×26（播放键 36px） | 剩下的小控件加透明内边距撑到 24px | 1 h |
-| ㉒ | 作品页标签页的 ARIA 不完整 | ~~有 `role="tab"` 但没有 `aria-controls`、没有 roving tabindex；两个 `[role=tabpanel]` 的 id 是空的；`a.work-thumb` 没有可访问名~~ | **2026-11-02 已改**：标签页补 `id`/`aria-controls`/roving tabindex + 左右方向键切换；面板补 `id`/`aria-labelledby`；缩略图加 `aria-label` | — |
-| ㉓ | 搜索结果区没有 `aria-live` | ~~`#site-search-results` 结果更新时读屏不播报~~ | **2026-11-02 已改**：加 `role="status" aria-live="polite" aria-atomic="true"` | — |
-| ㉖ | /games/ 大半是空的 | 内容到 y=386 就结束，任务栏在 y=864 —— 478px 纯壁纸；6 张卡片全是「开发中」且点不动（`apps.yml` 里 6 个 app 全是 `status: planned`、没有 url） | **站点主确认这是占位**（2026-11-02）。那就不用当缺陷改：只要在 /games/ 上写一句「这里的项目都还在做」就够了。**不建议**为了填空硬上没做完的东西 | 10 min（写一句话） |
-| — | 3 篇文章没有分类 | `呃可能是属性啥的吧.md`、`天雷滚滚好怕怕.md`、`纪念半次元，吗.md` 没有 `categories:`，在任何分类页里都看不到 | 站点主决定：**先不改，写在这里**。补了就会改变分类页的篇数，要改请一并确认分类页数字 | 10 min |
-| — | `hello-world.md` 还是 Hexo 默认示例 | 原封不动的 Quick Start / Run server / Generate / Deploy 四段 + 4 个代码块，是「随笔」分类里唯一的英文文章 | 留着当格式参考也行，但**建议从「随笔」分类里拿掉**（或改成不输出）。想换真文章：改文件名 + front-matter 就行 | 10 min |
-| — | 加密文章的标签 / 密码机制 | 见 ⑰ | — | — |
+| ① | **字号 / 行高 / 间距没成体系** | `font-size` 有 17 种取值：16px 占 117 处（正文档），另有 11/12/13/14/15/17/18/20/21/22/24/26/32/40/44/52px 的散值，同一元素常被后写的规则改档。行高 14 种、间距 30+ 处硬编码、圆角 9 种。没有 `--space-*` / `--fs-*` 这类 token | 先建 token，再把正文与标题收敛成阶梯，最后换掉硬编码色。**一次做完，别分批** | 半天起 |
+| ② | **死 CSS 还没清完** | ①播放器旧形态的两套 `.mp4-*` 皮肤（约 1039 行与 3398 行各一套，产物里只有一个形态命中）；②给 `/guides/` 攻略列表用的 `.tag-game/.tag-art/.tag-tech.guide-tag` 三条配色（页面已不存在，产物 0 命中）。11-07 只清了另外两处死码（嵌套媒体查询、`.feature-container`） | 先量哪一套真正命中，再删另一套；三条 `.guide-tag` 可以直接删 | 1~2 h |
+| ③ | **断点没收敛** | 主档 640/900/1200，另有 641/901/1100/1201/1240/1500 六个补丁档。13.3.1 已按实际值改写，文档与代码一致 | 要不要合并回三档是另一件事：每档都有具体组件依赖，合并要逐档量副作用，风险大于收益 —— **建议不动** | 半天（不建议现在做） |
+| ④ | 月级归档是孤儿页 | `/archives/<年>/<月>/` 能访问但没有入口，内容与主时间线重复 | 要么加链接，要么不生成 | 20 min |
+| ⑤ | 加密文章的标签明文可见 | `大烧烤` 设了密码，但标签「争议话题」在列表和标签云里照挂，还有自己的标签页 | 带密码的文章不输出标签，这类标签从标签云过滤。**注意**：密码保护的只是正文，标签本来不含内容，这是「要不要」不是「对不对」 | 20 min |
+| ⑥ | 搜索只在首页 | 其它页面没有搜索框，搜东西得先回首页 | 放进每页侧栏（比塞任务栏省事） | 1 h |
+| ⑦ | 没有常驻主导航 | 主导航实际是任务栏的「开始」菜单；主题那套隐藏顶栏 11-03 已随瘦身删除 | 要么给一个可见的顶部导航，要么把开始菜单的可达性做扎实 | 半天 |
+| ⑧ | 小控件点击目标偏小 | 窗口按钮 21×21、`.xp-tray-btn` 27×23、作品页复选框 13×13（触控建议 ≥24×24）。播放器键已达标（≥26px） | 透明内边距撑到 24px | 1 h |
+| ⑨ | `/games/` 下半屏是壁纸 | 6 张卡全是「开发中」、点不动，内容到 y=386 就结束 | 站主已确认是占位：在页面上写一句「都还在做」即可，**不要**为填空硬上没做完的东西 | 10 min |
+| ⑩ | 3 篇文章没有分类 | `呃可能是属性啥的吧` / `天雷滚滚好怕怕` / `纪念半次元，吗` 没有 `categories:`，任何分类页都看不到 | 站主自己补；补完分类页数字会变 | 10 min |
+| ⑪ | `hello-world.md` 还是 Hexo 默认示例 | 四段 Quick Start + 4 个代码块，是「随笔」里唯一的英文文章 | 留着当格式参考也行，建议先从「随笔」分类拿掉 | 10 min |
+| ⑫ | 任务栏压内容（可选） | 播放器页内化后，固定浮层只剩 36px 的任务栏：首页「快速导航」206 616px²、/works/ 标签云 159 001px²、文章页代码块 99 487px² | 给 `body` 底部补足任务栏高度的内边距。**不急** —— 视觉上是「贴着窗口下沿」，属于正常观感 | 30 min |
+| ⑬ | `guides.yml` 已无人读取 | 7 条攻略占位条目（全年 `planned`），`{% xp_guides %}` 零引用，48 个产物页面 0 命中 | 要么删文件（`dataFile` 会走空数组兜底），要么按 6.5 的办法恢复成实体页 | 10 min |
 
-### 14.3 还没定的问题（需要站主拍板）
+### 14.2 已经定下来的（含「决定不做」）
 
-> **2026-11-02 补充**：站主问过「这些问题我有些看不太懂，按实际情况分析一下如何改比较稳妥」。
-> 下面每条后面加了「**现状判断**」（我量出来的）和「**稳妥做法**」（我的建议）。
-> 判断与建议 ≠ 已执行；已执行的在 14.1，还没动的在 14.2。
+| 事项 | 结论 |
+|---|---|
+| 主题层要不要瘦身 | **做**（11-03）：只搬「真的有声明在赢」的规则，然后整层删除；`main.css` 只留浏览器重置。重置必须**未分层**，否则压不住 `@layer xp-css` 里的 XP.css |
+| 全站链接蓝兜底 `a{color:var(--link)}` | **不做**：18 页明暗量过，0 个链接不达标；加链接蓝会把「跟随正文色」的正文链接全刷蓝。删主题层后补的那条裸 `a` 写的是 `var(--text)`，不是 `var(--link)` |
+| 首页那段内联 `<style>` | **已并**（11-02）：内联那套才是真生效的，搬进 `xp-custom.css` 后删掉，网格真源只剩一处 |
+| 行高基线写在哪 | **维持「刻意不管」**：基线是主题的 `html{line-height:1.15}`，正文另给 1.725。设全局 1.6 会让紧凑控件长高约 27% |
+| `/tools/` 保留独立 URL 还是并进 `/games/` | **保留跳转桩**（858 B：meta refresh + canonical + 可见链接），旧链接不 404，也不依赖 JS |
+| `apps.yml` 全是 `planned` 是占位还是回退 | **是占位，不是缺陷**（站主 11-02 确认），见 14.1 ⑨ |
+| `tools/check/` 的老脚本要不要合并进 `audit-design.js` | **先不合并**：老的各管一件事（对比度 / 版式 / 字号 / 点击点），合并 = 把 6 个脚本揉进一个文件，收益小、风险大。真要收，一次只并一个 |
+| 播放器能否「切页不断音」 | **做不到，也不再尝试**（站主 11-05「不加 pjax 了」）：静态多页站每跳一页 `<audio>` 就重建；pjax 要 150~200 行 + 全站 129 段内联脚本改成可重入。0.5~2 秒断音是长期接受的现状 |
+| 要不要 pjax / Service Worker / iframe 壳 | **都不做**：GitHub Pages 不支持自定义 SW；iframe 壳会让深链、分享、刷新全废 |
 
-1. **主题层要不要瘦身？** —— **已执行**（2026-11-03，做法与结果见 **14.1.1**）。
-   *当时的判断*：主题层只占 14 KB（`public/style/main.css`），真正的体积在 `public/vendor/xp-css/XP.css`（213 KB），所以瘦身**省不下几个字节**；但主题层是几处深色模式毛病的源头，而且和 `xp-custom.css` 大面积重叠（同一条规则两处真理）。
-   *实际做法*：**只做「结构瘦身」** —— 先用 jsdom 逐条算出「主题层 67 条规则里哪 57 条真的有声明在赢」，把赢的搬进 `xp-custom.css`（改用语义 token），再把整层删掉；顶栏那 15 条虽然级联上「赢」，但视觉早被 `display:none` 关掉，直接连 DOM 一起删。`main.css` 保留 65 行浏览器重置（**必须未分层**，否则压不住 `@layer xp-css` 里的 XP.css）。
-   *结果*：`main.css` 13 161 B → 1 344 B；每页 `<h1>` 2 → 1；18 页 × 57 属性的快照 diff 归零（只剩动画噪声与设计内的删除）。**代价**：没有代价 —— 唯一的坑是删层会露出被压住的分层规则（`/works/` 的 `a.work-thumb` 一度变纯蓝），已补裸 `a{color:var(--text)}`。
+### 14.3 变更记录（倒序）
 
-2. **`a{color:var(--link)}` 要不要做全局兜底？** —— **不做**（2026-11-03 仍是这个结论）。
-   *现状判断*：**不要加链接蓝的全局兜底**。把 18 页 × 明暗里**每一个带文字的 `<a>`** 都量了一遍：**0 个不达标**（深色模式下 `.tag-pill` 5.53:1、`.profile-icon` 4.15:1、`.post-nav-item` 9.68:1 全部通过）。加全局链接蓝反而会把所有「非链接蓝」的正文链接改成蓝色，引入新问题。
-   *但*：主题层删掉后**必须**有一条裸 `a` 规则接住 `color/text-decoration/cursor` —— 见 14.1.1，那条写的是 `var(--text)`（黑字），**不是** `var(--link)`（蓝）。两者作用完全不同：前者复刻「链接跟随正文色」的旧行为，后者会把全站链接刷成蓝色。
-   *（此前体检曾报「63 个深色模式链接不达标」，那是探针自己的 bug —— 没做 alpha 合成、又在中途采样；已撤回。）*
+> 只记结论与坑。详细过程在 git log 和代码注释里，这里记的是**下一次动同一块地方时该知道的事**。
 
-3. **断点收敛到几个？**
-   *现状判断*：实际用了 **640 / 900 / 901 / 1200 / 1201 / 1240 / 1500**；13.3.1 却写着只有 640/900/1200。**表和代码必须一致**。
-   *2026-11-03 变化*：主题 `post.styl` 里那档 1400 随主题层瘦身一起没了，现在断点**全部只在 `xp-custom.css` 一处**。
-   *稳妥做法*：**先改文档，不动代码**。把 13.3.1 改成实际值；真要收敛（比如把 901/1201/1240 并到 900/1200）是另一次独立的活，现在动代码风险大、收益小。
+#### 2026-11-07 · 仓库去冗余（不动视觉）
 
-4. **首页那段内联 `<style>` 能不能并进 `xp-custom.css`？**
-   *现状判断*：能，而且**已经并了**（2026-11-02）。它和 xp-custom.css 里那套 `.xp-bento` 网格坐标是**两套打架的坐标**，内联那套靠「写在后面」赢，而 xp-custom.css 那套还留着 0 命中的 `.bento-meta`。
-   *稳妥做法*：**已完成** —— 搬进 xp-custom.css、删掉内联块、清掉过时坐标。网格真源现在只剩一处。
+- 磁盘：删 `.edge-audit/` **20 GB**（86 份 Edge profile，里面没有任何报告）、`tools/shots/` 79 MB profile + 37 张调试图、4 份 19 MB 快照 JSON、过期 `.deploy_git` 与 `public/`。仓库 20.2 GB → 129 MB。
+- 代码：删断链的 `build-compare-preview.js`（`require('./park-glyphs.js')`，那个文件 11-06 已删）与 8 个已完工的一次性脚本；清两处死 CSS（`max-width:640px` 里套 `min-width:641px` 的媒体查询、`.feature-container`）。
+- 修 `verify-site.py` 的自误报：文章末尾「相关文章」的 `h2.post-related-title` 被算成正文小标题，正文一个标题都没有的文章因此被判「缺侧栏目录」。判定前先排除这块，提醒回落到 4 条。
+- **教训**：跑体检用 `py -3`；用 `python` 会缺 PyYAML / fonttools，那两项检查会被**静默跳过**（看着全绿，其实少查了两项）。
+- 版本库：11-01 之后 6 天的改动（37 改 / 29 删 / 6 新增）按主题拆成提交。仓库此前**没有 remote**，`deploy.yml` 从建起来就没生效过；补上 remote 后推送被 GitHub 密钥扫描拦下（命中 Twikoo 后台的示例占位串 `AKID…`，带 `ADMIN_CONFIG_EXAMPLE` 前缀、无配套 SecretKey，不是真凭据），已用 filter-branch 从历史剔除并 gc：65 个提交保留，`.git` 11 MB → 7.5 MB。改完 push，CI 48 秒构建成功，线上追平。
 
-5. **圆角 4 / 6 / 8 / 9 / 12 里哪些算「XP 组件」可以留？**
-   *现状判断*：4 / 6 出现在小控件和头像上（`.profile-icon`、`.work-card`、`.xp-start-menu-header`、`.mp4-floating`），观感上就是 XP 控件的圆角；8 / 9 / 12 出现在**浮动卡片**上（`.work-tag` 9、`.meta-chip` 12、`.xp-music-embed` 8、`.content-container.xp-shell` 8），正是 13.3.2 说的「8~16px 的浮动圆角卡片」。
-   *稳妥做法*：**小控件保留 4 / 6，把卡片类的 8 / 9 / 12 收到 2 / 3**。改动集中在几个类，可以一次做完。
+#### 2026-11-07 · 底部通栏与播放器抬头收尾
 
-6. **行高基线写在哪？**
-   *现状判断*：真正生效的是主题 `base.styl` 的 `html{line-height:1.15}`（瘦身时**特意留在主题层**，因为它必须未分层才压得住 XP.css）；xp-custom.css **刻意**不设全站兜底（`:270-275` 注释说明：改成 1.6 会让紧凑控件长高约 27% —— XP 控件本来就是紧凑的，这个取舍是对的）。
-   *稳妥做法*：**维持「刻意不管」**，但把这句话从注释升级成 13.x 的一条明规则：**行高基线 = 主题的 1.15，紧凑控件靠组件自己设，正文另给 1.75**。别把 1.6 设成全局兜底。
+- 快速导航窗下方 76px 空行：加 `grid-auto-rows: 1fr` + 该格 body 改 flex 列，磁贴 67 → 106px。
+- 通栏左侧贴边：`.links-body` 补 `padding-left: 12px`；`align-content: space-between` 把「搜索行」与「关于│致谢行」分推上下。
+- 播放器抬头两个音符跟不动颜色：它们引用 symbol，`fill` 是构建期写死在属性上的 ⇒ 改成内联 SVG + `fill="currentColor"`。
 
-7. **`apps.yml` 全是 `planned` 是占位还是回退？**
-   *现状判断*：6 个 app 全是 `status: planned`、没有 url，/games/ 下半屏是壁纸。
-   *稳妥做法*：**站主已确认是占位**（2026-11-02）。那就把 14.2 ㉖ 从「缺陷」改成「已知占位」，在 /games/ 上写一行「这里的项目都还在做」就够了。**不要**为了填空硬上没做完的东西。
+#### 2026-11-06 · 三处排版 + 一个真回归
 
-8. **3 篇文章没分类是有意还是漏写？**
-   *现状判断*：`呃可能是属性啥的吧.md` / `天雷滚滚好怕怕.md` / `纪念半次元，吗.md` 没有 `categories:`，它们**照常出现在 /blog/、/archives/ 和侧栏「最近文章」里**，只是任何分类页都看不到（分类页只有「作品」3 篇 +「随笔」4 篇）。
-   *稳妥做法*：**站主自己补**（站主 2026-11-02 确认「后期我自己动手补」）。**不影响运行**，只是分类页数字会变，动之前记得看分类页的篇数。
+- 恢复芯片 `'恢复。'+name+'。'` → `'恢复：'+name`（窗口标题本身带标点时会变成两句独立的话）。
+- 致谢清单：去掉 ` · ` 分隔符改 flex gap 6px、说明文字降到 14px、列宽下限 165 → 206px（否则「主题基础框架」会在词中断行）。
+- 用户账户卡：卡片在桌面上只有 **593px** 宽，而字号写在 `@container (max-width: 600px)` 里 ⇒ **桌面一直命中窄档**，全局那组从未生效。改的是窄档：标题 19 → 22px、正文 16 → 17px、行距 1.5 → 1.3。
+- 真回归：`focus-4` 挂了（标题栏关闭键 2.33:1）——三键永远坐在饱和底色上，深色焦点环在红底不够，改成钉死白色（白@红 4.23、白@蓝 6.21）。
 
-9. **`/tools/` 保留独立 URL 还是彻底并到 `/games/`？**
-   *现状判断*：已按「轻量跳转页」处理 —— 858 字节的桩（meta refresh + canonical + 可见链接），旧链接不会 404。
-   *稳妥做法*：**保持现状**。等搜索引擎权重稳定、确认没有外部链接指向 /tools/ 之后，再考虑 301 到 /games/。
+#### 2026-11-06 · 去掉 pixelarticons，图标管线收口
 
-10. **`hello-world.md` 留着当格式参考还是换成真文章？**
-    *现状判断*：原封不动的 Hexo 示例（4 段 + 4 个代码块 + 4 个 hexo.io 链接），现在挂在「随笔」分类下。
-    *稳妥做法*：**留着当格式参考也行**，但**从「随笔」分类里拿掉**（或改成不输出），否则它是分类里唯一的英文文章。想换真文章的话，改文件名 + front-matter 就行。
+- `pixelarticons` 是唯一带 `^` 的依赖、也是唯一线上从不读取的依赖（10-31 换 IconPark 后就没人读），删。
+- 连带删 14 个只在内部互相 require 的旧脚本 + 1537 行的 `_xp-icons.pixel-backup.js`；`tools/icons/` 从 750 文件 / 68.9 MB 降到 16 个 `.js`。
+- 补装 `@iconify-json/icon-park@1.2.4` + `simple-icons@16.36.0`（原先 `node_modules` 里是空目录，`emit-smooth.js` 根本跑不起来）。重跑产出与仓库那份**字节完全相同** ⇒ 可复现。
+- **事故**：为试探「哪些脚本已死」逐个 `node` 跑了一遍，`merge-xp-icons.js` 读到缺失输入仍继续写盘，把 `scripts/xp-icons.js` 写成 0 字节（全站图标灭）。**教训**：带写盘副作用的脚本（`merge-*` / `emit-*` / `build-*`）不能盲跑试探 —— 查语法用 `node --check`，查逻辑先读源码看它会写什么。
 
-11. **`tools/check/` 里的体检脚本长期保留几个？**
-    *现状判断*：**已收口**（2026-11-02）：20 个一次性的 `probe-*.js` 和重复的 `design-review.js` 全删，合并成 `audit-design.js` 一条（配件是 `cdp.js` + `start-edge.ps1`）。仓库自带的 `audit-a11y.js` / `audit-contrast.js` / `audit-layout.js` / `audit-points.js` / `audit-type.js` / `pill-contrast.js` / `probe-contrast-*.js` / `probe-icon-dark.js` / `verify-site.py` / `_contrast-probe.js` 保持原样。
-    *2026-11-03 追加*：瘦身期间临时写的 `tools/tmp-cascade*.js` / `tmp-css-dead-check.js` / `tmp-shell-check.js` / `tmp-xp-rules.js` / `tmp-cascade-out.json` 已全部删除（级联分析只做一次，结论写进 14.1.1，脚本留着就是新的死代码）；`.screenshots/.tmp/` 里除快照/报告外的一次性探针也清了。
-    *稳妥做法*：**先别急着合并**。老的 `audit-*.js` 各管一件事（对比度、版式、字号、点击点），`audit-design.js` 管的是「这次体检关心的 25 条」；两套并存确实可能结论打架（这次就出现过探针误报），但合并 = 把 6 个脚本的逻辑揉进一个文件，**收益一般、风险不小**。真要收，就一次只并一个，每并一个跑一次体检。
+#### 2026-11-06 · 三处「空」与「偏心」
 
-### 14.3.1 音乐播放器改造的可行性（站主 2026-11-02 提问）
+- 「创作中」内容贴顶：`.xp-window-body` 是 `display:block`，子块高度只等于自身 ⇒ 该窗 body 改 flex 居中（标题栏不在 body 里，不受影响）。
+- 首页底部通栏挤成两行：三段 basis 300+300+380 = 1024 > 可用 1006 ⇒ 致谢被挤到第二行。收到 340 后一行放得下，窗口 277 → 221px。连带 bug：`.links-col` 变 flex 列后 `.xp-search-box`（`flex:1`）沿主轴被拉成 200px 高的空输入框。
+- 标签云「风景」偏上：上一轮补的 `align-items: flex-start` 矫枉过正，改 `center`。
+- **CDP 坑**：一个 `node` 探针里连跑 2~3 个页面必挂（>180s 无输出）。可靠做法是**一个 Edge 会话只跑一个页面**。
 
-> **2026-11-04 更新**：下面这张表是**改造前**的判断。站主后来决定「融入页面」，已经做完了（见 14.1.2）——
-> 所以「固定在某处」那一行现在是「落进页面版式」，不再有右下角浮层；「每个界面都有」那一行的
-> 结论不变、但落位变了（首页格 / 侧栏首卡 / 无侧栏页底部横条）。只有**「切换界面不中断音乐」仍是做不到**，
-> 那一条是纯架构约束，与播放器怎么摆无关。
+#### 2026-11-06 · 播放器横条重排 + 标签云 + 「创作中」统一
 
-**「放弃拖动、固定在某处、每个界面都有、切换界面不要中断音乐」——逐条结论：**
+- 横条三项分配原来是抬头 412 / 歌词 124 / 进度 420px。抬头限 300px、封面缩到 34px ⇒ 歌词区 124 → 306px；进度区收到 220px，并用 `display:contents` 把两个时间片拆成进度区自己的 flex 项排到条两侧。
+- 真 bug：横条只显示 `.is-cur`，而**前奏还没唱到第一句时一个 `.is-cur` 都没有** ⇒ 五格全隐、歌词区塌成 0。修法：容器挂 `.is-pre`，CSS 放第一格出来。与卡片形态「前奏五格全空」是同一处逻辑的两种表现。
+- 标签云高度不一：真因不是字号，是 flex 默认 `align-items: stretch` —— 行内会把矮药丸拉到与该行最高一致。
+- 「创作中」窗口去掉虚线外框 + 橙色标题栏 + 95% 透明三件套，改用普通窗；连带把 `audit-design.js` 的 `contrast-2` 断言改成「旧类名已从产物消失」。**断言绑定了会被删的具体样式，就得跟着改**，否则它永远失败。
 
-| 诉求 | 结论 | 依据 |
-|---|---|---|
-| 放弃拖动 | **已实现** | 删掉 `enableDrag`/`clampPos`/`restorePosition` 和位置存储键；**2026-11-04 起连「位置交给 CSS 的 fixed」也不需要了** —— 播放器是页内元素，坐标由容器决定 |
-| 固定在界面上某处 | **已实现 → 已改成页内** | 原先是右下角 `position:fixed`；现在首页 `.bento-music` 格竖排卡片、侧栏首卡、无侧栏页底部横条三形态（14.1.2） |
-| 每个界面都有 | **是** | 已生成的 48 页里有 40 页带播放器（`player-1` 断言），剩下 8 个是跳转桩，本来就没有正文 |
-| 切换界面不中断音乐 | **静态站做不到** | 音频元素是 APlayer 运行时 `createElement` 出来的，**每个页面一个**，跳页就销毁；网易云外链是 302 到带时间戳的 CDN 地址（`no-cache`），每次都要重新拉 ⇒ 必然有 0.5~3 秒空档；GitHub Pages 不支持自定义 Service Worker，也没有 SPA/pjax 路由。**浏览器自动播放策略**还会拦下首次自动播放（Chrome 允许静音自动播放，有声必须先有用户交互），APlayer 又把 `NotAllowedError` 吞掉，只把图标翻成「暂停」 |
+#### 2026-11-05~06 · 站点功能补全
 
-**能做到的替代方案**（按性价比排）：
-1. **本次已做**：自动播放被拒时给一句人话提示（「浏览器不让自动播放，点『▶』继续」），点播放后自动消失。
-2. **推荐下一步**：切页后**自动续播上一首、接着上次的位置播**（`xp_music_state_v1` 已经存了曲目和进度，只差「自动点播放」这一步）—— 空档仍然存在，但至少歌不断。
-3. **可选**：加淡入 + 音量渐起（`loadeddata` 里 ramp 0→0.7），把空档做成「渐入」而不是「咔一下」；再补 MediaSession 标题、`.is-buffering` 缓冲态、预取下一首。
-4. **想真无缝**：只能上 pjax —— `fetch` 下一页、只替换 `<main>`，`<audio>` 与 JS 环境原地不动。本站的结构天然适合（播放器/任务栏/装饰全在 `xp-main` 之外）。代价：约 150–200 行新脚本 + 每页 6/4/3 段内联脚本要改成可重入（实测全站 41 个正文页里共 **129 段内联 `<script>`**）+ 历史与滚动恢复 + 体检要加「导航后 audio 实例同一性」探针。**估 1–2 天。**
-   **2026-11-05 站主决定：不做（原话「不加pjax了，保持现状」）** —— 由此 0.5~3 秒断音成为长期接受的现状，不再列为待办。
-5. **不推荐**：Service Worker 或 SPA 路由 —— GitHub Pages 上做不了，等于换架构；iframe 壳会上地址栏不变、深链/分享/刷新全废。
-6. **顺带**：浏览器后退/前进时 bfcache 可能直接保留播放状态，那条路本来就是通的。
+按站主给的优先级表做完，两个「不做」也记在 14.2。
 
-**2026-11-05 社区对照（站主问「其他性质类似的博客怎么处理」）**：Hexo 生态里「切页不断音」几乎清一色是 **pjax/swup 接管导航**，而不是改播放器 —— [Butterfly 全局吸底 APlayer](https://snow.js.org/butterfly-aplayer/) 直接写明「切换页面音乐不中断请把 pjax 设为 true」、[Hexo 不间断背景音乐](https://urology.wiki/Blog/Hexo%E6%B7%BB%E5%8A%A0%E4%B8%8D%E9%97%B4%E6%96%AD%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90/)、[Next+pjax 方案](https://nobilta.github.io/2020/10/13/%E4%B8%BAhexo%E5%8D%9A%E5%AE%A2%E6%B7%BB%E5%8A%A0%E5%85%A8%E5%B1%80aplayer%E6%92%AD%E6%94%BE%E5%99%A8/) 都是同一条路；`hexo-theme-async` 内置 `swup:true`；`hexo-theme-matery` 则明确拒绝过（[#713](https://github.com/blinkfox/hexo-theme-matery/issues/713) 作者答「暂无这样的开发计划」）。**没有找到**任何主流主题把播放器做成页内卡片还承诺「切页不断」的 —— 因为这两件事在整页导航下互斥。本站选了「页内 + 接受断音」，与 matery 的取舍同侧。
+- **RSS / Atom**（`hexo-generator-feed@4.0.0`）：`type: [atom, rss2]`、`limit: 20`、`content_limit: 200`、`autodiscovery: true`。加密文章在 feed 里只有标题 + `message` 那句提示，密文不进去。
+- **sitemap + robots**（`scripts/xp-seo.js`，为 38 条 URL 自己写而不装插件）四个坑：① generator 里**不能用 `this.route.list()`** 收集页面（所有 generator 先跑完才注册路由，那时只看得见 `source/` 静态文件，实测只拿到首页）；改用 `locals.get(...)` 自建。② `category.path` / `tag.path` **已带** `categories/` / `tags/` 前缀，再拼一次就是 `/tags/tags/生活/` 这种 404。③ `locals.get('pages')` 里混着 `vendor/aplayer/*`、`css/xp-custom.css` 这类静态资源，按 `/index\.html$/` 过滤，另排除 `404.html`。④ `posts[].path` 形状不一，统一走 `norm()` 再逐段 `encodeURIComponent`。
+- **回到顶部**：做成任务栏托盘按钮而不是页脚浮球（浮球会压内容）。两个坑：`.xp-tray-btn` 是 `display:flex`，会盖掉 `[hidden]` 的默认 `display:none`；显隐判定写反过一次（`show === btn.hidden`），滚动到底按钮仍隐身。
+- **相关文章**：同分类 +3 / 同标签 +2，无交集返回空串不硬推；不套 `.xp-window`（窗口里嵌窗口违背 XP 画法）。坑：`scripts/` 的 IIFE 里没有模板的 `date()` 助手，得自己写 `fmtDay()`。
+- **阅读进度条**：3px 细线贴浏览窗口顶端，**按整页可滚动距离算**（按正文算时短文章只在 150px 窗口里闪一下就到 100%）。同一类显隐反转又踩了一次，守卫要写 `if (bar.hidden !== !show)`。
+- 没做的三项及理由：评论系统（`comment.enable: false` 是有意关的，UGC 合规是灰区）、PWA 离线缓存（复古站收益小）、阅读量统计（需后端，与纯静态冲突）。
 
-### 14.4 跑体检
+#### 2026-11-05 · 播放器竖卡 + 歌词窗口
 
-```powershell
-# 1) 构建
-npm run build
+- 4:5 竖卡：卡片从 `height: 236px` 改 `height: auto; aspect-ratio: 4/5`（侧栏 292×365、首页格 287×359），多出来的高度给歌词窗口。原来屏里 `aspect-ratio: 1/1` 的封面在 287×216 里只剩一个 43px 的圆 —— 不是审美问题，是算错了。
+- 屏里改成「抬头 + 五行歌词」：中间行绿色荧光（两行容量）、上下各两行灰上下文，**切行只换文字不重排**；纯音乐（44 首里 10 首）加 `.is-nolyric` 退化成 96px 居中大封面。
+- 歌词数据只能**构建期**抓：网易云歌词接口返回 200 但没有 `Access-Control-*`、也不支持 JSONP，浏览器同页 fetch 必被 CORS 拦。`tools/fetch/fetch-lyrics.py` 产出 `source/_data/music-lyrics.yml`（44 首中 34 首有词），`xp-content.js` 的 `lyricsBundle()` 输出成同源 `/js/xp-lyrics.json`，运行时分页不加载。
+- 三个坑：① 前奏阶段歌词窗全空 —— `lyricIndexAt()` 返回 -1，而换歌时也把游标置 -1，重画判断直接 return；改用哨兵 -99 强制重画。② 反引号模板字符串的注释里写 `*/` 会闭合注释，产物报 `Invalid or unexpected token`，页面表现为播放器完全不初始化。③ `.mp4-song-info` 被更高特异性的旧规则写死 `width:100%`，抬头里与 52px 封面抢宽度。
+- 加密文章字数从**源文件**算（`hexo-blog-encrypt` 会把 `post.content` 换成密码框那几十个字）；歌词里的日文汉字会让字体覆盖检查永远报缺 250+ 字 ⇒ 扫描列表里排除该文件（为几十秒歌词把字体从 180 KB 扩到 600 KB 不值）。
 
-# 2) 起预览（构建期脚本只在启动时加载一次，改过 scripts\*.js 必须重启）
-npm run server
+#### 2026-11-05 · 播放器图标加深 + 社交图标
 
-# 3) 起无头 Edge + 跑体检（Edge 必须由 PowerShell 起，Node 派生的子进程在沙箱里起不来）
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\check\start-edge.ps1 -Profile audit
-node tools\check\audit-design.js http://127.0.0.1:4010
-```
+- **值得记住的根因**：`park-recolor.js` 的 TINT 表写着深蓝 `['n','N']`，但 `emit-smooth.js` 读的是 `scripts/xp-icons.js` 的 `PALETTE`（只有 18 个键、没有 n/N）⇒ 一直走 `|| '#4a86e8'` 兜底。**表上写着深蓝、产物里一直是浅蓝，十几轮没人发现**，因为没人比对表与产物。改成引用超集 `PALETTE_HEX`。
+- 社交图标走 simple-icons 实心真身、不经过 TINT，只能改 `social-native.js` 里的 `BLUE` 常量。
+- 歌词「空行」不是数据问题：`.mp4-lyric.is-cur` 为两行容量写死 `height: 40px`，而 `line-height` 只有 20px。
+- 深色补偿：图标色写死在 SVG 里、改不了 CSS 变量 ⇒ `html.dark` 下用 `filter: brightness(2.2)`，把 1.73:1 提到 4.82:1。播放器与社交共用同一条规则，保证永远同色。
 
-体检产出在 `.screenshots\.tmp\audit-design\`：`audit-design.json` + 每个页面的明暗截图。
-**断言失败时退出码是 2**，别当成脚本崩了。
+#### 2026-11-05 · 首页留白 + 歌词翻译
 
-体检脚本除了断言，还会**打印但不断言**两组数据，留给还在待办里的活儿用：
+- 社交图标 30 → 34px（上一轮按「稍小」收到 30，站主看过觉得偏小 —— 这类「观感词」最好一次问到一个具体值）。
+- 「用户账户」显空不是宽度问题：文字块 122px 在 181px 内容区里居中，右侧其实贴满 ⇒ 只调上下留白与行距，不塞新内容。
+- 右侧 287×139 纯壁纸：`.bento-music` 的 `span 5` 只盖到第 5 行，改 `span 6` 与第三带齐平。
+- 「小站数据」下半 131px 全空 ⇒ 3 行扩到 6 行（标签 / 分类 / 归档，都是站内已有索引页，不是凑数）。
+- 歌词翻译：`tlyric` 字段 44 首里 27 首有；原文与译文**按时间戳匹配**（容差 0.6 秒，不能用秒当键）。重画判断不能读 `cell.textContent`（有译文的格每帧都判定「变了」），改用 `data-lrc`。
 
-- **正文行长与代码块利用率**（对应 14.2 的 ⑧）；
-- **固定浮层压住内容的面积**（对应 14.2 的 ②）——每页列出 `.xp-taskbar` / `.xp-start-menu` 压住了谁、压了多少 px²。
+#### 2026-11-04 · 播放器改页内组件
 
-> 测量浮层时**每页都要清 localStorage**：播放器把「已折叠」写进 `xp_music_state_v1_c`，
-> 手机那一轮跑完会把桌面那轮也变成收起态，量出来只有 200×30 而不是真实的 200×300。
-> `audit-design.js` 已经代为清理（每页 `localStorage.clear()`）。
+- 原先 `position: fixed` 的 200×300 浮层必然压内容（首页标签云 206 187px²、/blog/ 侧栏 246 009px²、/works/ 275 310px²，还挡住作品图点击）。改成页内元素后这些数字全部归零。
+- 三种落位由容器决定：卡片（首页 `.bento-music` + 31 个侧栏页）、横条（6 个无侧栏页）、窄屏 340px。
+- 删掉三个按钮（调大小 / 折叠 / 隐藏）+ 恢复小球 + 拖动与位置存储；位置交给 CSS（`right:18px` + 任务栏高度），转屏换档都不出画。
+- 三个坑：① `DRIVER` 是反引号模板字符串，注释里写 `` `:not(.is-playing)` `` 会提前闭合；② `footer.ejs` 的 `<%# %>` 注释正文里不能出现 `<%- %>` 字面量（EJS 会把它当结束符，48 个 HTML 全变 0 字节）；③ `source/*.md` 只认 `xp-window-title` 那一种 EJS 写法，其余 `<%-` 一律报「未处理的 EJS 写法」。
+
+#### 2026-11-03 · 主题层结构瘦身
+
+- 先用 jsdom 逐条算级联：主题层 67 条规则里 **57 条**有声明真的在赢。只搬赢的，然后整层删。
+- `main.css` 13 161 B → 1 344 B；每页 `<h1>` 2 → 1；`site-header-container` / `menu-container` / `menu-list` 在产物里 0 命中。
+- 零回归口径：18 页 × 57 个计算属性，改前改后各拍一份快照，按 `tag|class` 分桶比对 —— **不能用全局序号当 key**，删掉顶栏 DOM 后每页元素少 8 条、索引整体前移，会全线错配。浅色 99 / 深色 96 条差异，归类后只剩「设计内删除」「动画噪声」「两处真回归」。
+- 两处真回归：`/works/` 的 `a.work-thumb` 掉进 XP.css 的 `a{color:#00f}` 变纯蓝（补裸 `a{color:var(--text)}`）；`.work-compare` 组件一直被正文排版（0,3,0）压着，加上前缀后恢复成它自己写的紧凑样式 —— 这是**旧问题终于修了**，不是新回归。
+
+#### 2026-11-02 · 设计体检（9 页 × 4 断点 × 明暗）
+
+- 16 项修复，逐条已在 14.1 / 14.2 处置：焦点框（根因是主题层 `a:focus{outline:0}` 更具体且先加载）、三处对比度不达标、补 `<main>` 地标、`<div>` 闭合净少一个、404 占位符 `%path%`、`/tools/` 39 KB 主题页改跳转桩、点赞键双前缀、正文 44 字/行 → 41、代码块 84% 空、正文链接加下划线、`.headerlink` 比正文大、归档年份可点、作品页数字自相矛盾、标签页 ARIA、搜索结果 `aria-live`。
+- 顺手把体检脚本收成一条：`audit-design.js` 一条命令跑完体检 + 定点断言，**断言失败退出码是 2**（不是脚本崩了）。
 
 ---
 
-### 14.5 站点功能补全（2026-11-05/06，站主按优先度批准）
-
-站主问「还有什么个人博客常见但本站尚未添加的功能」，给了下面这张表，然后批准按优先度做。
-**依赖一律 `npm install --save-exact` 钉死版本号**（站主原话：「去除『一次只升一个包』的规则，
-令安装的文件便于溯源与回滚即可」）—— 回滚就是 `git checkout package.json package-lock.json && npm ci`。
-
-| 优先度 | 功能 | 状态 |
-|---|---|---|
-| 最高 | RSS / Atom | **已做** |
-| 高 | sitemap.xml + robots.txt | **已做** |
-| 中 | 回到顶部 | **已做** |
-| 中低 | 相关文章 | **已做** |
-| 低 | 阅读进度条 | **已做** |
-| 不做 | 分享按钮 | 按建议放弃（个人小站使用率低，第三方脚本拖慢页面） |
-
-**没做的三个**（理由记在这里，免得以后又想起来）：评论系统（`_config.minimalism.yml`
-里 `comment.enable: false` 是有意关的）、PWA 离线缓存（复古站收益小）、阅读量统计
-（需要后端，与纯静态定位冲突）。
-
-#### 14.5.1 RSS / Atom
-
-- 装 `hexo-generator-feed@4.0.0`，`_config.yml` 加 `feed:` 段（`type: [atom, rss2]`、
-  `limit: 20`、`content: true`、`content_limit: 200`、`autodiscovery: true`）。
-- 产物 `public/atom.xml`（约 20 KB）+ `public/rss2.xml`；每页 `<head>` 自动注入两条
-  `<link rel="alternate">`，阅读器直接能发现。
-- **加密文章不外泄**：`/大烧烤/` 在 feed 里只有标题 + `<summary>密码是本人生日。四位</summary>`，
-  正文（`hexo-blog-encrypt` 的密文）不进去。
-
-#### 14.5.2 sitemap.xml + robots.txt（`scripts/xp-seo.js`）
-
-自己遍历 locals 生成，没装 `hexo-generator-sitemap`（本站页面结构规整，多一个依赖不如自己写可控）。
-四个坑，改这个文件前必读：
-
-1. **generator 里不能用 `this.route.list()` 收集页面** —— generator 的执行顺序是「先把所有
-   generator 跑完、再统一注册路由」，所以在某个 generator 内部 `route.list()` 只看得见
-   `source/` 下的静态文件，看不到别的 generator 产出的 HTML。实测只拿到 1 条（首页）。
-   正确做法是从 `this.locals.get('posts' | 'pages' | 'categories' | 'tags')` 自建地址。
-2. **`category.path` / `tag.path` 已经带上了 `categories/` / `tags/` 前缀**（形如
-   `categories/作品`、`tags/生活`），再拼一次就会生成 `/tags/tags/生活/` 这种 404 地址。
-   现在只补前导与结尾斜杠。
-3. **`locals.get('pages')` 里混着静态资源**：实测有 `vendor/aplayer/APlayer.min.css`、
-   `vendor/aplayer/APlayer.min.js`、`css/xp-custom.css`、`vendor/xp-css/XP.css` 四项（`title` 为空）。
-   它们不是可索引页面，混进 sitemap 会让爬虫去抓样式表。Hexo 的页面模型 path 一律以
-   `index.html` 结尾，资源则不带 —— 按 `/index\.html$/i.test(p.path)` 过滤，另排除 `404.html`
-   （没有可检索内容，收录只会稀释站点质量）。
-4. **`posts[].path` 形状不一**（有的带前导 `/`），且 sitemap 协议要求 URL 是合法 ASCII URI
-   ⇒ 统一走 `norm()`：压连续斜杠 → 去掉 `index.html` 补回 `/` → 补前导斜杠 →
-   逐段 `encodeURIComponent`（`/大烧烤/` → `/%E5%A4%A7%E7%83%A7%E7%83%A4/`）。
-
-产物：**38 条 URL**（首页 1.0/daily + 文章 0.7/monthly + 独立页 0.8/weekly + 分类标签 0.5/0.4
-+ 归档 0.6/0.4/0.3），全部解码后验证过 `public/` 下文件确实存在。`robots.txt` 排除
-`/tools/`（跳转桩）、`/guides/`（跳转桩）、`/search.json`（索引数据）并指向 sitemap。
-
-#### 14.5.3 回到顶部（任务栏托盘按钮）
-
-做成**任务栏托盘的小按钮**而不是页脚浮球：本站的常驻 chrome 就是任务栏，
-浮球会压内容（播放器当年就为此从右下角浮层改成页内），托盘天然不占地。
-
-- DOM 在 `scripts/xp-taskbar.js` 的 `taskbarHTML()` 里（`#xpTopBtn`，插在 `#xpVolumeBtn` 之前），
-  默认 `hidden`，滚过约一屏才出现。
-- **箭头是手绘内联 SVG，不走图标管线**：2026-11-06 那天 `node_modules/@iconify-json` 与
-  `@iconify` 都还是空目录、`emit-smooth.js` 跑不起来，为了不把「加个按钮」这件事卡在
-  「先修工具链」上就手画了一个。**当天稍后已经补装 `@iconify-json/icon-park@1.2.4` 与
-  `simple-icons@16.36.0`（devDependencies，`--save-exact`），管线恢复可跑**
-  （实测重跑 `emit-smooth.js` 产出的 `smooth-glyphs.js` 与仓库里那份**字节完全相同**，
-  md5 一致 ⇒ 可复现）。现在要把它挪进正规管线只需在 `tools/icons/park-map.js` 加一条
-  `'tray-top': ['arrow-up', '回到顶部']` 再重跑 `emit-smooth.js` → `merge-smooth-xp-icons.js`
-  → `verify.js`；没做只是因为一个 16×16 的向上箭头手画 30 秒、走管线要改三处映射。
-- 两个容易踩的点：
-  1. `.xp-tray-btn` 是 `display:flex`，**会盖掉浏览器对 `[hidden]` 的默认 `display:none`**
-     ⇒ 必须补 `.xp-tray-btn[hidden] { display: none !important; }`。
-  2. 显隐逻辑写 `btn.hidden === !show` 才是对的。实测踩过：写成 `show === btn.hidden`
-     整个反转，滚到底按钮仍然隐身（`rect` 全是 0）。
-
-#### 14.5.4 相关文章（`xp_related`）
-
-- 打分：**同分类 +3 / 同标签 +2**（分类是站主主动划分的，比随手打的标签权威），
-  第二关键字按日期新→旧。
-- **没有任何交集时返回空串**，不硬推 —— 本站只有 10 篇，凑数会把「陶罐素描」
-  推给「关于平台的迷思」。
-- 和「上一篇 / 下一篇」的分工：上/下篇是时间轴上相邻的两篇（线性顺序），
-  这里是内容上相关但可能隔很远的几篇。所以放在 `.post-nav` 之后。
-- 加密文章在列表里带锁图标（不然读者点进去才发现要密码）。
-- 刻意**不套 `.xp-window` 外壳**：文章页已有一个大窗口（正文外壳），再套就成
-  「窗口里嵌窗口」，XP 本身不这么画。用 2px 顶线 + 小标题，和 `.post-info` 同一套语言。
-- 实现里踩过的一个作用域坑：**`scripts/` 的 IIFE 里没有模板的 `date()` 辅助函数**
-  （本文件只有 `href` / `esc` / `json` / `oneLine` 四个小工具）⇒ 自己写了 `fmtDay()`。
-
-#### 14.5.5 阅读进度条
-
-- 贴在浏览窗口最顶端的一条 **3px 细线**（`#xpReadBar`，`position:fixed; top:0; z-index:10050;
-  pointer-events:none`）。不放页面顶部固定条是因为顶部已经有 XP 窗口标题栏（蓝渐变），
-  再加一条有自己背景的条会变成两层 chrome；这里只用纯色细线 + 透明底，像窗口上沿的高光。
-- **按整页可滚动距离算**（`p = y / (scrollHeight - vh)`），不按 `.post-content` 自身算。
-  试过按正文元素算，短文章上完全不成立：实测 `/about-me/` 的正文只比视口高 152px，
-  那条线只在 150px 的滚动窗口里闪一下就到 100% 然后隐藏，等于没有。整页口径虽然
-  把页脚那 100 多 px 也算进去，但单调、可预期，符合「我这页看到哪了」的直觉。
-- 没有正文的页面（首页/列表页/致谢…）`initReadBar()` 直接 return，不产生任何 DOM 更新。
-- 颜色复用播放器进度条的绿渐变 —— 全站「进度」只有这一种语言。`prefers-reduced-motion`
-  下关掉过渡。
-- **又一个显隐反转**：守卫必须写 `if (bar.hidden !== !show)`。写成 `===` 再进分支，
-  等于「状态已经对了才去改」，会把该显示的按回隐藏 —— 症状是 `fill` 宽度已经算到
-  74.53%、CSS 里却是 `display:none`。同一类反转在 `#xpTopBtn` 上已经踩过一次。
-
-#### 14.5.6 播放器横条的重排（2026-11-06）
-
-站主反馈「窄条的播放器进度条过长且歌词显示不全」。实测三项分配：抬头 412px、
-歌词 124px、进度区 420px（两个时间片各占 210px）。改法：
-
-- `.mp4-lcd-head { max-width: 300px }` + 横条里封面缩到 34px ⇒ 歌词区 **124 → 306px**。
-- 进度区收到 **220px**，并用 `display: contents` 把 `.mp4-progress-times` 拆掉，
-  让两个时间片成为进度区自己的 flex 项、用 `order` 排到进度条两侧 ⇒
-  `00:53 ▬▬▬▬ 03:42` 一行排完，省下 16px 屏高（槽 52 → 46px）。
-- 网易云的歌手常写成「甲 / 乙 / 丙」，在 250px 抬头里折三行撑满屏 ⇒ 横条上强制单行省略。
-- **顺带修的真 bug**：横条只显示当前句（`.mp4-lyric:not(.is-cur){display:none}`），
-  而**前奏还没唱到第一句时一个 `.is-cur` 都没有** ⇒ 五格全隐、歌词区高度塌成 0，
-  屏里只剩歌名。修法是 `paintLyric()` 给容器挂 `.is-pre`，CSS 放第一格出来。
-  这与卡片形态「前奏五格全空」是同一处逻辑的两种表现。
-
-#### 14.5.7 标签云高度不一（flex 拉伸）
-
-站主问「『风景』似乎比其它数量为 1 的标签更高」。真因**不是字号**（那几个都是
-16px 档），而是 **flex 默认的 `align-items: stretch`**：`.tag-cloud` 只写了
-`align-content: flex-start`（管多行之间），行内仍会把矮药丸拉到与该行最高的一致。
-序号说明：药丸字号由文章数决定（1 篇 16px / 3 篇 22px），所以「风景(1篇)」与
-「碎碎念(3篇)」同行时被拉成 40px。补 `align-items: flex-start` 后，实测单篇档
-回落到 31px、3 篇档仍是 40px。
-
-#### 14.5.8 「创作中」窗口与其它窗口统一（2026-11-06）
-
-它原来是「虚线外框 + 橙色标题栏 + 95% 透明」三件套，用来暗示「这还不是真作品」——
-但它就夹在三扇正常窗口中间，三处都在说「我和你们不是一类」。站主要求统一：
-
-- `source/css/xp-custom.css` 删掉 `.work-window-card.upcoming`（dashed / 橙边 / opacity）
-  与 `.work-window-card.upcoming .xp-window-title`（橙渐变）两整条规则。
-- `source/works/index.md` 去掉 `work-window-card upcoming` 两个类，改用普通 `.xp-window`；
-  内容里 `<span class="work-status doing">进行中</span>` 也删掉 —— 标题已经写着「创作中」，
-  角标是同一句话的第二次说法。`.work-status` 本来在 2026-10-18 改版时就已下线，
-  这一处是漏网的最后一例。
-- **连带改了一条断言**：`tools/check/audit-design.js` 的 `contrast-2` 原本查橙色
-  `#9c6520` 是否已落地，橙色删掉后该断言会永远失败 ⇒ 改成查「旧类名
-  `.work-window-card` 已从产物消失」，即「确实和普通窗口一样了」。
-
-#### 14.5.9 三处「空」与「偏心」的修正（2026-11-06 第二轮）
-
-站主看图提了三条，都是布局问题、不是样式偏好：
-
-1. **「创作中」内容挤在上半截**。`.xp-window-body` 是 `display:block`，所以
-   `.upcoming-content`（flex 列）的高度只等于自身内容（87px），贴着 body 顶部，
-   下面空 48px。修法：`.works-upcoming .xp-window-body { display:flex; align-items:center;
-   justify-content:center }` + `.upcoming-content` 去掉多余 `padding`。
-   实测 body 426×136 / content 88 ⇒ 上下各 24px。**标题栏不在 body 里**（是兄弟节点），
-   所以窗口标题框不受影响。
-2. **首页底部通栏（搜索 · 关于 · 致谢）太空**。三段 flex-basis 原本是 300/300/380，
-   合计 1024px > 可用 1006px ⇒ 致谢被挤到第二行通栏，第一行只剩「一条 35px 搜索框
-   + 一段引文」，左上角空一大块。修法：`.credits-col` basis 收到 **340**
-   （300+300+340+2×22 = 984 ≤ 1006），三段并排一行；`align-items` 从 `center` 改
-   `stretch`、两列加 `flex-direction:column; justify-content:center` 让内容在等高列里居中。
-   窗口高度 277 → **221px**，三列各 178px。
-   - **踩到的连带 bug**：`.links-col` 变成 flex column 后，`.xp-search-box`（`flex:1`）
-     沿主轴被拉满整列 —— 截图里出现一个 200px 高的空输入框。补
-     `.links-col .xp-search-box { flex: 0 0 auto }` + 输入框 `height:28px` 修好。
-3. **「标签云」里的「风景」偏上**。我上一轮补 `align-items: flex-start` 只解决了
-   「被 stretch 拉高」，但矫枉过正：矮药丸贴行顶、下方空一截。改成 **`center`** ——
-   每颗药丸在自己那行垂直居中，高的矮的以中线对齐。实测同行「碎碎念3」40px 与
-   「风景1」31px 的中线对齐。
-4. 顺带把 `contrast-2` 断言改完（见上一条）。
-
-**这轮又踩到的同一个 CDP 坑**（值得写下来）：一次 `node` 探针里连跑 2~3 个页面
-（`goto` 多次）**必挂**，表现为 >180s 无输出。可靠做法是**一个 Edge 会话只跑一个
-页面**：`Stop-Process -Name msedge -Force` → `start-edge.ps1 -Profile <名字>` →
-跑一个 `goto` + 一次 `evaluate` + 一次截图 → 退出；换页面就重开一遍。
-
-#### 14.5.10 去掉 pixelarticons 依赖 + 像素管线整组删除（2026-11-06 第三轮）
-
-站主确认 `package.json` 里那条 `"pixelarticons": "^2.4.2"` 可以去掉（原话：「好的，帮我去掉」）。
-它是**唯一一条带 `^` 的依赖**，也是唯一一条线上产物从不读取的依赖 ——
-`scripts/xp-icons.js` 自 2026-10-31 换成 IconPark 平滑多色之后，`pixelarticons` 的点阵 SVG
-再没被任何活代码读过。
-
-- `npm uninstall pixelarticons`（3129 个文件）⇒ `package.json` / `package-lock.json` 里已无此项。
-- 连带删掉**只在内部互相 require** 的那条旧管线（`git grep` 已确认仓库其他地方零引用）：
-  `tools/icons/{decode-pixelarticons, colorize, review-decode, test-down16, down16,
-  merge-xp-icons, check-cmds, generated-glyphs, hand-drawn, park-pixel, park-glyphs,
-  colors, alt-colors, fluent-probe}.js` 共 14 个，加上未跟踪的
-  `scripts/_xp-icons.pixel-backup.js`（1537 行的像素风前身）。
-- **顺手把图标管线的依赖补齐了**（原先 `node_modules/@iconify-json` 与 `@iconify` 是空目录，
-  `emit-smooth.js` 根本跑不起来，这也是「回到顶部」的箭头当时只能手画的原因）：
-  `npm i -D --save-exact @iconify-json/icon-park@1.2.4 simple-icons@16.36.0`。
-  验证可复现性：重跑 `emit-smooth.js` 产出的 `smooth-glyphs.js` 与仓库里那份**字节完全相同**。
-  现在真的能改图标了：改 `park-map.js` 的名字 → `emit-smooth.js` → `merge-smooth-xp-icons.js`
-  → `verify.js`（应输出 `count: 75 / bad: 0 / ALL OK`）。
-- 清理磁盘：`tools/icons/` 从 **750 个文件 / 68.9 MB** 降到 **16 个 .js** ——
-  删掉 `_edge-hl/`(266 文件)、`_edge-hl2/`(431 文件)、`preview/`、31 张 `_*.png` 预览图、
-  `preview.html`、`_check-*.js`、`_duck-test.html`。这些此前已被 `.gitignore` 覆盖
-  （不占 git）但一直占盘。
-
-**⚠ 这一轮出过一次事故，值得记住**：为了确认「哪些脚本在删掉 pixelarticons 之后已经死了」，
-我逐个 `node tools\icons\<file>.js` 跑了一遍 —— 其中 `merge-xp-icons.js` 的用途是把
-`generated-glyphs.js` + `hand-drawn.js` 拼成 `scripts/xp-icons.js`，读到缺失的输入后
-**仍然继续写盘，把 `scripts/xp-icons.js` 写成了 0 字节**（站点图标全灭）。
-恢复过程：`git checkout -- scripts/xp-icons.js` 被工具链的安全网拦下（避免误丢未提交改动），
-改用 `git show HEAD:scripts/xp-icons.js > scripts/xp-icons.js` 取回 blob（6977 B / 75 glyphs），
-然后重做当天那句注释改写。
-
-**教训**：`tools/icons/` 下带写盘副作用的脚本（`merge-*` / `emit-*` / `build-*`）
-**不能盲跑试探死活**；验证有没有语法错用 `node --check`，验证逻辑先读源码看它会写什么。
-
-#### 14.5.11 三处排版微调（2026-11-06 第四轮）
-
-站主三条，都附了截图：
-
-**① 恢复芯片里多出两个句号**（图 1 的「恢复。参考过设计与思路的项目。」）。
-来源是 `scripts/xp-content.js` 的 `closeWindow()`：`chip.textContent = '恢复。' + name + '。'`。
-窗口标题本身经常带标点（「参考过设计与思路的项目」「前端库（`source\vendor\`）」），
-再补句号就变成两句独立的话。改成 **`'恢复：' + name`**，冒号分隔、不加尾句号。
-
-**② 致谢清单里蓝字与灰字贴太近、还有单字独占一行**（首页底部通栏）。
-四处一起改（`source/css/xp-custom.css` 的 `.credits-list` 段 + `source/index.md` 的标记）：
-
-- 去掉名字与说明之间的 ` · ` 分隔符，改成 `display:flex; gap:6px` —— 分隔符占 3 个字符
-  宽，比 gap 更难对齐。
-- 说明文字从继承的 16px 降到 **14px** 并加 `text-wrap: pretty`，让浏览器匀最后一行。
-- 列宽下限 `minmax(165px,1fr)` → **`minmax(206px,1fr)`**。原来 522px 宽的列里塞三栏、
-  每栏 165px，「minimalism 主题基础框架」这种长度必然在词中间断行，才会出现
-  「框架」两字独占一行。改后是两栏各 212px，实测九条全部单行。
-- 名字 `flex:0 0 auto; white-space:nowrap`，保证「缝合像素字体」这样的长名字不被拆。
-
-**③ 用户账户卡字号偏小、行距偏松**。这里有个反复踩的坑：卡片自己在桌面上只有
-**593px** 宽，而字体样式写在 `@container (max-width: 600px)` 里 ⇒ **桌面一直命中窄档**，
-全局那组 26px/17px 从没生效过（实测 `getComputedStyle` 里 h2 是 19px）。
-所以真正的改法是在那一档里改：标题 **19→22px**、正文 **16→17px**、
-行距 **1.5→1.3**（≈单倍），段落间距保持 6px。实测 h2 = 22px/25.3px、p = 17px/22.1px。
-
-**顺带修的一条真回归**：这一轮 `audit-design.js` 的 `focus-4` 挂了 ——
-`xp-window-btn close = 2.33:1`。原因是标题栏三键永远坐在饱和底色上（蓝 `#0050ee` /
-红 `#d84a3c`），而 `html.dark :focus-visible` 的深蓝轮廓在红底上不够。现在把这三个键的
-焦点环钉死成白色（`html.dark` 也覆盖），白@红 4.23:1、白@蓝 6.21:1，两种模式都够。
-
-#### 14.5.12 底部通栏与播放器抬头的收尾（2026-11-07 第五轮）
-
-**① 快速导航窗「下面一条空行」**。`.quick-nav-grid` 原来只有
-`grid-template-columns: repeat(3, 1fr)`，行高由磁贴内容决定 —— 格子比内容高时
-2×3 的磁贴只占上半截，下面空着 76px。两处一起改：
-
-```css
-.quick-nav-grid { grid-auto-rows: 1fr; flex: 1 1 auto; }
-.bento-nav .xp-window-body { display: flex; flex-direction: column; }
-```
-
-`.xp-window-body` 本身不动（全站窗口都靠它），只给这一格加 flex 列，
-grid 才能拿到「剩余高度」去按 `1fr` 平分。实测磁贴 67 → 106px，grid 143 → 219px
-（= body 高度，空行消失）。**这一改顺带让导航窗与右边通栏等高**：两者都在同一
-grid 行里，原来 262px 是这一行的高度、nav 窗自己只有 262 也一样，但 nav 内容
-只用了 210px；现在两边都吃满 262px，视觉上齐平。
-
-**② 通栏左侧文字贴边**。`compact-body` 只有 6px 外边距，搜索框与引文都顶到
-窗口内框。给 `.links-body` 补 `padding-left: 12px`，让文字与标题栏的图标列
-有同一个视觉起点；另加 `align-content: space-between` 把「搜索行」与
-「关于│致谢行」分推到窗口上下两端，无论致谢列多高都不在窗口里留空带。
-实测 `.links-col` 的 x 从 341 → 353。
-
-**③ 播放器抬头两侧的音符颜色跟不动**。音符原来是
-`<use href="#icon-media-note">`，而那张 symbol 的 `fill`/`stroke` 是**构建期写死在
-属性上**的（`#0054e3`）—— CSS `color` 传不进去，所以改 `.mp4-brand` 的 color
-只会改文字、音符还是深蓝。修法：抬头的两个音符改成**内联 SVG**，路径用
-`fill="currentColor"`，外面包 `.mp4-note` 控制尺寸。实测浅色
-`brandColor` = `noteFill` = `rgb(0,84,227)`，深色两者都是 `rgb(156,194,255)`。
-
-（`.mp4-cover` 里那个大音符仍用 symbol —— 它坐在 `#1a1a1a` 的 LCD 屏上，
-本来就该是固定深蓝，不跟主题变。）
-
-#### 14.5.13 仓库去冗余（2026-11-07 第六轮）
-
-这一轮只做清理与补提交，不动视觉。动机是发现仓库在磁盘上占了 **20.2 GB**，而其中
-**20 GB 是 `.edge-audit/`** —— 86 份无头 Edge 的 profile 副本（每份 600~700 MB，
-里面只有 `Default/`、`Crashpad/`、`GPUCache`，**没有任何报告或截图**）。`.gitignore`
-早就排除了它，所以它不进 git，只是一直占盘。
-
-**删掉的（全部可重建，不影响站点）**：
-
-| 位置 | 体积 | 说明 |
-|---|---|---|
-| `.edge-audit/` | 20 GB | 跑体检时 Edge 落下的 profile，重新跑体检会重建 |
-| `tools/shots/_profile/` | 79 MB | 同样是 Edge profile，被放进了「截图」目录里 |
-| `tools/shots/*.png` | 4.9 MB | 10-30/31 调试截图 37 张，README 零引用 |
-| `.screenshots/.tmp/snap-*.json` | 19 MB | 11-03 零回归验证的 4 份快照，结论已进 14.1.1 |
-| `.deploy_git/` | 32 MB | 最后一次部署停在 10-20，`hexo deploy` 会重建 |
-| `public/`、`db.json` | 7.5 MB | 构建产物与 Hexo 缓存 |
-
-保留：`.screenshots/.tmp/snap.js` 与 `snap-diff2.js`（14.1.1 引用的验证方法本身）、
-`backup/images-original/`（压缩前母版）。
-
-**代码层的四处冗余**：
-
-1. `tools/icons/build-compare-preview.js` 是**真断链** —— 它 `require('./park-glyphs.js')`，
-   而那个文件 11-06 随像素管线一起删了，跑起来必崩。连同 `build-preview-html` /
-   `render-preview` / `render-zoom` / `park-colors` / `test-park-decode` 五个已完工的
-   一次性脚本一并删除；`tools/_check_sprite_usage.js`、`tools/_render_sheet.py` 同理。
-2. 根目录 `_favicon_48.png` 是孤儿文件（favicon 由 `emit-favicon.js` 直写 `source/favicon.ico`）。
-3. `xp-custom.css` 两处死码：`@media (max-width:640px)` 里嵌套的 `(min-width:641px)`
-   媒体查询（外层不成立时内层永不求值）、`.xp-shell .feature-container` 两条规则
-   （48 个产物页面里 0 命中）。属于 14.2 ⑥「死 CSS」里的两小项。
-   **注意**：`xp-custom.css` 里那两套 `.mp4-*` 皮肤仍在，没在这一轮动。
-4. `verify-site.py` 的「缺侧栏目录」是自误报：文章末尾「相关文章」的
-   `h2.post-related-title` 被算成了正文小标题。判定前先把这块排除，提醒回落到 4 条。
-
-**验证**：`npm run build` 94 files / 299 ms；`py -3 tools/check/verify-site.py`
-48 页全绿（4 条老提醒：图片 1.74 MB / music.yml tracks 空 / 缺「嬷闝」2 字 / npm audit）。
-⚠ 跑体检要用 `py -3`，用 `python` 会缺 PyYAML 与 fonttools，那两项检查会被静默跳过。
-
-**补提交**：11-01 之后 6 天的改动一直压在工作区（37 改 / 29 删 / 6 新增），已按主题
-拆成 5 个提交（工具链、主题层瘦身、播放器与歌词、站点功能、文档）。
-
----
-
-*最后更新：2026-11。字段行为以 `scripts\xp-content.js`、`scripts\xp-player.js`、
+*最后更新：2026-11-07。字段行为以 `scripts\xp-content.js`、`scripts\xp-player.js`、
 `scripts\xp-seo.js`、`tools\images\import-artworks.py` 与 `tools\check\verify-site.py`
 的实际读取为准；文档与现象不符时**以现象为准**，并回来改这份文档。*
