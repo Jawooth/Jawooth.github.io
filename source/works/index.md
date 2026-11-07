@@ -47,7 +47,7 @@ layout: xp-page
 <div class="xp-window">
 <%- include('./includes/xp-window-title', { title='标签云', icon='tag', compact=true, buttons=false }) %>
 <div class="xp-window-body compact-body">
-{% xp_tag_cloud pill %}
+{% xp_tag_cloud %}
 </div>
 </div>
 </div>

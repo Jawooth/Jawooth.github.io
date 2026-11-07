@@ -6,7 +6,7 @@
  * 「示例文章改日期 → 首页链接 404」「标签云里 7 个标签根本不存在」这类漂移。  * 现在页面里只写 {% xp_xxx %}，数据一律来自 site.posts / site.tags 与 source/_data/*.yml。  *
  * 可用标签：* *   {% xp_num <键  %}                   单个统计数字，键见下面 num() 里的 switch
  *   {% xp_stat_rows %}                  首页「小站数据」  *   {% xp_recent_posts 4 [exclude=分类]} 最近更新列表（exclude= 可排掉某个分类）
- *   {% xp_recent_works 3 %}              最近作品横栏  *   {% xp_tag_cloud pill|cloud %}        标签云（pill=首页胶囊 / cloud=作品页）
+ *   {% xp_recent_works 3 %}              最近作品横栏  *   {% xp_tag_cloud %}                     标签云（按文章数缩放成药丸）
  *   {% xp_todo N %}                     待办清单（N=显示前 N 条；填 0=显示全部） *省略时默认 4 来 *（  *   {% xp_apps %}                        游戏/工具卡片（含分组标题条）
  *   {% xp_work_gallery %}                作品页：原创/同人分栏 + 时间轴 + 标签筛选 + 原地展开
  *
@@ -281,23 +281,18 @@ function recentWorks(limit) {
   return oneLine(`<div class="recent-works-strip">${cards.join('')}</div>`);
 }
 
-function tagCloud(variant) {
+function tagCloud() {
   const tags = allTags();
   if (!tags.length) return '<p class="xp-empty">还没有标签</p>';
-  if (variant === 'cloud') {
-    const items = tags.map((t) => (
-      `<a class="cloud-tag${t.length > 1 ? ' big' : ''}" href="${href(t.path)}" title="${t.length} 篇 >${esc(t.name)}</a>`
-    ));
-    return oneLine(`<div class="tag-cloud">${items.join('')}</div>`);
-  }
-  /* 药丸版（侧栏「标签云」窗口用的就是这个）：
+  /* 药丸版（首页、作品页、侧栏「标签云」窗口用的都是这个）：
      字号按文章数缩放 —— 窗口标题写着「标签云」，以前所有药丸都是 16px，
      只靠颜色区分，看着就是普通标签列表，名不副实。
      用对数缩放而不是线性：文章数是 1..N 的长尾分布，线性会让最大标签撑爆、
      其余全挤在最小档。log(count)/log(max) 在 count=1 时正好是 0，
      所以最少的一档仍然是 16px（正文基准），不会小于正文。
      字号写进 --pill-size 自定义属性，实际字号仍由 CSS 决定（.tag-pill 用 var 读它），
-     这样以后改整体字号只改 CSS 一处，不必回来改这里。 */
+     这样以后改整体字号只改 CSS 一处，不必回来改这里。
+     （原有一个 cloud 变体：输出 .cloud-tag 方胶囊，全站无调用，2026-11-07 连同样式一起删了。） */
   const maxCount = Math.max.apply(null, tags.map((t) => t.length));
   const sizeOf = (n) => {
     if (maxCount <= 1) return 16;
@@ -418,7 +413,7 @@ function appsCards(only) {
         `</div></div>`
       );
     }).join('');
-    /* 分组抬头。        ⚠ 历史：这里原来输出 .xp-section-bar（一条 34px 的蓝色渐变条，和窗口标题栏同款）。          2026-10-18 站主要求 PC 端两个窗口并排后，两个窗口各自都有一条窗口标题栏，          里面再顶一条一模一样的蓝条 = 双蓝条，视觉上重复且压掉卡片区空间。          现在改成轻量的「共 N 个」小标题：不加底色、不加阴影，只做分组说明。          ， xp-section-bar 这个组件本身保留，其他页面还在用。） */
+    /* 分组抬头。        ⚠ 历史：这里原来输出 .xp-section-bar（一条 34px 的蓝色渐变条，和窗口标题栏同款）。          2026-10-18 站主要求 PC 端两个窗口并排后，两个窗口各自都有一条窗口标题栏，          里面再顶一条一模一样的蓝条 = 双蓝条，视觉上重复且压掉卡片区空间。          现在改成轻量的「共 N 个」小标题：不加底色、不加阴影，只做分组说明。          ，xp-section-bar 这个组件 2026-11-07 连同样式一起删了 —— 全站产物 0 命中，没有页面在用。） */
     const bar = (
       `<div class="games-item games-section-title"><div class="pane-subhead">` +
       `<svg width="1.15em" height="1.15em" aria-hidden="true"><use href="#${g.icon}"/></svg>` +
@@ -928,7 +923,7 @@ hexo.extend.helper.register('xp_widget_author', function () {
    「列表里没有、侧栏里却有」这种对不上的情况。
 */
 hexo.extend.helper.register('xp_widget_recent', (n) => widget('最近文章', recentPosts(n || 6, listExcludeCategories())));
-hexo.extend.helper.register('xp_widget_tags', () => widget('标签云', tagCloud('pill')));
+hexo.extend.helper.register('xp_widget_tags', () => widget('标签云', tagCloud()));
 hexo.extend.helper.register('xp_widget_stats', () => widget('小站数据', statRows()));
 /* 待办窗口带 id="xp-todo"：首页账户卡的「待办」数字链接到 /blog/#xp-todo 直接跳到这里。    动 scroll-margin 让吸顶标题栏不盖住窗口标题（样式见 xp-custom.css）。
 */
@@ -1588,7 +1583,7 @@ registerTag('xp_recent_posts', (args) => {
   return recentPosts(limit, exclude || null);
 });
 registerTag('xp_recent_works', (args) => recentWorks(parseInt(args[0], 10) || 3));
-registerTag('xp_tag_cloud', (args) => tagCloud(args[0]));
+registerTag('xp_tag_cloud', () => tagCloud());
 registerTag('xp_todo', (args) => todoMini(parseInt(args[0], 10) || 4));
 /* {% xp_related %} / {% xp_related 4 %} —— 文章页底部「相关文章」（默认 3 篇）。
    ⚠ 只能在文章页用：它要读当前页的 categories / tags，别的页面调会返回空串。 */

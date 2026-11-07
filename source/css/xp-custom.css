@@ -688,29 +688,11 @@ html.dark .xp-404-icon { color: var(--text-heading); }
 .xp-404-actions { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 html.dark .xp-btn-primary:hover { filter: brightness(1.15); }
 
-/* 分区标题条（蓝色渐变长条）：游戏页「小游戏 (3)」、攻略页「游戏攻略 (3)」这类分区抬头。
-   ⚠ 高度必须固定，且要挡住来自网格的拉伸：
-   这两条在 .xp-bento 里各自占满一整行（grid-column: 1/-1），而便当格设了
-   grid-auto-rows: minmax(110px, auto) + align-items: stretch，网格项会被强行拉满整行 ——
-   结果只有一行文字的蓝条被撑成 110px 高，上下各多出约 36px 纯蓝空白，
-   和旁边 28px 高的窗口标题栏放一起明显不协调（2026-10 站主指出的问题）。
-   改法：高度锁死（和 .xp-window-title 一个量级），
-   并让包裹层 .xp-section-title-* 不参与拉伸（见 games/index.md、guides/index.md 内联样式）。 */
-.xp-section-bar {
-  background: var(--title-grad);
-  color: #fff;
-  height: 34px;
-  box-sizing: border-box;
-  padding: 0 14px;
-  font-weight: bold;
-  font-size: 16px;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 4px;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
-}
+/* ★ 2026-11-07 删除 .xp-section-bar（蓝色渐变分区条，34px 高）。
+   它在 2026-10-18 就被 .pane-subhead（无底色的一行小字，见第 13 节）取代，
+   生成代码在 scripts/xp-content.js 里同步改掉了；此后全站产物 0 命中，
+   连这里记的包裹层 .xp-section-title-* 也早已不存在。
+   xp-content.js 里曾写着「组件本身保留，其他页面还在用」，是误记 —— 没有页面在用。 */
 
 /* （原来这里有个 .xp-tip-box 黄色提示框，是给站主看的「小提示」用的。
      2026-10 站主要求：给人看的注意事项不要放到网站上 —— 三处提示框连同这套样式一起删了。） */
@@ -749,7 +731,6 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .xp-bento > * > .xp-window,
 .xp-bento > * > .xp-bubble,
 .xp-bento > * > .retro-mp4-player,
-.xp-bento > * > .xp-section-bar,
 .xp-bento > * > .app-card { width: 100%; }
 
 /* ============ 7) 首页组件 ============ */
@@ -2070,27 +2051,16 @@ html.dark .filter-pill.is-active { background: var(--xp-blue-border); color: #ff
 
 /* 状态角标（.work-status）已随 2026-10-18 瀑布流改版下线：卡片只留封面/标题/简介/标签。 */
 
-/* 标签云（作品页用的静态胶囊） */
-.cloud-tag {
-  display: inline-block;
-  background: linear-gradient(to bottom, #f0f8ff 0%, #d6e8ff 100%);
-  border: 1px solid var(--xp-blue-light);
-  border-radius: 3px;
-  padding: 2px 8px;
-  font-size: 16px;
-  color: var(--text-heading);
-  text-decoration: none;
-}
-.cloud-tag.big { font-size: 16px; padding: 3px 10px; }
-.cloud-tag:hover { border-color: var(--xp-hover); }
-html.dark .cloud-tag { background: rgba(53, 144, 243, 0.16); border-color: #3f6fa8; color: #cfe0ff; }
+/* ★ 2026-11-07 删除 .cloud-tag（作品页早期那版静态方胶囊，含 .big 大号与暗色变体）。
+   现在的标签云统一走 .tag-cloud + .tag-pill（字号按文章数对数缩放）。
+   原 `{% xp_tag_cloud cloud %}` 这个变体全站无调用，连带从 xp-content.js 里删掉。 */
 
 /* ---------- 手机端两处「一排东西被横向裁掉」（2026-10-17） ----------
    实测 390px：最近作品条一次只能露出 2.5 张卡（第三张被窗口右边切掉一半），
    标签云一行 5 个胶囊、第 5 个直接出界。两者都在 overflow:hidden 的窗口体里，
    所以既看不见也滚不动 —— 访客会以为是渲染坏了，而不是"可以滑动"。
    ① 作品条 → 变成两列网格，3 张卡 + 「查看全部」正好两行；
-   ② 标签云 → 允许折行。 */
+   ② 标签云 → 允许折行（当时是 .cloud-tag，11-07 已删；.tag-cloud 本身就是 flex-wrap）。 */
 @media (max-width: 640px) {
   .recent-works-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .recent-works-strip > .recent-work-item { width: auto; min-width: 0; }
@@ -2100,7 +2070,6 @@ html.dark .cloud-tag { background: rgba(53, 144, 243, 0.16); border-color: #3f6f
      属于纯死码。641~1240px 那档真正生效的规则在下面 14 行处的顶层媒体查询里。 */
   /* 网格版要显式盖掉基础规则的 overflow-x:auto —— 否则每张卡片会各自出现一条横向滚动条 */
   .recent-works-strip { overflow-x: visible; }
-  .cloud-tag { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 /* ★ 2026-10-18：641~1240px 那档其实从没生效过 —— 上面那条规则被写在了
    @media (max-width: 640px) 的内部（嵌套媒体查询），条件永远不成立。
@@ -3370,12 +3339,12 @@ html.xp-glitching::after {
 .xp-bento > *:nth-child(11) { animation-delay: 0.54s; }
 .xp-bento > *:nth-child(12) { animation-delay: 0.59s; }
 
-/* 桌面端轻微倾斜（手工感），移动端取消 */
+/* 桌面端轻微倾斜（手工感），移动端取消。
+   只有首页那张便签真的在倾斜（source/index.md 的 .tilt-note）；
+   原先并排写的 .tilt-left / .tilt-right / .tilt-soft 三个工具类从没被任何页面用过，
+   2026-11-07 删掉 —— 留着只会让人以为有一套通用的倾斜约定。 */
 @media (min-width: 901px) {
-  .tilt-left { transform: rotate(-0.4deg); }
-  .tilt-right { transform: rotate(0.5deg); }
   .tilt-note .xp-bubble { transform: rotate(-0.8deg); }
-  .tilt-soft { transform: rotate(0.3deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3476,9 +3445,8 @@ html.xp-glitching::after {
    在 390px 视口量过全站可点元素的**视觉高度**，偏小的有这些：
      .xp-tray-btn   18px  任务栏托盘按钮     .xp-chip       22px  标签芯片
      .work-tag      24px  作品卡片分类标签   .xp-btn-small  24px  小号 XP 按钮
-     .cloud-tag     24px  标签云             .mp4-btn       26px  播放器窗口按钮
      .filter-pill   26px  筛选药丸           .tag-pill      26px  标签药丸
-     .xp-search-btn 26px  站内搜索按钮
+     .mp4-btn       26px  播放器窗口按钮     .xp-search-btn 26px  站内搜索按钮
    按 40px 的建议下限都偏小，但**只有一半适合放大**：
      · XP 原版的紧凑 chrome —— .xp-tray-btn / .mp4-btn / .xp-start-btn —— **不改**。
        窗口控制按钮是一组按标题栏高度统一设计的；任务栏本身只有 32px 高，
@@ -3492,8 +3460,6 @@ html.xp-glitching::after {
    只在 ≤640px 生效 —— 平板和 PC 是鼠标操作，密度本身就是观感的一部分。 */
 @media (max-width: 640px) {
   .tag-pill,
-  .cloud-tag,
-  .cloud-tag.big,   /* 单独写出来：.cloud-tag.big 比 .cloud-tag 更具体，不列就被它按回 3px */
   .filter-pill,
   .work-tag,
   .xp-btn-small,
