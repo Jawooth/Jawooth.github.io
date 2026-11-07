@@ -902,12 +902,111 @@ else:
              % "、".join(unused_fs))
         gate_notes.append("字号 token 空转 %d 个" % len(unused_fs))
 
+    # --- 10.6 重复声明：同选择器同属性被后面的声明盖掉 -------------------------
+    # 2026-11-07 加。本轮四次「写了不生效」里有三次是同一回事：
+    #   .bento-bubble .bubble-from 的 clamp() 被紧邻的 15px 按掉、
+    #   .profile-text h2 的 26px 被后面的 24px 按掉、
+    #   .profile-text p 的 1.55/16px 被整条取代。
+    # 10.5 只查「取值在不在表里」，一条都挡不住 —— 它们用的都是合法值，
+    # 只是写在了必然被覆盖的位置。这里补上这一类。
+    # 判据：同一上下文（同 @media / @layer / @container 嵌套）+ 同一选择器 + 同一属性
+    # 出现两次以上。上下文必须进 key，否则不同断点的同名属性会被误报成重复。
+    # 已知豁免：文件末尾的「MP4 播放器样式精修层」刻意用追加覆盖实现（整段删掉
+    # 即可整体回退），基线值要留在原处，见该段段头。
+    DUP_ALLOW = {
+        (".mp4-screen", "background"),
+        (".mp4-progress-bar", "background"),
+        (".mp4-progress-fill", "background"),
+        ("html.dark .mp4-progress-bar", "background"),
+    }
+
+    def find_dup_decls(text):
+        """返回 { (ctx, 选择器, 属性): [行号, ...] }，只含出现 2 次以上的。"""
+        def norm_sel(sel):
+            parts = [" ".join(p.split()) for p in sel.split(",")]
+            parts = [p for p in parts if p]
+            return ", ".join(sorted(parts))
+
+        def parse_decls(body, base_line):
+            out, start = [], 0
+            for i in range(len(body) + 1):
+                if i == len(body) or body[i] == ";":
+                    seg = body[start:i]
+                    if ":" in seg:
+                        prop = seg.partition(":")[0].strip().lower()
+                        if prop and not prop.startswith("@"):
+                            out.append((prop, base_line + body.count("\n", 0, start)))
+                    start = i + 1
+            return out
+
+        found = {}
+
+        def walk(s, base_line, ctx):
+            i, n, seg = 0, len(s), 0
+            while i < n:
+                if s[i] == "{":
+                    prelude = " ".join(s[seg:i].split())
+                    j, d = i + 1, 1
+                    while j < n and d:
+                        if s[j] == "{":
+                            d += 1
+                        elif s[j] == "}":
+                            d -= 1
+                        j += 1
+                    inner = s[i + 1:j - 1 if d == 0 else n]
+                    inner_line = base_line + s.count("\n", 0, i + 1)
+                    low = prelude.lower()
+                    if low.startswith(("@font-face", "@page")):
+                        pass          # 只含描述符，不参与比对
+                    elif low.startswith(("@media", "@supports", "@layer",
+                                         "@container", "@keyframes", "@-webkit-keyframes")):
+                        walk(inner, inner_line, ctx + (prelude,))
+                    else:
+                        sel = norm_sel(prelude)
+                        for prop, line in parse_decls(inner, inner_line):
+                            found.setdefault((ctx, sel, prop), []).append(line)
+                    i = seg = j
+                    continue
+                if s[i] == "}":
+                    seg = i + 1
+                i += 1
+
+        walk(text, 1, ())
+        return {k: v for k, v in found.items() if len(v) > 1}
+
+    dup_all = find_dup_decls("\n".join(code_lines))
+    dup_bad = []
+    for (ctx, sel, prop), lines in sorted(dup_all.items(), key=lambda kv: kv[1][0]):
+        if (sel, prop) in DUP_ALLOW:
+            continue
+        where = " > ".join(ctx) if ctx else "顶层"
+        dup_bad.append("%s { %s } %s（L%s）" % (
+            where, sel, prop, ",".join(str(x) for x in lines[:4])))
+
+    if dup_bad:
+        warn("xp-custom.css 有 %d 组同选择器同属性的重复声明，前一条必然被后一条覆盖："
+             "%s —— 把值和注释合并到一处；确实是「追加覆盖层」写法就在本节的 "
+             "DUP_ALLOW 里登记并写明为什么" % (len(dup_bad), "；".join(dup_bad[:6])))
+        gate_notes.append("重复声明 %d 组" % len(dup_bad))
+    else:
+        gate_passed.append("无「同选择器同属性」的重复声明")
+
+    # 白名单腐坏检查：登记过的豁免如果已经不存在了，说明 CSS 那边删干净了，
+    # 这条 allow 该一起删掉，否则下次真出现重复会被它悄悄放行。
+    live = {(s, p) for (_, s, p) in dup_all}
+    stale_allow = sorted(k for k in DUP_ALLOW if k not in live)
+    if stale_allow:
+        warn("10.6 的 DUP_ALLOW 里有 %d 条登记已不成立（CSS 里已无这组重复）：%s —— "
+             "删掉对应条目" % (len(stale_allow),
+                            "、".join("%s { %s }" % (s, p) for s, p in stale_allow)))
+        gate_notes.append("重复声明白名单残留 %d 条" % len(stale_allow))
+
     for g in gate_passed:
         print("   √ %s" % g)
     if not gate_passed and not gate_notes:
         print("   （无检查项）")
 
-# ---------------------------------------------------------------- 10.6 JS 语法门禁
+# ---------------------------------------------------------------- 10.7 JS 语法门禁
 # README 13.3a「注入的 JS 必须单独做语法检查」—— 2026-11-01 曾因 xp-content.js 里
 # routeJs 的模板字符串引号没闭合，生成出 public/js/xp-win-actions.js 语法错误，
 # 导致全站 40 个页面的窗口「最小化/最大化/关闭」三键全部失效。原因正是没有机器拦。

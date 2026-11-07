@@ -741,7 +741,17 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .xp-bento {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-auto-rows: minmax(110px, auto);
+  /* 行高 = 「最小 96px，内容多了就自己长高」。
+     以前写死 96px：卡片里的内容一旦变高（简介多一行、文章列表多一条、
+     缩略图按宽度算出来更高），就会撞上 .xp-window 的 overflow:hidden 被静默裁掉
+     —— 2026-10 的「最近作品」日期行、「最新文章」第 4 条就是这么被截的。
+     改成 auto 之后：同一横带里的窗口占的是同一批网格行，所以它们仍然等高、上下边缘
+     仍然对齐；只是整条横带会按里面最高的那个窗口变高。横带之间本来就是上下排列，
+     各自高一点矮一点不影响观感。
+     ⚠ 2026-11-07 合并：文件末尾的「首页便当格排布」段里还有一条
+       `.xp-bento { grid-auto-rows: minmax(96px, auto) }` 覆盖本条，本条原写的
+       110px 从来没生效过。现已把值和上面这段注释一起搬到这里，末尾那条删掉。 */
+  grid-auto-rows: minmax(96px, auto);
   gap: 18px;
   align-items: stretch;
   max-width: 1400px;
@@ -856,7 +866,10 @@ html.dark .profile-text h2 .username,
 html.dark .xp-duck-count { color: var(--link); }
 /* 2026-11-05 站主「个人账户窗口排版似乎有些空」：实测文字块 122px 放在
    181px 的内容区里（justify-content:center 上下各留 ~30px）。不塞新内容，
-   只把纵向节奏拉开：标题下留白 2→6px、段落间距 3→6px、图标行上边距 10→14px。
+   只把纵向节奏拉开：标题下留白 2→6px、段落间距 3→6px。
+   ⚠ 图标行上边距当时想 10→14px，但下面 .profile-icons 的完整规则（padding-left +
+     flex 布局那条）里写着 margin-top: 10px，位置更靠后把它压回 10px —— 14px 从未生效。
+     2026-11-07 删掉那条孤立的 14px，保留实际生效的 10px。
    2026-11-06 站主「少量加大字号、缩短行距（单倍行距左右）」：上一轮把行距
    拉到 1.75 之后反而显得稀，这次字号 +1px、行距收到 1.5（≈单倍），
    段落间距保持 6px —— 撑满内容区的靠字号而非行距。
@@ -865,7 +878,6 @@ html.dark .xp-duck-count { color: var(--link); }
    （原先这里还有一条 margin:3px/line-height:1.55/font-size:var(--fs-text) 的
    同选择器规则，被下面这条整条取代、从未生效，11-07 已删。） */
 .profile-text p { margin: 6px 0; line-height: 1.5; font-size: 17px; }
-.profile-icons { margin-top: 14px; }
 /* 2026-10-19 站主：头像放大后文字栏上下各空一行很难看 —— 改成纵向也居中
    （flex-column + justify-content:center），文字块贴着窗口中线排，上下不留空。
    2026-10-19 排版优化（第二轮）：标题 24→26px + 字距拉开与正文拉开层次；
@@ -981,8 +993,9 @@ html.dark .profile-icon svg { filter: brightness(2.2); }
   width: 100%;
   height: auto;
   max-height: var(--bubble-bento-max);
-  min-height: 0;
-  /* ★ 2026-10-18 第四轮：外面那层 .xp-window 已经去掉（站主要纯纸张），
+  /* min-height 不在这里定：下面「首页那一格」那条同名规则给了 120px。
+     2026-11-07 之前这里还写着 min-height: 0，被那条完全覆盖、从未生效，已删。
+     ★ 2026-10-18 第四轮：外面那层 .xp-window 已经去掉（站主要纯纸张），
      现在这张纸自己就是整个格子，所以宽高都吃满、四角与上下卡片对齐。 */
   border-radius: 2px;
   box-sizing: border-box;
@@ -991,7 +1004,10 @@ html.dark .profile-icon svg { filter: brightness(2.2); }
   display: flex;
   flex-direction: column;
   justify-content: space-between;  /* 正文在上、出处在下，撑开整张纸 */
-  gap: 12px;
+  /* 12 → 16（2026-11-07 合并）：后面「首页那一格」那段里原本还有一条
+     `.bento-bubble .bubble-content { justify-content: space-between; gap: 16px }`
+     把这两条属性又写了一遍，gap 以 16px 为准。这里归位后那条已删。 */
+  gap: 16px;
   height: 100%;
   overflow: visible;      /* 不再裁字：格子够高，长句完整显示 */
 }
@@ -1071,9 +1087,10 @@ html.dark .profile-icon svg { filter: brightness(2.2); }
   /* 矮纸时也要有「贴在桌面上」的呼吸感；长句撑高时 padding 不再叠加 */
   min-height: 120px;
 }
-.bento-bubble .bubble-content { justify-content: space-between; gap: 16px; }
 /* 原来这里有两行同选择器：`clamp(13px, 1vw, 15px)` 紧接着被下一行 `15px` 按掉，
-   那段 clamp 从来没生效过（2026-11-07 合成一行时发现）。 */
+   那段 clamp 从来没生效过（2026-11-07 合成一行时发现）。
+   同日还删了 `.bento-bubble .bubble-content { justify-content; gap }` 那条 ——
+   两个属性已经归位到上面 .bubble-content 的定义里。 */
 .bento-bubble .bubble-from { margin-top: 0 !important; font-size: var(--fs-note); }
 /* 句子没有「出处」时这一行整行不显示（脚本会把它的内容清空、并 display:none；
    这里再加一道 :empty 兜底，避免出现一个空的空行） */
@@ -1173,9 +1190,10 @@ html.dark .profile-icon svg { filter: brightness(2.2); }
 /* 2026-10-19 修复「标题叠在封面上」（三版）：文字条带不再是悬浮半透明层，
    而是 flex 兄弟节点 —— 封面圆和文字条带上下排开，物理上不重叠。 */
 .mp4-screen-content.mp4-screen-v {
-  flex-direction: column; gap: 4px;
-  align-items: center; text-align: center;
-  /* 2026-10-20 站主要求：内容块在屏幕里水平垂直都居中，不要顶格 */
+  /* 2026-10-20 站主要求：内容块在屏幕里水平垂直都居中，不要顶格。
+     ⚠ flex-direction / align-items / gap / text-align 由下面「卡片形态」那条同选择器
+       规则重新声明（column / stretch / 8px / center），这里写了也不生效，2026-11-07 删掉。
+       只剩 justify-content 是这里独有的 —— 那边没有声明，所以「居中」由这条说了算。 */
   justify-content: center;
 }
 .mp4-screen-content.mp4-screen-v .mp4-song-info {
@@ -1232,10 +1250,12 @@ html.dark .mp4-progress-times .status-bar-field { color: #e8e8e0; }
 .mp4-btn-play { width: 42px; }
 html.dark .retro-mp4-player { background: linear-gradient(180deg, #4a4a58 0%, #35353f 100%); }html.dark .mp4-brand { color: #9cc2ff; }
 html.dark .mp4-progress-times { color: #c8c8d6; }
-html.dark .mp4-progress-bar { background: #4a4a52; border-color: #222; }
 /* 深色模式下进度条已填充段仍是亮绿，底槽若是深灰会看不清边界 ——
-   底槽提到 #b8b8c0（浅），与浅色模式 (#c0c0b8) 接近，让绿色 fill 始终有浅底衬着。 */
-html.dark .mp4-progress-bar { background: #b8b8c0; }
+   底槽提到 #b8b8c0（浅），与浅色模式 (#c0c0b8) 接近，让绿色 fill 始终有浅底衬着。
+   ⚠ 2026-11-07：这里原本是相邻两条（先 #4a4a52 再 #b8b8c0），前者被后者覆盖、
+     从未生效，已合并成一条。#b8b8c0 本身还会被末尾「MP4 播放器样式精修层」的渐变
+     覆盖 —— 那是刻意的追加覆盖层（整段删掉即可回退），所以基线值要留着。 */
+html.dark .mp4-progress-bar { background: #b8b8c0; border-color: #222; }
 
 /* ---------- 页内播放器（2026-11-04 站主要求：融入页面，不再做浮层） ----------
    同一个 .xp-music-slot 由容器决定落位，两种形态：
@@ -1391,7 +1411,11 @@ html.dark .mp4-autoplay-hint { background: #3a3320; color: #ffe6a7; border-color
      · 纯音乐（34 首里有 10 首抓不到歌词）退化成「大封面 + 歌名 + 歌手」，
        不会留一片空屏 —— 由 JS 给 .mp4-screen-content 加 .is-nolyric 触发。 */
 .mp4-screen-content { height: 100%; justify-content: flex-start; }
-/* 卡片形态：抬头一行、歌词窗口在下面 —— 所以屏内容改成纵向，且靠上（不是居中） */
+/* 卡片形态：抬头一行、歌词窗口在下面 —— 所以屏内容改成纵向。
+   ⚠ 本注释原先写「且靠上（不是居中）」，但这条规则并没有声明 justify-content：
+     真正生效的是上面 .mp4-screen-content.mp4-screen-v 那条的 center（2026-11-07 实测）。
+     之所以看不出差别：内容（抬头 52 + gap 8 + 歌词 154 = 214px）本来就撑满 222px 的
+     屏身，center 与 flex-start 可分摊的只剩 8px。要改「靠上」得连着上面那条一起改。 */
 .mp4-screen-content.mp4-screen-v {
   flex-direction: column; align-items: stretch;
   gap: 8px; text-align: center;
@@ -3473,8 +3497,8 @@ html.xp-glitching::after {
   .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
   .work-compare { grid-template-columns: 1fr; }
   .xp-shell .post-content { padding: 12px 12px 16px; }
-  .xp-shell .post-content p,
-  .xp-shell .post-content li { font-size: var(--fs-text); }
+  /* 正文 font-size 在更早的 @media (max-width: 640px) 块里已经声明过（同值
+     var(--fs-text)），2026-11-07 删掉这里的重复那条。 */
 }
 
 /* ---------- 触摸屏上的点击目标（2026-10-13 新增） ----------
@@ -3739,15 +3763,8 @@ pre *, code * {
    ============================================================ */
 
 /* ===== 首页排布（第 1 轮：账户 + 便利贴回第一眼） =====
-   放进 .home-page 里，让便利贴排布的样式作用域就在首页；排布细节见各段注释。 */
-/* 行高 = 「最小 96px，内容多了就自己长高」。
-   以前这里写死 96px：卡片里的内容一旦变高（简介多一行、文章列表多一条、
-   缩略图按宽度算出来更高），就会撞上 .xp-window 的 overflow:hidden 被静默裁掉
-   —— 2026-10 的「最近作品」日期行、「最新文章」第 4 条就是这么被截的。
-   改成 auto 之后：同一横带里的窗口占的是同一批网格行，所以它们仍然等高、上下边缘
-   仍然对齐；只是整条横带会按里面最高的那个窗口变高。横带之间本来就是上下排列，
-   各自高一点矮一点不影响观感。 */
-.xp-bento { grid-auto-rows: minmax(96px, auto); }
+   放进 .home-page 里，让便利贴排布的样式作用域就在首页；排布细节见各段注释。
+   注：.xp-bento 的 grid-auto-rows 已归位到 6) 便当格那节的定义里（2026-11-07）。 */
 /* 快速导航现在只有 4 个瓦片（作品集/游戏/攻略/杂谈），排成 2×2 更整齐 */
 .bento-nav .quick-nav-grid { grid-template-columns: repeat(2, 1fr); }
 
@@ -3789,8 +3806,9 @@ pre *, code * {
 /* 便利贴：格子高度不再强制拉满（★ 2026-10-18 第六轮：站主再报「下半张纸空一片」）。
    原来 align-self:stretch 把格子拉到与账户卡同高，格内 .xp-bento > * 是 flex，
    纸被纵向 stretch 撑满 → 句子短时下半空。改回 center（L840 的本意）：
-   纸高度随文字自己长（.bento-bubble > .xp-bubble 的 height:auto + 210px 上限管着）。 */
-.bento-bubble   { align-self: center; }
+   纸高度随文字自己长（.bento-bubble > .xp-bubble 的 height:auto + 210px 上限管着）。
+   ⚠ 2026-11-07：这里原本还有一条 `.bento-bubble { align-self: center }`，与 6) 便当格
+     那节的同名规则同值，属于重复声明，已删（center 由那一条给出）。 */
 .bento-bubble > .xp-bubble { align-self: flex-start; }
 .bento-profile > .xp-window { width: 100%; }
 /* 右列两窗：详细属性自适应高度，捏鸭计数器填满剩余空间（2026-10-12） */
