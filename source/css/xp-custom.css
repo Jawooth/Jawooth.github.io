@@ -854,15 +854,16 @@ html.dark .header-chip strong { color: #9cc2ff; }
 .profile-text h2 .username { color: var(--xp-blue-border); font-family: var(--font-display); font-weight: 700; font-size: 26px; transition: opacity 0.25s; }
 html.dark .profile-text h2 .username,
 html.dark .xp-duck-count { color: var(--link); }
-.profile-text p { margin: 3px 0; line-height: 1.55; font-size: var(--fs-text); }
 /* 2026-11-05 站主「个人账户窗口排版似乎有些空」：实测文字块 122px 放在
    181px 的内容区里（justify-content:center 上下各留 ~30px）。不塞新内容，
-   只把纵向节奏拉开：标题下留白 2→6px、段落行距 1.55→1.75、段落间距 3→6px、
-   图标行上边距 10→14px。视觉上仍然居中，但四条元素撑满内容区。
+   只把纵向节奏拉开：标题下留白 2→6px、段落间距 3→6px、图标行上边距 10→14px。
    2026-11-06 站主「少量加大字号、缩短行距（单倍行距左右）」：上一轮把行距
    拉到 1.75 之后反而显得稀，这次字号 +1px、行距收到 1.5（≈单倍），
-   段落间距保持 6px —— 撑满内容区的靠字号而非行距。 */
-.profile-text h2 { margin: 0 0 6px; }
+   段落间距保持 6px —— 撑满内容区的靠字号而非行距。
+   这一处**刻意不参与 11-07 的行高收敛**：站主要的是「单倍行距」这个观感，
+   17px/1.5 与全站的 16px/1.6 是两个不同的东西。
+   （原先这里还有一条 margin:3px/line-height:1.55/font-size:var(--fs-text) 的
+   同选择器规则，被下面这条整条取代、从未生效，11-07 已删。） */
 .profile-text p { margin: 6px 0; line-height: 1.5; font-size: 17px; }
 .profile-icons { margin-top: 14px; }
 /* 2026-10-19 站主：头像放大后文字栏上下各空一行很难看 —— 改成纵向也居中
@@ -1002,14 +1003,17 @@ html.dark .profile-icon svg { filter: brightness(2.2); }
    ★ 2026-10-18 第五轮：17px→16px。纸面高度现在**随文字自己长**，但上限锁死在账户卡
    高度（210px），17px 下最长的句子（原神那段 69 字）在 1240/1000 两档需要 250px，
    被纸面切掉最后一行。16px + 1.55 让它整段落在 210px 里（1240 实测 191px）。
-   想再调大之前先跑一遍长句：1400/1240/1000 三档都不能出现 scrollHeight > clientHeight。 */
+   2026-11-07 行高收敛：1.55 → 1.6，与其余「一段话」统一（长短文 1.75 / 短段落 1.6）。
+   改后余量从 19px 缩到 13px，三档复测仍无溢出；**这条的下限由纸面高度决定，
+   不是设计自由量** —— 想再调大之前先跑一遍长句：1400/1240/1000 三档都不能出现
+   .bubble-content 的 scrollHeight > clientHeight。 */
 .bento-bubble .bubble-quote {
   display: block;       /* p 默认是块级，但外层 flex 下会变 flex item；显式声明避免行盒问题 */
   font-size: var(--fs-text);
-  line-height: 1.55;
+  line-height: 1.6;
 }
 @media (max-width: 900px) {
-  .bento-bubble .bubble-quote { font-size: var(--fs-text); line-height: 1.55; }
+  .bento-bubble .bubble-quote { font-size: var(--fs-text); line-height: 1.6; }
 }
 /* 长句裁剪交给内层，外层不能 overflow:hidden —— 否则右下角卷边会被裁掉 */
 .bubble-content { overflow: hidden; }
@@ -2053,7 +2057,7 @@ html.dark .filter-pill { color: #d6e7ff; }
 .work-card-title a:hover { text-decoration: underline; }
 /* 简介：front-matter 的 desc:，两行后截断（瀑布流卡片以图为主，简介不能喧宾夺主） */
 .work-card-desc {
-  margin: 0; font-size: var(--fs-text); line-height: 1.55; color: var(--text-muted);
+  margin: 0; font-size: var(--fs-text); line-height: 1.6; color: var(--text-muted);
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
   overflow: hidden;
 }
@@ -2179,7 +2183,7 @@ html.dark .mini-stat strong { color: #9cc2ff; }
 
 /* 首页「关于本站」窗口（原「关于」页的内容，已整合到首页） */
 .about-home-body { display: flex; flex-direction: column; gap: 6px; }
-.about-home-body p { margin: 0; font-size: var(--fs-text); line-height: 1.7; color: var(--text); }
+.about-home-body p { margin: 0; font-size: var(--fs-text); line-height: 1.75; color: var(--text); }
 .about-home-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 
 /* 邮箱弹窗（首页邮箱图标：填了多个地址时点开）
@@ -2323,12 +2327,14 @@ html.dark .xp-shell .post-content h4 { color: #ddd; }
    在米白底上看着不那么扎眼。**只给 p**，li 的颜色由下面的 ul/ol 决定。 */
 .xp-shell .post-content p { color: var(--text-body); margin-bottom: 16px; }
 /* 主题 post.styl：列表整体比段落低一档对比度（深色下是 #c0c0c0，比段落的 #c9d1d9 灰）。
-   行高 1.725 也来自主题 —— 和段落的 1.75 差一点点，实测就是这样，别统一。 */
+   行高原先跟主题的 1.725（比段落 1.75 差一点点），2026-11-07 收敛统一到 1.75。
+   注意这条只作用于 ul/ol 自身：li 被上面 `.post-content p, li { 1.75 }` 直接命中，
+   从不继承这个 1.725 —— 即改前它就没有可见效果（实测 li 一直是 28px）。 */
 .xp-shell .post-content ul,
 .xp-shell .post-content ol {
   color: var(--text-list);
   padding-left: 24px;
-  line-height: 1.725;
+  line-height: 1.75;
   margin-bottom: 16px;
 }
 .xp-shell .post-content blockquote {
@@ -2706,7 +2712,7 @@ html.dark .xp-like.is-liked:hover { background: rgba(224, 69, 90, 0.26); }
 /* 键盘用户：焦点环在已赞态也别被红色吃掉 */
 .xp-like.is-liked:focus-visible { outline-color: #c2304a; }
 .xp-post-card-excerpt {
-  margin: 0; font-size: var(--fs-text); line-height: 1.7; color: var(--text-muted);
+  margin: 0; font-size: var(--fs-text); line-height: 1.6; color: var(--text-muted);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .xp-post-card-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
@@ -3124,7 +3130,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   cursor: pointer; overflow: auto;
   font-family: var(--font-ui);
 }
-.xp-bs-inner { max-width: 620px; padding: 32px 24px; font-size: var(--fs-text); line-height: 1.8; }
+.xp-bs-inner { max-width: 620px; padding: 32px 24px; font-size: var(--fs-text); line-height: 1.75; }
 .xp-bs-head {
   background: #aaaaaa; color: #0000aa;
   display: inline-block; padding: 0 8px; margin: 0 0 14px;
@@ -3637,7 +3643,7 @@ input[type=checkbox], input[type=radio] {
 .hbe-hint {
   margin: 0 0 6px;
   font-size: var(--fs-text);
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--text-muted);
 }
 /* 密码错误时那行提示也统一收边距（插件自己会给，这里只是对齐观感） */
