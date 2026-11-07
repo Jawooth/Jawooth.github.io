@@ -2156,6 +2156,48 @@ grid 行里，原来 262px 是这一行的高度、nav 窗自己只有 262 也�
 （`.mp4-cover` 里那个大音符仍用 symbol —— 它坐在 `#1a1a1a` 的 LCD 屏上，
 本来就该是固定深蓝，不跟主题变。）
 
+#### 14.5.13 仓库去冗余（2026-11-07 第六轮）
+
+这一轮只做清理与补提交，不动视觉。动机是发现仓库在磁盘上占了 **20.2 GB**，而其中
+**20 GB 是 `.edge-audit/`** —— 86 份无头 Edge 的 profile 副本（每份 600~700 MB，
+里面只有 `Default/`、`Crashpad/`、`GPUCache`，**没有任何报告或截图**）。`.gitignore`
+早就排除了它，所以它不进 git，只是一直占盘。
+
+**删掉的（全部可重建，不影响站点）**：
+
+| 位置 | 体积 | 说明 |
+|---|---|---|
+| `.edge-audit/` | 20 GB | 跑体检时 Edge 落下的 profile，重新跑体检会重建 |
+| `tools/shots/_profile/` | 79 MB | 同样是 Edge profile，被放进了「截图」目录里 |
+| `tools/shots/*.png` | 4.9 MB | 10-30/31 调试截图 37 张，README 零引用 |
+| `.screenshots/.tmp/snap-*.json` | 19 MB | 11-03 零回归验证的 4 份快照，结论已进 14.1.1 |
+| `.deploy_git/` | 32 MB | 最后一次部署停在 10-20，`hexo deploy` 会重建 |
+| `public/`、`db.json` | 7.5 MB | 构建产物与 Hexo 缓存 |
+
+保留：`.screenshots/.tmp/snap.js` 与 `snap-diff2.js`（14.1.1 引用的验证方法本身）、
+`backup/images-original/`（压缩前母版）。
+
+**代码层的四处冗余**：
+
+1. `tools/icons/build-compare-preview.js` 是**真断链** —— 它 `require('./park-glyphs.js')`，
+   而那个文件 11-06 随像素管线一起删了，跑起来必崩。连同 `build-preview-html` /
+   `render-preview` / `render-zoom` / `park-colors` / `test-park-decode` 五个已完工的
+   一次性脚本一并删除；`tools/_check_sprite_usage.js`、`tools/_render_sheet.py` 同理。
+2. 根目录 `_favicon_48.png` 是孤儿文件（favicon 由 `emit-favicon.js` 直写 `source/favicon.ico`）。
+3. `xp-custom.css` 两处死码：`@media (max-width:640px)` 里嵌套的 `(min-width:641px)`
+   媒体查询（外层不成立时内层永不求值）、`.xp-shell .feature-container` 两条规则
+   （48 个产物页面里 0 命中）。属于 14.2 ⑥「死 CSS」里的两小项。
+   **注意**：`xp-custom.css` 里那两套 `.mp4-*` 皮肤仍在，没在这一轮动。
+4. `verify-site.py` 的「缺侧栏目录」是自误报：文章末尾「相关文章」的
+   `h2.post-related-title` 被算成了正文小标题。判定前先把这块排除，提醒回落到 4 条。
+
+**验证**：`npm run build` 94 files / 299 ms；`py -3 tools/check/verify-site.py`
+48 页全绿（4 条老提醒：图片 1.74 MB / music.yml tracks 空 / 缺「嬷闝」2 字 / npm audit）。
+⚠ 跑体检要用 `py -3`，用 `python` 会缺 PyYAML 与 fonttools，那两项检查会被静默跳过。
+
+**补提交**：11-01 之后 6 天的改动一直压在工作区（37 改 / 29 删 / 6 新增），已按主题
+拆成 5 个提交（工具链、主题层瘦身、播放器与歌词、站点功能、文档）。
+
 ---
 
 *最后更新：2026-11。字段行为以 `scripts\xp-content.js`、`scripts\xp-player.js`、
