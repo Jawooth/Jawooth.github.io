@@ -110,6 +110,9 @@
      每个都跟一条写死的行高成对（24/20/18/17/15px），单独调字号会让五格歌词窗重排。 */
   --fs-ui: 16px;        /* 界面：按钮、标题栏、任务栏、芯片、播放器 chrome —— 44 处 */
   --fs-text: 16px;      /* 阅读文字：正文、摘要、日期、列表项、页脚 —— 67 处 */
+  --fs-note: 14px;      /* 注脚：屏外补充说明（致谢栏、相关文章日期、简介、404 提示） —— 9 处。
+                           比正文小 2px 是**看得见的差**；13 太小、15 与 16 只差 1px 等于没差。
+                           ⚠ 屏内不要用它，那是 --lcd-* 那套 */
   --fs-h1: 32px;        /* 文章标题四级。12px 是像素字体设计尺寸，只有 24 是整数倍 */
   --fs-h2: 24px;
   --fs-h3: 20px;
@@ -703,7 +706,7 @@ html.dark .xp-window-btn:focus-visible { outline-color: #fff; }
    压在深底上只有 1.79:1，看不清。换用深色模式自己的标题色。 */
 html.dark .xp-404-icon { color: var(--text-heading); }
 .xp-404-body p { margin: 6px 0; font-size: var(--fs-text); }
-.xp-404-hint { color: var(--text-muted); font-size: 15px; }
+.xp-404-hint { color: var(--text-muted); font-size: var(--fs-note); }
 .xp-404-actions { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 html.dark .xp-btn-primary:hover { filter: brightness(1.15); }
 
@@ -843,7 +846,11 @@ html.dark .header-chip strong { color: #9cc2ff; }
   .xp-firework-dot { animation: none; opacity: 0; }
 }
 .profile-text { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-.profile-text h2 { margin: 0 0 2px; font-size: 26px; letter-spacing: 0.5px; color: var(--text-heading); }
+/* 注意：这条的 font-size:26px 已删 —— 后面第 8 节还有一条 .profile-text h2 { font-size:24px }，
+   同选择器后者赢，26px 从来没生效过（2026-11-07 字号门禁建表时发现）。
+   名字 span 自带 26px（下一条），所以这行里只有「来了！」三个字是 24px。
+   想让整行回到 26，改后面那条，不是在这里加回来。 */
+.profile-text h2 { margin: 0 0 2px; letter-spacing: 0.5px; color: var(--text-heading); }
 .profile-text h2 .username { color: var(--xp-blue-border); font-family: var(--font-display); font-weight: 700; font-size: 26px; transition: opacity 0.25s; }
 html.dark .profile-text h2 .username,
 html.dark .xp-duck-count { color: var(--link); }
@@ -1061,8 +1068,9 @@ html.dark .profile-icon svg { filter: brightness(2.2); }
   min-height: 120px;
 }
 .bento-bubble .bubble-content { justify-content: space-between; gap: 16px; }
-.bento-bubble .bubble-from { font-size: clamp(13px, 1vw, 15px); }
-.bento-bubble .bubble-from { margin-top: 0 !important; font-size: 15px; }
+/* 原来这里有两行同选择器：`clamp(13px, 1vw, 15px)` 紧接着被下一行 `15px` 按掉，
+   那段 clamp 从来没生效过（2026-11-07 合成一行时发现）。 */
+.bento-bubble .bubble-from { margin-top: 0 !important; font-size: var(--fs-note); }
 /* 句子没有「出处」时这一行整行不显示（脚本会把它的内容清空、并 display:none；
    这里再加一道 :empty 兜底，避免出现一个空的空行） */
 .bubble-from:empty { display: none; }
@@ -1609,7 +1617,7 @@ html.dark .mp4-autoplay-hint { background: #3a3320; color: #ffe6a7; border-color
 .xp-intro-list .xp-intro-desc {
   display: block;
   margin: 2px 0 0 0;
-  font-size: 13px;
+  font-size: var(--fs-note);
   line-height: 1.6;
   color: var(--text-muted);
 }
@@ -1897,9 +1905,9 @@ html.dark .tag-life { --pill-fg: #8fe09a; }
    尽量把最后一行分配匀，避免"框架"这种两字独占一行；
    ③ 列宽下限从 165px 提到 232px —— 原来 522px 的列里塞三栏、每栏 165px，
    「minimalism 主题基础框架」这种长度必然在词中间断行。 */
-.credits-use { color: var(--text-muted); font-size: 14px; min-width: 0; text-wrap: pretty; }
+.credits-use { color: var(--text-muted); font-size: var(--fs-note); min-width: 0; text-wrap: pretty; }
 /* 「完整致谢与许可证 →」：首页只列最常用的几条，详细清单在 /thanks/ 页 */
-.credits-more { margin: 8px 0 0; font-size: 14px; }
+.credits-more { margin: 8px 0 0; font-size: var(--fs-note); }
 .credits-more a { color: var(--link); text-decoration: none; }
 .credits-more a:hover { text-decoration: underline; }
 /* 原来的 .friend-links（底部友情链接按钮）已按站主要求删除 */
@@ -2640,7 +2648,7 @@ html.dark .xp-shell .post-content img { box-shadow: none; }
 .post-related-link:focus-visible { outline: 2px solid var(--xp-hover); outline-offset: 2px; }
 .post-related-date {
   flex: 0 0 auto;
-  font-size: 13px;
+  font-size: var(--fs-note);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -3023,7 +3031,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   background: var(--surface-2); color: var(--text-main, #222);
   border: 2px solid var(--xp-blue-border);
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.35);
-  padding: 5px 10px; font-size: 14px; white-space: nowrap;
+  padding: 5px 10px; font-size: var(--fs-note); white-space: nowrap;
   text-shadow: none;
 }
 .xp-taskbar-clock { position: relative; }   /* fulltip 的定位基准 */
@@ -3191,7 +3199,7 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
 }
 .xp-ss-tip {
   position: absolute; left: 50%; bottom: 7vh; transform: translateX(-50%);
-  color: rgba(255, 255, 255, 0.75); font-size: 15px; letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.75); font-size: var(--fs-note); letter-spacing: 0.12em;
   animation: xp-ss-tip-pulse 2.4s ease-in-out infinite;
 }
 @keyframes xp-ss-tip-pulse {
@@ -3833,7 +3841,7 @@ pre *, code * {
      无论怎么换行，两个永远同行，不会出现 p1 里「次。」掉到下一行的情况。 */
   .xp-duck-num   { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
   /* 站主：按键稍小一点 */
-  .xp-duck-clear { padding: 3px 10px; font-size: 15px; }
+  .xp-duck-clear { padding: 3px 10px; font-size: var(--fs-note); }
   /* 极窄窗口（~230px）补丁（2026-10-18 站主截图）：
      ① 标题不换行——换行会把标题栏撑成两行，窗口看起来破相；
      ② 标题左缘留 6px 呼吸（站主：不要顶格）。 */

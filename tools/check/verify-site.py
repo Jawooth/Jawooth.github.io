@@ -17,7 +17,7 @@
        （少了 @layer 包裹会让全站 500+ 元素的字号/按钮尺寸/链接颜色一起变，详见第 8 节）
     9. 依赖安全审计 npm audit（--no-audit 跳过）
    10. 审美门禁：把 README 13.7 节「反规则清单」里标 ⭐ 的几条变成机器检查
-       （圆角语义表 / 深色成对 / 禁用字体与渐变 / 组件样式不外泄）
+       （圆角语义表 / 深色成对 / 禁用字体与渐变 / 组件样式不外泄 / 字号阶梯）
 
 退出码：0 = 全部通过；1 = 有失败项（便于以后接自动化）。
 """
@@ -827,12 +827,87 @@ else:
     else:
         gate_passed.append("XP 组件样式未外泄（唯一真源）")
 
+    # --- 10.5 字号：只能取 13.3.3 那张表里的档 --------------------------------
+    # 2026-11-07 收敛注脚那轮加的。此前「小一号灰字」散在四档：致谢栏 14、
+    # 相关文章日期 13、404 提示 15、首页简介 13 —— 同一个语义四个值，
+    # 改一次要翻四处，还看不出哪个是基准。现在屏外注脚统一走 --fs-note。
+    # 允许写的只有三类：
+    #   ① token 引用（--fs-* / --lcd-* / 标签云按文章数缩放的 --pill-size）
+    #   ② 下表登记过的组件专属值（每一条都写明用在哪，**加新值要写理由**）
+    #   ③ 关键词：0（图标按钮里文字透明）、1em/0.8em（代码块、标签计数）、
+    #      inherit（表单控件）、revert（清掉 XP.css 的 h1{5rem}）
+    # clamp() 一律放行：它是有上下界的自适应，不是"随手挑一个数"。
+    FS_LITERAL_OK = {
+        "12px",   # .post-info .icon：跟正文 16px 里的图标对齐，是图标不是文字
+        "17px",   # 个人面板正文（@container 里那套 21/22/26 之一，随容器缩放）
+        "20px",   # .xp-duck-count 的 .huge 档（鸭子计数的装饰数字）
+        "21px", "22px", "24px", "26px",   # 个人面板标题、统计数字、鸭子计数分档
+        "40px", "44px", "52px",           # 鸭子计数与 404 图标的展示字号
+        "0", "1em", "0.8em", "inherit", "revert",
+    }
+    # 注释要整块遮掉再判：本文件里有大量「XP.css 原文是 font-size:11px」这类
+    # 说明文字，只按行切 /* 挡不住跨行注释，会把描述当成声明（首次跑就误报了两条）。
+    def css_code_lines(text):
+        out, i, n = [], 0, len(text)
+        while i < n:
+            if text.startswith("/*", i):
+                j = text.find("*/", i + 2)
+                j = n if j == -1 else j + 2
+                out.append("".join("\n" if c == "\n" else " " for c in text[i:j]))
+                i = j
+            else:
+                out.append(text[i])
+                i += 1
+        return "".join(out).splitlines()
+
+    code_lines = css_code_lines(css)
+    fs_re = re.compile(r"font-size\s*:\s*([^;}]+)")
+    fs_tokens_defined, fs_tokens_used = set(), {}
+    bad_fs = {}
+    for i, code in enumerate(code_lines, 1):
+        for vm in re.finditer(r"(--(?:fs|lcd|pill-size)[a-z0-9-]*)\s*:", code):
+            fs_tokens_defined.add(vm.group(1))
+        for m in fs_re.finditer(code):
+            val = " ".join(m.group(1).split())
+            if not val:      # 跨行声明（值在下一行）不在这里判，交给肉眼
+                continue
+            for um in re.finditer(r"var\((--(?:fs|lcd|pill-size)[a-z0-9-]*)", val):
+                fs_tokens_used.setdefault(um.group(1), []).append(i)
+            if (val.startswith(("var(--fs-", "var(--lcd-", "var(--pill-size"))
+                    or val.startswith("clamp(") or val in FS_LITERAL_OK):
+                continue
+            bad_fs.setdefault(val, []).append(i)
+    if bad_fs:
+        detail = "；".join("%s（L%s）" % (v, ",".join(str(x) for x in ls[:3]))
+                          for v, ls in sorted(bad_fs.items()))
+        warn("xp-custom.css 出现 13.3.3 字号表之外的取值：%s —— 屏外注脚用 "
+             "--fs-note，屏内用 --lcd-*；确实是组件专属值就加进本节的 "
+             "FS_LITERAL_OK 并写明用在哪" % detail)
+        gate_notes.append("字号有 %d 种表外值" % len(bad_fs))
+    else:
+        gate_passed.append("字号全部落在 13.3.3 阶梯内（token / 登记值 / 关键词）")
+
+    # --pill-size 由 scripts/xp-content.js 按文章数写成行内样式，CSS 里只有引用，
+    # 不能算「未定义」。
+    undefined_fs = sorted(k for k in fs_tokens_used
+                          if k not in fs_tokens_defined and k != "--pill-size")
+    unused_fs = sorted(k for k in fs_tokens_defined
+                       if k.startswith(("--fs-", "--lcd-")) and k not in fs_tokens_used)
+    if undefined_fs:
+        # 这个一定是错的：var() 引用不到就整条声明失效，字号会退回继承值
+        fail("字号 token 引用了没定义的变量：%s —— 声明会整条失效（字号退回继承值），"
+             "在 :root 补上定义，或改回表里的档" % "、".join(undefined_fs))
+    if unused_fs:
+        warn("这些字号 token 定义了却没有引用：%s —— 要么删掉，要么是改档时漏改"
+             % "、".join(unused_fs))
+        gate_notes.append("字号 token 空转 %d 个" % len(unused_fs))
+
     for g in gate_passed:
         print("   √ %s" % g)
     if not gate_passed and not gate_notes:
         print("   （无检查项）")
 
-# ---------------------------------------------------------------- 10.5 JS 语法门禁
+# ---------------------------------------------------------------- 10.6 JS 语法门禁
 # README 13.3a「注入的 JS 必须单独做语法检查」—— 2026-11-01 曾因 xp-content.js 里
 # routeJs 的模板字符串引号没闭合，生成出 public/js/xp-win-actions.js 语法错误，
 # 导致全站 40 个页面的窗口「最小化/最大化/关闭」三键全部失效。原因正是没有机器拦。
