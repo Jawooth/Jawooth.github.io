@@ -23,7 +23,10 @@
  *
  * 再生成：改 park-map.js（语义映射）/ park-recolor.js（TINT 配色）→ node tools/icons/emit-smooth.js
  *         → node tools/icons/merge-smooth-xp-icons.js
- * 旧像素版备份：scripts/_xp-icons.pixel-backup.js
+ * 旧像素版（pixelarticons 点阵 + tools/icons/colorize.js 上色那一代）已删除：
+ *   2026-11-06 站主确认去掉 pixelarticons 依赖，那条管线（decode-pixelarticons /
+ *   colorize / review-decode / merge-xp-icons / generated-glyphs / hand-drawn）随之整组删掉。
+ *   它要读 node_modules/pixelarticons/svg，而产物在 2026-10-31 换成平滑多色之后就再没被读过。
  */
 /* ---------------- 全站像素色板（v3：9 色相 × 亮/暗，零黑色描边） ---------------- */
 const PALETTE = {

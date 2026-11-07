@@ -4,7 +4,11 @@
  * email/web 等中性图标不在此表，仍走 IconPark（park-map.js）。 */
 const si = require('simple-icons');
 
-const BLUE = '#4a86e8';
+/* 2026-11-05 站主：社交图标要和播放器按钮「使用相同颜色」。
+   播放器线条经 park-recolor.js 的 TINT 取 n = #0054e3（站内 XP 标题栏深蓝），
+   所以这里同步改成同一个值 —— 以前是 #4a86e8（浅蓝 b），两组看着像两种蓝。
+   注意 siBody 直接写死 fill，不走 TINT，改色只能改这一个常量。 */
+const BLUE = '#0054e3';
 
 const SOCIAL = {
   'icon-social-github':     { slug: 'siGithub' },

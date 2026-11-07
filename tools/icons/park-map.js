@@ -37,12 +37,15 @@ module.exports = {
   'tray-moon':        ['moon', '夜间模式'],
   'tray-power':       ['power', '电源'],
   // ─── 播放器 ───
+  // 2026-11-05 站主要求「看看有没有更合适的图标」：把「方向箭头」换成播放器语义的
+  // 传送键（竖线 + 三角），三角由 play-one 的实心改线条后与传送键同形；
+  // 列表换成 music-list（带播放符，比原来的勾选清单更像「播放列表」）。
   'icon-media-note':  ['music', '当前曲目'],
-  'icon-media-prev':  ['arrow-left', '上一首'],
-  'icon-media-play':  ['play', '播放'],
-  'icon-media-pause': ['pause-one', '暂停'],
-  'icon-media-next':  ['arrow-right', '下一首'],
-  'icon-media-list':  ['list', '播放列表'],
+  'icon-media-prev':  ['go-start', '上一首'],
+  'icon-media-play':  ['play-one', '播放'],
+  'icon-media-pause': ['pause', '暂停'],
+  'icon-media-next':  ['go-end', '下一首'],
+  'icon-media-list':  ['music-list', '播放列表'],
   'icon-media-link':  ['link-one', '外链'],
   'icon-media-expand':['expand-left-and-right', '展开'],
   'icon-media-collapse': ['click-to-fold', '收起'], // ☆ 近似：无精确 collapse 语义

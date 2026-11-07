@@ -69,19 +69,20 @@ const TINT = {
   'icon-media-collapse': ['n', 'N'],
   'icon-media-eye':   ['n', 'N'],
   'icon-media-dice':  ['n', 'N'],
-  // 社交（全部蓝色单色线条；X 移除，由 twitter 顶替）
-  'icon-social-github':   ['b', 'c'],
-  'icon-social-email':    ['b', 'c'],
-  'icon-social-bilibili': ['b', 'c'],
-  'icon-social-pixiv':    ['b', 'c'],
-  'icon-social-web':      ['b', 'c'],
-  'icon-social-bluesky':  ['b', 'c'],
-  'icon-social-twitter':  ['b', 'c'],
-  'icon-social-facebook': ['b', 'c'],
-  'icon-social-rss':      ['b', 'c'],
-  'icon-social-weibo':    ['b', 'c'],
-  'icon-social-zhihu':    ['b', 'c'],
-  'icon-social-redbook':  ['b', 'c'],
+  // 社交（2026-11-05 站主要求与播放器「相同颜色」：原本 b 浅蓝，改成与媒体组
+  // 一致的站内 XP 深蓝 n/N。simple-icons 品牌组不读这张表，改色见 social-native.js）
+  'icon-social-github':   ['n', 'N'],
+  'icon-social-email':    ['n', 'N'],
+  'icon-social-bilibili': ['n', 'N'],
+  'icon-social-pixiv':    ['n', 'N'],
+  'icon-social-web':      ['n', 'N'],
+  'icon-social-bluesky':  ['n', 'N'],
+  'icon-social-twitter':  ['n', 'N'],
+  'icon-social-facebook': ['n', 'N'],
+  'icon-social-rss':      ['n', 'N'],
+  'icon-social-weibo':    ['n', 'N'],
+  'icon-social-zhihu':    ['n', 'N'],
+  'icon-social-redbook':  ['n', 'N'],
   // 点赞/待办
   'icon-like-off':    ['G', 'w'],      // 灰心
   'icon-like-on':     ['r', 'o'],      // 红心

@@ -262,7 +262,11 @@ if not os.path.exists(os.path.join(PUB, "images", "xp-desktop-bg-dark.webp")):
 # 有标题的文章应当生成目录
 for f in posts:
     s = open(f, encoding="utf-8", errors="replace").read()
-    if "<h2" in s and "xp-toc" not in s.replace("xp-toc-level", "").replace("xp-toc-item", ""):
+    # 「相关文章」区块自带一个 <h2 class="post-related-title"（2026-11-05 起每篇文末都注入），
+    # 它不是正文标题，不能算进「有二级标题却没目录」的判定 —— 否则所有无小标题的文章都会误报
+    # （2026-11-07 实测：platform-thought 就是被这一条判成「缺目录」，其实正文一个标题都没有）。
+    body = s.replace('<h2 class="post-related-title"', "<div class=\"post-related-title\"")
+    if "<h2" in body and "xp-toc" not in body.replace("xp-toc-level", "").replace("xp-toc-item", ""):
         warn("%s 正文有二级标题但没有生成侧栏目录" % os.path.relpath(f, PUB))
         break
 
@@ -507,7 +511,17 @@ COVER_RE = re.compile(
 )
 _text_files = sorted(glob.glob(os.path.join(ROOT, "source", "_posts", "**", "*.md"), recursive=True))
 _text_files += sorted(glob.glob(os.path.join(ROOT, "source", "**", "*.md"), recursive=True))
-_text_files += sorted(glob.glob(os.path.join(ROOT, "source", "_data", "*.yml")))
+# 2026-11-05：**排除 music-lyrics.yml**。那是 tools/fetch/fetch-lyrics.py 抓下来的
+# 第三方歌词（44 首，34 首有词），日文歌词里的汉字（魚・扉・嘘・僕…）成百上千，
+# 基本都不在 GB2312 里。把它算进「站点用字」，这个检查就会永远报缺两百多个字，
+# 而正确答案不是「重裁字体」—— 把像素字体扩到覆盖日文常用汉字，正文 woff2 要从
+# 180 KB 涨到 600 KB+，为几十秒的歌词驮一套字体库不划算。
+# 这些字只出现在播放器屏里，走系统字体回退（歌词用常规字重），可以接受；
+# 正文与界面文字仍全部落在子集覆盖内，这个检查的原本目的不受影响。
+_text_files += sorted(
+    f for f in glob.glob(os.path.join(ROOT, "source", "_data", "*.yml"))
+    if os.path.basename(f) != "music-lyrics.yml"
+)
 # CSS/JS 里的符号也会用正文字体渲染（例如恢复 chip 的 ▣、时间线的 ▸），
 # 扫描范围与 tools/fonts/make-pixel-fonts.py 的 repo_chars() 保持一致
 for _ext in ("css", "js", "ejs", "styl"):
@@ -650,7 +664,8 @@ else:
             else:
                 warn("npm audit 报告 %s 个漏洞（详见上方输出）。"
                      "本站威胁模型下均为构建期本地风险，访客面不受影响；"
-                     "升级请遵守 package.json 注释里的「一次只升一个包」" % m.group(1))
+                     "升级时用 npm install <包> --save-exact 钉死版本（package.json "
+                     "与 package-lock.json 都在 git 里，回滚就 checkout 这两个文件）" % m.group(1))
         except subprocess.TimeoutExpired:
             warn("npm audit 超时（180s），跳过本次审计")
 

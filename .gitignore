@@ -75,6 +75,11 @@ tools/_*.js
 tools/_*.py
 _favicon_*.png
 
+# 无头浏览器的临时 profile（跑 tools/check 里的探针时生成）
+# 放在仓库内是因为 Edge 拿不到 %TEMP% 的 ACL 就起不来；profile 体积很大，别进仓库
+.edge-audit/
+.edge-probe*/
+.tmp-edge/
 # 图标工坊的调试脚本与预览页（临时验证用，重跑就有）
 tools/icons/_*.js
 tools/icons/_*.html

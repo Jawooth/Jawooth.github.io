@@ -30,16 +30,15 @@ const PROBE = `(() => {
   out.textHeading = rs.getPropertyValue('--text-heading').trim();
   out.isDark = document.documentElement.classList.contains('dark');
 
-  const menu = document.querySelector('.menu-list .menu');
-  if (menu) {
-    const r = menu.getBoundingClientRect();
-    const cs = getComputedStyle(menu);
-    out.menu = { text: menu.textContent.trim(), rect: [Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height)],
-      display: cs.display, visibility: cs.visibility, opacity: cs.opacity, zIndex: cs.zIndex,
-      parentDisplay: getComputedStyle(menu.closest('.site-header-container') || menu.parentElement).display };
+  // 顶部导航 DOM 已于 2026-11-03 随主题瘦身删除（导航由任务栏开始菜单承担），
+  // 所以这里改为报告它**不存在**：若哪天又冒出来，说明有人把顶栏加回去了。
+  out.headerContainer = null;
+  out.menu = null;
+  const staleMenu = document.querySelector('.menu-list .menu, .site-header-container');
+  if (staleMenu) {
+    const cs = getComputedStyle(staleMenu);
+    out.staleNav = { selector: staleMenu.className || staleMenu.tagName, display: cs.display };
   }
-  const hdr = document.querySelector('.site-header-container');
-  if (hdr) { const cs = getComputedStyle(hdr); out.headerContainer = { display: cs.display, h: Math.round(hdr.getBoundingClientRect().height) }; }
 
   // 搜索
   const si = document.querySelector('.xp-search-input');

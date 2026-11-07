@@ -19,7 +19,10 @@ const widths = (process.argv[3] || '390').split(',').map(Number);
 const height = Number(process.argv[4] || 844);
 const pages = (process.argv[5] || '/,/blog/,/works/,/games/,/archives/,/about-me/,/thanks/').split(',');
 
-const profile = path.join(os.tmpdir(), 'dsh-audit-edge');
+// 2026-11-02：Edge 的 profile 必须放在**仓库内**。放在 %TEMP% 时，Edge 的
+// network sandbox 会因为拿不到临时目录的 ACL 而拒绝启动（DevTools 端口不监听），
+// 表现为「CDP 没连上」。DSH 的 workspace-write 沙箱只保证仓库目录可写。
+const profile = path.join(__dirname, '..', '..', '.edge-audit', 'layout');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function findFreePort() {

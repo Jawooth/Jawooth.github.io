@@ -21,8 +21,12 @@ for (const id of ids) {
   const body = GLYPHS[id];
   if (!body || !/<(path|rect|circle|ellipse|g)\b/.test(body)) { console.log('BAD body:', id); bad++; continue; }
   if (/#000\b|#000000/i.test(body)) { console.log('BAD pure black:', id); bad++; continue; }
-  if (/^(icon-social-|icon-media-)/.test(id) && /fill="(?!none)[^"]*"/.test(body)) {
-    console.log('BAD filled (line-only group):', id); bad++; continue;
+  /* 2026-11-05：这条原来对 icon-social-* 也要求 fill="none"，但社交组自 m02896 起
+     就走 simple-icons 官方真身（实心品牌形状，见 tools/icons/social-native.js 的
+     siBody 直接写死 fill），线条款式是更早的 m02994 才有、后来又被推翻的。
+     继续按旧规则校验只会让每次重跑 emit 都失败，所以只对播放器组强制线条。 */
+  if (/^icon-media-/.test(id) && /fill="(?!none)[^"]*"/.test(body)) {
+    console.log('BAD filled (media line-only group):', id); bad++; continue;
   }
   try {
     const sym = pixelSymbol(id, body);

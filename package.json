@@ -13,7 +13,7 @@
     "version": "8.1.2"
   },
   "comments": {
-    "pinned": "所有依赖都锁定到确切的已安装版本（不使用 ^ 范围）。个人博客优先『今天能跑，明年还能跑』，npm update 不应该悄悄改变站点行为。升级请一次只升一个包，升完先 npm run build 并本地预览确认。",
+    "pinned": "所有依赖都锁定到确切的已安装版本（不使用 ^ 范围）。个人博客优先『今天能跑，明年还能跑』，npm update 不应该悄悄改变站点行为。安装/升级一律带 --save-exact，让版本号写进本文件便于溯源与回滚（2026-11-06 站主要求：不再强制『一次只升一个包』，但那句话的精神还在 —— 升完先 npm run build 并本地预览确认，出问题 git checkout package.json package-lock.json 即可回滚）。",
     "theme": "主题不再是 npm 依赖，而是仓库内的 themes/minimalism（自持）。Hexo 会优先使用 themes/<name>，所以即使 node_modules 里残留了 hexo-theme-minimalism 也不会生效。改主题模板直接改 themes/minimalism/layout/ 下的文件。",
     "build": "npm run build = clean + generate。必须先用它：Hexo 的增量 generate 感知不到 source/_data/*.yml 与 scripts/*.js 的改动，只改文章/样式时才可以用 npm run generate 走快路。"
   },
@@ -23,13 +23,17 @@
     "hexo-deployer-git": "4.0.0",
     "hexo-generator-archive": "2.0.0",
     "hexo-generator-category": "2.0.0",
+    "hexo-generator-feed": "4.0.0",
     "hexo-generator-index": "3.0.0",
     "hexo-generator-tag": "2.0.0",
     "hexo-renderer-ejs": "2.0.0",
     "hexo-renderer-marked": "7.0.1",
     "hexo-renderer-stylus": "3.0.1",
     "hexo-server": "3.0.0",
-    "hexo-wordcount": "6.0.1",
-    "pixelarticons": "^2.4.2"
+    "hexo-wordcount": "6.0.1"
+  },
+  "devDependencies": {
+    "@iconify-json/icon-park": "1.2.4",
+    "simple-icons": "16.36.0"
   }
 }

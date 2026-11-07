@@ -15,7 +15,13 @@ const path = require('path');
 const park = require('@iconify-json/icon-park/icons.json');
 const MAP = require('./park-map.js');
 const { recolor, TINT, DARKBG_IDS, PALETTE_HEX } = require('./park-recolor.js');
-const { PALETTE } = require('../../scripts/xp-icons.js');
+/* 2026-11-05 修复：以前这里是 `const { PALETTE } = require('../../scripts/xp-icons.js')`，
+ * 但 xp-icons.js 的 PALETTE 只有 19 个键、**没有 n/N**（站内 XP 深蓝只定义在
+ * park-recolor.js 的 PALETTE_HEX 里）。于是 TINT 表写着 ['n','N'] 的 11 个播放器
+ * 图标全部 `PALETTE['n'] === undefined` → 走 `|| '#4a86e8'` 兜底，十几轮下来
+ * 播放器线条一直是浅蓝 b，而 TINT 表看着却是深蓝 n —— 表与实际产物脱节。
+ * PALETTE_HEX 是 PALETTE 的超集（多 n/N），所以整体改用它，两边不会再漂。 */
+const PALETTE = PALETTE_HEX;
 const { SOCIAL, siBody } = require('./social-native.js');
 
 const SKIP = new Set(); // icon-social-x 已恢复（m02896 用户采用 simple-icons 官方 X 形）

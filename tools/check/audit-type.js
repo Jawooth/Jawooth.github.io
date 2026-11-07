@@ -58,8 +58,9 @@ const PROBE = `(() => {
   });
 
   // 4) 固定/悬浮元素是否遮住可点内容
+  // 2026-11-04：播放器已改为页内组件（.xp-music-slot / .xp-page-player），不再浮动，移出名单
   out.overlaps = [];
-  const floats = [...document.querySelectorAll('.xp-music-floating, .xp-taskbar, .retro-mp4-player, .xp-bubble, .xp-music-resume, #xp-restore-bar, .xp-decor')];
+  const floats = [...document.querySelectorAll('.xp-taskbar, .xp-bubble, #xp-restore-bar, .xp-decor')];
   const clickable = [...document.querySelectorAll('a[href],button,input')].filter(el => {
     const r = el.getBoundingClientRect();
     return r.width > 12 && r.height > 12 && r.top >= 0 && r.top < innerHeight && r.left >= 0 && r.left < innerWidth;
