@@ -1255,6 +1255,66 @@ hexo.extend.helper.register('xp_widget_browse', () => widget('浏览', oneLine(
   `</div>`
 )));
 
+/* ---------------------------------------------------------------- 单栏页的站内导航条
+   2026-11-08 补（README 14.1 ②）。背景：
+   · 全站的导航入口其实只有两处 —— 底部任务栏的「开始」菜单，和侧栏最后一张
+     「浏览」卡（xp_widget_browse）。
+   · 单栏页（/works/ /tags/ /categories/ /games/ /thanks/）**没有侧栏**，实测页面内
+     指向站内主要目的地的链接数是 0，唯一出口是左下角那个 79×28 的「开始」按钮。
+     从搜索引擎落到 /works/ 的人，看完作品就走进死胡同。
+   · 为什么不做一条「可见的顶部导航」：XP 的 chrome 就是任务栏，顶部导航条是这套
+     视觉隐喻里不存在的东西（主题原有那套隐藏顶栏 11-03 才随瘦身删掉，别再请回来）。
+   所以补的是「页面内的出口」，不是「第二条主导航」：条目跟任务栏菜单同序
+   （首页/绘画/文字/游戏/归档），末尾补两个索引页（标签/分类）。
+
+   当前页用 aria-current="page" 标出来而不是藏掉 —— 藏掉的话「我在哪」就没了；
+   这条链在五个页面上的位置固定，一页少一项反而像漏渲染。 */
+
+/* 条目**与开始菜单同源**（_config.minimalism.yml 的 menu）：菜单加减项，这条自动跟，
+   不会出现「开始菜单有了、导航条没有」的两张皮。menu 读取必须发生在渲染时（函数，
+   不能是模块加载期的常量）—— 那时主题配置才合并好，同 xp-taskbar.js 的 themeMenu()。
+   末尾补两个菜单里没有的索引页（标签/分类），站内找东西常用。 */
+function browseItems() {
+  const menu = (hexo.theme.config && hexo.theme.config.menu) || {};
+  const items = Object.keys(menu)
+    .map((k) => menu[k])
+    .filter((it) => it && it.url && it.name)
+    .map((it) => {
+      const url = String(it.url);
+      return [url.endsWith('/') || url.includes('.') ? url : url + '/', String(it.name)];
+    });
+  return items.concat([['/tags/', '标签'], ['/categories/', '分类']]);
+}
+
+/* 路由 path（'works/index.html'）→ 目录段（'/works/'）。首页没有目录段，回 '/'。
+   只认第一段：标签子页 /tags/xx/ 也归到 '/tags/'，那条链本来就是它的上级。 */
+function currentSection(p) {
+  const m = String(p || '').match(/^([A-Za-z0-9._-]+)\//);
+  return m ? '/' + m[1] + '/' : '/';
+}
+
+function browseBarHtml(path) {
+  /* path 取不到就当作「没有当前项」，宁可少一条 aria-current，也不要瞎标一个错的。 */
+  const cur = path ? currentSection(path) : '';
+  const links = browseItems().map(([url, name]) => {
+    const isCur = url === cur;
+    return `<a class="xp-btn xp-btn-small" href="${url}"` +
+      (isCur ? ' aria-current="page"' : '') + `>${name}</a>`;
+  });
+  return oneLine(`<nav class="xp-browse-bar" aria-label="站内导航">${links.join('')}</nav>`);
+}
+
+hexo.extend.helper.register('xp_browse_bar', function () {
+  return browseBarHtml(this.path);
+});
+
+/* 同一个标记要从 markdown 页面里写（{% xp_browse_bar %}），所以除了 helper 还要
+   注册一个 tag。tag 回调的 this 同样是模板 locals（hexo 用 Reflect.apply 把
+   context.ctx 当 this），所以 .path 两个入口都拿得到。 */
+hexo.extend.tag.register('xp_browse_bar', function () {
+  return browseBarHtml(this && this.path);
+});
+
 /* 目录：用 Hexo 自带的 toc helper 生成，class 前缀设成 xp-toc 以复用我们的样式 */
 hexo.extend.helper.register('xp_widget_toc', function (content) {
   const tocHelper = hexo.extend.helper.get('toc');

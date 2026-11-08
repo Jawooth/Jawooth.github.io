@@ -150,6 +150,19 @@ for rel in ["works/index.html", "games/index.html", "guides/index.html"]:
     if 'class="post-detail"' in s or 'class="post-content"' in s:
         fail("%s 出现了文章结构，说明 layout 不是 xp-page" % rel)
 
+# 单栏页的页面内出口（2026-11-08，README 14.1 ②）：这五页没有侧栏、没有「浏览」卡，
+# xp_browse_bar 是它们唯一的页面内导航。丢了的话访客看完只能靠任务栏的开始菜单。
+for rel in ["works/index.html", "tags/index.html", "categories/index.html",
+            "games/index.html", "thanks/index.html"]:
+    s = read(rel)
+    if not s:
+        continue
+    if 'class="xp-browse-bar"' not in s:
+        fail("%s 缺少站内导航条 xp-browse-bar" % rel)
+    elif 'aria-current="page"' not in s and rel != "thanks/index.html":
+        # /thanks/ 不在导航条目里（它不是分区），允许没有当前项；其余四页必须有
+        fail("%s 的导航条没有标当前页（aria-current）" % rel)
+
 # /todo/ 页已按站主要求删除（待办清单只保留在杂谈页一处）
 if os.path.exists(os.path.join(PUB, "todo", "index.html")):
     fail("待办页应当已删除，但仍存在 public/todo/index.html")

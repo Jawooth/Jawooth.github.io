@@ -2864,6 +2864,22 @@ html.dark .xp-toc a.current { color: var(--link); border-left-color: var(--link)
 .content-container:has(.xp-index-page) .xp-page-player { max-width: 900px; }
 .xp-page-player > .xp-music-slot { width: 100%; }
 
+/* 单栏页的站内导航条（2026-11-08，标记由 scripts/xp-content.js 的 xp_browse_bar 出）。
+   它是这些页面上**唯一**的页面内出口 —— 单栏页没有侧栏，也就没有「浏览」卡，
+   实测原先页面内指向站内主要目的地的链接数是 0，只剩任务栏的「开始」菜单。
+   宽度跟着内容列走，规则与上面的 .xp-page-player 完全一致（含 :has 那条），
+   这样它和下方的播放器左右边缘对齐、和上方内容也对齐。 */
+.xp-browse-bar {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  margin: 18px auto 0;
+  max-width: 100%;
+}
+.content-container:has(.xp-index-page) .xp-browse-bar { max-width: 900px; }
+/* 当前页压暗、不响应 hover：仍然可点（点一下等于刷新），但视觉上不像
+   「下一个目的地」。样式挂在 aria-current 上，不与语义分家。 */
+.xp-browse-bar .xp-btn[aria-current='page'] { opacity: 0.55; }
+.xp-browse-bar .xp-btn[aria-current='page']:hover { background: var(--face); }
+
 /* 侧栏里的标签胶囊与统计行沿用已有组件，只调间距 */
 .xp-widget .tag-cloud { gap: 5px; }
 .xp-widget .stat-row { font-size: var(--fs-text); padding: 4px 0; }
