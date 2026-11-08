@@ -11,7 +11,7 @@ const path = require('path');
 
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const base = process.argv[2] || 'http://127.0.0.1:4010';
-const pages = (process.argv[3] || '/,/blog/,/works/,/games/,/archives/,/about-me/,/thanks/,/hello-world/').split(',');
+const pages = (process.argv[3] || '/,/blog/,/works/,/games/,/archives/,/about-me/,/thanks/,/writing-reference/').split(',');
 const profile = path.join(os.tmpdir(), 'dsh-contrast-edge');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

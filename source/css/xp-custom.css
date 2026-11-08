@@ -522,13 +522,16 @@ html.dark :focus-visible { outline-color: #9cc2ff; }
 
 /* XP.css 风格窗口按钮（参考 botoxparty.github.io/XP.css）
    2026-10-13 起 compact 窄标题栏也显示按钮 —— 全站所有窗口统一带三按钮，
-   窄栏高度 28px、按钮 21px，放得下；打印时仍隐藏（见第 13 节 @media print）。 */
+   窄栏高度 28px、按钮 24px，放得下；打印时仍隐藏（见第 13 节 @media print）。
+   2026-11-08：按钮由 21×21 放到 24×24（触控最小尺寸），图标仍是 21px 见下面的
+   background-size —— 多的 1.5px 是四周一圈底色，视觉上就是「按钮略厚一点」。
+   间距仍 2px：两个 24px 热区中心距 26px，24px 的判定圆不会互相咬到（WCAG 2.5.8）。 */
 .xp-window-btns { display: flex; gap: 2px; flex-shrink: 0; }
 
-/* 按钮本体：XP.css 风格 —— 纯蓝/红背景、无边框、21×21 方形 */
+/* 按钮本体：XP.css 风格 —— 纯蓝/红背景、无边框、24×24 方形 */
 .xp-window-btn {
-  width: 21px;
-  height: 21px;
+  width: 24px;
+  height: 24px;
   border: none;
   border-radius: 0;
   background-color: #0050ee;
@@ -2032,7 +2035,11 @@ html.dark .xp-search-input { background: var(--surface-2); color: var(--text); b
 html.dark .filter-pill { color: #d6e7ff; }
 .filter-pill.is-active { background: var(--xp-blue-border); border-color: var(--xp-blue-border); color: #fff; }
 .filter-pill .pill-count { opacity: 0.75; margin-left: 2px; font-size: var(--fs-ui); }
-.filter-block { display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-ui); color: var(--text-muted); margin-left: 6px; cursor: pointer; }
+/* 2026-11-08：整条 label 才是「屏蔽模式」的热区（点字也能勾上），实测 82×18.4，
+  高比触控最小尺寸矮 5.6px。给 label 撑到 24，方块本身仍是 13×13 —— 不是把
+   原生控件放大（那会连带把勾选框画大），只是把可点范围补足。同一行的药丸 29px，
+   所以行高不变。 */
+.filter-block { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; font-size: var(--fs-ui); color: var(--text-muted); margin-left: 6px; cursor: pointer; }
 .filter-clear {
   font-family: inherit; font-size: var(--fs-ui); cursor: pointer;
   padding: 3px 10px; border-radius: 3px;
@@ -3059,6 +3066,9 @@ html.dark .xp-taskbar-item.active { background: linear-gradient(to bottom, #4a5a
   background: none; border: none; color: #fff;
   cursor: pointer; padding: 2px 4px; border-radius: 2px;
   display: flex; align-items: center;
+  /* 2026-11-08：实测 27.2×23.2，比触控最小尺寸矮 0.8px。任务栏 36px，
+     抬到 24 不影响任何东西 —— 图标（19px）居中，肉眼看不出变化。 */
+  min-height: 24px;
 }
 .xp-tray-btn:hover { background: rgba(255, 255, 255, 0.2); }
 /* 回到顶部按钮（2026-11-05）。两条都不能省：
@@ -3542,7 +3552,13 @@ html.xp-glitching::after {
    相邻的目标，**点错比点不到更糟**；改内边距则连视觉带热区一起长，永不重叠。
    高度定在 34px 而不是 40px：这些元素都是一排排紧挨着排的，34px 配上现有的
    5~6px gap 已经足够让相邻目标分开；40px 会让标签云在窄屏上白占一大截竖向空间。
-   只在 ≤640px 生效 —— 平板和 PC 是鼠标操作，密度本身就是观感的一部分。 */
+   只在 ≤640px 生效 —— 平板和 PC 是鼠标操作，密度本身就是观感的一部分。
+
+   2026-11-08 补：上面「XP chrome 不改」说的是**不按触摸屏的 40px 放大**，
+   不等于可以把热区留在 24px 以下。实测有三处低于触控最小尺寸，已在各自规则里
+   补到 24（连鼠标端一起，因为这是可点性下限，不是触屏专属）：
+     .xp-window-btn 21→24（图标仍 21）· .xp-tray-btn 23.2→24 ·
+     .filter-block（「屏蔽模式」那条 label，方块本身仍 13×13）18.4→24。 */
 @media (max-width: 640px) {
   .tag-pill,
   .filter-pill,

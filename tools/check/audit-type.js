@@ -13,7 +13,7 @@ const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
 const base = process.argv[2] || 'http://127.0.0.1:4010';
 const width = parseInt(process.argv[3] || '1440', 10);
 const height = parseInt(process.argv[4] || '900', 10);
-const pages = (process.argv[5] || '/,/hello-world/,/blog/,/works/').split(',');
+const pages = (process.argv[5] || '/,/writing-reference/,/blog/,/works/').split(',');
 const profile = path.join(os.tmpdir(), 'dsh-type-edge');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

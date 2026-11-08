@@ -117,7 +117,7 @@ async function main() {
   ws.onmessage = (ev) => { const m = JSON.parse(ev.data); if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } };
   const send = (method, params) => new Promise((res) => { const i = ++id; pending.set(i, res); ws.send(JSON.stringify({ id: i, method, params: params || {} })); });
 
-  for (const [mode, url] of [['light', base + '/'], ['dark', base + '/hello-world/']]) {
+  for (const [mode, url] of [['light', base + '/'], ['dark', base + '/writing-reference/']]) {
     await send('Page.navigate', { url });
     await sleep(2600);
     await send('Runtime.evaluate', { expression: mode === 'dark' ? "document.documentElement.classList.add('dark')" : "document.documentElement.classList.remove('dark')" });

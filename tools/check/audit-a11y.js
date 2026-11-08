@@ -16,7 +16,7 @@ const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
 const base = process.argv[2] || 'http://127.0.0.1:4010';
 const width = parseInt(process.argv[3] || '390', 10);
 const height = parseInt(process.argv[4] || '844', 10);
-const pages = (process.argv[5] || '/,/blog/,/works/,/games/,/archives/,/about-me/,/thanks/,/hello-world/').split(',');
+const pages = (process.argv[5] || '/,/blog/,/works/,/games/,/archives/,/about-me/,/thanks/,/writing-reference/').split(',');
 const profile = path.join(os.tmpdir(), 'dsh-a11y2-edge');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

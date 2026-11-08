@@ -29,7 +29,7 @@ const PAGES = [
   { p: '/archives/', name: 'archives' },
   { p: '/tags/', name: 'tags' },
   { p: '/categories/', name: 'categories' },
-  { p: '/hello-world/', name: 'post' },
+  { p: '/writing-reference/', name: 'post' },
   { p: '/404.html', name: '404' },
 ];
 
