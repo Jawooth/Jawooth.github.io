@@ -7,31 +7,31 @@
   </url>
   <url>
     <loc>https://Jawooth.github.io/%E5%A4%A7%E7%83%A7%E7%83%A4/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/about-bcy/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/about-death/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/about-me/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/about-me2/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -52,7 +52,7 @@
   </url>
   <url>
     <loc>https://Jawooth.github.io/categories/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -83,35 +83,24 @@
   </url>
   <url>
     <loc>https://Jawooth.github.io/games/</loc>
-    <lastmod>2026-11-08T07:04:31.021Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.336Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://Jawooth.github.io/hello-world/</loc>
-    <lastmod>2026-11-08T07:04:31.018Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://Jawooth.github.io/platform-thought/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/tags/</loc>
-    <lastmod>2026-11-08T07:04:31.024Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.340Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/tags/%E6%95%B0%E7%A0%81%E7%BB%98%E7%94%BB/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://Jawooth.github.io/tags/%E7%94%9F%E6%B4%BB/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
@@ -152,32 +141,38 @@
   </url>
   <url>
     <loc>https://Jawooth.github.io/thanks/</loc>
-    <lastmod>2026-11-08T07:04:31.024Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.340Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/work-character-practice/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/work-landscape-cottage/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/work-still-life-sketch/</loc>
-    <lastmod>2026-11-08T07:04:31.019Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://Jawooth.github.io/works/</loc>
-    <lastmod>2026-11-08T07:04:31.026Z</lastmod>
+    <lastmod>2026-11-08T07:35:11.341Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://Jawooth.github.io/writing-reference/</loc>
+    <lastmod>2026-11-08T07:35:11.334Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
